@@ -22,33 +22,21 @@ public class MainActivity extends AppCompatActivity
 
         SDDiskCache.open().putInt(key, 100);
         printInt();
-        SDDiskCache.open().removeInt(key);
-        printInt();
 
         SDDiskCache.open().putLong(key, 200);
-        printLong();
-        SDDiskCache.open().removeLong(key);
         printLong();
 
         SDDiskCache.open().putFloat(key, 100.123f);
         printFloat();
-        SDDiskCache.open().removeFloat(key);
-        printFloat();
 
         SDDiskCache.open().putDouble(key, 200.123345d);
-        printDouble();
-        SDDiskCache.open().removeDouble(key);
         printDouble();
 
         SDDiskCache.open().putString(key, "hello");
         printString();
-        SDDiskCache.open().removeString(key);
-        printString();
 
         TestModel model = new TestModel();
         SDDiskCache.open().putObject(model);
-        printObject();
-        SDDiskCache.open().removeObject(TestModel.class);
         printObject();
     }
 
