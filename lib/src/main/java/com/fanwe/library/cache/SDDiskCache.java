@@ -302,10 +302,6 @@ public class SDDiskCache
         {
             String realKey = createRealKey(key);
             File cacheFile = getCahceFile(realKey);
-            if (!cacheFile.exists())
-            {
-                cacheFile.mkdirs();
-            }
 
             CacheModel model = new CacheModel();
             model.setData(data);
@@ -374,7 +370,7 @@ public class SDDiskCache
 
     //---------- util method start ----------
 
-    public static Context getContext()
+    private static Context getContext()
     {
         return mContext;
     }
