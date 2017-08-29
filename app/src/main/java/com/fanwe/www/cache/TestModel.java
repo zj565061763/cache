@@ -76,4 +76,17 @@ public class TestModel
     {
         this.valueString = valueString;
     }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("\r\n");
+        sb.append("int:").append(valueInt).append("\r\n");
+        sb.append("long:").append(valueLong).append("\r\n");
+        sb.append("float:").append(valueFloat).append("\r\n");
+        sb.append("double:").append(valueDouble).append("\r\n");
+        sb.append("boolean:").append(valueBoolean).append("\r\n");
+        sb.append("string:").append(valueString).append("\r\n");
+        return sb.toString();
+    }
 }
