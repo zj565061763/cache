@@ -31,6 +31,8 @@ public class SDDiskCache
     private static final String OBJECT = "object_";
 
     private static Context mContext;
+    private static IObjectConverter sGlobalObjectConverter;
+    private static IEncryptConverter sGlobalEncryptConverter;
 
     private File mDirectory;
     private IObjectConverter mObjectConverter;
@@ -110,6 +112,26 @@ public class SDDiskCache
     }
 
     /**
+     * 设置全局对象转换器
+     *
+     * @param globalObjectConverter
+     */
+    public static void setGlobalObjectConverter(IObjectConverter globalObjectConverter)
+    {
+        sGlobalObjectConverter = globalObjectConverter;
+    }
+
+    /**
+     * 设置全局加解密转换器
+     *
+     * @param globalEncryptConverter
+     */
+    public static void setGlobalEncryptConverter(IEncryptConverter globalEncryptConverter)
+    {
+        sGlobalEncryptConverter = globalEncryptConverter;
+    }
+
+    /**
      * 设置对象转换器
      *
      * @param objectConverter
@@ -131,6 +153,28 @@ public class SDDiskCache
     {
         mEncryptConverter = encryptConverter;
         return this;
+    }
+
+    private IObjectConverter getObjectConverter()
+    {
+        if (mObjectConverter != null)
+        {
+            return mObjectConverter;
+        } else
+        {
+            return sGlobalObjectConverter;
+        }
+    }
+
+    private IEncryptConverter getEncryptConverter()
+    {
+        if (mEncryptConverter != null)
+        {
+            return mEncryptConverter;
+        } else
+        {
+            return sGlobalEncryptConverter;
+        }
     }
 
     //---------- int start ----------
@@ -260,7 +304,7 @@ public class SDDiskCache
         checkObjectConverter();
         if (object != null)
         {
-            String data = mObjectConverter.objectToString(object);
+            String data = getObjectConverter().objectToString(object);
             putString(OBJECT + object.getClass().getName(), data, encrypt);
         }
         return this;
@@ -273,7 +317,7 @@ public class SDDiskCache
         if (clazz != null)
         {
             String content = getString(OBJECT + object.getClass().getName());
-            object = mObjectConverter.stringToObject(content, clazz);
+            object = getObjectConverter().stringToObject(content, clazz);
         }
         return object;
     }
@@ -306,8 +350,8 @@ public class SDDiskCache
             CacheModel model = new CacheModel();
             model.setData(data);
             model.setEncrypt(encrypt);
-            model.encryptIfNeed(mEncryptConverter);
-            final String result = mObjectConverter.objectToString(model);
+            model.encryptIfNeed(getEncryptConverter());
+            final String result = getObjectConverter().objectToString(model);
 
             os = new FileOutputStream(cacheFile);
             FileUtil.writeString(os, result);
@@ -343,8 +387,8 @@ public class SDDiskCache
                 return null;
             }
 
-            CacheModel model = mObjectConverter.stringToObject(content, CacheModel.class);
-            model.decryptIfNeed(mEncryptConverter);
+            CacheModel model = getObjectConverter().stringToObject(content, CacheModel.class);
+            model.decryptIfNeed(getEncryptConverter());
             final String result = model.getData();
             return result;
         } catch (Exception e)
@@ -377,17 +421,17 @@ public class SDDiskCache
 
     private void checkObjectConverter()
     {
-        if (mObjectConverter == null)
+        if (getObjectConverter() == null)
         {
-            throw new NullPointerException("JsonConverter is null you must invoke setObjectConverter() method before this");
+            throw new NullPointerException("you must provide an IObjectConverter instance before this");
         }
     }
 
     private void checkEncryptConverter(boolean encrypt)
     {
-        if (encrypt && mEncryptConverter == null)
+        if (encrypt && getEncryptConverter() == null)
         {
-            throw new NullPointerException("EncryptConverter is null you must invoke setEncryptConverter() method before this");
+            throw new NullPointerException("you must provide an IEncryptConverter instance before this");
         }
     }
 
@@ -395,7 +439,7 @@ public class SDDiskCache
     {
         if (mContext == null)
         {
-            throw new NullPointerException("Context is null you must invoke init() static method before this");
+            throw new NullPointerException("you must invoke init() method before this");
         }
     }
 

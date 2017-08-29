@@ -22,10 +22,21 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SDDiskCache.init(this);
+        SDDiskCache.setGlobalObjectConverter(new JsonObjectConverter());
 
-        SDDiskCache.open().setObjectConverter(new JsonObjectConverter()).putString(keyString, "hello");
-        String valueString = SDDiskCache.open().setObjectConverter(new JsonObjectConverter()).getString(keyString);
+        SDDiskCache.open().putInt(keyInt, 100);
+        Log.i(TAG, "int:" + SDDiskCache.open().getInt(keyInt));
 
-        Log.i(TAG, "String:" + valueString);
+        SDDiskCache.open().putLong(keyLong, 200);
+        Log.i(TAG, "long:" + SDDiskCache.open().getLong(keyLong));
+
+        SDDiskCache.open().putFloat(keyFloat, 100.123f);
+        Log.i(TAG, "float:" + SDDiskCache.open().getFloat(keyFloat));
+
+        SDDiskCache.open().putDouble(keyDouble, 200.123345d);
+        Log.i(TAG, "double:" + SDDiskCache.open().getDouble(keyDouble));
+
+        SDDiskCache.open().putString(keyString, "hello");
+        Log.i(TAG, "string:" + SDDiskCache.open().getString(keyString));
     }
 }
