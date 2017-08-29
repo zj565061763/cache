@@ -36,7 +36,7 @@ class CacheModel
      */
     public void encryptIfNeed(IEncryptConverter converter)
     {
-        if (encrypt)
+        if (encrypt && converter != null)
         {
             data = converter.encrypt(data);
         }
@@ -49,7 +49,7 @@ class CacheModel
      */
     public void decryptIfNeed(IEncryptConverter converter)
     {
-        if (encrypt)
+        if (encrypt && converter != null)
         {
             data = converter.decrypt(data);
         }
