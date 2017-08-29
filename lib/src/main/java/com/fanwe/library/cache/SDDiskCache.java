@@ -163,11 +163,8 @@ public class SDDiskCache
      */
     public SDDiskCache setObjectConverter(IObjectConverter objectConverter)
     {
-        synchronized (mLocker)
-        {
-            mObjectConverter = objectConverter;
-            return this;
-        }
+        mObjectConverter = objectConverter;
+        return this;
     }
 
     /**
@@ -178,11 +175,8 @@ public class SDDiskCache
      */
     public SDDiskCache setEncryptConverter(IEncryptConverter encryptConverter)
     {
-        synchronized (mLocker)
-        {
-            mEncryptConverter = encryptConverter;
-            return this;
-        }
+        mEncryptConverter = encryptConverter;
+        return this;
     }
 
     private IObjectConverter getObjectConverter()
