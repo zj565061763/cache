@@ -3,12 +3,9 @@ package com.fanwe.library.cache;
 import android.content.Context;
 import android.util.Log;
 
-import java.io.Closeable;
+import com.jakewharton.disklrucache.DiskLruCache;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -19,6 +16,10 @@ import java.security.NoSuchAlgorithmException;
 public class SDDiskCache
 {
     private static final String TAG = "SDDiskCache";
+
+    private static final int DEFAULT_APP_VERSION = 0;
+    private static final int DEFAULT_INDEX = 0;
+    private static final long DEFAULT_MAX_SIZE = Long.MAX_VALUE;
 
     private static final String DEFAULT_FILE_DIR = "file";
     private static final String DEFAULT_CACHE_DIR = "cache";
@@ -34,18 +35,23 @@ public class SDDiskCache
     private static IObjectConverter sGlobalObjectConverter;
     private static IEncryptConverter sGlobalEncryptConverter;
 
-    private File mDirectory;
+    private DiskLruCache mDiskLruCache;
     private IObjectConverter mObjectConverter;
     private IEncryptConverter mEncryptConverter;
 
-    private SDDiskCache(File directory)
+    private SDDiskCache(File directory, int appVersion, long maxSize)
     {
         if (directory == null)
         {
             throw new NullPointerException("directory file is null");
         }
-        mDirectory = directory;
-        ensureDirectoryNotNull();
+        try
+        {
+            mDiskLruCache = DiskLruCache.open(directory, appVersion, 1, maxSize);
+        } catch (Exception e)
+        {
+            Log.e(TAG, String.valueOf(e));
+        }
     }
 
     /**
@@ -65,7 +71,7 @@ public class SDDiskCache
      */
     public static SDDiskCache open()
     {
-        return openDir(getFileDir(DEFAULT_FILE_DIR));
+        return open(DEFAULT_FILE_DIR);
     }
 
     /**
@@ -86,7 +92,7 @@ public class SDDiskCache
      */
     public static SDDiskCache openCache()
     {
-        return openDir(getCacheDir(DEFAULT_CACHE_DIR));
+        return openCache(DEFAULT_CACHE_DIR);
     }
 
     /**
@@ -107,7 +113,7 @@ public class SDDiskCache
      */
     public static SDDiskCache openDir(File directory)
     {
-        return new SDDiskCache(directory);
+        return new SDDiskCache(directory, DEFAULT_APP_VERSION, DEFAULT_MAX_SIZE);
     }
 
     /**
@@ -381,17 +387,25 @@ public class SDDiskCache
     public boolean hasString(String key)
     {
         String realKey = createRealKey(key);
-        File cacheFile = getCahceFile(realKey);
-        return cacheFile.exists();
+        try
+        {
+            return mDiskLruCache.get(realKey) != null;
+        } catch (Exception e)
+        {
+            Log.e(TAG, "hasString error:" + e);
+        }
+        return false;
     }
 
     public SDDiskCache removeString(String key)
     {
         String realKey = createRealKey(key);
-        File cacheFile = getCahceFile(realKey);
-        if (cacheFile.exists())
+        try
         {
-            cacheFile.delete();
+            mDiskLruCache.remove(realKey);
+        } catch (Exception e)
+        {
+            Log.e(TAG, "removeString error:" + e);
         }
         return this;
     }
@@ -406,27 +420,21 @@ public class SDDiskCache
         checkObjectConverter();
         checkEncryptConverter(encrypt);
 
-        OutputStream os = null;
         try
         {
-            String realKey = createRealKey(key);
-            File cacheFile = getCahceFile(realKey);
-
             CacheModel model = new CacheModel();
             model.setData(data);
             model.setEncrypt(encrypt);
             model.encryptIfNeed(getEncryptConverter());
             final String result = getObjectConverter().objectToString(model);
 
-            os = new FileOutputStream(cacheFile);
-            FileUtil.writeString(os, result);
+            String realKey = createRealKey(key);
+            DiskLruCache.Editor editor = mDiskLruCache.edit(realKey);
+            editor.set(DEFAULT_INDEX, result);
+            editor.commit();
         } catch (Exception e)
         {
-            e.printStackTrace();
-            Log.e(TAG, "putString error:" + String.valueOf(e));
-        } finally
-        {
-            FileUtil.closeQuietly(os);
+            Log.e(TAG, "putString error:" + e);
         }
         return this;
     }
@@ -435,18 +443,14 @@ public class SDDiskCache
     {
         checkObjectConverter();
 
-        InputStream is = null;
         try
         {
             String realKey = createRealKey(key);
-            File cacheFile = getCahceFile(realKey);
-            if (!cacheFile.exists())
+            if (mDiskLruCache.get(realKey) == null)
             {
                 return null;
             }
-
-            is = new FileInputStream(cacheFile);
-            String content = FileUtil.readString(is);
+            String content = mDiskLruCache.edit(realKey).getString(DEFAULT_INDEX);
             if (content == null)
             {
                 return null;
@@ -458,11 +462,7 @@ public class SDDiskCache
             return result;
         } catch (Exception e)
         {
-            e.printStackTrace();
-            Log.e(TAG, "getString error:" + String.valueOf(e));
-        } finally
-        {
-            FileUtil.closeQuietly(is);
+            Log.e(TAG, "getString error:" + e);
         }
         return null;
     }
@@ -474,7 +474,7 @@ public class SDDiskCache
      */
     public long size()
     {
-        return mDirectory.length();
+        return mDiskLruCache.size();
     }
 
     /**
@@ -482,7 +482,13 @@ public class SDDiskCache
      */
     public void delete()
     {
-        FileUtil.deleteFileOrDir(mDirectory);
+        try
+        {
+            mDiskLruCache.delete();
+        } catch (Exception e)
+        {
+            Log.e(TAG, String.valueOf(e));
+        }
     }
 
     //---------- util method start ----------
@@ -514,21 +520,6 @@ public class SDDiskCache
         {
             throw new NullPointerException("you must invoke init() method before this");
         }
-    }
-
-    private void ensureDirectoryNotNull()
-    {
-        if (!mDirectory.exists())
-        {
-            mDirectory.mkdirs();
-        }
-    }
-
-    private File getCahceFile(String key)
-    {
-        ensureDirectoryNotNull();
-        File cacheFile = new File(mDirectory, key);
-        return cacheFile;
     }
 
     private static File getFileDir(String dirName)
@@ -571,22 +562,10 @@ public class SDDiskCache
             result = sb.toString();
         } catch (NoSuchAlgorithmException e)
         {
+            Log.e(TAG, "MD5 error:" + e);
             result = null;
         }
         return result;
-    }
-
-    private static void closeQuietly(Closeable closeable)
-    {
-        if (closeable != null)
-        {
-            try
-            {
-                closeable.close();
-            } catch (Throwable ignored)
-            {
-            }
-        }
     }
 
     //---------- util method end ----------

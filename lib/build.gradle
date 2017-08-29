@@ -25,4 +25,5 @@ android {
 }
 
 dependencies {
+    compile 'com.jakewharton:disklrucache:2.0.2'
 }
