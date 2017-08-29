@@ -184,6 +184,11 @@ public class SDDiskCache
         return hasString(INT + key);
     }
 
+    public SDDiskCache removeInt(String key)
+    {
+        return removeString(INT + key);
+    }
+
     public SDDiskCache putInt(String key, int value)
     {
         return putString(INT + key, String.valueOf(value));
@@ -209,6 +214,11 @@ public class SDDiskCache
     public boolean hasLong(String key)
     {
         return hasString(LONG + key);
+    }
+
+    public SDDiskCache removeLong(String key)
+    {
+        return removeString(LONG + key);
     }
 
     public SDDiskCache putLong(String key, long value)
@@ -238,6 +248,11 @@ public class SDDiskCache
         return hasString(FLOAT + key);
     }
 
+    public SDDiskCache removeFloat(String key)
+    {
+        return removeString(FLOAT + key);
+    }
+
     public SDDiskCache putFloat(String key, float value)
     {
         return putString(FLOAT + key, String.valueOf(value));
@@ -263,6 +278,11 @@ public class SDDiskCache
     public boolean hasDouble(String key)
     {
         return hasString(DOUBLE + key);
+    }
+
+    public SDDiskCache removeDouble(String key)
+    {
+        return removeString(DOUBLE + key);
     }
 
     public SDDiskCache putDouble(String key, double value)
@@ -292,6 +312,11 @@ public class SDDiskCache
         return hasString(BOOLEAN + key);
     }
 
+    public SDDiskCache removeBoolean(String key)
+    {
+        return removeString(BOOLEAN + key);
+    }
+
     public SDDiskCache putBoolean(String key, boolean value)
     {
         return putString(BOOLEAN + key, String.valueOf(value));
@@ -314,9 +339,14 @@ public class SDDiskCache
 
     //---------- object start ----------
 
-    public <T> boolean hasObject(Class<T> clazz)
+    public boolean hasObject(Class clazz)
     {
         return hasString(OBJECT + clazz.getName());
+    }
+
+    public SDDiskCache removeObject(Class clazz)
+    {
+        return removeString(OBJECT + clazz.getName());
     }
 
     public SDDiskCache putObject(Object object)
@@ -354,6 +384,17 @@ public class SDDiskCache
         String realKey = createRealKey(key);
         File cacheFile = getCahceFile(realKey);
         return cacheFile.exists();
+    }
+
+    public SDDiskCache removeString(String key)
+    {
+        String realKey = createRealKey(key);
+        File cacheFile = getCahceFile(realKey);
+        if (cacheFile.exists())
+        {
+            cacheFile.delete();
+        }
+        return this;
     }
 
     public SDDiskCache putString(String key, String data)
@@ -435,6 +476,14 @@ public class SDDiskCache
     public long size()
     {
         return mDirectory.length();
+    }
+
+    /**
+     * 删除该目录以及目录下的所有缓存
+     */
+    public void delete()
+    {
+        FileUtil.deleteFileOrDir(mDirectory);
     }
 
     //---------- util method start ----------
