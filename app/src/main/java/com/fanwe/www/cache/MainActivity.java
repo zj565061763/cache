@@ -48,27 +48,27 @@ public class MainActivity extends AppCompatActivity
 
     private void printInt()
     {
-        Log.i(TAG, "int:" + SDDiskCache.open().getInt(key, 0));
+        Log.i(TAG, "int:" + SDDiskCache.open().hasInt(key) + "," + SDDiskCache.open().getInt(key, 0));
     }
 
     private void printLong()
     {
-        Log.i(TAG, "long:" + SDDiskCache.open().getLong(key, 0));
+        Log.i(TAG, "long:" + SDDiskCache.open().hasLong(key) + "," + SDDiskCache.open().getLong(key, 0));
     }
 
     private void printFloat()
     {
-        Log.i(TAG, "float:" + SDDiskCache.open().getFloat(key, 0));
+        Log.i(TAG, "float:" + SDDiskCache.open().hasFloat(key) + "," + SDDiskCache.open().getFloat(key, 0));
     }
 
     private void printDouble()
     {
-        Log.i(TAG, "double:" + SDDiskCache.open().getDouble(key, 0));
+        Log.i(TAG, "double:" + SDDiskCache.open().hasDouble(key) + "," + SDDiskCache.open().getDouble(key, 0));
     }
 
     private void printString()
     {
-        Log.i(TAG, "string:" + SDDiskCache.open().getString(key));
+        Log.i(TAG, "string:" + SDDiskCache.open().hasString(key) + "," + SDDiskCache.open().getString(key));
     }
 
     @Override
