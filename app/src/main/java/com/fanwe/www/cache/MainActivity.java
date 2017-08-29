@@ -19,11 +19,12 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         tv_info = (TextView) findViewById(R.id.tv_info);
 
-        SDDiskCache.init(this);
-        SDDiskCache.setGlobalObjectConverter(new JsonObjectConverter());
+        SDDiskCache.init(this); //初始化
+        SDDiskCache.setGlobalObjectConverter(new GlobalObjectConverter()); //设置全局对象转换器
+        SDDiskCache.setGlobalEncryptConverter(new GlobalEncryptConverter()); //设置全局加解密转换器
 
         TestModel model = new TestModel(); //创建实体
-        SDDiskCache.open().putObject(model); //保存实体
+        SDDiskCache.open().putObject(model, true); //保存实体
 
         TestModel modelCached = SDDiskCache.open().getObject(TestModel.class); //查询保存的实体
         tv_info.setText(String.valueOf(modelCached));
