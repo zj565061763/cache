@@ -1,11 +1,15 @@
 package com.fanwe.library.cache;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2017/8/29.
  */
 
-class CacheModel
+class CacheModel implements Serializable
 {
+    static final long serialVersionUID = 42L;
+
     private String data;
     private boolean encrypt;
 

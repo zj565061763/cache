@@ -3,9 +3,12 @@ package com.fanwe.library.cache;
 import android.content.Context;
 import android.util.Log;
 
-import com.jakewharton.disklrucache.DiskLruCache;
-
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -19,10 +22,6 @@ public class SDDiskCache
 {
     private static final String TAG = "SDDiskCache";
 
-    private static final int DEFAULT_APP_VERSION = 0;
-    private static final int DEFAULT_INDEX = 0;
-    private static final long DEFAULT_MAX_SIZE = Long.MAX_VALUE;
-
     private static final String DEFAULT_FILE_DIR = "file";
     private static final String DEFAULT_CACHE_DIR = "cache";
 
@@ -31,7 +30,9 @@ public class SDDiskCache
     private static final String FLOAT = "float_";
     private static final String DOUBLE = "double_";
     private static final String BOOLEAN = "boolean_";
+    private static final String STRING = "string_";
     private static final String OBJECT = "object_";
+    private static final String SERIALIZABLE = "serializable_";
 
     private static Map<String, Object> sMapDirLocker = new HashMap<>();
     private Object mLocker;
@@ -40,11 +41,11 @@ public class SDDiskCache
     private static IObjectConverter sGlobalObjectConverter;
     private static IEncryptConverter sGlobalEncryptConverter;
 
-    private DiskLruCache mDiskLruCache;
+    private File mDirectory;
     private IObjectConverter mObjectConverter;
     private IEncryptConverter mEncryptConverter;
 
-    private SDDiskCache(File directory, int appVersion, long maxSize)
+    private SDDiskCache(File directory)
     {
         if (directory == null)
         {
@@ -55,7 +56,8 @@ public class SDDiskCache
         {
             try
             {
-                mDiskLruCache = DiskLruCache.open(directory, appVersion, 1, maxSize);
+                mDirectory = directory;
+                ensureDirectoryExists();
 
                 final String path = directory.getAbsolutePath();
                 if (!sMapDirLocker.containsKey(path))
@@ -130,7 +132,7 @@ public class SDDiskCache
      */
     public static SDDiskCache openDir(File directory)
     {
-        return new SDDiskCache(directory, DEFAULT_APP_VERSION, DEFAULT_MAX_SIZE);
+        return new SDDiskCache(directory);
     }
 
     /**
@@ -212,17 +214,17 @@ public class SDDiskCache
         return hasString(INT + key);
     }
 
-    public SDDiskCache removeInt(String key)
+    public boolean removeInt(String key)
     {
         return removeString(INT + key);
     }
 
-    public SDDiskCache putInt(String key, int value)
+    public boolean putInt(String key, int value)
     {
         return putString(INT + key, String.valueOf(value));
     }
 
-    public SDDiskCache putInt(String key, int value, boolean encrypt)
+    public boolean putInt(String key, int value, boolean encrypt)
     {
         return putString(INT + key, String.valueOf(value), encrypt);
     }
@@ -244,17 +246,17 @@ public class SDDiskCache
         return hasString(LONG + key);
     }
 
-    public SDDiskCache removeLong(String key)
+    public boolean removeLong(String key)
     {
         return removeString(LONG + key);
     }
 
-    public SDDiskCache putLong(String key, long value)
+    public boolean putLong(String key, long value)
     {
         return putString(LONG + key, String.valueOf(value));
     }
 
-    public SDDiskCache putLong(String key, long value, boolean encrypt)
+    public boolean putLong(String key, long value, boolean encrypt)
     {
         return putString(LONG + key, String.valueOf(value), encrypt);
     }
@@ -276,17 +278,17 @@ public class SDDiskCache
         return hasString(FLOAT + key);
     }
 
-    public SDDiskCache removeFloat(String key)
+    public boolean removeFloat(String key)
     {
         return removeString(FLOAT + key);
     }
 
-    public SDDiskCache putFloat(String key, float value)
+    public boolean putFloat(String key, float value)
     {
         return putString(FLOAT + key, String.valueOf(value));
     }
 
-    public SDDiskCache putFloat(String key, float value, boolean encrypt)
+    public boolean putFloat(String key, float value, boolean encrypt)
     {
         return putString(FLOAT + key, String.valueOf(value), encrypt);
     }
@@ -308,17 +310,17 @@ public class SDDiskCache
         return hasString(DOUBLE + key);
     }
 
-    public SDDiskCache removeDouble(String key)
+    public boolean removeDouble(String key)
     {
         return removeString(DOUBLE + key);
     }
 
-    public SDDiskCache putDouble(String key, double value)
+    public boolean putDouble(String key, double value)
     {
         return putString(DOUBLE + key, String.valueOf(value));
     }
 
-    public SDDiskCache putDouble(String key, double value, boolean encrypt)
+    public boolean putDouble(String key, double value, boolean encrypt)
     {
         return putString(DOUBLE + key, String.valueOf(value), encrypt);
     }
@@ -340,17 +342,17 @@ public class SDDiskCache
         return hasString(BOOLEAN + key);
     }
 
-    public SDDiskCache removeBoolean(String key)
+    public boolean removeBoolean(String key)
     {
         return removeString(BOOLEAN + key);
     }
 
-    public SDDiskCache putBoolean(String key, boolean value)
+    public boolean putBoolean(String key, boolean value)
     {
         return putString(BOOLEAN + key, String.valueOf(value));
     }
 
-    public SDDiskCache putBoolean(String key, boolean value, boolean encrypt)
+    public boolean putBoolean(String key, boolean value, boolean encrypt)
     {
         return putString(BOOLEAN + key, String.valueOf(value), encrypt);
     }
@@ -372,7 +374,7 @@ public class SDDiskCache
         return hasString(OBJECT + clazz.getName());
     }
 
-    public SDDiskCache removeObject(Class clazz)
+    public boolean removeObject(Class clazz)
     {
         return removeString(OBJECT + clazz.getName());
     }
@@ -395,6 +397,7 @@ public class SDDiskCache
 
     public <T> T getObject(Class<T> clazz)
     {
+        checkObjectConverter();
         String content = getString(OBJECT + clazz.getName());
         if (content == null)
         {
@@ -409,96 +412,141 @@ public class SDDiskCache
 
     public boolean hasString(String key)
     {
+        return hasSerializable(STRING + key);
+    }
+
+    public boolean removeString(String key)
+    {
+        return removeSerializable(STRING + key);
+    }
+
+    public boolean putString(String key, String data)
+    {
+        return putString(key, data, false);
+    }
+
+    public boolean putString(String key, String data, boolean encrypt)
+    {
+        checkEncryptConverter(encrypt);
+
+        CacheModel model = new CacheModel();
+        model.setData(data);
+        model.setEncrypt(encrypt);
+        model.encryptIfNeed(getEncryptConverter());
+
+        return putSerializable(STRING + key, model);
+    }
+
+    public String getString(String key)
+    {
+        CacheModel model = getSerializable(STRING + key);
+        if (model == null)
+        {
+            return null;
+        }
+        checkEncryptConverter(model.isEncrypt());
+
+        model.decryptIfNeed(getEncryptConverter());
+        final String result = model.getData();
+        return result;
+    }
+
+    //---------- Serializable start ----------
+
+    public boolean hasSerializable(Class clazz)
+    {
+        return hasSerializable(clazz.getName());
+    }
+
+    public <T extends Serializable> boolean putSerializable(T object)
+    {
+        return putSerializable(object.getClass().getName(), object);
+    }
+
+    public <T extends Serializable> T getSerializable(Class<T> clazz)
+    {
+        return getSerializable(clazz.getName());
+    }
+
+    public boolean removeSerializable(Class clazz)
+    {
+        return removeSerializable(clazz.getName());
+    }
+
+    //---------- Serializable private start ----------
+
+    private boolean hasSerializable(String key)
+    {
         synchronized (mLocker)
         {
-            String realKey = createRealKey(key);
-            try
+            File cache = getCacheFile(SERIALIZABLE + key);
+            return cache.exists();
+        }
+    }
+
+    private <T extends Serializable> boolean putSerializable(String key, T object)
+    {
+        synchronized (mLocker)
+        {
+            if (object != null)
             {
-                return mDiskLruCache.get(realKey) != null;
-            } catch (Exception e)
-            {
-                Log.e(TAG, "hasString error:" + e);
+                ObjectOutputStream os = null;
+                try
+                {
+                    File cache = getCacheFile(SERIALIZABLE + key);
+                    os = new ObjectOutputStream(new FileOutputStream(cache));
+                    os.writeObject(object);
+                    os.flush();
+                    return true;
+                } catch (Exception e)
+                {
+                    Log.e(TAG, "putSerializable:" + e);
+                } finally
+                {
+                    FileUtil.closeQuietly(os);
+                }
             }
             return false;
         }
     }
 
-    public SDDiskCache removeString(String key)
+    private <T extends Serializable> T getSerializable(String key)
     {
         synchronized (mLocker)
         {
-            String realKey = createRealKey(key);
+            ObjectInputStream is = null;
             try
             {
-                mDiskLruCache.remove(realKey);
-            } catch (Exception e)
-            {
-                Log.e(TAG, "removeString error:" + e);
-            }
-            return this;
-        }
-    }
-
-    public SDDiskCache putString(String key, String data)
-    {
-        return putString(key, data, false);
-    }
-
-    public SDDiskCache putString(String key, String data, boolean encrypt)
-    {
-        synchronized (mLocker)
-        {
-            checkObjectConverter();
-            checkEncryptConverter(encrypt);
-
-            try
-            {
-                CacheModel model = new CacheModel();
-                model.setData(data);
-                model.setEncrypt(encrypt);
-                model.encryptIfNeed(getEncryptConverter());
-                final String result = getObjectConverter().objectToString(model);
-
-                String realKey = createRealKey(key);
-                DiskLruCache.Editor editor = mDiskLruCache.edit(realKey);
-                editor.set(DEFAULT_INDEX, result);
-                editor.commit();
-            } catch (Exception e)
-            {
-                Log.e(TAG, "putString error:" + e);
-            }
-            return this;
-        }
-    }
-
-    public String getString(String key)
-    {
-        synchronized (mLocker)
-        {
-            checkObjectConverter();
-
-            try
-            {
-                String realKey = createRealKey(key);
-                if (mDiskLruCache.get(realKey) == null)
+                File cache = getCacheFile(SERIALIZABLE + key);
+                if (!cache.exists())
                 {
                     return null;
                 }
-                String content = mDiskLruCache.edit(realKey).getString(DEFAULT_INDEX);
-                if (content == null)
-                {
-                    return null;
-                }
-
-                CacheModel model = getObjectConverter().stringToObject(content, CacheModel.class);
-                model.decryptIfNeed(getEncryptConverter());
-                final String result = model.getData();
-                return result;
+                is = new ObjectInputStream(new FileInputStream(cache));
+                return (T) is.readObject();
             } catch (Exception e)
             {
-                Log.e(TAG, "getString error:" + e);
+                Log.e(TAG, "getSerializable:" + e);
+            } finally
+            {
+                FileUtil.closeQuietly(is);
             }
             return null;
+        }
+    }
+
+    private boolean removeSerializable(String key)
+    {
+        synchronized (mLocker)
+        {
+            File cache = getCacheFile(SERIALIZABLE + key);
+            if (cache.exists())
+            {
+                return cache.delete();
+            } else
+            {
+                return true;
+            }
         }
     }
 
@@ -511,7 +559,7 @@ public class SDDiskCache
     {
         synchronized (mLocker)
         {
-            return mDiskLruCache.size();
+            return mDirectory.length();
         }
     }
 
@@ -522,13 +570,7 @@ public class SDDiskCache
     {
         synchronized (mLocker)
         {
-            try
-            {
-                mDiskLruCache.delete();
-            } catch (Exception e)
-            {
-                Log.e(TAG, String.valueOf(e));
-            }
+            FileUtil.deleteFileOrDir(mDirectory);
         }
     }
 
@@ -561,6 +603,23 @@ public class SDDiskCache
         {
             throw new NullPointerException("you must invoke init() method before this");
         }
+    }
+
+    private void ensureDirectoryExists()
+    {
+        if (!mDirectory.exists())
+        {
+            mDirectory.mkdirs();
+        }
+    }
+
+    private File getCacheFile(String key)
+    {
+        ensureDirectoryExists();
+
+        String realkey = createRealKey(key);
+        File cache = new File(mDirectory, realkey);
+        return cache;
     }
 
     private static File getFileDir(String dirName)
