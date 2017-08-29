@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
 
     private TextView tv_info;
+    private String key;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -21,13 +22,12 @@ public class MainActivity extends AppCompatActivity
         tv_info = (TextView) findViewById(R.id.tv_info);
 
         SDDiskCache.init(this); //初始化
-        SDDiskCache.setGlobalObjectConverter(new GlobalObjectConverter()); //设置全局对象转换器，必须设置
-        SDDiskCache.setGlobalEncryptConverter(new GlobalEncryptConverter()); //设置全局加解密转换器，如果不需要加解密，可以不设置
 
-        SDDiskCache.open().putObject(new TestModel());
+        SDDiskCache.open().putInt(key, 10);
 
         startThread1();
         startThread2();
+        startThread3();
     }
 
     private void startThread1()
@@ -56,27 +56,32 @@ public class MainActivity extends AppCompatActivity
         }.start();
     }
 
+    private void startThread3()
+    {
+        new Thread("thread 3")
+        {
+            @Override
+            public void run()
+            {
+                mRunnable3.run();
+                super.run();
+            }
+        }.start();
+    }
+
+    private Object locker = new Object();
+
     private Runnable mRunnable1 = new Runnable()
     {
         @Override
         public void run()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 500; i++)
             {
-                Log.i(TAG, "put:" + i);
-
-                TestModel model = SDDiskCache.open().getObject(TestModel.class);
-                model.setValueInt(i);
-                SDDiskCache.open().putObject(model);
-
-                try
-                {
-                    Thread.sleep(1);
-                } catch (Exception e)
-                {
-                }
-
-                Log.i(TAG, "get-----:" + SDDiskCache.open().getObject(TestModel.class).getValueInt());
+//                synchronized (locker)
+//                {
+                    SDDiskCache.open().putInt(key, SDDiskCache.open().getInt(key, 0) + 1);
+//                }
             }
         }
     };
@@ -86,22 +91,30 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void run()
         {
-            for (int i = 2000; i < 3000; i++)
+            for (int i = 0; i < 500; i++)
             {
-                Log.e(TAG, "put:" + i);
+//                synchronized (locker)
+//                {
+                    SDDiskCache.open().putInt(key, SDDiskCache.open().getInt(key, 0) - 1);
+//                }
+            }
+        }
+    };
 
-                TestModel model = SDDiskCache.open().getObject(TestModel.class);
-                model.setValueInt(i);
-                SDDiskCache.open().putObject(model);
-
+    private Runnable mRunnable3 = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            for (int i = 0; i < 2000; i++)
+            {
+                Log.e(TAG, "read finish-------------:" + SDDiskCache.open().getInt(key, 0));
                 try
                 {
-                    Thread.sleep(1);
+                    Thread.sleep(5);
                 } catch (Exception e)
                 {
                 }
-
-                Log.e(TAG, "get-----:" + SDDiskCache.open().getObject(TestModel.class).getValueInt());
             }
         }
     };
