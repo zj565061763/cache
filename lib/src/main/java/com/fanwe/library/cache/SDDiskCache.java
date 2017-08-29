@@ -111,7 +111,7 @@ public class SDDiskCache
      * @param directory
      * @return
      */
-    public static SDDiskCache openDir(File directory)
+    public synchronized static SDDiskCache openDir(File directory)
     {
         return new SDDiskCache(directory, DEFAULT_APP_VERSION, DEFAULT_MAX_SIZE);
     }
