@@ -24,6 +24,10 @@ public class SDDiskCache
     private static final String DEFAULT_CACHE_DIR = "cache";
 
     private static final String INT = "int_";
+    private static final String LONG = "long_";
+    private static final String FLOAT = "float_";
+    private static final String DOUBLE = "double_";
+    private static final String BOOLEAN = "boolean_";
     private static final String OBJECT = "object_";
 
     private static Context mContext;
@@ -144,6 +148,99 @@ public class SDDiskCache
     public SDDiskCache putInt(String key, int value, boolean encrypt)
     {
         return putString(INT + key, String.valueOf(value), encrypt);
+    }
+
+    public int getInt(String key)
+    {
+        return Integer.valueOf(getString(key));
+    }
+
+    //---------- long start ----------
+
+    public boolean hasLong(String key)
+    {
+        return hasString(LONG + key);
+    }
+
+    public SDDiskCache putLong(String key, long value)
+    {
+        return putString(LONG + key, String.valueOf(value));
+    }
+
+    public SDDiskCache putLong(String key, long value, boolean encrypt)
+    {
+        return putString(LONG + key, String.valueOf(value), encrypt);
+    }
+
+    public long getLong(String key)
+    {
+        return Long.valueOf(getString(key));
+    }
+
+    //---------- float start ----------
+
+    public boolean hasFloat(String key)
+    {
+        return hasString(FLOAT + key);
+    }
+
+    public SDDiskCache putFloat(String key, float value)
+    {
+        return putString(FLOAT + key, String.valueOf(value));
+    }
+
+    public SDDiskCache putFloat(String key, float value, boolean encrypt)
+    {
+        return putString(FLOAT + key, String.valueOf(value), encrypt);
+    }
+
+    public float getFloat(String key)
+    {
+        return Float.valueOf(getString(key));
+    }
+
+    //---------- double start ----------
+
+    public boolean hasDouble(String key)
+    {
+        return hasString(DOUBLE + key);
+    }
+
+    public SDDiskCache putDouble(String key, double value)
+    {
+        return putString(DOUBLE + key, String.valueOf(value));
+    }
+
+    public SDDiskCache putDouble(String key, double value, boolean encrypt)
+    {
+        return putString(DOUBLE + key, String.valueOf(value), encrypt);
+    }
+
+    public double getDouble(String key)
+    {
+        return Double.valueOf(getString(key));
+    }
+
+    //---------- boolean start ----------
+
+    public boolean hasBoolean(String key)
+    {
+        return hasString(BOOLEAN + key);
+    }
+
+    public SDDiskCache putBoolean(String key, boolean value)
+    {
+        return putString(BOOLEAN + key, String.valueOf(value));
+    }
+
+    public SDDiskCache putBoolean(String key, boolean value, boolean encrypt)
+    {
+        return putString(BOOLEAN + key, String.valueOf(value), encrypt);
+    }
+
+    public boolean getBoolean(String key)
+    {
+        return Boolean.valueOf(getString(key));
     }
 
     //---------- object start ----------
