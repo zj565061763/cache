@@ -25,16 +25,16 @@ public class MainActivity extends AppCompatActivity
         SDDiskCache.setGlobalObjectConverter(new JsonObjectConverter());
 
         SDDiskCache.open().putInt(keyInt, 100);
-        Log.i(TAG, "int:" + SDDiskCache.open().getInt(keyInt));
+        Log.i(TAG, "int:" + SDDiskCache.open().getInt(keyInt, 0));
 
         SDDiskCache.open().putLong(keyLong, 200);
-        Log.i(TAG, "long:" + SDDiskCache.open().getLong(keyLong));
+        Log.i(TAG, "long:" + SDDiskCache.open().getLong(keyLong, 0));
 
         SDDiskCache.open().putFloat(keyFloat, 100.123f);
-        Log.i(TAG, "float:" + SDDiskCache.open().getFloat(keyFloat));
+        Log.i(TAG, "float:" + SDDiskCache.open().getFloat(keyFloat, 0));
 
         SDDiskCache.open().putDouble(keyDouble, 200.123345d);
-        Log.i(TAG, "double:" + SDDiskCache.open().getDouble(keyDouble));
+        Log.i(TAG, "double:" + SDDiskCache.open().getDouble(keyDouble, 0));
 
         SDDiskCache.open().putString(keyString, "hello");
         Log.i(TAG, "string:" + SDDiskCache.open().getString(keyString));

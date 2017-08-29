@@ -194,9 +194,14 @@ public class SDDiskCache
         return putString(INT + key, String.valueOf(value), encrypt);
     }
 
-    public int getInt(String key)
+    public int getInt(String key, int defValue)
     {
-        return Integer.valueOf(getString(INT + key));
+        String content = getString(INT + key);
+        if (content == null)
+        {
+            return defValue;
+        }
+        return Integer.valueOf(content);
     }
 
     //---------- long start ----------
@@ -216,9 +221,14 @@ public class SDDiskCache
         return putString(LONG + key, String.valueOf(value), encrypt);
     }
 
-    public long getLong(String key)
+    public long getLong(String key, long defValue)
     {
-        return Long.valueOf(getString(LONG + key));
+        String content = getString(LONG + key);
+        if (content == null)
+        {
+            return defValue;
+        }
+        return Long.valueOf(content);
     }
 
     //---------- float start ----------
@@ -238,9 +248,14 @@ public class SDDiskCache
         return putString(FLOAT + key, String.valueOf(value), encrypt);
     }
 
-    public float getFloat(String key)
+    public float getFloat(String key, float defValue)
     {
-        return Float.valueOf(getString(FLOAT + key));
+        String content = getString(FLOAT + key);
+        if (content == null)
+        {
+            return defValue;
+        }
+        return Float.valueOf(content);
     }
 
     //---------- double start ----------
@@ -260,9 +275,14 @@ public class SDDiskCache
         return putString(DOUBLE + key, String.valueOf(value), encrypt);
     }
 
-    public double getDouble(String key)
+    public double getDouble(String key, double defValue)
     {
-        return Double.valueOf(getString(DOUBLE + key));
+        String content = getString(DOUBLE + key);
+        if (content == null)
+        {
+            return defValue;
+        }
+        return Double.valueOf(content);
     }
 
     //---------- boolean start ----------
@@ -282,9 +302,14 @@ public class SDDiskCache
         return putString(BOOLEAN + key, String.valueOf(value), encrypt);
     }
 
-    public boolean getBoolean(String key)
+    public boolean getBoolean(String key, boolean defValue)
     {
-        return Boolean.valueOf(getString(BOOLEAN + key));
+        String content = getString(BOOLEAN + key);
+        if (content == null)
+        {
+            return defValue;
+        }
+        return Boolean.valueOf(content);
     }
 
     //---------- object start ----------
