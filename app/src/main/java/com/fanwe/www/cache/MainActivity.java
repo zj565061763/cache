@@ -1,9 +1,7 @@
 package com.fanwe.www.cache;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
-import com.jakewharton.disklrucache.DiskLruCache;
+import android.support.v7.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity
 {
