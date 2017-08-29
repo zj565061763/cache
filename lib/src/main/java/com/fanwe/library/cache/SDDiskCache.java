@@ -59,40 +59,39 @@ public class SDDiskCache
     }
 
     /**
-     * 返回和SD卡文件目录下"file"目录关联的操作对象
+     * 返回和"Android/data/包名/files/file"目录关联的操作对象
      *
      * @return
      */
-    public static SDDiskCache openFile()
+    public static SDDiskCache open()
     {
-        return openFile(DEFAULT_FILE_DIR);
+        return openDir(getFileDir(DEFAULT_FILE_DIR));
     }
 
     /**
-     * 返回和SD卡缓存目录下"cache"目录关联的操作对象
-     *
-     * @return
-     */
-    public static SDDiskCache openCache()
-    {
-        return openCache(DEFAULT_CACHE_DIR);
-    }
-
-    /**
-     * 返回和SD卡文件目录下指定目录关联的操作对象
+     * 返回和"Android/data/包名/files/dirName"目录关联的操作对象
      *
      * @param dirName
      * @return
      */
-    public static SDDiskCache openFile(String dirName)
+    public static SDDiskCache open(String dirName)
     {
         return openDir(getFileDir(dirName));
     }
 
     /**
-     * 返回和SD卡缓存目录下指定目录关联的操作对象
+     * 返回和"Android/data/包名/cache/cache"目录关联的操作对象
      *
-     * @param dirName
+     * @return
+     */
+    public static SDDiskCache openCache()
+    {
+        return openDir(getCacheDir(DEFAULT_CACHE_DIR));
+    }
+
+    /**
+     * 返回和"Android/data/包名/cache/dirName"目录关联的操作对象
+     *
      * @return
      */
     public static SDDiskCache openCache(String dirName)
