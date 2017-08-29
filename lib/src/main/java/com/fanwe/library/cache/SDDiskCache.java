@@ -132,8 +132,7 @@ public class SDDiskCache
 
     public <T> boolean hasObject(Class<T> clazz)
     {
-        String key = OBJECT + clazz.getName();
-        return hasString(key);
+        return hasString(OBJECT + clazz.getName());
     }
 
     public SDDiskCache putObject(Object object)
@@ -146,10 +145,8 @@ public class SDDiskCache
         checkObjectConverter();
         if (object != null)
         {
-            String key = OBJECT + object.getClass().getName();
-
             String data = mObjectConverter.objectToString(object);
-            putString(key, data, encrypt);
+            putString(OBJECT + object.getClass().getName(), data, encrypt);
         }
         return this;
     }
@@ -160,9 +157,7 @@ public class SDDiskCache
         T object = null;
         if (clazz != null)
         {
-            String key = OBJECT + object.getClass().getName();
-
-            String content = getString(key);
+            String content = getString(OBJECT + object.getClass().getName());
             object = mObjectConverter.stringToObject(content, clazz);
         }
         return object;
