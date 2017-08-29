@@ -8,6 +8,8 @@ import com.jakewharton.disklrucache.DiskLruCache;
 import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017/8/29.
@@ -31,6 +33,9 @@ public class SDDiskCache
     private static final String BOOLEAN = "boolean_";
     private static final String OBJECT = "object_";
 
+    private static Map<String, Object> sMapDirLocker = new HashMap<>();
+    private Object mLocker;
+
     private static Context mContext;
     private static IObjectConverter sGlobalObjectConverter;
     private static IEncryptConverter sGlobalEncryptConverter;
@@ -45,12 +50,24 @@ public class SDDiskCache
         {
             throw new NullPointerException("directory file is null");
         }
-        try
+
+        synchronized (sMapDirLocker)
         {
-            mDiskLruCache = DiskLruCache.open(directory, appVersion, 1, maxSize);
-        } catch (Exception e)
-        {
-            Log.e(TAG, String.valueOf(e));
+            try
+            {
+                mDiskLruCache = DiskLruCache.open(directory, appVersion, 1, maxSize);
+
+                final String path = directory.getAbsolutePath();
+                if (!sMapDirLocker.containsKey(path))
+                {
+                    sMapDirLocker.put(path, path);
+                }
+
+                mLocker = sMapDirLocker.get(path);
+            } catch (Exception e)
+            {
+                Log.e(TAG, String.valueOf(e));
+            }
         }
     }
 
@@ -111,7 +128,7 @@ public class SDDiskCache
      * @param directory
      * @return
      */
-    public synchronized static SDDiskCache openDir(File directory)
+    public static SDDiskCache openDir(File directory)
     {
         return new SDDiskCache(directory, DEFAULT_APP_VERSION, DEFAULT_MAX_SIZE);
     }
@@ -386,28 +403,34 @@ public class SDDiskCache
 
     public boolean hasString(String key)
     {
-        String realKey = createRealKey(key);
-        try
+        synchronized (mLocker)
         {
-            return mDiskLruCache.get(realKey) != null;
-        } catch (Exception e)
-        {
-            Log.e(TAG, "hasString error:" + e);
+            String realKey = createRealKey(key);
+            try
+            {
+                return mDiskLruCache.get(realKey) != null;
+            } catch (Exception e)
+            {
+                Log.e(TAG, "hasString error:" + e);
+            }
+            return false;
         }
-        return false;
     }
 
     public SDDiskCache removeString(String key)
     {
-        String realKey = createRealKey(key);
-        try
+        synchronized (mLocker)
         {
-            mDiskLruCache.remove(realKey);
-        } catch (Exception e)
-        {
-            Log.e(TAG, "removeString error:" + e);
+            String realKey = createRealKey(key);
+            try
+            {
+                mDiskLruCache.remove(realKey);
+            } catch (Exception e)
+            {
+                Log.e(TAG, "removeString error:" + e);
+            }
+            return this;
         }
-        return this;
     }
 
     public SDDiskCache putString(String key, String data)
@@ -417,54 +440,60 @@ public class SDDiskCache
 
     public SDDiskCache putString(String key, String data, boolean encrypt)
     {
-        checkObjectConverter();
-        checkEncryptConverter(encrypt);
-
-        try
+        synchronized (mLocker)
         {
-            CacheModel model = new CacheModel();
-            model.setData(data);
-            model.setEncrypt(encrypt);
-            model.encryptIfNeed(getEncryptConverter());
-            final String result = getObjectConverter().objectToString(model);
+            checkObjectConverter();
+            checkEncryptConverter(encrypt);
 
-            String realKey = createRealKey(key);
-            DiskLruCache.Editor editor = mDiskLruCache.edit(realKey);
-            editor.set(DEFAULT_INDEX, result);
-            editor.commit();
-        } catch (Exception e)
-        {
-            Log.e(TAG, "putString error:" + e);
+            try
+            {
+                CacheModel model = new CacheModel();
+                model.setData(data);
+                model.setEncrypt(encrypt);
+                model.encryptIfNeed(getEncryptConverter());
+                final String result = getObjectConverter().objectToString(model);
+
+                String realKey = createRealKey(key);
+                DiskLruCache.Editor editor = mDiskLruCache.edit(realKey);
+                editor.set(DEFAULT_INDEX, result);
+                editor.commit();
+            } catch (Exception e)
+            {
+                Log.e(TAG, "putString error:" + e);
+            }
+            return this;
         }
-        return this;
     }
 
     public String getString(String key)
     {
-        checkObjectConverter();
-
-        try
+        synchronized (mLocker)
         {
-            String realKey = createRealKey(key);
-            if (mDiskLruCache.get(realKey) == null)
-            {
-                return null;
-            }
-            String content = mDiskLruCache.edit(realKey).getString(DEFAULT_INDEX);
-            if (content == null)
-            {
-                return null;
-            }
+            checkObjectConverter();
 
-            CacheModel model = getObjectConverter().stringToObject(content, CacheModel.class);
-            model.decryptIfNeed(getEncryptConverter());
-            final String result = model.getData();
-            return result;
-        } catch (Exception e)
-        {
-            Log.e(TAG, "getString error:" + e);
+            try
+            {
+                String realKey = createRealKey(key);
+                if (mDiskLruCache.get(realKey) == null)
+                {
+                    return null;
+                }
+                String content = mDiskLruCache.edit(realKey).getString(DEFAULT_INDEX);
+                if (content == null)
+                {
+                    return null;
+                }
+
+                CacheModel model = getObjectConverter().stringToObject(content, CacheModel.class);
+                model.decryptIfNeed(getEncryptConverter());
+                final String result = model.getData();
+                return result;
+            } catch (Exception e)
+            {
+                Log.e(TAG, "getString error:" + e);
+            }
+            return null;
         }
-        return null;
     }
 
     /**
@@ -474,7 +503,10 @@ public class SDDiskCache
      */
     public long size()
     {
-        return mDiskLruCache.size();
+        synchronized (mLocker)
+        {
+            return mDiskLruCache.size();
+        }
     }
 
     /**
@@ -482,12 +514,15 @@ public class SDDiskCache
      */
     public void delete()
     {
-        try
+        synchronized (mLocker)
         {
-            mDiskLruCache.delete();
-        } catch (Exception e)
-        {
-            Log.e(TAG, String.valueOf(e));
+            try
+            {
+                mDiskLruCache.delete();
+            } catch (Exception e)
+            {
+                Log.e(TAG, String.valueOf(e));
+            }
         }
     }
 
