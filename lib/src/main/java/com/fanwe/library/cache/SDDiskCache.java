@@ -196,7 +196,7 @@ public class SDDiskCache
 
     public int getInt(String key)
     {
-        return Integer.valueOf(getString(key));
+        return Integer.valueOf(getString(INT + key));
     }
 
     //---------- long start ----------
@@ -218,7 +218,7 @@ public class SDDiskCache
 
     public long getLong(String key)
     {
-        return Long.valueOf(getString(key));
+        return Long.valueOf(getString(LONG + key));
     }
 
     //---------- float start ----------
@@ -240,7 +240,7 @@ public class SDDiskCache
 
     public float getFloat(String key)
     {
-        return Float.valueOf(getString(key));
+        return Float.valueOf(getString(FLOAT + key));
     }
 
     //---------- double start ----------
@@ -262,7 +262,7 @@ public class SDDiskCache
 
     public double getDouble(String key)
     {
-        return Double.valueOf(getString(key));
+        return Double.valueOf(getString(DOUBLE + key));
     }
 
     //---------- boolean start ----------
@@ -284,7 +284,7 @@ public class SDDiskCache
 
     public boolean getBoolean(String key)
     {
-        return Boolean.valueOf(getString(key));
+        return Boolean.valueOf(getString(BOOLEAN + key));
     }
 
     //---------- object start ----------
