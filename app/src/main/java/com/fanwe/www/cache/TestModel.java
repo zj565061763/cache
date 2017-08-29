@@ -1,11 +1,15 @@
 package com.fanwe.www.cache;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2017/8/29.
  */
 
-public class TestModel
+public class TestModel implements Serializable
 {
+    static final long serialVersionUID = 0;
+
     private int valueInt = 10;
     private long valueLong = 20;
 

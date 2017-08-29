@@ -66,11 +66,8 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "put:" + i);
 
                 TestModel model = SDDiskCache.open().getObject(TestModel.class);
-                if (model != null)
-                {
-                    model.setValueInt(i);
-                    SDDiskCache.open().putObject(model);
-                }
+                model.setValueInt(i);
+                SDDiskCache.open().putObject(model);
 
                 try
                 {
@@ -79,11 +76,7 @@ public class MainActivity extends AppCompatActivity
                 {
                 }
 
-                TestModel query = SDDiskCache.open().getObject(TestModel.class);
-                if (query != null)
-                {
-                    Log.i(TAG, "get-----:" + query.getValueInt());
-                }
+                Log.i(TAG, "get-----:" + SDDiskCache.open().getObject(TestModel.class).getValueInt());
             }
         }
     };
@@ -98,11 +91,8 @@ public class MainActivity extends AppCompatActivity
                 Log.e(TAG, "put:" + i);
 
                 TestModel model = SDDiskCache.open().getObject(TestModel.class);
-                if (model != null)
-                {
-                    model.setValueInt(i);
-                    SDDiskCache.open().putObject(model);
-                }
+                model.setValueInt(i);
+                SDDiskCache.open().putObject(model);
 
                 try
                 {
@@ -111,12 +101,7 @@ public class MainActivity extends AppCompatActivity
                 {
                 }
 
-
-                TestModel query = SDDiskCache.open().getObject(TestModel.class);
-                if (query != null)
-                {
-                    Log.e(TAG, "get-----:" + query.getValueInt());
-                }
+                Log.e(TAG, "get-----:" + SDDiskCache.open().getObject(TestModel.class).getValueInt());
             }
         }
     };
