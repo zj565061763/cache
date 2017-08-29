@@ -10,11 +10,7 @@ public class MainActivity extends AppCompatActivity
 {
     private static final String TAG = "MainActivity";
 
-    private String keyInt = "keyInt";
-    private String keyLong = "keyLong";
-    private String keyFloat = "keyFloat";
-    private String keyDouble = "keyDouble";
-    private String keyString = "keyString";
+    private String key = "key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -24,19 +20,44 @@ public class MainActivity extends AppCompatActivity
         SDDiskCache.init(this);
         SDDiskCache.setGlobalObjectConverter(new JsonObjectConverter());
 
-        SDDiskCache.openFile().putInt(keyInt, 100);
-        Log.i(TAG, "int:" + SDDiskCache.openFile().getInt(keyInt, 0));
+        SDDiskCache.openFile().putInt(key, 100);
+        printInt();
 
-        SDDiskCache.openFile().putLong(keyLong, 200);
-        Log.i(TAG, "long:" + SDDiskCache.openFile().getLong(keyLong, 0));
+        SDDiskCache.openFile().putLong(key, 200);
+        printLong();
 
-        SDDiskCache.openFile().putFloat(keyFloat, 100.123f);
-        Log.i(TAG, "float:" + SDDiskCache.openFile().getFloat(keyFloat, 0));
+        SDDiskCache.openFile().putFloat(key, 100.123f);
+        printFloat();
 
-        SDDiskCache.openFile().putDouble(keyDouble, 200.123345d);
-        Log.i(TAG, "double:" + SDDiskCache.openFile().getDouble(keyDouble, 0));
+        SDDiskCache.openFile().putDouble(key, 200.123345d);
+        printDouble();
 
-        SDDiskCache.openFile().putString(keyString, "hello");
-        Log.i(TAG, "string:" + SDDiskCache.openFile().getString(keyString));
+        SDDiskCache.openFile().putString(key, "hello");
+        printString();
+    }
+
+    private void printInt()
+    {
+        Log.i(TAG, "int:" + SDDiskCache.openFile().getInt(key, 0));
+    }
+
+    private void printLong()
+    {
+        Log.i(TAG, "long:" + SDDiskCache.openFile().getLong(key, 0));
+    }
+
+    private void printFloat()
+    {
+        Log.i(TAG, "float:" + SDDiskCache.openFile().getFloat(key, 0));
+    }
+
+    private void printDouble()
+    {
+        Log.i(TAG, "double:" + SDDiskCache.openFile().getDouble(key, 0));
+    }
+
+    private void printString()
+    {
+        Log.i(TAG, "string:" + SDDiskCache.openFile().getString(key));
     }
 }
