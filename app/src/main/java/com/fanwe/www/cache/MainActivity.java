@@ -24,19 +24,19 @@ public class MainActivity extends AppCompatActivity
         SDDiskCache.init(this);
         SDDiskCache.setGlobalObjectConverter(new JsonObjectConverter());
 
-        SDDiskCache.open().putInt(keyInt, 100);
-        Log.i(TAG, "int:" + SDDiskCache.open().getInt(keyInt, 0));
+        SDDiskCache.openFile().putInt(keyInt, 100);
+        Log.i(TAG, "int:" + SDDiskCache.openFile().getInt(keyInt, 0));
 
-        SDDiskCache.open().putLong(keyLong, 200);
-        Log.i(TAG, "long:" + SDDiskCache.open().getLong(keyLong, 0));
+        SDDiskCache.openFile().putLong(keyLong, 200);
+        Log.i(TAG, "long:" + SDDiskCache.openFile().getLong(keyLong, 0));
 
-        SDDiskCache.open().putFloat(keyFloat, 100.123f);
-        Log.i(TAG, "float:" + SDDiskCache.open().getFloat(keyFloat, 0));
+        SDDiskCache.openFile().putFloat(keyFloat, 100.123f);
+        Log.i(TAG, "float:" + SDDiskCache.openFile().getFloat(keyFloat, 0));
 
-        SDDiskCache.open().putDouble(keyDouble, 200.123345d);
-        Log.i(TAG, "double:" + SDDiskCache.open().getDouble(keyDouble, 0));
+        SDDiskCache.openFile().putDouble(keyDouble, 200.123345d);
+        Log.i(TAG, "double:" + SDDiskCache.openFile().getDouble(keyDouble, 0));
 
-        SDDiskCache.open().putString(keyString, "hello");
-        Log.i(TAG, "string:" + SDDiskCache.open().getString(keyString));
+        SDDiskCache.openFile().putString(keyString, "hello");
+        Log.i(TAG, "string:" + SDDiskCache.openFile().getString(keyString));
     }
 }

@@ -63,9 +63,9 @@ public class SDDiskCache
      *
      * @return
      */
-    public static SDDiskCache open()
+    public static SDDiskCache openFile()
     {
-        return open(DEFAULT_FILE_DIR);
+        return openFile(DEFAULT_FILE_DIR);
     }
 
     /**
@@ -84,7 +84,7 @@ public class SDDiskCache
      * @param dirName
      * @return
      */
-    public static SDDiskCache open(String dirName)
+    public static SDDiskCache openFile(String dirName)
     {
         return open(getFileDir(dirName));
     }
