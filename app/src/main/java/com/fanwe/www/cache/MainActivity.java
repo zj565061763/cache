@@ -60,4 +60,12 @@ public class MainActivity extends AppCompatActivity
     {
         Log.i(TAG, "string:" + SDDiskCache.openFile().getString(key));
     }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        SDDiskCache.openFile().delete();
+        SDDiskCache.openCache().delete();
+    }
 }
