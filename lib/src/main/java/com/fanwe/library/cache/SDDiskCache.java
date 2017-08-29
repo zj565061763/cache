@@ -23,6 +23,7 @@ public class SDDiskCache
     private static final String DEFAULT_FILE_DIR = "file";
     private static final String DEFAULT_CACHE_DIR = "cache";
 
+    private static final String INT = "int_";
     private static final String OBJECT = "object_";
 
     private static Context mContext;
@@ -128,6 +129,23 @@ public class SDDiskCache
         return this;
     }
 
+    //---------- int start ----------
+
+    public boolean hasInt(String key)
+    {
+        return hasString(INT + key);
+    }
+
+    public SDDiskCache putInt(String key, int value)
+    {
+        return putString(INT + key, String.valueOf(value));
+    }
+
+    public SDDiskCache putInt(String key, int value, boolean encrypt)
+    {
+        return putString(INT + key, String.valueOf(value), encrypt);
+    }
+
     //---------- object start ----------
 
     public <T> boolean hasObject(Class<T> clazz)
@@ -162,7 +180,6 @@ public class SDDiskCache
         }
         return object;
     }
-    //---------- object end ----------
 
     //---------- string start ----------
 
@@ -247,8 +264,12 @@ public class SDDiskCache
         }
         return null;
     }
-    //---------- string end ----------
 
+    /**
+     * 返回当前目录的大小
+     *
+     * @return
+     */
     public long size()
     {
         return mDirectory.length();
