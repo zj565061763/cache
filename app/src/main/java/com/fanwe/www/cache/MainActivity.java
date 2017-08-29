@@ -20,8 +20,8 @@ public class MainActivity extends AppCompatActivity
         tv_info = (TextView) findViewById(R.id.tv_info);
 
         SDDiskCache.init(this); //初始化
-        SDDiskCache.setGlobalObjectConverter(new GlobalObjectConverter()); //设置全局对象转换器
-        SDDiskCache.setGlobalEncryptConverter(new GlobalEncryptConverter()); //设置全局加解密转换器
+        SDDiskCache.setGlobalObjectConverter(new GlobalObjectConverter()); //设置全局对象转换器，必须设置
+        SDDiskCache.setGlobalEncryptConverter(new GlobalEncryptConverter()); //设置全局加解密转换器，如果不需要加解密，可以不设置
 
         TestModel model = new TestModel(); //创建实体
         SDDiskCache.open().putObject(model, true); //保存实体，以加密方式保存
