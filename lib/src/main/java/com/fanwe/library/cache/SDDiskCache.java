@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -42,31 +41,64 @@ public class SDDiskCache
         ensureDirectoryNotNull();
     }
 
+    /**
+     * 初始化
+     *
+     * @param context
+     */
     public static void init(Context context)
     {
         mContext = context.getApplicationContext();
     }
 
-    public static SDDiskCache openFile()
+    /**
+     * 返回和SD卡文件目录下"file"目录关联的操作对象
+     *
+     * @return
+     */
+    public static SDDiskCache open()
     {
-        return openFile(DEFAULT_FILE_DIR);
+        return open(DEFAULT_FILE_DIR);
     }
 
+    /**
+     * 返回和SD卡缓存目录下"cache"目录关联的操作对象
+     *
+     * @return
+     */
     public static SDDiskCache openCache()
     {
         return openCache(DEFAULT_CACHE_DIR);
     }
 
-    public static SDDiskCache openFile(String dirName)
+    /**
+     * 返回和SD卡文件目录下指定目录关联的操作对象
+     *
+     * @param dirName
+     * @return
+     */
+    public static SDDiskCache open(String dirName)
     {
         return open(getFileDir(dirName));
     }
 
+    /**
+     * 返回和SD卡缓存目录下指定目录关联的操作对象
+     *
+     * @param dirName
+     * @return
+     */
     public static SDDiskCache openCache(String dirName)
     {
         return open(getCacheDir(dirName));
     }
 
+    /**
+     * 返回和指定目录关联的操作对象
+     *
+     * @param directory
+     * @return
+     */
     public static SDDiskCache open(File directory)
     {
         return new SDDiskCache(directory);
@@ -98,6 +130,12 @@ public class SDDiskCache
 
     //---------- object start ----------
 
+    public <T> boolean hasObject(Class<T> clazz)
+    {
+        String key = OBJECT + clazz.getName();
+        return hasString(key);
+    }
+
     public SDDiskCache putObject(Object object)
     {
         return putObject(object, false);
@@ -108,23 +146,23 @@ public class SDDiskCache
         checkObjectConverter();
         if (object != null)
         {
-            String realKey = createRealKey(OBJECT + object.getClass().getName());
+            String key = OBJECT + object.getClass().getName();
 
             String data = mObjectConverter.objectToString(object);
-            putString(realKey, data, encrypt);
+            putString(key, data, encrypt);
         }
         return this;
     }
 
-    public <T extends Serializable> T getObject(Class<T> clazz)
+    public <T> T getObject(Class<T> clazz)
     {
         checkObjectConverter();
         T object = null;
         if (clazz != null)
         {
-            String realKey = createRealKey(OBJECT + object.getClass().getName());
+            String key = OBJECT + object.getClass().getName();
 
-            String content = getString(realKey);
+            String content = getString(key);
             object = mObjectConverter.stringToObject(content, clazz);
         }
         return object;
