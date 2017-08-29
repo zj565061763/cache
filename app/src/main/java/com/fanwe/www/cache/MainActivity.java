@@ -44,6 +44,12 @@ public class MainActivity extends AppCompatActivity
         printString();
         SDDiskCache.open().removeString(key);
         printString();
+
+        TestModel model = new TestModel();
+        SDDiskCache.open().putObject(model);
+        printObject();
+        SDDiskCache.open().removeObject(TestModel.class);
+        printObject();
     }
 
     private void printInt()
@@ -69,6 +75,11 @@ public class MainActivity extends AppCompatActivity
     private void printString()
     {
         Log.i(TAG, "string:" + SDDiskCache.open().hasString(key) + "," + SDDiskCache.open().getString(key));
+    }
+
+    private void printObject()
+    {
+        Log.i(TAG, "object:" + SDDiskCache.open().hasObject(TestModel.class) + "," + SDDiskCache.open().getObject(TestModel.class));
     }
 
     @Override

@@ -366,14 +366,14 @@ public class SDDiskCache
 
     public <T> T getObject(Class<T> clazz)
     {
-        checkObjectConverter();
-        T object = null;
-        if (clazz != null)
+        String content = getString(OBJECT + clazz.getName());
+        if (content == null)
         {
-            String content = getString(OBJECT + object.getClass().getName());
-            object = getObjectConverter().stringToObject(content, clazz);
+            return null;
+        } else
+        {
+            return getObjectConverter().stringToObject(content, clazz);
         }
-        return object;
     }
 
     //---------- string start ----------
