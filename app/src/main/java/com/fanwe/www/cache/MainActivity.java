@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity
         SDDiskCache.setGlobalEncryptConverter(new GlobalEncryptConverter()); //设置全局加解密转换器
 
         TestModel model = new TestModel(); //创建实体
-        SDDiskCache.open().putObject(model, true); //保存实体
+        SDDiskCache.open().putObject(model, true); //保存实体，以加密方式保存
 
         TestModel modelCached = SDDiskCache.open().getObject(TestModel.class); //查询保存的实体
         tv_info.setText(String.valueOf(modelCached));
@@ -34,6 +34,6 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        SDDiskCache.open().delete();
+        SDDiskCache.open().delete(); //删除该目录对应的所有缓存
     }
 }
