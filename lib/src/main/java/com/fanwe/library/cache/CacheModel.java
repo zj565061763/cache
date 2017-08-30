@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 class CacheModel implements Serializable
 {
-    static final long serialVersionUID = 42L;
+    static final long serialVersionUID = 0L;
 
     private String data;
     private boolean encrypt;
