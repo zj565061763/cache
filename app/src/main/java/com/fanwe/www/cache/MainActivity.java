@@ -3,7 +3,6 @@ package com.fanwe.www.cache;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.fanwe.library.cache.SDDiskCache;
 
@@ -11,7 +10,6 @@ public class MainActivity extends AppCompatActivity
 {
     private static final String TAG = "MainActivity";
 
-    private TextView tv_info;
     private String key = "key";
 
     @Override
@@ -19,106 +17,30 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tv_info = (TextView) findViewById(R.id.tv_info);
 
         SDDiskCache.init(this); //初始化
 
-        SDDiskCache.open().putInt(key, 10);
+        SDDiskCache.open().putInt(key, 1);
+        SDDiskCache.open().putLong(key, 2);
+        SDDiskCache.open().putFloat(key, 3.3f);
+        SDDiskCache.open().putDouble(key, 4.4444d);
+        SDDiskCache.open().putBoolean(key, true);
+        SDDiskCache.open().putString(key, "hello String");
+        SDDiskCache.open().putSerializable(new TestModel());
 
-        startThread1();
-        startThread2();
-        startThread3();
+        print();
     }
 
-    private void startThread1()
+    private void print()
     {
-        new Thread("thread 1")
-        {
-            @Override
-            public void run()
-            {
-                mRunnable1.run();
-                super.run();
-            }
-        }.start();
+        Log.i(TAG, "getInt:" + SDDiskCache.open().getInt(key, 0));
+        Log.i(TAG, "getLong:" + SDDiskCache.open().getLong(key, 0));
+        Log.i(TAG, "getFloat:" + SDDiskCache.open().getFloat(key, 0));
+        Log.i(TAG, "getDouble:" + SDDiskCache.open().getDouble(key, 0));
+        Log.i(TAG, "getBoolean:" + SDDiskCache.open().getBoolean(key, false));
+        Log.i(TAG, "getString:" + SDDiskCache.open().getString(key));
+        Log.i(TAG, "getSerializable:" + SDDiskCache.open().getSerializable(TestModel.class));
     }
-
-    private void startThread2()
-    {
-        new Thread("thread 2")
-        {
-            @Override
-            public void run()
-            {
-                mRunnable2.run();
-                super.run();
-            }
-        }.start();
-    }
-
-    private void startThread3()
-    {
-        new Thread("thread 3")
-        {
-            @Override
-            public void run()
-            {
-                mRunnable3.run();
-                super.run();
-            }
-        }.start();
-    }
-
-    private Object locker = new Object();
-
-    private Runnable mRunnable1 = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            for (int i = 0; i < 500; i++)
-            {
-//                synchronized (locker)
-//                {
-                SDDiskCache.open().putInt(key, SDDiskCache.open().getInt(key, 0) + 1);
-//                }
-            }
-        }
-    };
-
-    private Runnable mRunnable2 = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            for (int i = 0; i < 500; i++)
-            {
-//                synchronized (locker)
-//                {
-                SDDiskCache.open().putInt(key, SDDiskCache.open().getInt(key, 0) - 1);
-//                }
-            }
-        }
-    };
-
-    private Runnable mRunnable3 = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            for (int i = 0; i < 2000; i++)
-            {
-                Log.e(TAG, "read finish-------------:" + SDDiskCache.open().getInt(key, 0));
-                try
-                {
-                    Thread.sleep(5);
-                } catch (Exception e)
-                {
-                }
-            }
-        }
-    };
-
 
     @Override
     protected void onDestroy()

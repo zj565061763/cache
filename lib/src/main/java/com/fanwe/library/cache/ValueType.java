@@ -3,7 +3,7 @@ package com.fanwe.library.cache;
 /**
  * Created by Administrator on 2017/8/30.
  */
-public enum ValueType
+enum ValueType
 {
     Int,
     Long,
