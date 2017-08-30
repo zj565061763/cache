@@ -1,6 +1,7 @@
 package com.fanwe.library.cache;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
@@ -205,27 +206,22 @@ public class SDDiskCache
 
     public boolean hasInt(String key)
     {
-        return hasString(INT + key);
+        return hasStringValue(key, ValueType.Int);
     }
 
     public boolean removeInt(String key)
     {
-        return removeString(INT + key);
+        return removeStringValue(key, ValueType.Int);
     }
 
     public boolean putInt(String key, int value)
     {
-        return putString(INT + key, String.valueOf(value));
-    }
-
-    public boolean putInt(String key, int value, boolean encrypt)
-    {
-        return putString(INT + key, String.valueOf(value), encrypt);
+        return putStringValue(key, String.valueOf(value), false, ValueType.Int);
     }
 
     public int getInt(String key, int defValue)
     {
-        String content = getString(INT + key);
+        String content = getStringValue(key, ValueType.Int);
         if (content == null)
         {
             return defValue;
@@ -237,27 +233,22 @@ public class SDDiskCache
 
     public boolean hasLong(String key)
     {
-        return hasString(LONG + key);
+        return hasStringValue(key, ValueType.Long);
     }
 
     public boolean removeLong(String key)
     {
-        return removeString(LONG + key);
+        return removeStringValue(key, ValueType.Long);
     }
 
     public boolean putLong(String key, long value)
     {
-        return putString(LONG + key, String.valueOf(value));
-    }
-
-    public boolean putLong(String key, long value, boolean encrypt)
-    {
-        return putString(LONG + key, String.valueOf(value), encrypt);
+        return putStringValue(key, String.valueOf(value), false, ValueType.Long);
     }
 
     public long getLong(String key, long defValue)
     {
-        String content = getString(LONG + key);
+        String content = getStringValue(key, ValueType.Long);
         if (content == null)
         {
             return defValue;
@@ -269,27 +260,22 @@ public class SDDiskCache
 
     public boolean hasFloat(String key)
     {
-        return hasString(FLOAT + key);
+        return hasStringValue(key, ValueType.Float);
     }
 
     public boolean removeFloat(String key)
     {
-        return removeString(FLOAT + key);
+        return removeStringValue(key, ValueType.Float);
     }
 
     public boolean putFloat(String key, float value)
     {
-        return putString(FLOAT + key, String.valueOf(value));
-    }
-
-    public boolean putFloat(String key, float value, boolean encrypt)
-    {
-        return putString(FLOAT + key, String.valueOf(value), encrypt);
+        return putStringValue(key, String.valueOf(value), false, ValueType.Float);
     }
 
     public float getFloat(String key, float defValue)
     {
-        String content = getString(FLOAT + key);
+        String content = getStringValue(key, ValueType.Float);
         if (content == null)
         {
             return defValue;
@@ -301,27 +287,22 @@ public class SDDiskCache
 
     public boolean hasDouble(String key)
     {
-        return hasString(DOUBLE + key);
+        return hasStringValue(key, ValueType.Double);
     }
 
     public boolean removeDouble(String key)
     {
-        return removeString(DOUBLE + key);
+        return removeStringValue(key, ValueType.Double);
     }
 
     public boolean putDouble(String key, double value)
     {
-        return putString(DOUBLE + key, String.valueOf(value));
-    }
-
-    public boolean putDouble(String key, double value, boolean encrypt)
-    {
-        return putString(DOUBLE + key, String.valueOf(value), encrypt);
+        return putStringValue(key, String.valueOf(value), false, ValueType.Double);
     }
 
     public double getDouble(String key, double defValue)
     {
-        String content = getString(DOUBLE + key);
+        String content = getStringValue(key, ValueType.Double);
         if (content == null)
         {
             return defValue;
@@ -333,27 +314,22 @@ public class SDDiskCache
 
     public boolean hasBoolean(String key)
     {
-        return hasString(BOOLEAN + key);
+        return hasStringValue(key, ValueType.Boolean);
     }
 
     public boolean removeBoolean(String key)
     {
-        return removeString(BOOLEAN + key);
+        return removeStringValue(key, ValueType.Boolean);
     }
 
     public boolean putBoolean(String key, boolean value)
     {
-        return putString(BOOLEAN + key, String.valueOf(value));
-    }
-
-    public boolean putBoolean(String key, boolean value, boolean encrypt)
-    {
-        return putString(BOOLEAN + key, String.valueOf(value), encrypt);
+        return putStringValue(key, String.valueOf(value), false, ValueType.Boolean);
     }
 
     public boolean getBoolean(String key, boolean defValue)
     {
-        String content = getString(BOOLEAN + key);
+        String content = getStringValue(key, ValueType.Boolean);
         if (content == null)
         {
             return defValue;
@@ -365,12 +341,12 @@ public class SDDiskCache
 
     public boolean hasObject(Class clazz)
     {
-        return hasString(OBJECT + clazz.getName());
+        return hasStringValue(clazz.getName(), ValueType.Object);
     }
 
     public boolean removeObject(Class clazz)
     {
-        return removeString(OBJECT + clazz.getName());
+        return removeStringValue(clazz.getName(), ValueType.Object);
     }
 
     public SDDiskCache putObject(Object object)
@@ -384,7 +360,7 @@ public class SDDiskCache
         if (object != null)
         {
             String data = getObjectConverter().objectToString(object);
-            putString(OBJECT + object.getClass().getName(), data, encrypt);
+            putStringValue(object.getClass().getName(), data, encrypt, ValueType.Object);
         }
         return this;
     }
@@ -392,7 +368,7 @@ public class SDDiskCache
     public <T> T getObject(Class<T> clazz)
     {
         checkObjectConverter();
-        String content = getString(OBJECT + clazz.getName());
+        String content = getStringValue(clazz.getName(), ValueType.Object);
         if (content == null)
         {
             return null;
@@ -406,12 +382,12 @@ public class SDDiskCache
 
     public boolean hasString(String key)
     {
-        return hasSerializable(STRING + key);
+        return hasStringValue(key, ValueType.String);
     }
 
     public boolean removeString(String key)
     {
-        return removeSerializable(STRING + key);
+        return removeStringValue(key, ValueType.String);
     }
 
     public boolean putString(String key, String data)
@@ -421,6 +397,28 @@ public class SDDiskCache
 
     public boolean putString(String key, String data, boolean encrypt)
     {
+        return putStringValue(key, data, encrypt, ValueType.String);
+    }
+
+    public String getString(String key)
+    {
+        return getStringValue(key, ValueType.String);
+    }
+
+    //---------- private string value start ----------
+
+    private boolean hasStringValue(String key, ValueType type)
+    {
+        return hasSerializable(getValueTypeKey(key, type));
+    }
+
+    private boolean removeStringValue(String key, ValueType type)
+    {
+        return removeSerializable(getValueTypeKey(key, type));
+    }
+
+    private boolean putStringValue(String key, String data, boolean encrypt, ValueType type)
+    {
         checkEncryptConverter(encrypt);
 
         CacheModel model = new CacheModel();
@@ -428,12 +426,12 @@ public class SDDiskCache
         model.setEncrypt(encrypt);
         model.encryptIfNeed(getEncryptConverter());
 
-        return putSerializable(STRING + key, model);
+        return putSerializable(getValueTypeKey(key, type), model);
     }
 
-    public String getString(String key)
+    private String getStringValue(String key, ValueType type)
     {
-        CacheModel model = getSerializable(STRING + key);
+        CacheModel model = getSerializable(getValueTypeKey(key, type));
         if (model == null)
         {
             return null;
@@ -441,8 +439,7 @@ public class SDDiskCache
         checkEncryptConverter(model.isEncrypt());
 
         model.decryptIfNeed(getEncryptConverter());
-        final String result = model.getData();
-        return result;
+        return model.getData();
     }
 
     //---------- Serializable start ----------
@@ -600,6 +597,34 @@ public class SDDiskCache
         if (mContext == null)
         {
             throw new NullPointerException("you must invoke init() method before this");
+        }
+    }
+
+    private String getValueTypeKey(String key, ValueType type)
+    {
+        if (TextUtils.isEmpty(key))
+        {
+            throw new IllegalArgumentException("key must not be null or empty");
+        }
+        key = generateKey(key);
+        switch (type)
+        {
+            case Int:
+                return INT + key;
+            case Long:
+                return LONG + key;
+            case Float:
+                return FLOAT + key;
+            case Double:
+                return DOUBLE + key;
+            case Boolean:
+                return BOOLEAN + key;
+            case String:
+                return STRING + key;
+            case Object:
+                return OBJECT + key;
+            default:
+                return "";
         }
     }
 

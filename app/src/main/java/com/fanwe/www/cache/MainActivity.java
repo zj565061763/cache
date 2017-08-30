@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
 
     private TextView tv_info;
-    private String key;
+    private String key = "key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity
             {
 //                synchronized (locker)
 //                {
-                    SDDiskCache.open().putInt(key, SDDiskCache.open().getInt(key, 0) + 1);
+                SDDiskCache.open().putInt(key, SDDiskCache.open().getInt(key, 0) + 1);
 //                }
             }
         }
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity
             {
 //                synchronized (locker)
 //                {
-                    SDDiskCache.open().putInt(key, SDDiskCache.open().getInt(key, 0) - 1);
+                SDDiskCache.open().putInt(key, SDDiskCache.open().getInt(key, 0) - 1);
 //                }
             }
         }
