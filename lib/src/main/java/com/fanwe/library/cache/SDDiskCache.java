@@ -449,22 +449,26 @@ public class SDDiskCache
 
     public boolean hasSerializable(Class clazz)
     {
-        return hasSerializable(clazz.getName());
+        String key = generateKey(clazz.getName());
+        return hasSerializable(key);
     }
 
     public <T extends Serializable> boolean putSerializable(T object)
     {
-        return putSerializable(object.getClass().getName(), object);
+        String key = generateKey(object.getClass().getName());
+        return putSerializable(key, object);
     }
 
     public <T extends Serializable> T getSerializable(Class<T> clazz)
     {
-        return getSerializable(clazz.getName());
+        String key = generateKey(clazz.getName());
+        return getSerializable(key);
     }
 
     public boolean removeSerializable(Class clazz)
     {
-        return removeSerializable(clazz.getName());
+        String key = generateKey(clazz.getName());
+        return removeSerializable(key);
     }
 
     //---------- Serializable private start ----------
@@ -610,9 +614,7 @@ public class SDDiskCache
     private File getCacheFile(String key)
     {
         ensureDirectoryExists();
-
-        String realkey = createRealKey(key);
-        File cache = new File(mDirectory, realkey);
+        File cache = new File(mDirectory, key);
         return cache;
     }
 
@@ -630,7 +632,7 @@ public class SDDiskCache
         return dir;
     }
 
-    private static String createRealKey(String key)
+    private static String generateKey(String key)
     {
         return MD5(key);
     }
