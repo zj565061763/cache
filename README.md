@@ -16,12 +16,22 @@ public class MainActivity extends AppCompatActivity
         SDDiskCache.setGlobalObjectConverter(new GlobalObjectConverter());//如果要用XXXObject方法，需要配置Object对象转换器
         SDDiskCache.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
 
+
+        // 不同的open方法可以关联不同的目录
+        SDDiskCache.openCache();        //"Android/data/包名/cache/cache"
+        SDDiskCache.openCache("hello"); //"Android/data/包名/cache/hello"
+
+        SDDiskCache.open();             //"Android/data/包名/files/files"
+        SDDiskCache.open("hello");      //"Android/data/包名/files/hello"
+
+        SDDiskCache.openDir(Environment.getExternalStorageDirectory()); //关联指定的目录
+
         SDDiskCache.open().putInt(key, 1);
         SDDiskCache.open().putLong(key, 2);
         SDDiskCache.open().putFloat(key, 3.3f);
         SDDiskCache.open().putDouble(key, 4.4444d);
         SDDiskCache.open().putBoolean(key, true);
-        SDDiskCache.open().putString(key, "hello String", true); //加密
+        SDDiskCache.open().putString(key, "hello String", true); //加密字符串
         SDDiskCache.open().putSerializable(new TestModel());
         SDDiskCache.open().putObject(new TestModel(), true); //加密实体
 
