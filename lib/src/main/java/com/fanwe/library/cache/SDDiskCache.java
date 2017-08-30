@@ -23,7 +23,7 @@ public class SDDiskCache
 {
     private static final String TAG = "SDDiskCache";
 
-    private static final String DEFAULT_FILE_DIR = "file";
+    private static final String DEFAULT_FILE_DIR = "files";
     private static final String DEFAULT_CACHE_DIR = "cache";
 
     private static final String INT = "int_";
