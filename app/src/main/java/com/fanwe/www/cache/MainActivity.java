@@ -19,6 +19,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         SDDiskCache.init(this); //初始化
+        SDDiskCache.setGlobalObjectConverter(new GlobalObjectConverter());//如果要用XXXObject方法，需要配置Object对象转换器
+        SDDiskCache.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
 
         SDDiskCache.open().putInt(key, 1);
         SDDiskCache.open().putLong(key, 2);
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity
         SDDiskCache.open().putBoolean(key, true);
         SDDiskCache.open().putString(key, "hello String");
         SDDiskCache.open().putSerializable(new TestModel());
+        SDDiskCache.open().putObject(new TestModel());
 
         print();
     }
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity
         Log.i(TAG, "getBoolean:" + SDDiskCache.open().getBoolean(key, false));
         Log.i(TAG, "getString:" + SDDiskCache.open().getString(key));
         Log.i(TAG, "getSerializable:" + SDDiskCache.open().getSerializable(TestModel.class));
+        Log.i(TAG, "getObject:" + SDDiskCache.open().getObject(TestModel.class));
     }
 
     @Override
