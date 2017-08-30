@@ -24,11 +24,11 @@ public class MainActivity extends AppCompatActivity
 
 
         //不同的open方法可以关联不同的目录
-        SDDisk.openCache(); //"Android/data/包名/cache/cache"
+        SDDisk.openCache();        //"Android/data/包名/cache/cache"
         SDDisk.openCache("hello"); //"Android/data/包名/cache/hello"
 
-        SDDisk.open(); //"Android/data/包名/files/files"
-        SDDisk.open("hello"); //"Android/data/包名/files/hello"
+        SDDisk.open();             //"Android/data/包名/files/files"
+        SDDisk.open("hello");      //"Android/data/包名/files/hello"
 
         SDDisk.openDir(Environment.getExternalStorageDirectory()); //关联指定的目录
 
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity
         SDDisk.open().putFloat(key, 3.3f);
         SDDisk.open().putDouble(key, 4.4444d);
         SDDisk.open().putBoolean(key, true);
-        SDDisk.open().putString(key, "hello String", true); //加密
+        SDDisk.open().putString(key, "hello String", true); //加密字符串
         SDDisk.open().putSerializable(new TestModel());
         SDDisk.open().putObject(new TestModel(), true); //加密实体
 
