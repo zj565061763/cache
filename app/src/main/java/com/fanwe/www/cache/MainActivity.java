@@ -9,7 +9,6 @@ import com.fanwe.library.cache.SDDiskCache;
 public class MainActivity extends AppCompatActivity
 {
     private static final String TAG = "MainActivity";
-
     private String key = "key";
 
     @Override
