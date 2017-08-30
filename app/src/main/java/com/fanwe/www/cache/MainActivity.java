@@ -27,9 +27,9 @@ public class MainActivity extends AppCompatActivity
         SDDiskCache.open().putFloat(key, 3.3f);
         SDDiskCache.open().putDouble(key, 4.4444d);
         SDDiskCache.open().putBoolean(key, true);
-        SDDiskCache.open().putString(key, "hello String");
+        SDDiskCache.open().putString(key, "hello String", true); //加密
         SDDiskCache.open().putSerializable(new TestModel());
-        SDDiskCache.open().putObject(new TestModel());
+        SDDiskCache.open().putObject(new TestModel(), true); //加密实体
 
         print();
     }
