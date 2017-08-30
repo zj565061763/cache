@@ -19,9 +19,9 @@ import java.util.Map;
  * Created by Administrator on 2017/8/29.
  */
 
-public class SDDiskCache
+public class SDDisk
 {
-    private static final String TAG = "SDDiskCache";
+    private static final String TAG = "SDDisk";
 
     private static final String DEFAULT_FILE_DIR = "files";
     private static final String DEFAULT_CACHE_DIR = "cache";
@@ -46,7 +46,7 @@ public class SDDiskCache
     private IObjectConverter mObjectConverter;
     private IEncryptConverter mEncryptConverter;
 
-    private SDDiskCache(File directory)
+    private SDDisk(File directory)
     {
         if (directory == null)
         {
@@ -89,7 +89,7 @@ public class SDDiskCache
      *
      * @return
      */
-    public static SDDiskCache open()
+    public static SDDisk open()
     {
         return open(DEFAULT_FILE_DIR);
     }
@@ -100,7 +100,7 @@ public class SDDiskCache
      * @param dirName
      * @return
      */
-    public static SDDiskCache open(String dirName)
+    public static SDDisk open(String dirName)
     {
         return openDir(getFileDir(dirName));
     }
@@ -110,7 +110,7 @@ public class SDDiskCache
      *
      * @return
      */
-    public static SDDiskCache openCache()
+    public static SDDisk openCache()
     {
         return openCache(DEFAULT_CACHE_DIR);
     }
@@ -120,7 +120,7 @@ public class SDDiskCache
      *
      * @return
      */
-    public static SDDiskCache openCache(String dirName)
+    public static SDDisk openCache(String dirName)
     {
         return openDir(getCacheDir(dirName));
     }
@@ -131,9 +131,9 @@ public class SDDiskCache
      * @param directory
      * @return
      */
-    public static SDDiskCache openDir(File directory)
+    public static SDDisk openDir(File directory)
     {
-        return new SDDiskCache(directory);
+        return new SDDisk(directory);
     }
 
     /**
@@ -162,7 +162,7 @@ public class SDDiskCache
      * @param objectConverter
      * @return
      */
-    public SDDiskCache setObjectConverter(IObjectConverter objectConverter)
+    public SDDisk setObjectConverter(IObjectConverter objectConverter)
     {
         mObjectConverter = objectConverter;
         return this;
@@ -174,7 +174,7 @@ public class SDDiskCache
      * @param encryptConverter
      * @return
      */
-    public SDDiskCache setEncryptConverter(IEncryptConverter encryptConverter)
+    public SDDisk setEncryptConverter(IEncryptConverter encryptConverter)
     {
         mEncryptConverter = encryptConverter;
         return this;
@@ -349,12 +349,12 @@ public class SDDiskCache
         return removeStringValue(clazz.getName(), ValueType.Object);
     }
 
-    public SDDiskCache putObject(Object object)
+    public SDDisk putObject(Object object)
     {
         return putObject(object, false);
     }
 
-    public SDDiskCache putObject(Object object, boolean encrypt)
+    public SDDisk putObject(Object object, boolean encrypt)
     {
         checkObjectConverter();
         if (object != null)
@@ -421,7 +421,7 @@ public class SDDiskCache
     {
         checkEncryptConverter(encrypt);
 
-        CacheModel model = new CacheModel();
+        DataModel model = new DataModel();
         model.setData(data);
         model.setEncrypt(encrypt);
         model.encryptIfNeed(getEncryptConverter());
@@ -431,7 +431,7 @@ public class SDDiskCache
 
     private String getStringValue(String key, ValueType type)
     {
-        CacheModel model = getSerializable(getValueTypeKey(key, type));
+        DataModel model = getSerializable(getValueTypeKey(key, type));
         if (model == null)
         {
             return null;

@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by Administrator on 2017/8/29.
  */
 
-class CacheModel implements Serializable
+class DataModel implements Serializable
 {
     static final long serialVersionUID = 0L;
 
