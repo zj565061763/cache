@@ -74,7 +74,7 @@ public abstract class ObjectHandler<T> implements IObjectHandler<T>
             return true;
         }
 
-        boolean result = onPutObject(getObjectFile(key), object);
+        boolean result = onPutObject(key, object, getObjectFile(key));
         return result;
     }
 
@@ -87,7 +87,7 @@ public abstract class ObjectHandler<T> implements IObjectHandler<T>
             return null;
         }
 
-        T result = onGetObject(file);
+        T result = onGetObject(key, file);
         return result;
     }
 
@@ -104,9 +104,9 @@ public abstract class ObjectHandler<T> implements IObjectHandler<T>
         }
     }
 
-    abstract protected String getKeyPrefix();
+    abstract public String getKeyPrefix();
 
-    abstract protected boolean onPutObject(File file, T object);
+    abstract protected boolean onPutObject(String key, T object, File file);
 
-    abstract protected T onGetObject(File file);
+    abstract protected T onGetObject(String key, File file);
 }

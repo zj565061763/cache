@@ -39,13 +39,13 @@ public class SerializableHandler extends ObjectHandler<Serializable>
     }
 
     @Override
-    protected String getKeyPrefix()
+    public String getKeyPrefix()
     {
         return SERIALIZABLE;
     }
 
     @Override
-    protected boolean onPutObject(File file, Serializable object)
+    protected boolean onPutObject(String key, Serializable object, File file)
     {
         ObjectOutputStream os = null;
         try
@@ -65,7 +65,7 @@ public class SerializableHandler extends ObjectHandler<Serializable>
     }
 
     @Override
-    protected Serializable onGetObject(File file)
+    protected Serializable onGetObject(String key, File file)
     {
         ObjectInputStream is = null;
         try
