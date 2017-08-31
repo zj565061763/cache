@@ -27,6 +27,15 @@ public class SDDisk extends ASDDisk
     private static final String DEFAULT_FILE_DIR = "files";
     private static final String DEFAULT_CACHE_DIR = "cache";
 
+    private static final String INT = "int_";
+    private static final String LONG = "long_";
+    private static final String FLOAT = "float_";
+    private static final String DOUBLE = "double_";
+    private static final String BOOLEAN = "boolean_";
+    private static final String STRING = "string_";
+    private static final String OBJECT = "object_";
+    private static final String SERIALIZABLE = "serializable_";
+
     private StringHandler mIntHandler;
     private StringHandler mLongHandler;
     private StringHandler mFloatHandler;

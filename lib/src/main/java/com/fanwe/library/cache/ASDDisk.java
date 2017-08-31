@@ -18,20 +18,9 @@ package com.fanwe.library.cache;
 import android.content.Context;
 
 import java.io.File;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public abstract class ASDDisk implements ISDDisk
 {
-    protected static final String INT = "int_";
-    protected static final String LONG = "long_";
-    protected static final String FLOAT = "float_";
-    protected static final String DOUBLE = "double_";
-    protected static final String BOOLEAN = "boolean_";
-    protected static final String STRING = "string_";
-    protected static final String OBJECT = "object_";
-    protected static final String SERIALIZABLE = "serializable_";
-
     private static Context mContext;
     private static IObjectConverter sGlobalObjectConverter;
     private static IEncryptConverter sGlobalEncryptConverter;
@@ -172,7 +161,6 @@ public abstract class ASDDisk implements ISDDisk
         File dir = new File(getContext().getExternalCacheDir(), dirName);
         return dir;
     }
-
 
 
     //---------- util method end ----------
