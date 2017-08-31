@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.fanwe.library.cache.handler;
+package com.fanwe.library.cache;
 
 import android.util.Log;
-
-import com.fanwe.library.cache.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;

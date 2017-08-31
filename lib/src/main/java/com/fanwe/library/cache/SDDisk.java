@@ -16,9 +16,6 @@
 package com.fanwe.library.cache;
 
 
-import com.fanwe.library.cache.handler.SerializableHandler;
-import com.fanwe.library.cache.handler.StringHandler;
-
 import java.io.File;
 import java.io.Serializable;
 

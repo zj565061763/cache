@@ -20,7 +20,7 @@ import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Utils
+class Utils
 {
 
     public static boolean deleteFileOrDir(File path)
