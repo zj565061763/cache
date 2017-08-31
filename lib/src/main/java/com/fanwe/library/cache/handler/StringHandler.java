@@ -15,6 +15,8 @@
  */
 package com.fanwe.library.cache.handler;
 
+import android.text.TextUtils;
+
 import com.fanwe.library.cache.DataModel;
 
 import java.io.File;
@@ -26,11 +28,17 @@ public class StringHandler extends ObjectHandler<String>
 {
     public static final String STRING = "string_";
 
+    private String mKeyPrefix = STRING;
     private SerializableHandler mSerializableHandler;
 
-    public StringHandler(File directory)
+    public StringHandler(File directory, String keyPrefix)
     {
         super(directory);
+
+        if (!TextUtils.isEmpty(keyPrefix))
+        {
+            mKeyPrefix = keyPrefix;
+        }
         mSerializableHandler = new SerializableHandler(directory);
     }
 
@@ -42,7 +50,7 @@ public class StringHandler extends ObjectHandler<String>
     @Override
     public String getFileKey(String key)
     {
-        return getSerializableHandler().getFileKey(STRING + key);
+        return getSerializableHandler().getFileKey(mKeyPrefix + key);
     }
 
     @Override
@@ -53,13 +61,13 @@ public class StringHandler extends ObjectHandler<String>
         model.setEncrypt(isEncrypt());
         model.encryptIfNeed(getEncryptConverter());
 
-        return getSerializableHandler().putObject(STRING + key, model);
+        return getSerializableHandler().putObject(mKeyPrefix + key, model);
     }
 
     @Override
     protected String onGetObject(String key, File file)
     {
-        DataModel model = (DataModel) getSerializableHandler().getObject(STRING + key);
+        DataModel model = (DataModel) getSerializableHandler().getObject(mKeyPrefix + key);
         if (model != null)
         {
             model.decryptIfNeed(getEncryptConverter());
