@@ -1,4 +1,7 @@
 
+## Gradle
+`compile 'com.fanwe.android:cache:1.0.3'`
+
 ## 简单demo
 ```java
 public class MainActivity extends AppCompatActivity
