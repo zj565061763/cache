@@ -15,6 +15,9 @@
  */
 package com.fanwe.library.cache.handler;
 
+/**
+ * Created by zhengjun on 2017/8/31.
+ */
 public interface IObjectHandler<T>
 {
     boolean isEncrypt();

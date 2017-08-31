@@ -18,8 +18,7 @@ package com.fanwe.library.cache;
 import java.io.Closeable;
 import java.io.File;
 
-
-class FileUtil
+public class Utils
 {
 
     public static boolean deleteFileOrDir(File path)

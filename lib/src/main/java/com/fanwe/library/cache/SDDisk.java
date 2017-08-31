@@ -510,7 +510,7 @@ public class SDDisk
                     Log.e(TAG, "putSerializable:" + e);
                 } finally
                 {
-                    FileUtil.closeQuietly(os);
+                    Utils.closeQuietly(os);
                 }
             }
             return false;
@@ -536,7 +536,7 @@ public class SDDisk
                 Log.e(TAG, "getSerializable:" + e);
             } finally
             {
-                FileUtil.closeQuietly(is);
+                Utils.closeQuietly(is);
             }
             return null;
         }
@@ -577,7 +577,7 @@ public class SDDisk
     {
         synchronized (mLocker)
         {
-            FileUtil.deleteFileOrDir(mDirectory);
+            Utils.deleteFileOrDir(mDirectory);
         }
     }
 
