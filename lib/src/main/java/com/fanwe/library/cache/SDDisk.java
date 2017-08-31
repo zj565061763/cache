@@ -15,691 +15,300 @@
  */
 package com.fanwe.library.cache;
 
-import android.content.Context;
-import android.text.TextUtils;
-import android.util.Log;
+
+import com.fanwe.library.cache.handler.SerializableHandler;
+import com.fanwe.library.cache.handler.StringHandler;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 
-
-public class SDDisk
+public class SDDisk extends ASDDisk
 {
-    private static final String TAG = "SDDisk";
-
     private static final String DEFAULT_FILE_DIR = "files";
     private static final String DEFAULT_CACHE_DIR = "cache";
 
-    private static final String INT = "int_";
-    private static final String LONG = "long_";
-    private static final String FLOAT = "float_";
-    private static final String DOUBLE = "double_";
-    private static final String BOOLEAN = "boolean_";
-    private static final String STRING = "string_";
-    private static final String OBJECT = "object_";
-    private static final String SERIALIZABLE = "serializable_";
+    private StringHandler mIntHandler;
+    private StringHandler mLongHandler;
+    private StringHandler mFloatHandler;
+    private StringHandler mDoubleHandler;
+    private StringHandler mBooleanHandler;
+    private StringHandler mStringHandler;
+    private SerializableHandler mSerializableHandler;
 
-    private static Map<String, Object> sMapDirLocker = new HashMap<>();
-    private Object mLocker;
-
-    private static Context mContext;
-    private static IObjectConverter sGlobalObjectConverter;
-    private static IEncryptConverter sGlobalEncryptConverter;
-
-    private File mDirectory;
-    private IObjectConverter mObjectConverter;
-    private IEncryptConverter mEncryptConverter;
-
-    private SDDisk(File directory)
+    protected SDDisk(File directory)
     {
-        if (directory == null)
-        {
-            throw new NullPointerException("directory file is null");
-        }
-
-        synchronized (sMapDirLocker)
-        {
-            try
-            {
-                mDirectory = directory;
-                ensureDirectoryExists();
-
-                final String path = directory.getAbsolutePath();
-                if (!sMapDirLocker.containsKey(path))
-                {
-                    sMapDirLocker.put(path, path);
-                }
-
-                mLocker = sMapDirLocker.get(path);
-            } catch (Exception e)
-            {
-                Log.e(TAG, String.valueOf(e));
-            }
-        }
+        super(directory);
+        mIntHandler = new StringHandler(directory, INT);
+        mLongHandler = new StringHandler(directory, LONG);
+        mFloatHandler = new StringHandler(directory, FLOAT);
+        mDoubleHandler = new StringHandler(directory, DOUBLE);
+        mBooleanHandler = new StringHandler(directory, BOOLEAN);
+        mStringHandler = new StringHandler(directory, STRING);
+        mSerializableHandler = new SerializableHandler(directory);
     }
 
-    /**
-     * 初始化
-     *
-     * @param context
-     */
-    public static void init(Context context)
-    {
-        mContext = context.getApplicationContext();
-    }
-
-    /**
-     * 返回和"Android/data/包名/files/file"目录关联的操作对象
-     *
-     * @return
-     */
     public static SDDisk open()
     {
         return open(DEFAULT_FILE_DIR);
     }
 
-    /**
-     * 返回和"Android/data/包名/files/dirName"目录关联的操作对象
-     *
-     * @param dirName
-     * @return
-     */
     public static SDDisk open(String dirName)
     {
         return openDir(getFileDir(dirName));
     }
 
-    /**
-     * 返回和"Android/data/包名/cache/cache"目录关联的操作对象
-     *
-     * @return
-     */
     public static SDDisk openCache()
     {
-        return openCache(DEFAULT_CACHE_DIR);
+        return open(DEFAULT_CACHE_DIR);
     }
 
-    /**
-     * 返回和"Android/data/包名/cache/dirName"目录关联的操作对象
-     *
-     * @return
-     */
     public static SDDisk openCache(String dirName)
     {
         return openDir(getCacheDir(dirName));
     }
 
-    /**
-     * 返回和指定目录关联的操作对象
-     *
-     * @param directory
-     * @return
-     */
     public static SDDisk openDir(File directory)
     {
         return new SDDisk(directory);
     }
 
-    /**
-     * 设置全局对象转换器
-     *
-     * @param globalObjectConverter
-     */
-    public static void setGlobalObjectConverter(IObjectConverter globalObjectConverter)
-    {
-        sGlobalObjectConverter = globalObjectConverter;
-    }
-
-    /**
-     * 设置全局加解密转换器
-     *
-     * @param globalEncryptConverter
-     */
-    public static void setGlobalEncryptConverter(IEncryptConverter globalEncryptConverter)
-    {
-        sGlobalEncryptConverter = globalEncryptConverter;
-    }
-
-    /**
-     * 设置对象转换器
-     *
-     * @param objectConverter
-     * @return
-     */
-    public SDDisk setObjectConverter(IObjectConverter objectConverter)
-    {
-        mObjectConverter = objectConverter;
-        return this;
-    }
-
-    /**
-     * 设置加解密转换器
-     *
-     * @param encryptConverter
-     * @return
-     */
-    public SDDisk setEncryptConverter(IEncryptConverter encryptConverter)
-    {
-        mEncryptConverter = encryptConverter;
-        return this;
-    }
-
-    private IObjectConverter getObjectConverter()
-    {
-        if (mObjectConverter != null)
-        {
-            return mObjectConverter;
-        } else
-        {
-            return sGlobalObjectConverter;
-        }
-    }
-
-    private IEncryptConverter getEncryptConverter()
-    {
-        if (mEncryptConverter != null)
-        {
-            return mEncryptConverter;
-        } else
-        {
-            return sGlobalEncryptConverter;
-        }
-    }
-
-    //---------- int start ----------
-
+    @Override
     public boolean hasInt(String key)
     {
-        return hasStringValue(key, ValueType.Int);
+        return mIntHandler.hasObject(key);
     }
 
+    @Override
     public boolean removeInt(String key)
     {
-        return removeStringValue(key, ValueType.Int);
+        return mIntHandler.removeObject(key);
     }
 
+    @Override
     public boolean putInt(String key, int value)
     {
-        return putStringValue(key, String.valueOf(value), false, ValueType.Int);
+        return mIntHandler.putObject(key, String.valueOf(value));
     }
 
+    @Override
     public int getInt(String key, int defValue)
     {
-        String content = getStringValue(key, ValueType.Int);
-        if (content == null)
+        String content = mIntHandler.getObject(key);
+        if (content != null)
         {
-            return defValue;
-        }
-        return Integer.valueOf(content);
-    }
-
-    //---------- long start ----------
-
-    public boolean hasLong(String key)
-    {
-        return hasStringValue(key, ValueType.Long);
-    }
-
-    public boolean removeLong(String key)
-    {
-        return removeStringValue(key, ValueType.Long);
-    }
-
-    public boolean putLong(String key, long value)
-    {
-        return putStringValue(key, String.valueOf(value), false, ValueType.Long);
-    }
-
-    public long getLong(String key, long defValue)
-    {
-        String content = getStringValue(key, ValueType.Long);
-        if (content == null)
-        {
-            return defValue;
-        }
-        return Long.valueOf(content);
-    }
-
-    //---------- float start ----------
-
-    public boolean hasFloat(String key)
-    {
-        return hasStringValue(key, ValueType.Float);
-    }
-
-    public boolean removeFloat(String key)
-    {
-        return removeStringValue(key, ValueType.Float);
-    }
-
-    public boolean putFloat(String key, float value)
-    {
-        return putStringValue(key, String.valueOf(value), false, ValueType.Float);
-    }
-
-    public float getFloat(String key, float defValue)
-    {
-        String content = getStringValue(key, ValueType.Float);
-        if (content == null)
-        {
-            return defValue;
-        }
-        return Float.valueOf(content);
-    }
-
-    //---------- double start ----------
-
-    public boolean hasDouble(String key)
-    {
-        return hasStringValue(key, ValueType.Double);
-    }
-
-    public boolean removeDouble(String key)
-    {
-        return removeStringValue(key, ValueType.Double);
-    }
-
-    public boolean putDouble(String key, double value)
-    {
-        return putStringValue(key, String.valueOf(value), false, ValueType.Double);
-    }
-
-    public double getDouble(String key, double defValue)
-    {
-        String content = getStringValue(key, ValueType.Double);
-        if (content == null)
-        {
-            return defValue;
-        }
-        return Double.valueOf(content);
-    }
-
-    //---------- boolean start ----------
-
-    public boolean hasBoolean(String key)
-    {
-        return hasStringValue(key, ValueType.Boolean);
-    }
-
-    public boolean removeBoolean(String key)
-    {
-        return removeStringValue(key, ValueType.Boolean);
-    }
-
-    public boolean putBoolean(String key, boolean value)
-    {
-        return putStringValue(key, String.valueOf(value), false, ValueType.Boolean);
-    }
-
-    public boolean getBoolean(String key, boolean defValue)
-    {
-        String content = getStringValue(key, ValueType.Boolean);
-        if (content == null)
-        {
-            return defValue;
-        }
-        return Boolean.valueOf(content);
-    }
-
-    //---------- object start ----------
-
-    public boolean hasObject(Class clazz)
-    {
-        return hasStringValue(clazz.getName(), ValueType.Object);
-    }
-
-    public boolean removeObject(Class clazz)
-    {
-        return removeStringValue(clazz.getName(), ValueType.Object);
-    }
-
-    public SDDisk putObject(Object object)
-    {
-        return putObject(object, false);
-    }
-
-    public SDDisk putObject(Object object, boolean encrypt)
-    {
-        checkObjectConverter();
-        if (object != null)
-        {
-            String data = getObjectConverter().objectToString(object);
-            putStringValue(object.getClass().getName(), data, encrypt, ValueType.Object);
-        }
-        return this;
-    }
-
-    public <T> T getObject(Class<T> clazz)
-    {
-        checkObjectConverter();
-        String content = getStringValue(clazz.getName(), ValueType.Object);
-        if (content == null)
-        {
-            return null;
+            return Integer.valueOf(content);
         } else
         {
-            return getObjectConverter().stringToObject(content, clazz);
+            return defValue;
         }
     }
 
-    //---------- string start ----------
+    @Override
+    public boolean hasLong(String key)
+    {
+        return mLongHandler.hasObject(key);
+    }
 
+    @Override
+    public boolean removeLong(String key)
+    {
+        return mLongHandler.removeObject(key);
+    }
+
+    @Override
+    public boolean putLong(String key, long value)
+    {
+        return mLongHandler.putObject(key, String.valueOf(value));
+    }
+
+    @Override
+    public long getLong(String key, long defValue)
+    {
+        String content = mLongHandler.getObject(key);
+        if (content != null)
+        {
+            return Long.valueOf(content);
+        } else
+        {
+            return defValue;
+        }
+    }
+
+    @Override
+    public boolean hasFloat(String key)
+    {
+        return mFloatHandler.hasObject(key);
+    }
+
+    @Override
+    public boolean removeFloat(String key)
+    {
+        return mFloatHandler.removeObject(key);
+    }
+
+    @Override
+    public boolean putFloat(String key, float value)
+    {
+        return mFloatHandler.putObject(key, String.valueOf(value));
+    }
+
+    @Override
+    public float getFloat(String key, float defValue)
+    {
+        String content = mFloatHandler.getObject(key);
+        if (content != null)
+        {
+            return Float.valueOf(content);
+        } else
+        {
+            return defValue;
+        }
+    }
+
+    @Override
+    public boolean hasDouble(String key)
+    {
+        return mDoubleHandler.hasObject(key);
+    }
+
+    @Override
+    public boolean removeDouble(String key)
+    {
+        return mDoubleHandler.removeObject(key);
+    }
+
+    @Override
+    public boolean putDouble(String key, double value)
+    {
+        return mDoubleHandler.putObject(key, String.valueOf(value));
+    }
+
+    @Override
+    public double getDouble(String key, double defValue)
+    {
+        String content = mDoubleHandler.getObject(key);
+        if (content != null)
+        {
+            return Double.valueOf(content);
+        } else
+        {
+            return defValue;
+        }
+    }
+
+    @Override
+    public boolean hasBoolean(String key)
+    {
+        return mBooleanHandler.hasObject(key);
+    }
+
+    @Override
+    public boolean removeBoolean(String key)
+    {
+        return mBooleanHandler.removeObject(key);
+    }
+
+    @Override
+    public boolean putBoolean(String key, boolean value)
+    {
+        return mBooleanHandler.putObject(key, String.valueOf(value));
+    }
+
+    @Override
+    public boolean getBoolean(String key, boolean defValue)
+    {
+        String content = mBooleanHandler.getObject(key);
+        if (content != null)
+        {
+            return Boolean.valueOf(content);
+        } else
+        {
+            return defValue;
+        }
+    }
+
+    @Override
     public boolean hasString(String key)
     {
-        return hasStringValue(key, ValueType.String);
+        return mStringHandler.hasObject(key);
     }
 
+    @Override
     public boolean removeString(String key)
     {
-        return removeStringValue(key, ValueType.String);
+        return mStringHandler.removeObject(key);
     }
 
+    @Override
     public boolean putString(String key, String data)
     {
         return putString(key, data, false);
     }
 
+    @Override
     public boolean putString(String key, String data, boolean encrypt)
     {
-        return putStringValue(key, data, encrypt, ValueType.String);
+        mStringHandler.setEncrypt(encrypt);
+        return mStringHandler.putObject(key, data);
     }
 
+    @Override
     public String getString(String key)
     {
-        return getStringValue(key, ValueType.String);
+        return mStringHandler.getObject(key);
     }
 
-    //---------- private string value start ----------
-
-    private boolean hasStringValue(String key, ValueType type)
-    {
-        return hasSerializable(getValueTypeKey(key, type));
-    }
-
-    private boolean removeStringValue(String key, ValueType type)
-    {
-        return removeSerializable(getValueTypeKey(key, type));
-    }
-
-    private boolean putStringValue(String key, String data, boolean encrypt, ValueType type)
-    {
-        checkEncryptConverter(encrypt);
-
-        DataModel model = new DataModel();
-        model.setData(data);
-        model.setEncrypt(encrypt);
-        model.encryptIfNeed(getEncryptConverter());
-
-        return putSerializable(getValueTypeKey(key, type), model);
-    }
-
-    private String getStringValue(String key, ValueType type)
-    {
-        DataModel model = getSerializable(getValueTypeKey(key, type));
-        if (model == null)
-        {
-            return null;
-        }
-        checkEncryptConverter(model.isEncrypt());
-
-        model.decryptIfNeed(getEncryptConverter());
-        return model.getData();
-    }
-
-    //---------- Serializable start ----------
-
+    @Override
     public boolean hasSerializable(Class clazz)
     {
-        String key = generateKey(clazz.getName());
-        return hasSerializable(key);
+        return mSerializableHandler.hasObject(clazz.getName());
     }
 
+    @Override
     public <T extends Serializable> boolean putSerializable(T object)
     {
-        String key = generateKey(object.getClass().getName());
-        return putSerializable(key, object);
+        return mSerializableHandler.putObject(object.getClass().getName(), object);
     }
 
+    @Override
     public <T extends Serializable> T getSerializable(Class<T> clazz)
     {
-        String key = generateKey(clazz.getName());
-        return getSerializable(key);
+        return (T) mSerializableHandler.getObject(clazz.getName());
     }
 
+    @Override
     public boolean removeSerializable(Class clazz)
     {
-        String key = generateKey(clazz.getName());
-        return removeSerializable(key);
+        return mSerializableHandler.removeObject(clazz.getName());
     }
 
-    //---------- Serializable private start ----------
-
-    private boolean hasSerializable(String key)
+    @Override
+    public boolean hasObject(Class clazz)
     {
-        synchronized (mLocker)
-        {
-            File cache = getCacheFile(SERIALIZABLE + key);
-            return cache.exists();
-        }
+        return false;
     }
 
-    private <T extends Serializable> boolean putSerializable(String key, T object)
+    @Override
+    public boolean removeObject(Class clazz)
     {
-        synchronized (mLocker)
-        {
-            if (object != null)
-            {
-                ObjectOutputStream os = null;
-                try
-                {
-                    File cache = getCacheFile(SERIALIZABLE + key);
-                    os = new ObjectOutputStream(new FileOutputStream(cache));
-                    os.writeObject(object);
-                    os.flush();
-                    return true;
-                } catch (Exception e)
-                {
-                    Log.e(TAG, "putSerializable:" + e);
-                } finally
-                {
-                    Utils.closeQuietly(os);
-                }
-            }
-            return false;
-        }
+        return false;
     }
 
-    private <T extends Serializable> T getSerializable(String key)
+    @Override
+    public boolean putObject(Object object)
     {
-        synchronized (mLocker)
-        {
-            ObjectInputStream is = null;
-            try
-            {
-                File cache = getCacheFile(SERIALIZABLE + key);
-                if (!cache.exists())
-                {
-                    return null;
-                }
-                is = new ObjectInputStream(new FileInputStream(cache));
-                return (T) is.readObject();
-            } catch (Exception e)
-            {
-                Log.e(TAG, "getSerializable:" + e);
-            } finally
-            {
-                Utils.closeQuietly(is);
-            }
-            return null;
-        }
+        return false;
     }
 
-    private boolean removeSerializable(String key)
+    @Override
+    public boolean putObject(Object object, boolean encrypt)
     {
-        synchronized (mLocker)
-        {
-            File cache = getCacheFile(SERIALIZABLE + key);
-            if (cache.exists())
-            {
-                return cache.delete();
-            } else
-            {
-                return true;
-            }
-        }
+        return false;
     }
 
-    /**
-     * 返回当前目录的大小
-     *
-     * @return
-     */
-    public long size()
+    @Override
+    public <T> T getObject(Class<T> clazz)
     {
-        synchronized (mLocker)
-        {
-            return mDirectory.length();
-        }
+        return null;
     }
-
-    /**
-     * 删除该目录以及目录下的所有缓存
-     */
-    public void delete()
-    {
-        synchronized (mLocker)
-        {
-            Utils.deleteFileOrDir(mDirectory);
-        }
-    }
-
-    //---------- util method start ----------
-
-    private static Context getContext()
-    {
-        return mContext;
-    }
-
-    private void checkObjectConverter()
-    {
-        if (getObjectConverter() == null)
-        {
-            throw new NullPointerException("you must provide an IObjectConverter instance before this");
-        }
-    }
-
-    private void checkEncryptConverter(boolean encrypt)
-    {
-        if (encrypt && getEncryptConverter() == null)
-        {
-            throw new NullPointerException("you must provide an IEncryptConverter instance before this");
-        }
-    }
-
-    private static void checkContext()
-    {
-        if (mContext == null)
-        {
-            throw new NullPointerException("you must invoke init() method before this");
-        }
-    }
-
-    private String getValueTypeKey(String key, ValueType type)
-    {
-        if (TextUtils.isEmpty(key))
-        {
-            throw new IllegalArgumentException("key must not be null or empty");
-        }
-        key = generateKey(key);
-        switch (type)
-        {
-            case Int:
-                return INT + key;
-            case Long:
-                return LONG + key;
-            case Float:
-                return FLOAT + key;
-            case Double:
-                return DOUBLE + key;
-            case Boolean:
-                return BOOLEAN + key;
-            case String:
-                return STRING + key;
-            case Object:
-                return OBJECT + key;
-            default:
-                return "";
-        }
-    }
-
-    private void ensureDirectoryExists()
-    {
-        if (!mDirectory.exists())
-        {
-            mDirectory.mkdirs();
-        }
-    }
-
-    private File getCacheFile(String key)
-    {
-        ensureDirectoryExists();
-        File cache = new File(mDirectory, key);
-        return cache;
-    }
-
-    private static File getFileDir(String dirName)
-    {
-        checkContext();
-        File dir = getContext().getExternalFilesDir(dirName);
-        return dir;
-    }
-
-    private static File getCacheDir(String dirName)
-    {
-        checkContext();
-        File dir = new File(getContext().getExternalCacheDir(), dirName);
-        return dir;
-    }
-
-    private static String generateKey(String key)
-    {
-        return MD5(key);
-    }
-
-    private static String MD5(String value)
-    {
-        String result;
-        try
-        {
-            final MessageDigest digest = MessageDigest.getInstance("MD5");
-            digest.update(value.getBytes());
-            byte[] bytes = digest.digest();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.length; i++)
-            {
-                String hex = Integer.toHexString(0xFF & bytes[i]);
-                if (hex.length() == 1)
-                {
-                    sb.append('0');
-                }
-                sb.append(hex);
-            }
-            result = sb.toString();
-        } catch (NoSuchAlgorithmException e)
-        {
-            Log.e(TAG, "MD5 error:" + e);
-            result = null;
-        }
-        return result;
-    }
-
-    //---------- util method end ----------
 }

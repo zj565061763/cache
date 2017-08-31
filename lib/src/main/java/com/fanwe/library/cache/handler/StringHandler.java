@@ -24,7 +24,7 @@ import java.io.File;
 /**
  * Created by zhengjun on 2017/8/31.
  */
-public class StringHandler extends ObjectHandler<String>
+public class StringHandler extends AObjectHandler<String>
 {
     public static final String STRING = "string_";
 

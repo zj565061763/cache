@@ -29,7 +29,7 @@ import java.io.Serializable;
 /**
  * Created by zhengjun on 2017/8/31.
  */
-public class SerializableHandler<T extends Serializable> extends ObjectHandler<T>
+public class SerializableHandler<T extends Serializable> extends AObjectHandler<T>
 {
     private static final String SERIALIZABLE = "serializable_";
 

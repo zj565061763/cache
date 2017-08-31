@@ -18,24 +18,33 @@ package com.fanwe.library.cache.handler;
 import android.text.TextUtils;
 
 import com.fanwe.library.cache.IEncryptConverter;
+import com.fanwe.library.cache.Utils;
 
 import java.io.File;
 
 /**
  * Created by zhengjun on 2017/8/31.
  */
-public abstract class ObjectHandler<T> implements IObjectHandler<T>
+public abstract class AObjectHandler<T> implements IObjectHandler<T>
 {
-    public static final String TAG = "ObjectHandler";
+    public static final String TAG = "AObjectHandler";
 
     private File mDirectory;
 
     private boolean mEncrypt;
     private IEncryptConverter mEncryptConverter;
 
-    public ObjectHandler(File directory)
+    public AObjectHandler(File directory)
     {
         mDirectory = directory;
+    }
+
+    private void ensureDirectoryExists()
+    {
+        if (!mDirectory.exists())
+        {
+            mDirectory.mkdirs();
+        }
     }
 
     @Override
@@ -67,7 +76,9 @@ public abstract class ObjectHandler<T> implements IObjectHandler<T>
             throw new IllegalArgumentException("key is null or empty");
         }
 
+        key = Utils.MD5(key);
         String realKey = getFileKey(key);
+        ensureDirectoryExists();
         File file = new File(mDirectory, realKey);
         return file;
     }
