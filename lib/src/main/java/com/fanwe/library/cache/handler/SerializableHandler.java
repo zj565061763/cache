@@ -39,9 +39,9 @@ public class SerializableHandler extends ObjectHandler<Serializable>
     }
 
     @Override
-    public String getKeyPrefix()
+    public String getFileKey(String key)
     {
-        return SERIALIZABLE;
+        return SERIALIZABLE + key;
     }
 
     @Override

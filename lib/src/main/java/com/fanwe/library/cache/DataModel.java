@@ -18,7 +18,7 @@ package com.fanwe.library.cache;
 import java.io.Serializable;
 
 
-class DataModel implements Serializable
+public class DataModel implements Serializable
 {
     static final long serialVersionUID = 0L;
 

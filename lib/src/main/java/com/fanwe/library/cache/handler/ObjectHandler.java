@@ -17,6 +17,8 @@ package com.fanwe.library.cache.handler;
 
 import android.text.TextUtils;
 
+import com.fanwe.library.cache.IEncryptConverter;
+
 import java.io.File;
 
 /**
@@ -27,7 +29,9 @@ public abstract class ObjectHandler<T> implements IObjectHandler<T>
     public static final String TAG = "ObjectHandler";
 
     private File mDirectory;
+
     private boolean mEncrypt;
+    private IEncryptConverter mEncryptConverter;
 
     public ObjectHandler(File directory)
     {
@@ -35,15 +39,25 @@ public abstract class ObjectHandler<T> implements IObjectHandler<T>
     }
 
     @Override
-    public final boolean isEncrypt()
+    public void setEncrypt(boolean encrypt)
+    {
+        mEncrypt = encrypt;
+    }
+
+    @Override
+    public void setEncryptConverter(IEncryptConverter encryptConverter)
+    {
+        mEncryptConverter = encryptConverter;
+    }
+
+    protected final boolean isEncrypt()
     {
         return mEncrypt;
     }
 
-    @Override
-    public final void setEncrypt(boolean encrypt)
+    protected final IEncryptConverter getEncryptConverter()
     {
-        this.mEncrypt = encrypt;
+        return mEncryptConverter;
     }
 
     private File getObjectFile(String key)
@@ -53,7 +67,7 @@ public abstract class ObjectHandler<T> implements IObjectHandler<T>
             throw new IllegalArgumentException("key is null or empty");
         }
 
-        String realKey = getKeyPrefix() + key;
+        String realKey = getFileKey(key);
         File file = new File(mDirectory, realKey);
         return file;
     }
@@ -104,7 +118,7 @@ public abstract class ObjectHandler<T> implements IObjectHandler<T>
         }
     }
 
-    abstract public String getKeyPrefix();
+    abstract public String getFileKey(String key);
 
     abstract protected boolean onPutObject(String key, T object, File file);
 

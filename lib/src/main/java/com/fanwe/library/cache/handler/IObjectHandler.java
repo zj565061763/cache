@@ -15,14 +15,16 @@
  */
 package com.fanwe.library.cache.handler;
 
+import com.fanwe.library.cache.IEncryptConverter;
+
 /**
  * Created by zhengjun on 2017/8/31.
  */
 public interface IObjectHandler<T>
 {
-    boolean isEncrypt();
-
     void setEncrypt(boolean encrypt);
+
+    void setEncryptConverter(IEncryptConverter encryptConverter);
 
     boolean hasObject(String key);
 
