@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
-apply plugin: 'com.github.dcendents.android-maven' group='com.fanwe.android'
+
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.zj565061763'
 
 android {
     compileSdkVersion 25
@@ -36,7 +38,7 @@ publish {
     artifactId = 'cache'
     publishVersion = '1.0.1'
     desc = 'fanwe android cache library'
-    website = 'https://github.com/zj565061763/Cache'
+    website = 'https://github.com/zj565061763/cache'
 }
 
 tasks.withType(Javadoc) {
