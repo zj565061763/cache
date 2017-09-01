@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity
         SDDisk.open().putFloat(key, 3.3f);
         SDDisk.open().putDouble(key, 4.4444d);
         SDDisk.open().putBoolean(key, true);
-        SDDisk.open().putString(key, "hello String"); //加密字符串
+        SDDisk.open().putString(key, "hello String");
         SDDisk.open().putSerializable(new TestModel());
         SDDisk.open().setEncrypt(true).putObject(new TestModel()); //加密实体
 

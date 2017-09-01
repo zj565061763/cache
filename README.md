@@ -1,6 +1,6 @@
 
 ## Gradle
-`compile 'com.fanwe.android:cache:1.0.4'`
+`compile 'com.fanwe.android:cache:1.0.5'`
 
 ## 简单demo
 ```java
@@ -19,12 +19,11 @@ public class MainActivity extends AppCompatActivity
         SDDisk.setGlobalObjectConverter(new GlobalObjectConverter());//如果要用XXXObject方法，需要配置Object对象转换器
         SDDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
 
-
         //不同的open方法可以关联不同的目录
-        SDDisk.openCache();        //"Android/data/包名/cache/cache"
-        SDDisk.openCache("hello"); //"Android/data/包名/cache/hello"
-        SDDisk.open();             //"Android/data/包名/files/files"
+        SDDisk.open();             //"Android/data/包名/files/disk_file"
         SDDisk.open("hello");      //"Android/data/包名/files/hello"
+        SDDisk.openCache();        //"Android/data/包名/cache/disk_cache"
+        SDDisk.openCache("hello"); //"Android/data/包名/cache/hello"
         SDDisk.openDir(Environment.getExternalStorageDirectory()); //关联指定的目录
 
         SDDisk.open().putInt(key, 1);
@@ -32,9 +31,9 @@ public class MainActivity extends AppCompatActivity
         SDDisk.open().putFloat(key, 3.3f);
         SDDisk.open().putDouble(key, 4.4444d);
         SDDisk.open().putBoolean(key, true);
-        SDDisk.open().putString(key, "hello String", true); //加密字符串
+        SDDisk.open().putString(key, "hello String");
         SDDisk.open().putSerializable(new TestModel());
-        SDDisk.open().putObject(new TestModel(), true); //加密实体
+        SDDisk.open().setEncrypt(true).putObject(new TestModel()); //加密实体
 
         print();
     }
