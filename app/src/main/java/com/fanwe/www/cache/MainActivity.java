@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity
         SDDisk.setGlobalObjectConverter(new GlobalObjectConverter());//如果要用XXXObject方法，需要配置Object对象转换器
         SDDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
 
-
         //不同的open方法可以关联不同的目录
         SDDisk.open();             //"Android/data/包名/files/disk_file"
         SDDisk.open("hello");      //"Android/data/包名/files/hello"
