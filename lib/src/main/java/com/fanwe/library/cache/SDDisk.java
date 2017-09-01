@@ -21,8 +21,8 @@ import java.io.Serializable;
 
 public class SDDisk extends ASDDisk
 {
-    private static final String DEFAULT_FILE_DIR = "files";
-    private static final String DEFAULT_CACHE_DIR = "cache";
+    private static final String DEFAULT_FILE_DIR = "disk_file";
+    private static final String DEFAULT_CACHE_DIR = "disk_cache";
 
     private static final String INT = "int_";
     private static final String LONG = "long_";
@@ -49,7 +49,7 @@ public class SDDisk extends ASDDisk
     }
 
     /**
-     * 打开"Android/data/包名/files/files"目录
+     * 打开"Android/data/包名/files/disk_file"目录
      *
      * @return
      */
@@ -70,7 +70,7 @@ public class SDDisk extends ASDDisk
     }
 
     /**
-     * 打开"Android/data/包名/cache/cache"目录
+     * 打开"Android/data/包名/cache/disk_cache"目录
      *
      * @return
      */

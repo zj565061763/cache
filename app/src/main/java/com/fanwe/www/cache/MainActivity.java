@@ -24,9 +24,9 @@ public class MainActivity extends AppCompatActivity
 
 
         //不同的open方法可以关联不同的目录
-        SDDisk.open();             //"Android/data/包名/files/files"
+        SDDisk.open();             //"Android/data/包名/files/disk_file"
         SDDisk.open("hello");      //"Android/data/包名/files/hello"
-        SDDisk.openCache();        //"Android/data/包名/cache/cache"
+        SDDisk.openCache();        //"Android/data/包名/cache/disk_cache"
         SDDisk.openCache("hello"); //"Android/data/包名/cache/hello"
         SDDisk.openDir(Environment.getExternalStorageDirectory()); //关联指定的目录
 

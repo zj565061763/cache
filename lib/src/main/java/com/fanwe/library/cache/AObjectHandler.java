@@ -70,6 +70,14 @@ public abstract class AObjectHandler<T> implements IObjectHandler<T>
         return mDiskConfig;
     }
 
+    protected final void checkEncryptConverter()
+    {
+        if (getDiskConfig().isEncrypt() && getDiskConfig().getEncryptConverter() == null)
+        {
+            throw new NullPointerException("you must provide an IEncryptConverter instance before this");
+        }
+    }
+
     private File getObjectFile(String key)
     {
         if (TextUtils.isEmpty(key))

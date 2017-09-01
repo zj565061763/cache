@@ -74,7 +74,6 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
     @Override
     public ASDDisk setEncrypt(boolean encrypt)
     {
-        checkEncryptConverter(encrypt);
         mEncrypt = encrypt;
         return this;
     }
@@ -140,14 +139,6 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
     private static Context getContext()
     {
         return mContext;
-    }
-
-    private void checkEncryptConverter(boolean encrypt)
-    {
-        if (encrypt && getEncryptConverter() == null)
-        {
-            throw new NullPointerException("you must provide an IEncryptConverter instance before this");
-        }
     }
 
     protected void checkObjectConverter()

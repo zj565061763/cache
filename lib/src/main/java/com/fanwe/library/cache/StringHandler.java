@@ -45,6 +45,8 @@ class StringHandler extends AObjectHandler<String>
     @Override
     protected boolean onPutObject(String key, String object, File file)
     {
+        checkEncryptConverter();
+
         DataModel model = new DataModel();
         model.setData(object);
         model.setEncrypt(getDiskConfig().isEncrypt());
