@@ -33,19 +33,18 @@ public class SDDisk extends ASDDisk
     private static final String OBJECT = "object_";
     private static final String SERIALIZABLE = "serializable_";
 
+    private StringHandler mIntHandler;
+    private StringHandler mLongHandler;
+    private StringHandler mFloatHandler;
+    private StringHandler mDoubleHandler;
+    private StringHandler mBooleanHandler;
     private StringHandler mStringHandler;
+    private StringHandler mObjectHandler;
     private SerializableHandler mSerializableHandler;
 
     protected SDDisk(File directory)
     {
         super(directory);
-
-        mStringHandler = new StringHandler(directory);
-        mStringHandler.setDiskConfig(this);
-
-        mSerializableHandler = new SerializableHandler(directory);
-        mSerializableHandler.setDiskConfig(this);
-        mSerializableHandler.setKeyPrefix(SERIALIZABLE);
     }
 
     /**
@@ -122,32 +121,41 @@ public class SDDisk extends ASDDisk
         return this;
     }
 
+    //---------- int start ----------
+
+    private StringHandler getIntHandler()
+    {
+        if (mIntHandler == null)
+        {
+            mIntHandler = new StringHandler(getDirectory());
+            mIntHandler.setKeyPrefix(INT);
+            mIntHandler.setDiskConfig(this);
+        }
+        return mIntHandler;
+    }
+
     @Override
     public boolean hasInt(String key)
     {
-        mStringHandler.setKeyPrefix(INT);
-        return mStringHandler.hasObject(key);
+        return getIntHandler().hasObject(key);
     }
 
     @Override
     public boolean removeInt(String key)
     {
-        mStringHandler.setKeyPrefix(INT);
-        return mStringHandler.removeObject(key);
+        return getIntHandler().removeObject(key);
     }
 
     @Override
     public boolean putInt(String key, int value)
     {
-        mStringHandler.setKeyPrefix(INT);
-        return mStringHandler.putObject(key, String.valueOf(value));
+        return getIntHandler().putObject(key, String.valueOf(value));
     }
 
     @Override
     public int getInt(String key, int defValue)
     {
-        mStringHandler.setKeyPrefix(INT);
-        String content = mStringHandler.getObject(key);
+        String content = getIntHandler().getObject(key);
         if (content != null)
         {
             return Integer.valueOf(content);
@@ -157,32 +165,41 @@ public class SDDisk extends ASDDisk
         }
     }
 
+    //---------- long start ----------
+
+    private StringHandler getLongHandler()
+    {
+        if (mLongHandler == null)
+        {
+            mLongHandler = new StringHandler(getDirectory());
+            mLongHandler.setKeyPrefix(LONG);
+            mLongHandler.setDiskConfig(this);
+        }
+        return mLongHandler;
+    }
+
     @Override
     public boolean hasLong(String key)
     {
-        mStringHandler.setKeyPrefix(LONG);
-        return mStringHandler.hasObject(key);
+        return getLongHandler().hasObject(key);
     }
 
     @Override
     public boolean removeLong(String key)
     {
-        mStringHandler.setKeyPrefix(LONG);
-        return mStringHandler.removeObject(key);
+        return getLongHandler().removeObject(key);
     }
 
     @Override
     public boolean putLong(String key, long value)
     {
-        mStringHandler.setKeyPrefix(LONG);
-        return mStringHandler.putObject(key, String.valueOf(value));
+        return getLongHandler().putObject(key, String.valueOf(value));
     }
 
     @Override
     public long getLong(String key, long defValue)
     {
-        mStringHandler.setKeyPrefix(LONG);
-        String content = mStringHandler.getObject(key);
+        String content = getLongHandler().getObject(key);
         if (content != null)
         {
             return Long.valueOf(content);
@@ -192,32 +209,41 @@ public class SDDisk extends ASDDisk
         }
     }
 
+    //---------- float start ----------
+
+    private StringHandler getFloatHandler()
+    {
+        if (mFloatHandler == null)
+        {
+            mFloatHandler = new StringHandler(getDirectory());
+            mFloatHandler.setKeyPrefix(FLOAT);
+            mFloatHandler.setDiskConfig(this);
+        }
+        return mFloatHandler;
+    }
+
     @Override
     public boolean hasFloat(String key)
     {
-        mStringHandler.setKeyPrefix(FLOAT);
-        return mStringHandler.hasObject(key);
+        return getFloatHandler().hasObject(key);
     }
 
     @Override
     public boolean removeFloat(String key)
     {
-        mStringHandler.setKeyPrefix(FLOAT);
-        return mStringHandler.removeObject(key);
+        return getFloatHandler().removeObject(key);
     }
 
     @Override
     public boolean putFloat(String key, float value)
     {
-        mStringHandler.setKeyPrefix(FLOAT);
-        return mStringHandler.putObject(key, String.valueOf(value));
+        return getFloatHandler().putObject(key, String.valueOf(value));
     }
 
     @Override
     public float getFloat(String key, float defValue)
     {
-        mStringHandler.setKeyPrefix(FLOAT);
-        String content = mStringHandler.getObject(key);
+        String content = getFloatHandler().getObject(key);
         if (content != null)
         {
             return Float.valueOf(content);
@@ -227,32 +253,41 @@ public class SDDisk extends ASDDisk
         }
     }
 
+    //---------- double start ----------
+
+    private StringHandler getDoubleHandler()
+    {
+        if (mDoubleHandler == null)
+        {
+            mDoubleHandler = new StringHandler(getDirectory());
+            mDoubleHandler.setKeyPrefix(DOUBLE);
+            mDoubleHandler.setDiskConfig(this);
+        }
+        return mDoubleHandler;
+    }
+
     @Override
     public boolean hasDouble(String key)
     {
-        mStringHandler.setKeyPrefix(DOUBLE);
-        return mStringHandler.hasObject(key);
+        return getDoubleHandler().hasObject(key);
     }
 
     @Override
     public boolean removeDouble(String key)
     {
-        mStringHandler.setKeyPrefix(DOUBLE);
-        return mStringHandler.removeObject(key);
+        return getDoubleHandler().removeObject(key);
     }
 
     @Override
     public boolean putDouble(String key, double value)
     {
-        mStringHandler.setKeyPrefix(DOUBLE);
-        return mStringHandler.putObject(key, String.valueOf(value));
+        return getDoubleHandler().putObject(key, String.valueOf(value));
     }
 
     @Override
     public double getDouble(String key, double defValue)
     {
-        mStringHandler.setKeyPrefix(DOUBLE);
-        String content = mStringHandler.getObject(key);
+        String content = getDoubleHandler().getObject(key);
         if (content != null)
         {
             return Double.valueOf(content);
@@ -262,32 +297,41 @@ public class SDDisk extends ASDDisk
         }
     }
 
+    //---------- boolean start ----------
+
+    private StringHandler getBooleanHandler()
+    {
+        if (mBooleanHandler == null)
+        {
+            mBooleanHandler = new StringHandler(getDirectory());
+            mBooleanHandler.setKeyPrefix(BOOLEAN);
+            mBooleanHandler.setDiskConfig(this);
+        }
+        return mBooleanHandler;
+    }
+
     @Override
     public boolean hasBoolean(String key)
     {
-        mStringHandler.setKeyPrefix(BOOLEAN);
-        return mStringHandler.hasObject(key);
+        return getBooleanHandler().hasObject(key);
     }
 
     @Override
     public boolean removeBoolean(String key)
     {
-        mStringHandler.setKeyPrefix(BOOLEAN);
-        return mStringHandler.removeObject(key);
+        return getBooleanHandler().removeObject(key);
     }
 
     @Override
     public boolean putBoolean(String key, boolean value)
     {
-        mStringHandler.setKeyPrefix(BOOLEAN);
-        return mStringHandler.putObject(key, String.valueOf(value));
+        return getBooleanHandler().putObject(key, String.valueOf(value));
     }
 
     @Override
     public boolean getBoolean(String key, boolean defValue)
     {
-        mStringHandler.setKeyPrefix(BOOLEAN);
-        String content = mStringHandler.getObject(key);
+        String content = getBooleanHandler().getObject(key);
         if (content != null)
         {
             return Boolean.valueOf(content);
@@ -297,70 +341,67 @@ public class SDDisk extends ASDDisk
         }
     }
 
+    //---------- string start ----------
+
+    private StringHandler getStringHandler()
+    {
+        if (mStringHandler == null)
+        {
+            mStringHandler = new StringHandler(getDirectory());
+            mStringHandler.setKeyPrefix(STRING);
+            mStringHandler.setDiskConfig(this);
+        }
+        return mStringHandler;
+    }
+
     @Override
     public boolean hasString(String key)
     {
-        mStringHandler.setKeyPrefix(STRING);
-        return mStringHandler.hasObject(key);
+        return getStringHandler().hasObject(key);
     }
 
     @Override
     public boolean removeString(String key)
     {
-        mStringHandler.setKeyPrefix(STRING);
-        return mStringHandler.removeObject(key);
+        return getStringHandler().removeObject(key);
     }
 
     @Override
     public boolean putString(String key, String data)
     {
-        mStringHandler.setKeyPrefix(STRING);
-        return mStringHandler.putObject(key, data);
+        return getStringHandler().putObject(key, data);
     }
 
     @Override
     public String getString(String key)
     {
-        mStringHandler.setKeyPrefix(STRING);
-        return mStringHandler.getObject(key);
+        return getStringHandler().getObject(key);
     }
 
-    @Override
-    public boolean hasSerializable(Class clazz)
-    {
-        return mSerializableHandler.hasObject(clazz.getName());
-    }
+    //---------- object start ----------
 
-    @Override
-    public <T extends Serializable> boolean putSerializable(T object)
-    {
-        return mSerializableHandler.putObject(object.getClass().getName(), object);
-    }
 
-    @Override
-    public <T extends Serializable> T getSerializable(Class<T> clazz)
+    private StringHandler getObjectHandler()
     {
-        return (T) mSerializableHandler.getObject(clazz.getName());
-    }
-
-    @Override
-    public boolean removeSerializable(Class clazz)
-    {
-        return mSerializableHandler.removeObject(clazz.getName());
+        if (mObjectHandler == null)
+        {
+            mObjectHandler = new StringHandler(getDirectory());
+            mObjectHandler.setKeyPrefix(OBJECT);
+            mObjectHandler.setDiskConfig(this);
+        }
+        return mObjectHandler;
     }
 
     @Override
     public boolean hasObject(Class clazz)
     {
-        mStringHandler.setKeyPrefix(OBJECT);
-        return mStringHandler.hasObject(clazz.getName());
+        return getObjectHandler().hasObject(clazz.getName());
     }
 
     @Override
     public boolean removeObject(Class clazz)
     {
-        mStringHandler.setKeyPrefix(OBJECT);
-        return mStringHandler.removeObject(clazz.getName());
+        return getObjectHandler().removeObject(clazz.getName());
     }
 
     @Override
@@ -372,9 +413,8 @@ public class SDDisk extends ASDDisk
         }
         checkObjectConverter();
 
-        mStringHandler.setKeyPrefix(OBJECT);
         String content = getObjectConverter().objectToString(object);
-        return mStringHandler.putObject(object.getClass().getName(), content);
+        return getObjectHandler().putObject(object.getClass().getName(), content);
     }
 
     @Override
@@ -382,8 +422,7 @@ public class SDDisk extends ASDDisk
     {
         checkObjectConverter();
 
-        mStringHandler.setKeyPrefix(OBJECT);
-        String content = mStringHandler.getObject(clazz.getName());
+        String content = getObjectHandler().getObject(clazz.getName());
         if (content != null)
         {
             return getObjectConverter().stringToObject(content, clazz);
@@ -391,5 +430,42 @@ public class SDDisk extends ASDDisk
         {
             return null;
         }
+    }
+
+    //---------- Serializable start ----------
+
+    private SerializableHandler getSerializableHandler()
+    {
+        if (mSerializableHandler == null)
+        {
+            mSerializableHandler = new SerializableHandler(getDirectory());
+            mSerializableHandler.setKeyPrefix(SERIALIZABLE);
+            mSerializableHandler.setDiskConfig(this);
+        }
+        return mSerializableHandler;
+    }
+
+    @Override
+    public boolean hasSerializable(Class clazz)
+    {
+        return getSerializableHandler().hasObject(clazz.getName());
+    }
+
+    @Override
+    public <T extends Serializable> boolean putSerializable(T object)
+    {
+        return getSerializableHandler().putObject(object.getClass().getName(), object);
+    }
+
+    @Override
+    public <T extends Serializable> T getSerializable(Class<T> clazz)
+    {
+        return (T) getSerializableHandler().getObject(clazz.getName());
+    }
+
+    @Override
+    public boolean removeSerializable(Class clazz)
+    {
+        return getSerializableHandler().removeObject(clazz.getName());
     }
 }

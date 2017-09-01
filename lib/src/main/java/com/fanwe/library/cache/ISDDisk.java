@@ -126,16 +126,6 @@ interface ISDDisk
 
     String getString(String key);
 
-    //---------- Serializable start ----------
-
-    boolean hasSerializable(Class clazz);
-
-    <T extends Serializable> boolean putSerializable(T object);
-
-    <T extends Serializable> T getSerializable(Class<T> clazz);
-
-    boolean removeSerializable(Class clazz);
-
     //---------- object start ----------
 
     boolean hasObject(Class clazz);
@@ -145,4 +135,14 @@ interface ISDDisk
     boolean putObject(Object object);
 
     <T> T getObject(Class<T> clazz);
+
+    //---------- Serializable start ----------
+
+    boolean hasSerializable(Class clazz);
+
+    <T extends Serializable> boolean putSerializable(T object);
+
+    <T extends Serializable> T getSerializable(Class<T> clazz);
+
+    boolean removeSerializable(Class clazz);
 }
