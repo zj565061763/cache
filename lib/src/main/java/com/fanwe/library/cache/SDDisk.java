@@ -137,31 +137,43 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasInt(String key)
     {
-        return getIntHandler().hasObject(key);
+        synchronized (INT)
+        {
+            return getIntHandler().hasObject(key);
+        }
     }
 
     @Override
     public boolean removeInt(String key)
     {
-        return getIntHandler().removeObject(key);
+        synchronized (INT)
+        {
+            return getIntHandler().removeObject(key);
+        }
     }
 
     @Override
     public boolean putInt(String key, int value)
     {
-        return getIntHandler().putObject(key, String.valueOf(value));
+        synchronized (INT)
+        {
+            return getIntHandler().putObject(key, String.valueOf(value));
+        }
     }
 
     @Override
     public int getInt(String key, int defValue)
     {
-        String content = getIntHandler().getObject(key);
-        if (content != null)
+        synchronized (INT)
         {
-            return Integer.valueOf(content);
-        } else
-        {
-            return defValue;
+            String content = getIntHandler().getObject(key);
+            if (content != null)
+            {
+                return Integer.valueOf(content);
+            } else
+            {
+                return defValue;
+            }
         }
     }
 
@@ -181,31 +193,43 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasLong(String key)
     {
-        return getLongHandler().hasObject(key);
+        synchronized (LONG)
+        {
+            return getLongHandler().hasObject(key);
+        }
     }
 
     @Override
     public boolean removeLong(String key)
     {
-        return getLongHandler().removeObject(key);
+        synchronized (LONG)
+        {
+            return getLongHandler().removeObject(key);
+        }
     }
 
     @Override
     public boolean putLong(String key, long value)
     {
-        return getLongHandler().putObject(key, String.valueOf(value));
+        synchronized (LONG)
+        {
+            return getLongHandler().putObject(key, String.valueOf(value));
+        }
     }
 
     @Override
     public long getLong(String key, long defValue)
     {
-        String content = getLongHandler().getObject(key);
-        if (content != null)
+        synchronized (LONG)
         {
-            return Long.valueOf(content);
-        } else
-        {
-            return defValue;
+            String content = getLongHandler().getObject(key);
+            if (content != null)
+            {
+                return Long.valueOf(content);
+            } else
+            {
+                return defValue;
+            }
         }
     }
 
@@ -225,31 +249,43 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasFloat(String key)
     {
-        return getFloatHandler().hasObject(key);
+        synchronized (FLOAT)
+        {
+            return getFloatHandler().hasObject(key);
+        }
     }
 
     @Override
     public boolean removeFloat(String key)
     {
-        return getFloatHandler().removeObject(key);
+        synchronized (FLOAT)
+        {
+            return getFloatHandler().removeObject(key);
+        }
     }
 
     @Override
     public boolean putFloat(String key, float value)
     {
-        return getFloatHandler().putObject(key, String.valueOf(value));
+        synchronized (FLOAT)
+        {
+            return getFloatHandler().putObject(key, String.valueOf(value));
+        }
     }
 
     @Override
     public float getFloat(String key, float defValue)
     {
-        String content = getFloatHandler().getObject(key);
-        if (content != null)
+        synchronized (FLOAT)
         {
-            return Float.valueOf(content);
-        } else
-        {
-            return defValue;
+            String content = getFloatHandler().getObject(key);
+            if (content != null)
+            {
+                return Float.valueOf(content);
+            } else
+            {
+                return defValue;
+            }
         }
     }
 
@@ -269,31 +305,43 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasDouble(String key)
     {
-        return getDoubleHandler().hasObject(key);
+        synchronized (DOUBLE)
+        {
+            return getDoubleHandler().hasObject(key);
+        }
     }
 
     @Override
     public boolean removeDouble(String key)
     {
-        return getDoubleHandler().removeObject(key);
+        synchronized (DOUBLE)
+        {
+            return getDoubleHandler().removeObject(key);
+        }
     }
 
     @Override
     public boolean putDouble(String key, double value)
     {
-        return getDoubleHandler().putObject(key, String.valueOf(value));
+        synchronized (DOUBLE)
+        {
+            return getDoubleHandler().putObject(key, String.valueOf(value));
+        }
     }
 
     @Override
     public double getDouble(String key, double defValue)
     {
-        String content = getDoubleHandler().getObject(key);
-        if (content != null)
+        synchronized (DOUBLE)
         {
-            return Double.valueOf(content);
-        } else
-        {
-            return defValue;
+            String content = getDoubleHandler().getObject(key);
+            if (content != null)
+            {
+                return Double.valueOf(content);
+            } else
+            {
+                return defValue;
+            }
         }
     }
 
@@ -313,31 +361,43 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasBoolean(String key)
     {
-        return getBooleanHandler().hasObject(key);
+        synchronized (BOOLEAN)
+        {
+            return getBooleanHandler().hasObject(key);
+        }
     }
 
     @Override
     public boolean removeBoolean(String key)
     {
-        return getBooleanHandler().removeObject(key);
+        synchronized (BOOLEAN)
+        {
+            return getBooleanHandler().removeObject(key);
+        }
     }
 
     @Override
     public boolean putBoolean(String key, boolean value)
     {
-        return getBooleanHandler().putObject(key, String.valueOf(value));
+        synchronized (BOOLEAN)
+        {
+            return getBooleanHandler().putObject(key, String.valueOf(value));
+        }
     }
 
     @Override
     public boolean getBoolean(String key, boolean defValue)
     {
-        String content = getBooleanHandler().getObject(key);
-        if (content != null)
+        synchronized (BOOLEAN)
         {
-            return Boolean.valueOf(content);
-        } else
-        {
-            return defValue;
+            String content = getBooleanHandler().getObject(key);
+            if (content != null)
+            {
+                return Boolean.valueOf(content);
+            } else
+            {
+                return defValue;
+            }
         }
     }
 
@@ -357,25 +417,37 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasString(String key)
     {
-        return getStringHandler().hasObject(key);
+        synchronized (STRING)
+        {
+            return getStringHandler().hasObject(key);
+        }
     }
 
     @Override
     public boolean removeString(String key)
     {
-        return getStringHandler().removeObject(key);
+        synchronized (STRING)
+        {
+            return getStringHandler().removeObject(key);
+        }
     }
 
     @Override
     public boolean putString(String key, String data)
     {
-        return getStringHandler().putObject(key, data);
+        synchronized (STRING)
+        {
+            return getStringHandler().putObject(key, data);
+        }
     }
 
     @Override
     public String getString(String key)
     {
-        return getStringHandler().getObject(key);
+        synchronized (STRING)
+        {
+            return getStringHandler().getObject(key);
+        }
     }
 
     //---------- object start ----------
@@ -395,40 +467,52 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasObject(Class clazz)
     {
-        return getObjectHandler().hasObject(clazz.getName());
+        synchronized (OBJECT)
+        {
+            return getObjectHandler().hasObject(clazz.getName());
+        }
     }
 
     @Override
     public boolean removeObject(Class clazz)
     {
-        return getObjectHandler().removeObject(clazz.getName());
+        synchronized (OBJECT)
+        {
+            return getObjectHandler().removeObject(clazz.getName());
+        }
     }
 
     @Override
     public boolean putObject(Object object)
     {
-        if (object == null)
+        synchronized (OBJECT)
         {
-            return false;
-        }
-        checkObjectConverter();
+            if (object == null)
+            {
+                return false;
+            }
+            checkObjectConverter();
 
-        String content = getObjectConverter().objectToString(object);
-        return getObjectHandler().putObject(object.getClass().getName(), content);
+            String content = getObjectConverter().objectToString(object);
+            return getObjectHandler().putObject(object.getClass().getName(), content);
+        }
     }
 
     @Override
     public <T> T getObject(Class<T> clazz)
     {
-        checkObjectConverter();
+        synchronized (OBJECT)
+        {
+            checkObjectConverter();
 
-        String content = getObjectHandler().getObject(clazz.getName());
-        if (content != null)
-        {
-            return getObjectConverter().stringToObject(content, clazz);
-        } else
-        {
-            return null;
+            String content = getObjectHandler().getObject(clazz.getName());
+            if (content != null)
+            {
+                return getObjectConverter().stringToObject(content, clazz);
+            } else
+            {
+                return null;
+            }
         }
     }
 
@@ -448,24 +532,36 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasSerializable(Class clazz)
     {
-        return getSerializableHandler().hasObject(clazz.getName());
+        synchronized (SERIALIZABLE)
+        {
+            return getSerializableHandler().hasObject(clazz.getName());
+        }
     }
 
     @Override
     public <T extends Serializable> boolean putSerializable(T object)
     {
-        return getSerializableHandler().putObject(object.getClass().getName(), object);
+        synchronized (SERIALIZABLE)
+        {
+            return getSerializableHandler().putObject(object.getClass().getName(), object);
+        }
     }
 
     @Override
     public <T extends Serializable> T getSerializable(Class<T> clazz)
     {
-        return (T) getSerializableHandler().getObject(clazz.getName());
+        synchronized (SERIALIZABLE)
+        {
+            return (T) getSerializableHandler().getObject(clazz.getName());
+        }
     }
 
     @Override
     public boolean removeSerializable(Class clazz)
     {
-        return getSerializableHandler().removeObject(clazz.getName());
+        synchronized (SERIALIZABLE)
+        {
+            return getSerializableHandler().removeObject(clazz.getName());
+        }
     }
 }
