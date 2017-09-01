@@ -20,7 +20,7 @@ import java.io.File;
 /**
  * Created by zhengjun on 2017/8/31.
  */
-public class StringHandler extends AObjectHandler<String>
+class StringHandler extends AObjectHandler<String>
 {
     private SerializableHandler mSerializableHandler;
 

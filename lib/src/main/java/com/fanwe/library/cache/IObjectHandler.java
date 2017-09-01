@@ -18,7 +18,7 @@ package com.fanwe.library.cache;
 /**
  * Created by zhengjun on 2017/8/31.
  */
-public interface IObjectHandler<T>
+interface IObjectHandler<T>
 {
     void setKeyPrefix(String keyPrefix);
 

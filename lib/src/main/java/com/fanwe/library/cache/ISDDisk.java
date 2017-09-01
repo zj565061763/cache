@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by zhengjun on 2017/9/1.
  */
-public interface ISDDisk
+interface ISDDisk
 {
     /**
      * 设置对象转换器

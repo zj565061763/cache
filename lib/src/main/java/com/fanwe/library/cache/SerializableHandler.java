@@ -27,7 +27,7 @@ import java.io.Serializable;
 /**
  * Created by zhengjun on 2017/8/31.
  */
-public class SerializableHandler<T extends Serializable> extends AObjectHandler<T>
+class SerializableHandler<T extends Serializable> extends AObjectHandler<T>
 {
     public SerializableHandler(File directory)
     {

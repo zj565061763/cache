@@ -19,7 +19,7 @@ import android.content.Context;
 
 import java.io.File;
 
-public abstract class ASDDisk implements ISDDisk
+abstract class ASDDisk implements ISDDisk
 {
     private static Context mContext;
     private static IObjectConverter sGlobalObjectConverter;
