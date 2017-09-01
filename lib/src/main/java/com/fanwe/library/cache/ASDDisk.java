@@ -93,6 +93,12 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
     }
 
     @Override
+    public File getDirectory()
+    {
+        return mDirectory;
+    }
+
+    @Override
     public long size()
     {
         return mDirectory.length();

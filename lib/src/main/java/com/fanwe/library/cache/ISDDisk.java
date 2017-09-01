@@ -15,6 +15,7 @@
  */
 package com.fanwe.library.cache;
 
+import java.io.File;
 import java.io.Serializable;
 
 /**
@@ -45,6 +46,13 @@ interface ISDDisk
      * @return
      */
     ISDDisk setObjectConverter(IObjectConverter objectConverter);
+
+    /**
+     * 返回当前对象关联的目录
+     *
+     * @return
+     */
+    File getDirectory();
 
     /**
      * 返回当前目录的大小
