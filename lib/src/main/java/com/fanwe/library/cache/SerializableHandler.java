@@ -29,17 +29,9 @@ import java.io.Serializable;
  */
 public class SerializableHandler<T extends Serializable> extends AObjectHandler<T>
 {
-    private static final String SERIALIZABLE = "serializable_";
-
     public SerializableHandler(File directory)
     {
         super(directory);
-    }
-
-    @Override
-    public String getFileKey(String key)
-    {
-        return SERIALIZABLE + key;
     }
 
     @Override

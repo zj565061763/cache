@@ -15,8 +15,6 @@
  */
 package com.fanwe.library.cache;
 
-import android.text.TextUtils;
-
 import java.io.File;
 
 /**
@@ -24,19 +22,11 @@ import java.io.File;
  */
 public class StringHandler extends AObjectHandler<String>
 {
-    public static final String STRING = "string_";
-
-    private String mKeyPrefix = STRING;
     private SerializableHandler mSerializableHandler;
 
-    public StringHandler(File directory, String keyPrefix)
+    public StringHandler(File directory)
     {
         super(directory);
-
-        if (!TextUtils.isEmpty(keyPrefix))
-        {
-            mKeyPrefix = keyPrefix;
-        }
         mSerializableHandler = new SerializableHandler(directory);
     }
 
@@ -46,9 +36,10 @@ public class StringHandler extends AObjectHandler<String>
     }
 
     @Override
-    public String getFileKey(String key)
+    public void setKeyPrefix(String keyPrefix)
     {
-        return getSerializableHandler().getFileKey(mKeyPrefix + key);
+        super.setKeyPrefix(keyPrefix);
+        getSerializableHandler().setKeyPrefix(keyPrefix);
     }
 
     @Override
@@ -59,13 +50,13 @@ public class StringHandler extends AObjectHandler<String>
         model.setEncrypt(isEncrypt());
         model.encryptIfNeed(getEncryptConverter());
 
-        return getSerializableHandler().putObject(mKeyPrefix + key, model);
+        return getSerializableHandler().putObject(key, model);
     }
 
     @Override
     protected String onGetObject(String key, File file)
     {
-        DataModel model = (DataModel) getSerializableHandler().getObject(mKeyPrefix + key);
+        DataModel model = (DataModel) getSerializableHandler().getObject(key);
         if (model != null)
         {
             model.decryptIfNeed(getEncryptConverter());

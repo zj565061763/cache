@@ -28,6 +28,7 @@ public abstract class AObjectHandler<T> implements IObjectHandler<T>
 
     private File mDirectory;
 
+    private String mKeyPrefix;
     private boolean mEncrypt;
     private IEncryptConverter mEncryptConverter;
 
@@ -45,6 +46,12 @@ public abstract class AObjectHandler<T> implements IObjectHandler<T>
     }
 
     @Override
+    public void setKeyPrefix(String keyPrefix)
+    {
+        mKeyPrefix = keyPrefix;
+    }
+
+    @Override
     public void setEncrypt(boolean encrypt)
     {
         mEncrypt = encrypt;
@@ -54,6 +61,15 @@ public abstract class AObjectHandler<T> implements IObjectHandler<T>
     public void setEncryptConverter(IEncryptConverter encryptConverter)
     {
         mEncryptConverter = encryptConverter;
+    }
+
+    protected String getKeyPrefix()
+    {
+        if (mKeyPrefix == null)
+        {
+            mKeyPrefix = "";
+        }
+        return mKeyPrefix;
     }
 
     protected final boolean isEncrypt()
@@ -73,8 +89,7 @@ public abstract class AObjectHandler<T> implements IObjectHandler<T>
             throw new IllegalArgumentException("key is null or empty");
         }
 
-        key = Utils.MD5(key);
-        String realKey = getFileKey(key);
+        String realKey = getKeyPrefix() + Utils.MD5(key);
         ensureDirectoryExists();
         File file = new File(mDirectory, realKey);
         return file;
@@ -125,8 +140,6 @@ public abstract class AObjectHandler<T> implements IObjectHandler<T>
             return true;
         }
     }
-
-    abstract public String getFileKey(String key);
 
     abstract protected boolean onPutObject(String key, T object, File file);
 

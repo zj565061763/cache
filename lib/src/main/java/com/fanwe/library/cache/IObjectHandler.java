@@ -15,13 +15,13 @@
  */
 package com.fanwe.library.cache;
 
-import com.fanwe.library.cache.IEncryptConverter;
-
 /**
  * Created by zhengjun on 2017/8/31.
  */
 public interface IObjectHandler<T>
 {
+    void setKeyPrefix(String keyPrefix);
+
     void setEncrypt(boolean encrypt);
 
     void setEncryptConverter(IEncryptConverter encryptConverter);
