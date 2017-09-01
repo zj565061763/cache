@@ -45,26 +45,54 @@ public class SDDisk extends ASDDisk
         mSerializableHandler.setKeyPrefix(SERIALIZABLE);
     }
 
+    /**
+     * 打开"Android/data/包名/files/files"目录
+     *
+     * @return
+     */
     public static SDDisk open()
     {
         return open(DEFAULT_FILE_DIR);
     }
 
+    /**
+     * 打开"Android/data/包名/files/dirName"目录
+     *
+     * @param dirName
+     * @return
+     */
     public static SDDisk open(String dirName)
     {
         return openDir(getFileDir(dirName));
     }
 
+    /**
+     * 打开"Android/data/包名/cache/cache"目录
+     *
+     * @return
+     */
     public static SDDisk openCache()
     {
         return open(DEFAULT_CACHE_DIR);
     }
 
+    /**
+     * 打开"Android/data/包名/cache/dirName"目录
+     *
+     * @param dirName
+     * @return
+     */
     public static SDDisk openCache(String dirName)
     {
         return openDir(getCacheDir(dirName));
     }
 
+    /**
+     * 打开指定的目录
+     *
+     * @param directory
+     * @return
+     */
     public static SDDisk openDir(File directory)
     {
         return new SDDisk(directory);
