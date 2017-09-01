@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          * putObject在10毫秒之内
          * getObject在50毫秒左右
          *
-         * putSerializable在500毫秒左右
+         * putSerializable在600毫秒左右
          * getSerializable在700毫秒左右
          */
         SDDisk.setGlobalObjectConverter(new GlobalObjectConverter());//如果要用XXXObject方法，需要配置Object对象转换器
