@@ -171,6 +171,5 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
         return dir;
     }
 
-
     //---------- util method end ----------
 }
