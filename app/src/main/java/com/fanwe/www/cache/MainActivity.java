@@ -9,6 +9,7 @@ import android.view.View;
 import com.fanwe.library.cache.SDDisk;
 import com.fanwe.www.cache.converter.FastJsonObjectConverter;
 import com.fanwe.www.cache.converter.GlobalEncryptConverter;
+import com.fanwe.www.cache.converter.GsonObjectConverter;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -30,12 +31,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          * 用魅族MX6测试，测试对象中的map有10000条数据，测试结果如下：
          *
          * FastJson对象转换器:
-         * putObject在10毫秒之内
-         * getObject在50毫秒左右
+         * putObject在70毫秒左右
+         * getObject在140毫秒左右
          *
          * Gson对象转换器:
-         * putObject在70毫秒左右
-         * getObject在150毫秒左右
+         * putObject在65毫秒左右
+         * getObject在140毫秒左右
          *
          * putSerializable在600毫秒左右
          * getSerializable在700毫秒左右

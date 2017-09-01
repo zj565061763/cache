@@ -32,6 +32,15 @@ public class TestModel implements Serializable
         }
     }
 
+    public Map<String, String> getMapString()
+    {
+        return mapString;
+    }
+
+    public void setMapString(Map<String, String> mapString)
+    {
+        this.mapString = mapString;
+    }
 
     public int getValueInt()
     {
