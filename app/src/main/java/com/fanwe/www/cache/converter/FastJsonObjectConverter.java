@@ -1,4 +1,4 @@
-package com.fanwe.www.cache;
+package com.fanwe.www.cache.converter;
 
 import com.alibaba.fastjson.JSON;
 import com.fanwe.library.cache.IObjectConverter;
@@ -6,7 +6,7 @@ import com.fanwe.library.cache.IObjectConverter;
 /**
  * Created by Administrator on 2017/8/29.
  */
-public class GlobalObjectConverter implements IObjectConverter
+public class FastJsonObjectConverter implements IObjectConverter
 {
     @Override
     public String objectToString(Object object)

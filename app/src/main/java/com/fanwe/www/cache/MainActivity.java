@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.fanwe.library.cache.SDDisk;
+import com.fanwe.www.cache.converter.FastJsonObjectConverter;
+import com.fanwe.www.cache.converter.GlobalEncryptConverter;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -24,15 +26,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         /**
          * 当数据量较大的时候建议用XXXObject方法，性能会比XXXSerializable好非常多
          *
-         * 用魅族MX6测试，测试对象中的map有10000条数据，对象转换器用FastJson实现，测试结果如下：
+         * 用魅族MX6测试，测试对象中的map有10000条数据，测试结果如下：
          *
+         * FastJson对象转换器:
          * putObject在10毫秒之内
          * getObject在50毫秒左右
+         *
+         * Gson对象转换器:
+         * putObject在70毫秒之内
+         * getObject在150毫秒左右
          *
          * putSerializable在600毫秒左右
          * getSerializable在700毫秒左右
          */
-        SDDisk.setGlobalObjectConverter(new GlobalObjectConverter());//如果要用XXXObject方法，需要配置Object对象转换器
+        SDDisk.setGlobalObjectConverter(new FastJsonObjectConverter());//如果要用XXXObject方法，需要配置Object对象转换器
         SDDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
 
         //不同的open方法可以关联不同的目录
