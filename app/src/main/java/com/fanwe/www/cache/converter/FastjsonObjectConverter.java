@@ -6,7 +6,7 @@ import com.fanwe.library.cache.IObjectConverter;
 /**
  * Created by Administrator on 2017/8/29.
  */
-public class FastJsonObjectConverter implements IObjectConverter
+public class FastjsonObjectConverter implements IObjectConverter
 {
     @Override
     public String objectToString(Object object)
