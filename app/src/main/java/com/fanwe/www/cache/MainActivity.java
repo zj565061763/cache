@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         /**
          * 当数据量较大的时候建议用XXXObject方法，性能会比XXXSerializable好非常多
          *
-         * demo中测试对象中的map有10000调数据的时候，对象转换器用的是FastJson的对象和json互转
+         * 用魅族MX6测试，测试对象中的map有10000条数据，对象转换器用FastJson实现，测试结果如下：
          *
          * putObject在10毫秒之内
          * getObject在50毫秒左右
