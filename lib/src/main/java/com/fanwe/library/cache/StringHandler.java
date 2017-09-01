@@ -43,6 +43,13 @@ class StringHandler extends AObjectHandler<String>
     }
 
     @Override
+    public void setDiskConfig(ISDDiskConfig diskConfig)
+    {
+        super.setDiskConfig(diskConfig);
+        getSerializableHandler().setDiskConfig(diskConfig);
+    }
+
+    @Override
     protected boolean onPutObject(String key, String object, File file)
     {
         checkEncryptConverter();
@@ -56,9 +63,9 @@ class StringHandler extends AObjectHandler<String>
     }
 
     @Override
-    protected String onGetObject(String key, File file)
+    protected String onGetObject(String key, Class clazz, File file)
     {
-        DataModel model = (DataModel) getSerializableHandler().getObject(key);
+        DataModel model = (DataModel) getSerializableHandler().getObject(key, DataModel.class);
         if (model != null)
         {
             model.decryptIfNeed(getDiskConfig().getEncryptConverter());

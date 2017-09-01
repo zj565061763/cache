@@ -78,6 +78,14 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
         }
     }
 
+    protected final void checkObjectConverter()
+    {
+        if (getDiskConfig().getObjectConverter() == null)
+        {
+            throw new NullPointerException("you must provide an IObjectConverter instance before this");
+        }
+    }
+
     private File getObjectFile(String key)
     {
         if (TextUtils.isEmpty(key))
@@ -112,7 +120,7 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
     }
 
     @Override
-    public final T getObject(String key)
+    public final T getObject(String key, Class clazz)
     {
         File file = getObjectFile(key);
         if (!file.exists())
@@ -120,7 +128,7 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
             return null;
         }
 
-        T result = onGetObject(key, file);
+        T result = onGetObject(key, clazz, file);
         return result;
     }
 
@@ -139,5 +147,5 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
 
     abstract protected boolean onPutObject(String key, T object, File file);
 
-    abstract protected T onGetObject(String key, File file);
+    abstract protected T onGetObject(String key, Class clazz, File file);
 }

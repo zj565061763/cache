@@ -147,14 +147,6 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
         return mContext;
     }
 
-    protected void checkObjectConverter()
-    {
-        if (getObjectConverter() == null)
-        {
-            throw new NullPointerException("you must provide an IObjectConverter instance before this");
-        }
-    }
-
     private static void checkContext()
     {
         if (mContext == null)

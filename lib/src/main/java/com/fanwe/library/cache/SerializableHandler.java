@@ -27,7 +27,7 @@ import java.io.Serializable;
 /**
  * Created by zhengjun on 2017/8/31.
  */
-class SerializableHandler<T extends Serializable> extends AObjectHandler<T>
+class SerializableHandler extends AObjectHandler<Serializable>
 {
     public SerializableHandler(File directory)
     {
@@ -35,7 +35,7 @@ class SerializableHandler<T extends Serializable> extends AObjectHandler<T>
     }
 
     @Override
-    protected boolean onPutObject(String key, T object, File file)
+    protected boolean onPutObject(String key, Serializable object, File file)
     {
         ObjectOutputStream os = null;
         try
@@ -55,13 +55,13 @@ class SerializableHandler<T extends Serializable> extends AObjectHandler<T>
     }
 
     @Override
-    protected T onGetObject(String key, File file)
+    protected Serializable onGetObject(String key, Class clazz, File file)
     {
         ObjectInputStream is = null;
         try
         {
             is = new ObjectInputStream(new FileInputStream(file));
-            return (T) is.readObject();
+            return (Serializable) is.readObject();
         } catch (Exception e)
         {
             Log.e(TAG, "getSerializable:" + e);

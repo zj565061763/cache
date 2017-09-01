@@ -28,7 +28,7 @@ interface IObjectHandler<T>
 
     boolean putObject(String key, T object);
 
-    T getObject(String key);
+    T getObject(String key, Class clazz);
 
     boolean removeObject(String key);
 }

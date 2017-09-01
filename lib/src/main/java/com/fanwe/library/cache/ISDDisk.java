@@ -140,9 +140,10 @@ interface ISDDisk
 
     boolean hasSerializable(Class clazz);
 
-    <T extends Serializable> boolean putSerializable(T object);
+    boolean removeSerializable(Class clazz);
+
+    boolean putSerializable(Serializable object);
 
     <T extends Serializable> T getSerializable(Class<T> clazz);
 
-    boolean removeSerializable(Class clazz);
 }

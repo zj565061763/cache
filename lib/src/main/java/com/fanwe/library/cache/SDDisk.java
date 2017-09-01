@@ -39,7 +39,8 @@ public class SDDisk extends ASDDisk
     private StringHandler mDoubleHandler;
     private StringHandler mBooleanHandler;
     private StringHandler mStringHandler;
-    private StringHandler mObjectHandler;
+
+    private ObjectHandler mObjectHandler;
     private SerializableHandler mSerializableHandler;
 
     protected SDDisk(File directory)
@@ -166,7 +167,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (INT)
         {
-            String content = getIntHandler().getObject(key);
+            String content = getIntHandler().getObject(key, null);
             if (content != null)
             {
                 return Integer.valueOf(content);
@@ -222,7 +223,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (LONG)
         {
-            String content = getLongHandler().getObject(key);
+            String content = getLongHandler().getObject(key, null);
             if (content != null)
             {
                 return Long.valueOf(content);
@@ -278,7 +279,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (FLOAT)
         {
-            String content = getFloatHandler().getObject(key);
+            String content = getFloatHandler().getObject(key, null);
             if (content != null)
             {
                 return Float.valueOf(content);
@@ -334,7 +335,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (DOUBLE)
         {
-            String content = getDoubleHandler().getObject(key);
+            String content = getDoubleHandler().getObject(key, null);
             if (content != null)
             {
                 return Double.valueOf(content);
@@ -390,7 +391,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (BOOLEAN)
         {
-            String content = getBooleanHandler().getObject(key);
+            String content = getBooleanHandler().getObject(key, null);
             if (content != null)
             {
                 return Boolean.valueOf(content);
@@ -446,18 +447,18 @@ public class SDDisk extends ASDDisk
     {
         synchronized (STRING)
         {
-            return getStringHandler().getObject(key);
+            return getStringHandler().getObject(key, null);
         }
     }
 
     //---------- object start ----------
 
 
-    private StringHandler getObjectHandler()
+    private ObjectHandler getObjectHandler()
     {
         if (mObjectHandler == null)
         {
-            mObjectHandler = new StringHandler(getDirectory());
+            mObjectHandler = new ObjectHandler(getDirectory());
             mObjectHandler.setKeyPrefix(OBJECT);
             mObjectHandler.setDiskConfig(this);
         }
@@ -487,14 +488,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (OBJECT)
         {
-            if (object == null)
-            {
-                return false;
-            }
-            checkObjectConverter();
-
-            String content = getObjectConverter().objectToString(object);
-            return getObjectHandler().putObject(object.getClass().getName(), content);
+            return getObjectHandler().putObject(object.getClass().getName(), object);
         }
     }
 
@@ -503,16 +497,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (OBJECT)
         {
-            checkObjectConverter();
-
-            String content = getObjectHandler().getObject(clazz.getName());
-            if (content != null)
-            {
-                return getObjectConverter().stringToObject(content, clazz);
-            } else
-            {
-                return null;
-            }
+            return (T) getObjectHandler().getObject(clazz.getName(), clazz);
         }
     }
 
@@ -539,7 +524,16 @@ public class SDDisk extends ASDDisk
     }
 
     @Override
-    public <T extends Serializable> boolean putSerializable(T object)
+    public boolean removeSerializable(Class clazz)
+    {
+        synchronized (SERIALIZABLE)
+        {
+            return getSerializableHandler().removeObject(clazz.getName());
+        }
+    }
+
+    @Override
+    public boolean putSerializable(Serializable object)
     {
         synchronized (SERIALIZABLE)
         {
@@ -552,16 +546,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (SERIALIZABLE)
         {
-            return (T) getSerializableHandler().getObject(clazz.getName());
-        }
-    }
-
-    @Override
-    public boolean removeSerializable(Class clazz)
-    {
-        synchronized (SERIALIZABLE)
-        {
-            return getSerializableHandler().removeObject(clazz.getName());
+            return (T) getSerializableHandler().getObject(clazz.getName(), clazz);
         }
     }
 }
