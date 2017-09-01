@@ -22,7 +22,7 @@ import java.io.File;
 /**
  * Created by zhengjun on 2017/8/31.
  */
-public abstract class AObjectHandler<T> implements IObjectHandler<T>
+abstract class AObjectHandler<T> implements IObjectHandler<T>
 {
     public static final String TAG = "AObjectHandler";
 
