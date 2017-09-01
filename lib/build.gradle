@@ -26,7 +26,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
 }
 
 publish {
