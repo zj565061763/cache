@@ -19,15 +19,17 @@ import android.content.Context;
 
 import java.io.File;
 
-abstract class ASDDisk implements ISDDisk
+abstract class ASDDisk implements ISDDisk, ISDDiskConfig
 {
     private static Context mContext;
     private static IObjectConverter sGlobalObjectConverter;
     private static IEncryptConverter sGlobalEncryptConverter;
 
     private File mDirectory;
-    private IObjectConverter mObjectConverter;
+
+    private boolean mEncrypt;
     private IEncryptConverter mEncryptConverter;
+    private IObjectConverter mObjectConverter;
 
     protected ASDDisk(File directory)
     {
@@ -70,9 +72,10 @@ abstract class ASDDisk implements ISDDisk
     }
 
     @Override
-    public ASDDisk setObjectConverter(IObjectConverter objectConverter)
+    public ASDDisk setEncrypt(boolean encrypt)
     {
-        mObjectConverter = objectConverter;
+        checkEncryptConverter(encrypt);
+        mEncrypt = encrypt;
         return this;
     }
 
@@ -80,6 +83,13 @@ abstract class ASDDisk implements ISDDisk
     public ASDDisk setEncryptConverter(IEncryptConverter encryptConverter)
     {
         mEncryptConverter = encryptConverter;
+        return this;
+    }
+
+    @Override
+    public ASDDisk setObjectConverter(IObjectConverter objectConverter)
+    {
+        mObjectConverter = objectConverter;
         return this;
     }
 
@@ -95,18 +105,14 @@ abstract class ASDDisk implements ISDDisk
         Utils.deleteFileOrDir(mDirectory);
     }
 
-    protected IObjectConverter getObjectConverter()
+    @Override
+    public final boolean isEncrypt()
     {
-        if (mObjectConverter != null)
-        {
-            return mObjectConverter;
-        } else
-        {
-            return sGlobalObjectConverter;
-        }
+        return mEncrypt;
     }
 
-    protected IEncryptConverter getEncryptConverter()
+    @Override
+    public final IEncryptConverter getEncryptConverter()
     {
         if (mEncryptConverter != null)
         {
@@ -117,6 +123,18 @@ abstract class ASDDisk implements ISDDisk
         }
     }
 
+    @Override
+    public final IObjectConverter getObjectConverter()
+    {
+        if (mObjectConverter != null)
+        {
+            return mObjectConverter;
+        } else
+        {
+            return sGlobalObjectConverter;
+        }
+    }
+
     //---------- util method start ----------
 
     private static Context getContext()
@@ -124,19 +142,19 @@ abstract class ASDDisk implements ISDDisk
         return mContext;
     }
 
+    private void checkEncryptConverter(boolean encrypt)
+    {
+        if (encrypt && getEncryptConverter() == null)
+        {
+            throw new NullPointerException("you must provide an IEncryptConverter instance before this");
+        }
+    }
+
     protected void checkObjectConverter()
     {
         if (getObjectConverter() == null)
         {
             throw new NullPointerException("you must provide an IObjectConverter instance before this");
-        }
-    }
-
-    protected void checkEncryptConverter(boolean encrypt)
-    {
-        if (encrypt && getEncryptConverter() == null)
-        {
-            throw new NullPointerException("you must provide an IEncryptConverter instance before this");
         }
     }
 

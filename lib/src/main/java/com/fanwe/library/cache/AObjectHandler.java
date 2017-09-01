@@ -29,8 +29,7 @@ public abstract class AObjectHandler<T> implements IObjectHandler<T>
     private File mDirectory;
 
     private String mKeyPrefix;
-    private boolean mEncrypt;
-    private IEncryptConverter mEncryptConverter;
+    private ISDDiskConfig mDiskConfig;
 
     public AObjectHandler(File directory)
     {
@@ -52,18 +51,12 @@ public abstract class AObjectHandler<T> implements IObjectHandler<T>
     }
 
     @Override
-    public void setEncrypt(boolean encrypt)
+    public void setDiskConfig(ISDDiskConfig diskConfig)
     {
-        mEncrypt = encrypt;
+        mDiskConfig = diskConfig;
     }
 
-    @Override
-    public void setEncryptConverter(IEncryptConverter encryptConverter)
-    {
-        mEncryptConverter = encryptConverter;
-    }
-
-    protected String getKeyPrefix()
+    protected final String getKeyPrefix()
     {
         if (mKeyPrefix == null)
         {
@@ -72,14 +65,9 @@ public abstract class AObjectHandler<T> implements IObjectHandler<T>
         return mKeyPrefix;
     }
 
-    protected final boolean isEncrypt()
+    protected final ISDDiskConfig getDiskConfig()
     {
-        return mEncrypt;
-    }
-
-    protected final IEncryptConverter getEncryptConverter()
-    {
-        return mEncryptConverter;
+        return mDiskConfig;
     }
 
     private File getObjectFile(String key)

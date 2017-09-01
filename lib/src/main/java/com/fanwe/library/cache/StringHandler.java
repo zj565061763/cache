@@ -47,8 +47,8 @@ class StringHandler extends AObjectHandler<String>
     {
         DataModel model = new DataModel();
         model.setData(object);
-        model.setEncrypt(isEncrypt());
-        model.encryptIfNeed(getEncryptConverter());
+        model.setEncrypt(getDiskConfig().isEncrypt());
+        model.encryptIfNeed(getDiskConfig().getEncryptConverter());
 
         return getSerializableHandler().putObject(key, model);
     }
@@ -59,7 +59,7 @@ class StringHandler extends AObjectHandler<String>
         DataModel model = (DataModel) getSerializableHandler().getObject(key);
         if (model != null)
         {
-            model.decryptIfNeed(getEncryptConverter());
+            model.decryptIfNeed(getDiskConfig().getEncryptConverter());
             return model.getData();
         } else
         {

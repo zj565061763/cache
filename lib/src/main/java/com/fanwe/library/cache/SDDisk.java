@@ -39,9 +39,12 @@ public class SDDisk extends ASDDisk
     protected SDDisk(File directory)
     {
         super(directory);
+
         mStringHandler = new StringHandler(directory);
+        mStringHandler.setDiskConfig(this);
 
         mSerializableHandler = new SerializableHandler(directory);
+        mSerializableHandler.setDiskConfig(this);
         mSerializableHandler.setKeyPrefix(SERIALIZABLE);
     }
 
@@ -99,9 +102,9 @@ public class SDDisk extends ASDDisk
     }
 
     @Override
-    public SDDisk setObjectConverter(IObjectConverter objectConverter)
+    public SDDisk setEncrypt(boolean encrypt)
     {
-        super.setObjectConverter(objectConverter);
+        super.setEncrypt(encrypt);
         return this;
     }
 
@@ -109,6 +112,13 @@ public class SDDisk extends ASDDisk
     public SDDisk setEncryptConverter(IEncryptConverter encryptConverter)
     {
         super.setEncryptConverter(encryptConverter);
+        return this;
+    }
+
+    @Override
+    public SDDisk setObjectConverter(IObjectConverter objectConverter)
+    {
+        super.setObjectConverter(objectConverter);
         return this;
     }
 
@@ -305,14 +315,6 @@ public class SDDisk extends ASDDisk
     public boolean putString(String key, String data)
     {
         mStringHandler.setKeyPrefix(STRING);
-        return putString(key, data, false);
-    }
-
-    @Override
-    public boolean putString(String key, String data, boolean encrypt)
-    {
-        mStringHandler.setKeyPrefix(STRING);
-        mStringHandler.setEncrypt(encrypt);
         return mStringHandler.putObject(key, data);
     }
 
@@ -350,30 +352,44 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasObject(Class clazz)
     {
-        return false;
+        mStringHandler.setKeyPrefix(OBJECT);
+        return mStringHandler.hasObject(clazz.getName());
     }
 
     @Override
     public boolean removeObject(Class clazz)
     {
-        return false;
+        mStringHandler.setKeyPrefix(OBJECT);
+        return mStringHandler.removeObject(clazz.getName());
     }
 
     @Override
     public boolean putObject(Object object)
     {
-        return false;
-    }
+        if (object == null)
+        {
+            return false;
+        }
+        checkObjectConverter();
 
-    @Override
-    public boolean putObject(Object object, boolean encrypt)
-    {
-        return false;
+        mStringHandler.setKeyPrefix(OBJECT);
+        String content = getObjectConverter().objectToString(object);
+        return mStringHandler.putObject(object.getClass().getName(), content);
     }
 
     @Override
     public <T> T getObject(Class<T> clazz)
     {
-        return null;
+        checkObjectConverter();
+
+        mStringHandler.setKeyPrefix(OBJECT);
+        String content = mStringHandler.getObject(clazz.getName());
+        if (content != null)
+        {
+            return getObjectConverter().stringToObject(content, clazz);
+        } else
+        {
+            return null;
+        }
     }
 }

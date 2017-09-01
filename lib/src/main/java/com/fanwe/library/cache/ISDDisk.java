@@ -8,12 +8,12 @@ import java.io.Serializable;
 interface ISDDisk
 {
     /**
-     * 设置对象转换器
+     * 设置是否加密
      *
-     * @param objectConverter
+     * @param encrypt
      * @return
      */
-    ISDDisk setObjectConverter(IObjectConverter objectConverter);
+    ISDDisk setEncrypt(boolean encrypt);
 
     /**
      * 设置加解密转换器
@@ -22,6 +22,14 @@ interface ISDDisk
      * @return
      */
     ISDDisk setEncryptConverter(IEncryptConverter encryptConverter);
+
+    /**
+     * 设置对象转换器
+     *
+     * @param objectConverter
+     * @return
+     */
+    ISDDisk setObjectConverter(IObjectConverter objectConverter);
 
     /**
      * 返回当前目录的大小
@@ -93,8 +101,6 @@ interface ISDDisk
 
     boolean putString(String key, String data);
 
-    boolean putString(String key, String data, boolean encrypt);
-
     String getString(String key);
 
     //---------- Serializable start ----------
@@ -114,8 +120,6 @@ interface ISDDisk
     boolean removeObject(Class clazz);
 
     boolean putObject(Object object);
-
-    boolean putObject(Object object, boolean encrypt);
 
     <T> T getObject(Class<T> clazz);
 }

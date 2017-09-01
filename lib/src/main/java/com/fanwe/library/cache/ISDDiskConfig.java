@@ -16,19 +16,28 @@
 package com.fanwe.library.cache;
 
 /**
- * Created by zhengjun on 2017/8/31.
+ * Created by zhengjun on 2017/9/1.
  */
-interface IObjectHandler<T>
+interface ISDDiskConfig
 {
-    void setKeyPrefix(String keyPrefix);
+    /**
+     * 是否需要加密
+     *
+     * @return
+     */
+    boolean isEncrypt();
 
-    void setDiskConfig(ISDDiskConfig diskConfig);
+    /**
+     * 返回加解密转换器
+     *
+     * @return
+     */
+    IEncryptConverter getEncryptConverter();
 
-    boolean hasObject(String key);
-
-    boolean putObject(String key, T object);
-
-    T getObject(String key);
-
-    boolean removeObject(String key);
+    /**
+     * 返回对象转换器
+     *
+     * @return
+     */
+    IObjectConverter getObjectConverter();
 }
