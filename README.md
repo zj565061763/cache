@@ -16,6 +16,18 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         SDDisk.init(this); //初始化
+
+        /**
+         * 当数据量较大的时候建议用XXXObject方法，性能会比XXXSerializable好非常多
+         *
+         * demo中测试对象中的map有10000调数据的时候，对象转换器用的是FastJson的对象和json互转
+         *
+         * putObject在10毫秒之内
+         * getObject在50毫秒左右
+         *
+         * putSerializable在500毫秒左右
+         * getSerializable在700毫秒左右
+         */
         SDDisk.setGlobalObjectConverter(new GlobalObjectConverter());//如果要用XXXObject方法，需要配置Object对象转换器
         SDDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
 
