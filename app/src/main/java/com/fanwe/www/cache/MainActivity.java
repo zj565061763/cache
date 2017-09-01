@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         /**
          * 当数据量较大的时候建议用XXXObject方法，性能会比XXXSerializable好非常多
+         * 如果要用XXXObject方法，需要配置对象转换器
          *
          * 用魅族MX6测试，测试对象中的map有10000条数据，测试结果如下：
          *
@@ -39,7 +40,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          * putSerializable在600毫秒左右
          * getSerializable在700毫秒左右
          */
-        SDDisk.setGlobalObjectConverter(new FastJsonObjectConverter());//如果要用XXXObject方法，需要配置Object对象转换器
+        SDDisk.setGlobalObjectConverter(new FastJsonObjectConverter());//配置FastJson对象转换器
+//        SDDisk.setGlobalObjectConverter(new GsonObjectConverter());//配置Gson对象转换器
         SDDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
 
         //不同的open方法可以关联不同的目录
