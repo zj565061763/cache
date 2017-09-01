@@ -55,7 +55,7 @@ public class SDDisk extends ASDDisk
      */
     public static SDDisk open()
     {
-        return open(DEFAULT_FILE_DIR);
+        return openDir(getFileDir(DEFAULT_FILE_DIR));
     }
 
     /**
@@ -76,7 +76,7 @@ public class SDDisk extends ASDDisk
      */
     public static SDDisk openCache()
     {
-        return open(DEFAULT_CACHE_DIR);
+        return openDir(getCacheDir(DEFAULT_CACHE_DIR));
     }
 
     /**

@@ -157,6 +157,12 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
         }
     }
 
+    /**
+     * 返回"Android/data/包名/files/dirName"目录
+     *
+     * @param dirName
+     * @return
+     */
     protected static File getFileDir(String dirName)
     {
         checkContext();
@@ -164,6 +170,12 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
         return dir;
     }
 
+    /**
+     * 返回"Android/data/包名/cache/dirName"目录
+     *
+     * @param dirName
+     * @return
+     */
     protected static File getCacheDir(String dirName)
     {
         checkContext();
