@@ -1,6 +1,8 @@
 package com.fanwe.www.cache;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017/8/29.
@@ -19,6 +21,16 @@ public class TestModel implements Serializable
     private boolean valueBoolean = true;
 
     private String valueString = "hello";
+    private Map<String, String> mapString;
+
+    public TestModel()
+    {
+        mapString = new HashMap<>();
+        for (int i = 0; i < 10000; i++)
+        {
+            mapString.put(String.valueOf(i), String.valueOf(i + i));
+        }
+    }
 
 
     public int getValueInt()

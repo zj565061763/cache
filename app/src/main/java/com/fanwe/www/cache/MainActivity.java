@@ -4,10 +4,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.fanwe.library.cache.SDDisk;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
     private static final String TAG = "MainActivity";
     private String key = "key";
@@ -51,6 +52,30 @@ public class MainActivity extends AppCompatActivity
         Log.i(TAG, "getString:" + SDDisk.open().getString(key));
         Log.i(TAG, "getSerializable:" + SDDisk.open().getSerializable(TestModel.class));
         Log.i(TAG, "getObject:" + SDDisk.open().getObject(TestModel.class));
+    }
+
+    private TestModel mTestModel = new TestModel();
+
+    @Override
+    public void onClick(View v)
+    {
+        SDTimeLogger.test(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                SDDisk.open().putSerializable(mTestModel);
+            }
+        });
+
+        SDTimeLogger.test(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                SDDisk.open().getSerializable(TestModel.class);
+            }
+        });
     }
 
     @Override
