@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity
          * getObject在50毫秒左右
          *
          * Gson对象转换器:
-         * putObject在70毫秒之内
+         * putObject在70毫秒左右
          * getObject在150毫秒左右
          *
          * putSerializable在600毫秒左右
