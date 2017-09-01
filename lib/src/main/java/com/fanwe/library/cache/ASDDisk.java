@@ -21,11 +21,11 @@ import java.io.File;
 
 abstract class ASDDisk implements ISDDisk, ISDDiskConfig
 {
-    private static Context mContext;
-    private static IObjectConverter sGlobalObjectConverter;
-    private static IEncryptConverter sGlobalEncryptConverter;
-
     private File mDirectory;
+
+    private static Context mContext;
+    private static IEncryptConverter sGlobalEncryptConverter;
+    private static IObjectConverter sGlobalObjectConverter;
 
     private boolean mEncrypt;
     private IEncryptConverter mEncryptConverter;
@@ -52,16 +52,6 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
     }
 
     /**
-     * 设置全局对象转换器
-     *
-     * @param globalObjectConverter
-     */
-    public static void setGlobalObjectConverter(IObjectConverter globalObjectConverter)
-    {
-        sGlobalObjectConverter = globalObjectConverter;
-    }
-
-    /**
      * 设置全局加解密转换器
      *
      * @param globalEncryptConverter
@@ -69,6 +59,16 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
     public static void setGlobalEncryptConverter(IEncryptConverter globalEncryptConverter)
     {
         sGlobalEncryptConverter = globalEncryptConverter;
+    }
+
+    /**
+     * 设置全局对象转换器
+     *
+     * @param globalObjectConverter
+     */
+    public static void setGlobalObjectConverter(IObjectConverter globalObjectConverter)
+    {
+        sGlobalObjectConverter = globalObjectConverter;
     }
 
     @Override
