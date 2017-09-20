@@ -24,8 +24,6 @@ import java.io.File;
  */
 abstract class AObjectHandler<T> implements IObjectHandler<T>
 {
-    public static final String TAG = "AObjectHandler";
-
     private File mDirectory;
 
     private String mKeyPrefix;

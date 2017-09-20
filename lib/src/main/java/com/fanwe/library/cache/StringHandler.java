@@ -59,6 +59,7 @@ class StringHandler extends AObjectHandler<String>
         model.setEncrypt(getDiskConfig().isEncrypt());
         model.encryptIfNeed(getDiskConfig().getEncryptConverter());
 
+        LogUtils.i("put " + getKeyPrefix() + key + ":" + object);
         return getSerializableHandler().putObject(key, model);
     }
 
@@ -66,13 +67,13 @@ class StringHandler extends AObjectHandler<String>
     protected String onGetObject(String key, Class clazz, File file)
     {
         DataModel model = (DataModel) getSerializableHandler().getObject(key, DataModel.class);
+        String result = null;
         if (model != null)
         {
             model.decryptIfNeed(getDiskConfig().getEncryptConverter());
-            return model.getData();
-        } else
-        {
-            return null;
+            result = model.getData();
         }
+        LogUtils.i("get " + getKeyPrefix() + key + ":" + result);
+        return result;
     }
 }

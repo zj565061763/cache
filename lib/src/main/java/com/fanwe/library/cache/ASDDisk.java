@@ -51,6 +51,11 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
         mContext = context.getApplicationContext();
     }
 
+    public static void setDebug(boolean debug)
+    {
+        LogUtils.setDebug(debug);
+    }
+
     /**
      * 设置全局加解密转换器
      *

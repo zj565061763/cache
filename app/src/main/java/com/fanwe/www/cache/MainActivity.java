@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         SDDisk.init(this); //初始化
+        SDDisk.setDebug(true);
 
         /**
          * 当数据量较大的时候建议用XXXObject方法，性能会比XXXSerializable好非常多

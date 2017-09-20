@@ -15,8 +15,6 @@
  */
 package com.fanwe.library.cache;
 
-import android.util.Log;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -46,7 +44,7 @@ class SerializableHandler extends AObjectHandler<Serializable>
             return true;
         } catch (Exception e)
         {
-            Log.e(TAG, "putSerializable:" + e);
+            LogUtils.e("putSerializable:" + e);
         } finally
         {
             Utils.closeQuietly(os);
@@ -64,7 +62,7 @@ class SerializableHandler extends AObjectHandler<Serializable>
             return (Serializable) is.readObject();
         } catch (Exception e)
         {
-            Log.e(TAG, "getSerializable:" + e);
+            LogUtils.e("getSerializable:" + e);
         } finally
         {
             Utils.closeQuietly(is);
