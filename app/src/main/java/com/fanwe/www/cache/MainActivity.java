@@ -115,11 +115,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        SDDisk.open().delete(); //删除该目录对应的所有缓存
-    }
 }
