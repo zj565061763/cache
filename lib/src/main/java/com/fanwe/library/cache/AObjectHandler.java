@@ -34,14 +34,6 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
         mDirectory = directory;
     }
 
-    private void ensureDirectoryExists()
-    {
-        if (!mDirectory.exists())
-        {
-            mDirectory.mkdirs();
-        }
-    }
-
     @Override
     public void setKeyPrefix(String keyPrefix)
     {
@@ -81,6 +73,14 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
         if (getDiskConfig().getObjectConverter() == null)
         {
             throw new NullPointerException("you must provide an IObjectConverter instance before this");
+        }
+    }
+
+    private void ensureDirectoryExists()
+    {
+        if (!mDirectory.exists())
+        {
+            mDirectory.mkdirs();
         }
     }
 
