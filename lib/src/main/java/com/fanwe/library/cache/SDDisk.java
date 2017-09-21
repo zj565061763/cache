@@ -164,7 +164,8 @@ public class SDDisk extends ASDDisk
     {
         synchronized (INT)
         {
-            return getIntHandler().putObject(key, String.valueOf(value));
+            boolean result = getIntHandler().putObject(key, String.valueOf(value));
+            return result;
         }
     }
 
@@ -219,7 +220,8 @@ public class SDDisk extends ASDDisk
     {
         synchronized (LONG)
         {
-            return getLongHandler().putObject(key, String.valueOf(value));
+            boolean result = getLongHandler().putObject(key, String.valueOf(value));
+            return result;
         }
     }
 
@@ -274,7 +276,8 @@ public class SDDisk extends ASDDisk
     {
         synchronized (FLOAT)
         {
-            return getFloatHandler().putObject(key, String.valueOf(value));
+            boolean result = getFloatHandler().putObject(key, String.valueOf(value));
+            return result;
         }
     }
 
@@ -329,7 +332,8 @@ public class SDDisk extends ASDDisk
     {
         synchronized (DOUBLE)
         {
-            return getDoubleHandler().putObject(key, String.valueOf(value));
+            boolean result = getDoubleHandler().putObject(key, String.valueOf(value));
+            return result;
         }
     }
 
@@ -384,7 +388,8 @@ public class SDDisk extends ASDDisk
     {
         synchronized (BOOLEAN)
         {
-            return getBooleanHandler().putObject(key, String.valueOf(value));
+            boolean result = getBooleanHandler().putObject(key, String.valueOf(value));
+            return result;
         }
     }
 
@@ -439,7 +444,8 @@ public class SDDisk extends ASDDisk
     {
         synchronized (STRING)
         {
-            return getStringHandler().putObject(key, data);
+            boolean result = getStringHandler().putObject(key, data);
+            return result;
         }
     }
 
