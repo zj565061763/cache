@@ -135,8 +135,7 @@ public class SDDisk extends ASDDisk
     {
         if (mIntHandler == null)
         {
-            mIntHandler = new StringHandler(getDirectory());
-            mIntHandler.setKeyPrefix(INT);
+            mIntHandler = new StringHandler(getDirectory(), INT);
             mIntHandler.setDiskConfig(this);
         }
         return mIntHandler;
@@ -191,8 +190,7 @@ public class SDDisk extends ASDDisk
     {
         if (mLongHandler == null)
         {
-            mLongHandler = new StringHandler(getDirectory());
-            mLongHandler.setKeyPrefix(LONG);
+            mLongHandler = new StringHandler(getDirectory(), LONG);
             mLongHandler.setDiskConfig(this);
         }
         return mLongHandler;
@@ -247,8 +245,7 @@ public class SDDisk extends ASDDisk
     {
         if (mFloatHandler == null)
         {
-            mFloatHandler = new StringHandler(getDirectory());
-            mFloatHandler.setKeyPrefix(FLOAT);
+            mFloatHandler = new StringHandler(getDirectory(), FLOAT);
             mFloatHandler.setDiskConfig(this);
         }
         return mFloatHandler;
@@ -303,8 +300,7 @@ public class SDDisk extends ASDDisk
     {
         if (mDoubleHandler == null)
         {
-            mDoubleHandler = new StringHandler(getDirectory());
-            mDoubleHandler.setKeyPrefix(DOUBLE);
+            mDoubleHandler = new StringHandler(getDirectory(), DOUBLE);
             mDoubleHandler.setDiskConfig(this);
         }
         return mDoubleHandler;
@@ -359,8 +355,7 @@ public class SDDisk extends ASDDisk
     {
         if (mBooleanHandler == null)
         {
-            mBooleanHandler = new StringHandler(getDirectory());
-            mBooleanHandler.setKeyPrefix(BOOLEAN);
+            mBooleanHandler = new StringHandler(getDirectory(), BOOLEAN);
             mBooleanHandler.setDiskConfig(this);
         }
         return mBooleanHandler;
@@ -415,8 +410,7 @@ public class SDDisk extends ASDDisk
     {
         if (mStringHandler == null)
         {
-            mStringHandler = new StringHandler(getDirectory());
-            mStringHandler.setKeyPrefix(STRING);
+            mStringHandler = new StringHandler(getDirectory(), STRING);
             mStringHandler.setDiskConfig(this);
         }
         return mStringHandler;
@@ -465,8 +459,7 @@ public class SDDisk extends ASDDisk
     {
         if (mObjectHandler == null)
         {
-            mObjectHandler = new ObjectHandler(getDirectory());
-            mObjectHandler.setKeyPrefix(OBJECT);
+            mObjectHandler = new ObjectHandler(getDirectory(), OBJECT);
             mObjectHandler.setDiskConfig(this);
         }
         return mObjectHandler;
@@ -526,8 +519,7 @@ public class SDDisk extends ASDDisk
     {
         if (mSerializableHandler == null)
         {
-            mSerializableHandler = new SerializableHandler(getDirectory());
-            mSerializableHandler.setKeyPrefix(SERIALIZABLE);
+            mSerializableHandler = new SerializableHandler(getDirectory(), SERIALIZABLE);
             mSerializableHandler.setDiskConfig(this);
         }
         return mSerializableHandler;

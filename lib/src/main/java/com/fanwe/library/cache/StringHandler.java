@@ -24,22 +24,18 @@ class StringHandler extends AObjectHandler<String>
 {
     private SerializableHandler mSerializableHandler;
 
-    public StringHandler(File directory)
+    public StringHandler(File directory, String keyPrefix)
     {
-        super(directory);
-        mSerializableHandler = new SerializableHandler(directory);
+        super(directory, keyPrefix);
     }
 
     private SerializableHandler getSerializableHandler()
     {
+        if (mSerializableHandler == null)
+        {
+            mSerializableHandler = new SerializableHandler(getDirectory(), getKeyPrefix());
+        }
         return mSerializableHandler;
-    }
-
-    @Override
-    public void setKeyPrefix(String keyPrefix)
-    {
-        super.setKeyPrefix(keyPrefix);
-        getSerializableHandler().setKeyPrefix(keyPrefix);
     }
 
     @Override

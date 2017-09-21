@@ -27,9 +27,9 @@ import java.io.Serializable;
  */
 class SerializableHandler extends AObjectHandler<Serializable>
 {
-    public SerializableHandler(File directory)
+    public SerializableHandler(File directory, String keyPrefix)
     {
-        super(directory);
+        super(directory, keyPrefix);
     }
 
     @Override

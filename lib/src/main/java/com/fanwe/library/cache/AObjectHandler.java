@@ -29,14 +29,9 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
     private String mKeyPrefix;
     private ISDDiskConfig mDiskConfig;
 
-    public AObjectHandler(File directory)
+    public AObjectHandler(File directory, String keyPrefix)
     {
         mDirectory = directory;
-    }
-
-    @Override
-    public void setKeyPrefix(String keyPrefix)
-    {
         mKeyPrefix = keyPrefix;
     }
 
@@ -44,6 +39,11 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
     public void setDiskConfig(ISDDiskConfig diskConfig)
     {
         mDiskConfig = diskConfig;
+    }
+
+    protected File getDirectory()
+    {
+        return mDirectory;
     }
 
     protected final String getKeyPrefix()

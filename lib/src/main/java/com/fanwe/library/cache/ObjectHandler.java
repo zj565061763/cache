@@ -24,22 +24,18 @@ class ObjectHandler extends AObjectHandler<Object>
 {
     private StringHandler mStringHandler;
 
-    public ObjectHandler(File directory)
+    public ObjectHandler(File directory, String keyPrefix)
     {
-        super(directory);
-        mStringHandler = new StringHandler(directory);
+        super(directory, keyPrefix);
     }
 
     private StringHandler getStringHandler()
     {
+        if (mStringHandler == null)
+        {
+            mStringHandler = new StringHandler(getDirectory(), getKeyPrefix());
+        }
         return mStringHandler;
-    }
-
-    @Override
-    public void setKeyPrefix(String keyPrefix)
-    {
-        super.setKeyPrefix(keyPrefix);
-        getStringHandler().setKeyPrefix(keyPrefix);
     }
 
     @Override
