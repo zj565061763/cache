@@ -486,6 +486,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (OBJECT)
         {
+            removeMemory(clazz.getName(), getObjectHandler());
             return getObjectHandler().removeObject(clazz.getName());
         }
     }
@@ -495,7 +496,12 @@ public class SDDisk extends ASDDisk
     {
         synchronized (OBJECT)
         {
-            return getObjectHandler().putObject(object.getClass().getName(), object);
+            boolean result = getObjectHandler().putObject(object.getClass().getName(), object);
+            if (result)
+            {
+                putMemory(object.getClass().getName(), object, getObjectHandler());
+            }
+            return result;
         }
     }
 
@@ -504,6 +510,12 @@ public class SDDisk extends ASDDisk
     {
         synchronized (OBJECT)
         {
+            T result = getMemory(clazz.getName(), getObjectHandler());
+            if (isMemorySupport() && result != null)
+            {
+                return result;
+            }
+
             return (T) getObjectHandler().getObject(clazz.getName(), clazz);
         }
     }
@@ -565,8 +577,7 @@ public class SDDisk extends ASDDisk
                 return result;
             }
 
-            result = (T) getSerializableHandler().getObject(clazz.getName(), clazz);
-            return result;
+            return (T) getSerializableHandler().getObject(clazz.getName(), clazz);
         }
     }
 }
