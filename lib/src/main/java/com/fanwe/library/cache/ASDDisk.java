@@ -18,6 +18,8 @@ package com.fanwe.library.cache;
 import android.content.Context;
 
 import java.io.File;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 abstract class ASDDisk implements ISDDisk, ISDDiskConfig
 {
@@ -30,6 +32,9 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
     private boolean mEncrypt;
     private IEncryptConverter mEncryptConverter;
     private IObjectConverter mObjectConverter;
+
+    private boolean mMemorySupport;
+    private static final Map<String, Object> MAP_MEMORY = new ConcurrentHashMap<>();
 
     protected ASDDisk(File directory)
     {
@@ -98,6 +103,13 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
     }
 
     @Override
+    public ASDDisk setMemorySupport(boolean memorySupport)
+    {
+        mMemorySupport = memorySupport;
+        return this;
+    }
+
+    @Override
     public File getDirectory()
     {
         return mDirectory;
@@ -142,6 +154,35 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
         } else
         {
             return sGlobalObjectConverter;
+        }
+    }
+
+    public boolean isMemorySupport()
+    {
+        return mMemorySupport;
+    }
+
+    protected final void removeObjectMemory(String key, AObjectHandler handler)
+    {
+        MAP_MEMORY.remove(handler.getRealKey(key));
+    }
+
+    protected final void putObjectMemory(String key, Object object, AObjectHandler handler)
+    {
+        if (isMemorySupport())
+        {
+            MAP_MEMORY.put(handler.getRealKey(key), object);
+        }
+    }
+
+    protected final <T> T getObjectMemory(String key, AObjectHandler handler)
+    {
+        if (isMemorySupport())
+        {
+            return (T) MAP_MEMORY.get(handler.getRealKey(key));
+        } else
+        {
+            return null;
         }
     }
 

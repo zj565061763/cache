@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run()
             {
-                SDDisk.open().putSerializable(mTestModel);
+                SDDisk.open().setMemorySupport(false).putSerializable(mTestModel);
             }
         });
         SDTimeLogger.test("getSerializable", new Runnable()
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run()
             {
-                SDDisk.open().getSerializable(TestModel.class);
+                SDDisk.open().setMemorySupport(false).getSerializable(TestModel.class);
             }
         });
     }

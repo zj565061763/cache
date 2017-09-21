@@ -48,6 +48,14 @@ interface ISDDisk
     ISDDisk setObjectConverter(IObjectConverter objectConverter);
 
     /**
+     * 设置是否支持内存存储
+     *
+     * @param memorySupport
+     * @return
+     */
+    ISDDisk setMemorySupport(boolean memorySupport);
+
+    /**
      * 返回当前对象关联的目录
      *
      * @return
