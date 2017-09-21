@@ -162,12 +162,12 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
         return mMemorySupport;
     }
 
-    protected final void removeObjectMemory(String key, AObjectHandler handler)
+    protected final void removeMemory(String key, AObjectHandler handler)
     {
         MAP_MEMORY.remove(handler.getRealKey(key));
     }
 
-    protected final void putObjectMemory(String key, Object object, AObjectHandler handler)
+    protected final void putMemory(String key, Object object, AObjectHandler handler)
     {
         if (isMemorySupport())
         {
@@ -175,7 +175,7 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
         }
     }
 
-    protected final <T> T getObjectMemory(String key, AObjectHandler handler)
+    protected final <T> T getMemory(String key, AObjectHandler handler)
     {
         if (isMemorySupport())
         {
