@@ -55,6 +55,11 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
         return mKeyPrefix;
     }
 
+    public final String getRealKey(String key)
+    {
+        return getKeyPrefix() + Utils.MD5(key);
+    }
+
     protected final ISDDiskConfig getDiskConfig()
     {
         return mDiskConfig;
@@ -91,7 +96,7 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
             throw new IllegalArgumentException("key is null or empty");
         }
 
-        String realKey = getKeyPrefix() + Utils.MD5(key);
+        String realKey = getRealKey(key);
         ensureDirectoryExists();
         File file = new File(mDirectory, realKey);
         return file;
