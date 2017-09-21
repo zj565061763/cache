@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 20170920
-        versionName "1.0.7"
+        versionCode 20170921
+        versionName "1.0.8"
 
     }
     buildTypes {
@@ -33,7 +33,7 @@ publish {
     userOrg = 'zj565061763'
     groupId = 'com.fanwe.android'
     artifactId = 'cache'
-    publishVersion = '1.0.7.kryo'
+    publishVersion = '1.0.8'
     desc = 'fanwe android cache library'
     website = 'https://github.com/zj565061763/cache'
 }
