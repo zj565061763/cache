@@ -9,7 +9,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 20170921
-        versionName "1.0.8"
+        versionName "1.0.9"
 
     }
     buildTypes {
@@ -26,14 +26,13 @@ android {
 }
 
 dependencies {
-    compile 'com.esotericsoftware:kryo:4.0.1'
 }
 
 publish {
     userOrg = 'zj565061763'
     groupId = 'com.fanwe.android'
     artifactId = 'cache'
-    publishVersion = '1.0.8'
+    publishVersion = '1.0.9'
     desc = 'fanwe android cache library'
     website = 'https://github.com/zj565061763/cache'
 }

@@ -32,7 +32,6 @@ public class SDDisk extends ASDDisk
     private static final String STRING = "string_";
     private static final String OBJECT = "object_";
     private static final String SERIALIZABLE = "serializable_";
-    private static final String KRYO = "kryo_";
 
     private StringHandler mIntHandler;
     private StringHandler mLongHandler;
@@ -43,7 +42,6 @@ public class SDDisk extends ASDDisk
 
     private ObjectHandler mObjectHandler;
     private SerializableHandler mSerializableHandler;
-    private KryoHandler mKryoHandler;
 
     protected SDDisk(File directory)
     {
@@ -549,55 +547,6 @@ public class SDDisk extends ASDDisk
         synchronized (SERIALIZABLE)
         {
             return (T) getSerializableHandler().getObject(clazz.getName(), clazz);
-        }
-    }
-
-    //---------- kryo start ----------
-
-    public KryoHandler getKryoHandler()
-    {
-        if (mKryoHandler == null)
-        {
-            mKryoHandler = new KryoHandler(getDirectory());
-            mKryoHandler.setKeyPrefix(KRYO);
-            mKryoHandler.setDiskConfig(this);
-        }
-        return mKryoHandler;
-    }
-
-    @Override
-    public boolean hasKryo(Class clazz)
-    {
-        synchronized (KRYO)
-        {
-            return getKryoHandler().hasObject(clazz.getName());
-        }
-    }
-
-    @Override
-    public boolean removeKryo(Class clazz)
-    {
-        synchronized (KRYO)
-        {
-            return getKryoHandler().removeObject(clazz.getName());
-        }
-    }
-
-    @Override
-    public boolean putKryo(Object object)
-    {
-        synchronized (KRYO)
-        {
-            return getKryoHandler().putObject(object.getClass().getName(), object);
-        }
-    }
-
-    @Override
-    public <T> T getKryo(Class<T> clazz)
-    {
-        synchronized (KRYO)
-        {
-            return (T) getKryoHandler().getObject(clazz.getName(), clazz);
         }
     }
 }

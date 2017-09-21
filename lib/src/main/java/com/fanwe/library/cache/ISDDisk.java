@@ -145,15 +145,4 @@ interface ISDDisk
     boolean putSerializable(Serializable object);
 
     <T extends Serializable> T getSerializable(Class<T> clazz);
-
-    //---------- kryo start ----------
-
-    boolean hasKryo(Class clazz);
-
-    boolean removeKryo(Class clazz);
-
-    boolean putKryo(Object object);
-
-    <T> T getKryo(Class<T> clazz);
-
 }

@@ -114,22 +114,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 SDDisk.open().getSerializable(TestModel.class);
             }
         });
-
-        SDTimeLogger.test("putKryo", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SDDisk.open().putKryo(mTestModel);
-            }
-        });
-        SDTimeLogger.test("getKryo", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SDDisk.open().getKryo(TestModel.class);
-            }
-        });
     }
 }
