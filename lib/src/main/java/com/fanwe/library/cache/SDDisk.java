@@ -568,24 +568,36 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasKryo(Class clazz)
     {
-        return getKryoHandler().hasObject(clazz.getName());
+        synchronized (KRYO)
+        {
+            return getKryoHandler().hasObject(clazz.getName());
+        }
     }
 
     @Override
     public boolean removeKryo(Class clazz)
     {
-        return getKryoHandler().removeObject(clazz.getName());
+        synchronized (KRYO)
+        {
+            return getKryoHandler().removeObject(clazz.getName());
+        }
     }
 
     @Override
     public boolean putKryo(Object object)
     {
-        return getKryoHandler().putObject(object.getClass().getName(), object);
+        synchronized (KRYO)
+        {
+            return getKryoHandler().putObject(object.getClass().getName(), object);
+        }
     }
 
     @Override
     public <T> T getKryo(Class<T> clazz)
     {
-        return (T) getKryoHandler().getObject(clazz.getName(), clazz);
+        synchronized (KRYO)
+        {
+            return (T) getKryoHandler().getObject(clazz.getName(), clazz);
+        }
     }
 }
