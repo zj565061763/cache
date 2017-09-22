@@ -179,10 +179,10 @@ public class SDDisk extends ASDDisk
     {
         synchronized (INT)
         {
-            Integer result = getMemory(key, getIntHandler());
-            if (isMemorySupport() && result != null)
+            if (isMemorySupport())
             {
-                return result;
+                Integer result = getMemory(key, getIntHandler());
+                if (result != null) return result;
             }
 
             String content = getIntHandler().getObject(key, null);
@@ -246,10 +246,10 @@ public class SDDisk extends ASDDisk
     {
         synchronized (LONG)
         {
-            Long result = getMemory(key, getLongHandler());
-            if (isMemorySupport() && result != null)
+            if (isMemorySupport())
             {
-                return result;
+                Long result = getMemory(key, getLongHandler());
+                if (result != null) return result;
             }
 
             String content = getLongHandler().getObject(key, null);
@@ -313,10 +313,10 @@ public class SDDisk extends ASDDisk
     {
         synchronized (FLOAT)
         {
-            Float result = getMemory(key, getFloatHandler());
-            if (isMemorySupport() && result != null)
+            if (isMemorySupport())
             {
-                return result;
+                Float result = getMemory(key, getFloatHandler());
+                if (result != null) return result;
             }
 
             String content = getFloatHandler().getObject(key, null);
@@ -380,10 +380,10 @@ public class SDDisk extends ASDDisk
     {
         synchronized (DOUBLE)
         {
-            Double result = getMemory(key, getDoubleHandler());
-            if (isMemorySupport() && result != null)
+            if (isMemorySupport())
             {
-                return result;
+                Double result = getMemory(key, getDoubleHandler());
+                if (result != null) return result;
             }
 
             String content = getDoubleHandler().getObject(key, null);
@@ -447,10 +447,10 @@ public class SDDisk extends ASDDisk
     {
         synchronized (BOOLEAN)
         {
-            Boolean result = getMemory(key, getBooleanHandler());
-            if (isMemorySupport() && result != null)
+            if (isMemorySupport())
             {
-                return result;
+                Boolean result = getMemory(key, getBooleanHandler());
+                if (result != null) return result;
             }
 
             String content = getBooleanHandler().getObject(key, null);
@@ -514,10 +514,10 @@ public class SDDisk extends ASDDisk
     {
         synchronized (STRING)
         {
-            String result = getMemory(key, getStringHandler());
-            if (isMemorySupport() && result != null)
+            if (isMemorySupport())
             {
-                return result;
+                String result = getMemory(key, getStringHandler());
+                if (result != null) return result;
             }
 
             return getStringHandler().getObject(key, null);
@@ -575,10 +575,10 @@ public class SDDisk extends ASDDisk
     {
         synchronized (OBJECT)
         {
-            T result = getMemory(clazz.getName(), getObjectHandler());
-            if (isMemorySupport() && result != null)
+            if (isMemorySupport())
             {
-                return result;
+                T result = getMemory(clazz.getName(), getObjectHandler());
+                if (result != null) return result;
             }
 
             return (T) getObjectHandler().getObject(clazz.getName(), clazz);
@@ -635,10 +635,10 @@ public class SDDisk extends ASDDisk
     {
         synchronized (SERIALIZABLE)
         {
-            T result = getMemory(clazz.getName(), getSerializableHandler());
-            if (isMemorySupport() && result != null)
+            if (isMemorySupport())
             {
-                return result;
+                T result = getMemory(clazz.getName(), getSerializableHandler());
+                if (result != null) return result;
             }
 
             return (T) getSerializableHandler().getObject(clazz.getName(), clazz);
