@@ -9,7 +9,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 20170922
-        versionName "1.0.9"
+        versionName "1.0.10"
 
     }
     buildTypes {
@@ -32,7 +32,7 @@ publish {
     userOrg = 'zj565061763'
     groupId = 'com.fanwe.android'
     artifactId = 'cache'
-    publishVersion = '1.0.9'
+    publishVersion = '1.0.10'
     desc = 'fanwe android cache library'
     website = 'https://github.com/zj565061763/cache'
 }
