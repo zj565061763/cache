@@ -18,6 +18,8 @@ package com.fanwe.library.cache;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SDDisk extends ASDDisk
 {
@@ -42,6 +44,8 @@ public class SDDisk extends ASDDisk
 
     private ObjectHandler mObjectHandler;
     private SerializableHandler mSerializableHandler;
+
+    private static final Map<String, SDDisk> MAP_INSTANCE = new ConcurrentHashMap<>();
 
     protected SDDisk(File directory)
     {
@@ -98,7 +102,31 @@ public class SDDisk extends ASDDisk
      */
     public static SDDisk openDir(File directory)
     {
-        return new SDDisk(directory);
+        if (directory == null)
+        {
+            throw new NullPointerException("directory file is null");
+        } else
+        {
+            if (!directory.exists() && !directory.mkdirs())
+            {
+                throw new IllegalArgumentException("directory can not be create,theck the directory path");
+            }
+        }
+
+        final String path = directory.getAbsolutePath();
+        SDDisk instance = MAP_INSTANCE.get(path);
+        if (instance == null)
+        {
+            synchronized (SDDisk.class)
+            {
+                if (instance == null)
+                {
+                    instance = new SDDisk(directory);
+                }
+                MAP_INSTANCE.put(path, instance);
+            }
+        }
+        return instance;
     }
 
     @Override

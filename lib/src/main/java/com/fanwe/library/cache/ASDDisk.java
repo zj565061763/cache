@@ -38,11 +38,6 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
 
     protected ASDDisk(File directory)
     {
-        if (directory == null)
-        {
-            throw new NullPointerException("directory file is null");
-        }
-
         mDirectory = directory;
     }
 
