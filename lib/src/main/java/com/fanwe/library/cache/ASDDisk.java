@@ -205,7 +205,7 @@ abstract class ASDDisk implements ISDDisk, ISDDiskInfo
      * @param dirName
      * @return
      */
-    protected static File getFileDir(String dirName)
+    protected static File getExternalFilesDir(String dirName)
     {
         checkContext();
         File dir = getContext().getExternalFilesDir(dirName);
@@ -218,7 +218,7 @@ abstract class ASDDisk implements ISDDisk, ISDDiskInfo
      * @param dirName
      * @return
      */
-    protected static File getCacheDir(String dirName)
+    protected static File getExternalCacheDir(String dirName)
     {
         checkContext();
         File dir = new File(getContext().getExternalCacheDir(), dirName);

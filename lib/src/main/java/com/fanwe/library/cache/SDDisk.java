@@ -54,7 +54,7 @@ public class SDDisk extends ASDDisk
      */
     public static SDDisk open()
     {
-        return openDir(getFileDir(DEFAULT_FILE_DIR));
+        return openDir(getExternalFilesDir(DEFAULT_FILE_DIR));
     }
 
     /**
@@ -65,7 +65,7 @@ public class SDDisk extends ASDDisk
      */
     public static SDDisk open(String dirName)
     {
-        return openDir(getFileDir(dirName));
+        return openDir(getExternalFilesDir(dirName));
     }
 
     /**
@@ -75,7 +75,7 @@ public class SDDisk extends ASDDisk
      */
     public static SDDisk openCache()
     {
-        return openDir(getCacheDir(DEFAULT_CACHE_DIR));
+        return openDir(getExternalCacheDir(DEFAULT_CACHE_DIR));
     }
 
     /**
@@ -86,7 +86,7 @@ public class SDDisk extends ASDDisk
      */
     public static SDDisk openCache(String dirName)
     {
-        return openDir(getCacheDir(dirName));
+        return openDir(getExternalCacheDir(dirName));
     }
 
     /**
