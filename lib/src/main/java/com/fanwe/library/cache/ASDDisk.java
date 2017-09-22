@@ -200,7 +200,7 @@ abstract class ASDDisk implements ISDDisk, ISDDiskInfo
     }
 
     /**
-     * 返回"Android/data/包名/files/dirName"目录
+     * 返回外部存储"Android/data/包名/files/dirName"目录
      *
      * @param dirName
      * @return
@@ -213,7 +213,7 @@ abstract class ASDDisk implements ISDDisk, ISDDiskInfo
     }
 
     /**
-     * 返回"Android/data/包名/cache/dirName"目录
+     * 返回外部存储"Android/data/包名/cache/dirName"目录
      *
      * @param dirName
      * @return
