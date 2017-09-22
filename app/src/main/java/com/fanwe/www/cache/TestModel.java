@@ -106,12 +106,12 @@ public class TestModel implements Serializable
     public String toString()
     {
         StringBuilder sb = new StringBuilder("\r\n");
-        sb.append("int:").append(valueInt).append("\r\n");
-        sb.append("long:").append(valueLong).append("\r\n");
-        sb.append("float:").append(valueFloat).append("\r\n");
-        sb.append("double:").append(valueDouble).append("\r\n");
-        sb.append("boolean:").append(valueBoolean).append("\r\n");
-        sb.append("string:").append(valueString).append("\r\n");
+        sb.append("valueInt:").append(valueInt).append("\r\n");
+        sb.append("valueLong:").append(valueLong).append("\r\n");
+        sb.append("valueFloat:").append(valueFloat).append("\r\n");
+        sb.append("valueDouble:").append(valueDouble).append("\r\n");
+        sb.append("valueBoolean:").append(valueBoolean).append("\r\n");
+        sb.append("valueString:").append(valueString).append("\r\n");
         return sb.toString();
     }
 }
