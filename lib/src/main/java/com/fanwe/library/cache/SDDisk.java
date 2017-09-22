@@ -155,6 +155,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (INT)
         {
+            removeMemory(key, getIntHandler());
             return getIntHandler().removeObject(key);
         }
     }
@@ -165,6 +166,10 @@ public class SDDisk extends ASDDisk
         synchronized (INT)
         {
             boolean result = getIntHandler().putObject(key, String.valueOf(value));
+            if (result)
+            {
+                putMemory(key, value, getIntHandler());
+            }
             return result;
         }
     }
@@ -174,6 +179,12 @@ public class SDDisk extends ASDDisk
     {
         synchronized (INT)
         {
+            Integer result = getMemory(key, getIntHandler());
+            if (isMemorySupport() && result != null)
+            {
+                return result;
+            }
+
             String content = getIntHandler().getObject(key, null);
             if (content != null)
             {
@@ -211,6 +222,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (LONG)
         {
+            removeMemory(key, getLongHandler());
             return getLongHandler().removeObject(key);
         }
     }
@@ -221,6 +233,10 @@ public class SDDisk extends ASDDisk
         synchronized (LONG)
         {
             boolean result = getLongHandler().putObject(key, String.valueOf(value));
+            if (result)
+            {
+                putMemory(key, value, getLongHandler());
+            }
             return result;
         }
     }
@@ -230,6 +246,12 @@ public class SDDisk extends ASDDisk
     {
         synchronized (LONG)
         {
+            Long result = getMemory(key, getLongHandler());
+            if (isMemorySupport() && result != null)
+            {
+                return result;
+            }
+
             String content = getLongHandler().getObject(key, null);
             if (content != null)
             {
@@ -267,6 +289,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (FLOAT)
         {
+            removeMemory(key, getFloatHandler());
             return getFloatHandler().removeObject(key);
         }
     }
@@ -277,6 +300,10 @@ public class SDDisk extends ASDDisk
         synchronized (FLOAT)
         {
             boolean result = getFloatHandler().putObject(key, String.valueOf(value));
+            if (result)
+            {
+                putMemory(key, value, getFloatHandler());
+            }
             return result;
         }
     }
@@ -286,6 +313,12 @@ public class SDDisk extends ASDDisk
     {
         synchronized (FLOAT)
         {
+            Float result = getMemory(key, getFloatHandler());
+            if (isMemorySupport() && result != null)
+            {
+                return result;
+            }
+
             String content = getFloatHandler().getObject(key, null);
             if (content != null)
             {
@@ -323,6 +356,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (DOUBLE)
         {
+            removeMemory(key, getDoubleHandler());
             return getDoubleHandler().removeObject(key);
         }
     }
@@ -333,6 +367,10 @@ public class SDDisk extends ASDDisk
         synchronized (DOUBLE)
         {
             boolean result = getDoubleHandler().putObject(key, String.valueOf(value));
+            if (result)
+            {
+                putMemory(key, value, getDoubleHandler());
+            }
             return result;
         }
     }
@@ -342,6 +380,12 @@ public class SDDisk extends ASDDisk
     {
         synchronized (DOUBLE)
         {
+            Double result = getMemory(key, getDoubleHandler());
+            if (isMemorySupport() && result != null)
+            {
+                return result;
+            }
+
             String content = getDoubleHandler().getObject(key, null);
             if (content != null)
             {
