@@ -53,7 +53,7 @@ class ObjectHandler extends AObjectHandler<Object>
     {
         checkObjectConverter();
 
-        String content = getStringHandler().getObject(clazz.getName(), null);
+        String content = getStringHandler().getObject(key, null);
         if (content != null)
         {
             return getDiskInfo().getObjectConverter().stringToObject(content, clazz);
