@@ -130,7 +130,7 @@ interface ISDDisk
 
     boolean removeString(String key);
 
-    boolean putString(String key, String data);
+    boolean putString(String key, String value);
 
     String getString(String key);
 

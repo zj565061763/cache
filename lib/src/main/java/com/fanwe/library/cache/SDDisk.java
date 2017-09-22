@@ -379,6 +379,7 @@ public class SDDisk extends ASDDisk
     {
         synchronized (BOOLEAN)
         {
+            removeMemory(key, getBooleanHandler());
             return getBooleanHandler().removeObject(key);
         }
     }
@@ -389,6 +390,10 @@ public class SDDisk extends ASDDisk
         synchronized (BOOLEAN)
         {
             boolean result = getBooleanHandler().putObject(key, String.valueOf(value));
+            if (result)
+            {
+                putMemory(key, value, getBooleanHandler());
+            }
             return result;
         }
     }
@@ -398,6 +403,12 @@ public class SDDisk extends ASDDisk
     {
         synchronized (BOOLEAN)
         {
+            Boolean result = getMemory(key, getBooleanHandler());
+            if (isMemorySupport() && result != null)
+            {
+                return result;
+            }
+
             String content = getBooleanHandler().getObject(key, null);
             if (content != null)
             {
@@ -435,16 +446,21 @@ public class SDDisk extends ASDDisk
     {
         synchronized (STRING)
         {
+            removeMemory(key, getStringHandler());
             return getStringHandler().removeObject(key);
         }
     }
 
     @Override
-    public boolean putString(String key, String data)
+    public boolean putString(String key, String value)
     {
         synchronized (STRING)
         {
-            boolean result = getStringHandler().putObject(key, data);
+            boolean result = getStringHandler().putObject(key, value);
+            if (result)
+            {
+                putMemory(key, value, getStringHandler());
+            }
             return result;
         }
     }
@@ -454,6 +470,12 @@ public class SDDisk extends ASDDisk
     {
         synchronized (STRING)
         {
+            String result = getMemory(key, getStringHandler());
+            if (isMemorySupport() && result != null)
+            {
+                return result;
+            }
+
             return getStringHandler().getObject(key, null);
         }
     }
