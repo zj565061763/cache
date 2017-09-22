@@ -225,5 +225,31 @@ abstract class ASDDisk implements ISDDisk, ISDDiskInfo
         return dir;
     }
 
+    /**
+     * 返回内部存储"/data/包名/files/dirName"目录
+     *
+     * @param dirName
+     * @return
+     */
+    protected static File getInternalFilesDir(String dirName)
+    {
+        checkContext();
+        File dir = new File(getContext().getFilesDir(), dirName);
+        return dir;
+    }
+
+    /**
+     * 返回内部存储"/data/包名/cache/dirName"目录
+     *
+     * @param dirName
+     * @return
+     */
+    protected static File getInternalCacheDir(String dirName)
+    {
+        checkContext();
+        File dir = new File(getContext().getCacheDir(), dirName);
+        return dir;
+    }
+
     //---------- util method end ----------
 }

@@ -46,10 +46,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SDDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
 
         //不同的open方法可以关联不同的目录
-        SDDisk.open();             //"Android/data/包名/files/disk_file"
-        SDDisk.open("hello");      //"Android/data/包名/files/hello"
-        SDDisk.openCache();        //"Android/data/包名/cache/disk_cache"
-        SDDisk.openCache("hello"); //"Android/data/包名/cache/hello"
+        SDDisk.open();                    // 外部存储"Android/data/包名/files/disk_file"目录
+        SDDisk.open("hello");             // 外部存储"Android/data/包名/files/hello"目录
+        SDDisk.openCache();               // 外部存储"Android/data/包名/cache/disk_cache"目录
+        SDDisk.openCache("hello");        // 外部存储"Android/data/包名/cache/hello"目录
+
+        SDDisk.openInternal();             // 内部存储"/data/包名/files/disk_file"目录
+        SDDisk.openInternal("hello");      // 内部存储"/data/包名/files/hello"目录
+        SDDisk.openInternalCache();        // 内部存储"/data/包名/cache/disk_cache"目录
+        SDDisk.openInternalCache("hello"); // 内部存储"/data/包名/cache/hello"目录
         SDDisk.openDir(Environment.getExternalStorageDirectory()); //关联指定的目录
 
         SDDisk.open().putInt(key, 1);

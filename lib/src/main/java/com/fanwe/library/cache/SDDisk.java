@@ -48,7 +48,7 @@ public class SDDisk extends ASDDisk
     }
 
     /**
-     * 打开外部存储"Android/data/包名/files/disk_file"目录
+     * 外部存储"Android/data/包名/files/disk_file"目录
      *
      * @return
      */
@@ -58,7 +58,7 @@ public class SDDisk extends ASDDisk
     }
 
     /**
-     * 打开外部存储"Android/data/包名/files/dirName"目录
+     * 外部存储"Android/data/包名/files/dirName"目录
      *
      * @param dirName
      * @return
@@ -69,7 +69,7 @@ public class SDDisk extends ASDDisk
     }
 
     /**
-     * 打开外部存储"Android/data/包名/cache/disk_cache"目录
+     * 外部存储"Android/data/包名/cache/disk_cache"目录
      *
      * @return
      */
@@ -79,7 +79,7 @@ public class SDDisk extends ASDDisk
     }
 
     /**
-     * 打开外部存储"Android/data/包名/cache/dirName"目录
+     * 外部存储"Android/data/包名/cache/dirName"目录
      *
      * @param dirName
      * @return
@@ -87,6 +87,48 @@ public class SDDisk extends ASDDisk
     public static SDDisk openCache(String dirName)
     {
         return openDir(getExternalCacheDir(dirName));
+    }
+
+    /**
+     * 内部存储"/data/包名/files/disk_file"目录
+     *
+     * @return
+     */
+    public static SDDisk openInternal()
+    {
+        return openDir(getInternalFilesDir(DEFAULT_FILE_DIR));
+    }
+
+    /**
+     * 内部存储"/data/包名/files/dirName"目录
+     *
+     * @param dirName
+     * @return
+     */
+    public static SDDisk openInternal(String dirName)
+    {
+        return openDir(getInternalFilesDir(dirName));
+    }
+
+    /**
+     * 内部存储"/data/包名/cache/disk_cache"目录
+     *
+     * @return
+     */
+    public static SDDisk openInternalCache()
+    {
+        return openDir(getInternalCacheDir(DEFAULT_CACHE_DIR));
+    }
+
+    /**
+     * 内部存储"/data/包名/cache/dirName"目录
+     *
+     * @param dirName
+     * @return
+     */
+    public static SDDisk openInternalCache(String dirName)
+    {
+        return openDir(getInternalCacheDir(dirName));
     }
 
     /**
