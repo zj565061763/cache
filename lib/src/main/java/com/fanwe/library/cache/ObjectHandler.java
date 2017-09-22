@@ -45,7 +45,7 @@ class ObjectHandler extends AObjectHandler<Object>
         checkObjectConverter();
 
         String content = getDiskInfo().getObjectConverter().objectToString(object);
-        return getStringHandler().putObject(object.getClass().getName(), content);
+        return getStringHandler().putObject(key, content);
     }
 
     @Override
