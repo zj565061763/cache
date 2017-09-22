@@ -15,11 +15,20 @@
  */
 package com.fanwe.library.cache;
 
+import java.io.File;
+
 /**
  * Created by zhengjun on 2017/9/1.
  */
-interface ISDDiskConfig
+interface ISDDiskInfo
 {
+    /**
+     * 存取的目录
+     *
+     * @return
+     */
+    File getDirectory();
+
     /**
      * 是否需要加密
      *

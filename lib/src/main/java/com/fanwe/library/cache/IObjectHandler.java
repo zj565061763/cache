@@ -20,7 +20,7 @@ package com.fanwe.library.cache;
  */
 interface IObjectHandler<T>
 {
-    void setDiskConfig(ISDDiskConfig diskConfig);
+    void setKeyPrefix(String keyPrefix);
 
     boolean hasObject(String key);
 

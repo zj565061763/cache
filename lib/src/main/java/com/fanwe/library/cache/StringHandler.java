@@ -24,25 +24,19 @@ class StringHandler extends AObjectHandler<String>
 {
     private SerializableHandler mSerializableHandler;
 
-    public StringHandler(File directory, String keyPrefix)
+    public StringHandler(ISDDiskInfo diskInfo)
     {
-        super(directory, keyPrefix);
+        super(diskInfo);
     }
 
     private SerializableHandler getSerializableHandler()
     {
         if (mSerializableHandler == null)
         {
-            mSerializableHandler = new SerializableHandler(getDirectory(), getKeyPrefix());
+            mSerializableHandler = new SerializableHandler(getDiskInfo());
         }
+        mSerializableHandler.setKeyPrefix(getKeyPrefix());
         return mSerializableHandler;
-    }
-
-    @Override
-    public void setDiskConfig(ISDDiskConfig diskConfig)
-    {
-        super.setDiskConfig(diskConfig);
-        getSerializableHandler().setDiskConfig(diskConfig);
     }
 
     @Override
@@ -52,8 +46,8 @@ class StringHandler extends AObjectHandler<String>
 
         DataModel model = new DataModel();
         model.setData(object);
-        model.setEncrypt(getDiskConfig().isEncrypt());
-        model.encryptIfNeed(getDiskConfig().getEncryptConverter());
+        model.setEncrypt(getDiskInfo().isEncrypt());
+        model.encryptIfNeed(getDiskInfo().getEncryptConverter());
 
         LogUtils.i("put " + getKeyPrefix() + key + ":" + object);
         return getSerializableHandler().putObject(key, model);
@@ -66,7 +60,7 @@ class StringHandler extends AObjectHandler<String>
         String result = null;
         if (model != null)
         {
-            model.decryptIfNeed(getDiskConfig().getEncryptConverter());
+            model.decryptIfNeed(getDiskInfo().getEncryptConverter());
             result = model.getData();
         }
         LogUtils.i("get " + getKeyPrefix() + key + ":" + result);

@@ -24,26 +24,23 @@ import java.io.File;
  */
 abstract class AObjectHandler<T> implements IObjectHandler<T>
 {
-    private File mDirectory;
-
+    private ISDDiskInfo mDiskInfo;
     private String mKeyPrefix;
-    private ISDDiskConfig mDiskConfig;
 
-    public AObjectHandler(File directory, String keyPrefix)
+    public AObjectHandler(ISDDiskInfo diskInfo)
     {
-        mDirectory = directory;
-        mKeyPrefix = keyPrefix;
+        if (diskInfo == null)
+        {
+            throw new NullPointerException("diskInfo must not be null");
+        }
+
+        mDiskInfo = diskInfo;
     }
 
     @Override
-    public void setDiskConfig(ISDDiskConfig diskConfig)
+    public void setKeyPrefix(String keyPrefix)
     {
-        mDiskConfig = diskConfig;
-    }
-
-    protected File getDirectory()
-    {
-        return mDirectory;
+        mKeyPrefix = keyPrefix;
     }
 
     protected final String getKeyPrefix()
@@ -60,14 +57,14 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
         return getKeyPrefix() + Utils.MD5(key);
     }
 
-    protected final ISDDiskConfig getDiskConfig()
+    protected final ISDDiskInfo getDiskInfo()
     {
-        return mDiskConfig;
+        return mDiskInfo;
     }
 
     protected final void checkEncryptConverter()
     {
-        if (getDiskConfig().isEncrypt() && getDiskConfig().getEncryptConverter() == null)
+        if (getDiskInfo().isEncrypt() && getDiskInfo().getEncryptConverter() == null)
         {
             throw new NullPointerException("you must provide an IEncryptConverter instance before this");
         }
@@ -75,7 +72,7 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
 
     protected final void checkObjectConverter()
     {
-        if (getDiskConfig().getObjectConverter() == null)
+        if (getDiskInfo().getObjectConverter() == null)
         {
             throw new NullPointerException("you must provide an IObjectConverter instance before this");
         }
@@ -83,9 +80,9 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
 
     private void ensureDirectoryExists()
     {
-        if (!mDirectory.exists())
+        if (!getDiskInfo().getDirectory().exists())
         {
-            mDirectory.mkdirs();
+            getDiskInfo().getDirectory().mkdirs();
         }
     }
 
@@ -98,7 +95,7 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
 
         String realKey = getRealKey(key);
         ensureDirectoryExists();
-        File file = new File(mDirectory, realKey);
+        File file = new File(getDiskInfo().getDirectory(), realKey);
         return file;
     }
 

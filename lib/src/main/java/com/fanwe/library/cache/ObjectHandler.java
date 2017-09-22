@@ -24,25 +24,19 @@ class ObjectHandler extends AObjectHandler<Object>
 {
     private StringHandler mStringHandler;
 
-    public ObjectHandler(File directory, String keyPrefix)
+    public ObjectHandler(ISDDiskInfo diskInfo)
     {
-        super(directory, keyPrefix);
+        super(diskInfo);
     }
 
     private StringHandler getStringHandler()
     {
         if (mStringHandler == null)
         {
-            mStringHandler = new StringHandler(getDirectory(), getKeyPrefix());
+            mStringHandler = new StringHandler(getDiskInfo());
         }
+        mStringHandler.setKeyPrefix(getKeyPrefix());
         return mStringHandler;
-    }
-
-    @Override
-    public void setDiskConfig(ISDDiskConfig diskConfig)
-    {
-        super.setDiskConfig(diskConfig);
-        getStringHandler().setDiskConfig(diskConfig);
     }
 
     @Override
@@ -50,7 +44,7 @@ class ObjectHandler extends AObjectHandler<Object>
     {
         checkObjectConverter();
 
-        String content = getDiskConfig().getObjectConverter().objectToString(object);
+        String content = getDiskInfo().getObjectConverter().objectToString(object);
         return getStringHandler().putObject(object.getClass().getName(), content);
     }
 
@@ -62,7 +56,7 @@ class ObjectHandler extends AObjectHandler<Object>
         String content = getStringHandler().getObject(clazz.getName(), null);
         if (content != null)
         {
-            return getDiskConfig().getObjectConverter().stringToObject(content, clazz);
+            return getDiskInfo().getObjectConverter().stringToObject(content, clazz);
         } else
         {
             return null;

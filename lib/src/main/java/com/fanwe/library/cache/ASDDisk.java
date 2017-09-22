@@ -21,7 +21,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-abstract class ASDDisk implements ISDDisk, ISDDiskConfig
+abstract class ASDDisk implements ISDDisk, ISDDiskInfo
 {
     private File mDirectory;
 
@@ -119,7 +119,10 @@ abstract class ASDDisk implements ISDDisk, ISDDiskConfig
     @Override
     public void delete()
     {
-        Utils.deleteFileOrDir(mDirectory);
+        synchronized (this)
+        {
+            Utils.deleteFileOrDir(mDirectory);
+        }
     }
 
     @Override

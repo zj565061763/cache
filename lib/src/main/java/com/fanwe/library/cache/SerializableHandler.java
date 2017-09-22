@@ -27,9 +27,9 @@ import java.io.Serializable;
  */
 class SerializableHandler extends AObjectHandler<Serializable>
 {
-    public SerializableHandler(File directory, String keyPrefix)
+    public SerializableHandler(ISDDiskInfo diskInfo)
     {
-        super(directory, keyPrefix);
+        super(diskInfo);
     }
 
     @Override
