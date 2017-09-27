@@ -18,8 +18,8 @@ package com.fanwe.library.cache;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class SDDisk extends ASDDisk
 {
@@ -40,7 +40,7 @@ public class SDDisk extends ASDDisk
     private ObjectHandler mObjectHandler;
     private SerializableHandler mSerializableHandler;
 
-    private static final Map<String, SDDisk> MAP_INSTANCE = new ConcurrentHashMap<>();
+    private static final Map<String, SDDisk> MAP_INSTANCE = new HashMap<>();
 
     protected SDDisk(File directory)
     {
@@ -137,7 +137,7 @@ public class SDDisk extends ASDDisk
      * @param directory
      * @return
      */
-    public static SDDisk openDir(File directory)
+    public static synchronized SDDisk openDir(File directory)
     {
         if (directory == null)
         {
@@ -154,14 +154,8 @@ public class SDDisk extends ASDDisk
         SDDisk instance = MAP_INSTANCE.get(path);
         if (instance == null)
         {
-            synchronized (SDDisk.class)
-            {
-                if (instance == null)
-                {
-                    instance = new SDDisk(directory);
-                }
-                MAP_INSTANCE.put(path, instance);
-            }
+            instance = new SDDisk(directory);
+            MAP_INSTANCE.put(path, instance);
         }
         return instance;
     }
