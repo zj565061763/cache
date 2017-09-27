@@ -1,6 +1,6 @@
 
 ## Gradle
-`compile 'com.fanwe.android:cache:1.0.11'`
+`compile 'com.fanwe.android:cache:1.0.12'`
 
 ## 简单demo
 ```java
