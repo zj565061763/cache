@@ -57,6 +57,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SDDisk.openInternalCache("hello"); // 内部存储"/data/包名/cache/hello"目录
         SDDisk.openDir(Environment.getExternalStorageDirectory()); //关联指定的目录
 
+        putData();
+        printData();
+    }
+
+    private void putData()
+    {
         SDDisk.open().putInt(key, 1);
         SDDisk.open().putLong(key, 2);
         SDDisk.open().putFloat(key, 3.3f);
@@ -65,11 +71,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SDDisk.open().putString(key, "hello String");
         SDDisk.open().putSerializable(new TestModel());
         SDDisk.open().setEncrypt(true).putObject(new TestModel()); //加密实体
-
-        print();
     }
 
-    private void print()
+    private void printData()
     {
         Log.i(TAG, "getInt:" + SDDisk.open().getInt(key, 0));
         Log.i(TAG, "getLong:" + SDDisk.open().getLong(key, 0));
