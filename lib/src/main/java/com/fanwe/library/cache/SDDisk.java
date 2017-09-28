@@ -52,7 +52,7 @@ public class SDDisk extends ASDDisk
      *
      * @return
      */
-    public synchronized static SDDisk open()
+    public static SDDisk open()
     {
         return openDir(getExternalFilesDir(DEFAULT_FILE_DIR));
     }
@@ -63,7 +63,7 @@ public class SDDisk extends ASDDisk
      * @param dirName
      * @return
      */
-    public synchronized static SDDisk open(String dirName)
+    public static SDDisk open(String dirName)
     {
         return openDir(getExternalFilesDir(dirName));
     }
@@ -73,7 +73,7 @@ public class SDDisk extends ASDDisk
      *
      * @return
      */
-    public synchronized static SDDisk openCache()
+    public static SDDisk openCache()
     {
         return openDir(getExternalCacheDir(DEFAULT_CACHE_DIR));
     }
@@ -84,7 +84,7 @@ public class SDDisk extends ASDDisk
      * @param dirName
      * @return
      */
-    public synchronized static SDDisk openCache(String dirName)
+    public static SDDisk openCache(String dirName)
     {
         return openDir(getExternalCacheDir(dirName));
     }
@@ -94,7 +94,7 @@ public class SDDisk extends ASDDisk
      *
      * @return
      */
-    public synchronized static SDDisk openInternal()
+    public static SDDisk openInternal()
     {
         return openDir(getInternalFilesDir(DEFAULT_FILE_DIR));
     }
@@ -105,7 +105,7 @@ public class SDDisk extends ASDDisk
      * @param dirName
      * @return
      */
-    public synchronized static SDDisk openInternal(String dirName)
+    public static SDDisk openInternal(String dirName)
     {
         return openDir(getInternalFilesDir(dirName));
     }
@@ -115,7 +115,7 @@ public class SDDisk extends ASDDisk
      *
      * @return
      */
-    public synchronized static SDDisk openInternalCache()
+    public static SDDisk openInternalCache()
     {
         return openDir(getInternalCacheDir(DEFAULT_CACHE_DIR));
     }
@@ -126,7 +126,7 @@ public class SDDisk extends ASDDisk
      * @param dirName
      * @return
      */
-    public synchronized static SDDisk openInternalCache(String dirName)
+    public static SDDisk openInternalCache(String dirName)
     {
         return openDir(getInternalCacheDir(dirName));
     }

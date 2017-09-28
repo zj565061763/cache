@@ -117,12 +117,9 @@ abstract class ASDDisk implements ISDDisk, ISDDiskInfo
     }
 
     @Override
-    public void delete()
+    public synchronized void delete()
     {
-        synchronized (this)
-        {
-            Utils.deleteFileOrDir(mDirectory);
-        }
+        Utils.deleteFileOrDir(mDirectory);
     }
 
     @Override
