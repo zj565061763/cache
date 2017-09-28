@@ -35,8 +35,6 @@ public class SDDisk extends ASDDisk
     private static final String OBJECT = "object_";
     private static final String SERIALIZABLE = "serializable_";
 
-    private StringHandler mStringHandler;
-
     private ObjectHandler mObjectHandler;
     private SerializableHandler mSerializableHandler;
 
@@ -514,6 +512,8 @@ public class SDDisk extends ASDDisk
     }
 
     //---------- string start ----------
+
+    private StringHandler mStringHandler;
 
     private StringHandler getStringHandler()
     {
