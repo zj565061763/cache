@@ -1,6 +1,6 @@
 package com.fanwe.www.cache.converter;
 
-import com.fanwe.library.cache.IObjectConverter;
+import com.fanwe.lib.cache.IObjectConverter;
 import com.google.gson.Gson;
 
 /**

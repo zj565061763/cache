@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.fanwe.library.cache;
+package com.fanwe.lib.cache;
 
 /**
  * Created by zhengjun on 2017/8/31.

@@ -1,7 +1,7 @@
 package com.fanwe.www.cache.converter;
 
 import com.alibaba.fastjson.JSON;
-import com.fanwe.library.cache.IObjectConverter;
+import com.fanwe.lib.cache.IObjectConverter;
 
 /**
  * Created by Administrator on 2017/8/29.

@@ -1,6 +1,6 @@
 package com.fanwe.www.cache.converter;
 
-import com.fanwe.library.cache.IEncryptConverter;
+import com.fanwe.lib.cache.IEncryptConverter;
 import com.fanwe.www.cache.AESUtil;
 
 /**

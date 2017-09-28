@@ -1,4 +1,4 @@
-package com.fanwe.library.cache;
+package com.fanwe.lib.cache;
 
 import android.util.Log;
 
