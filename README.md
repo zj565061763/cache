@@ -9,7 +9,7 @@ allprojects {
 }
 
 dependencies {
-        compile 'com.github.zj565061763:cache:1.0.13'
+        compile 'com.github.zj565061763:cache:1.0.14'
 }
 
 ```
