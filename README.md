@@ -1,6 +1,18 @@
 
 ## Gradle
-`compile 'com.fanwe.android:cache:1.0.13'`
+```
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+        compile 'com.github.zj565061763:cache:1.0.13'
+}
+
+```
 
 ## 简单demo
 ```java
