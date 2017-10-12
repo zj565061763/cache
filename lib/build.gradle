@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.zj565061763'
@@ -11,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 20171012
-        versionName "1.0.15"
+        versionCode 20170929
+        versionName "1.0.0"
 
     }
     buildTypes {
@@ -29,21 +28,4 @@ android {
 }
 
 dependencies {
-}
-
-publish {
-    userOrg = 'zj565061763'
-    groupId = 'com.fanwe.android'
-    artifactId = 'lib'
-    publishVersion = 'cache-1.0.15'
-    desc = 'fanwe android library'
-    website = 'https://github.com/zj565061763'
-}
-
-tasks.withType(Javadoc) {
-    options {
-        encoding "UTF-8"
-        charSet 'UTF-8'
-        failOnError false
-    }
 }
