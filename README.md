@@ -1,6 +1,6 @@
 
 ## Gradle
-`compile 'com.fanwe.android:lib:cache-1.0.15'`
+[![](https://jitpack.io/v/zj565061763/cache.svg)](https://jitpack.io/#zj565061763/cache)
 
 ## 简单demo
 ```java
