@@ -17,7 +17,9 @@ package com.fanwe.lib.cache;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -42,7 +44,10 @@ class SerializableHandler extends AObjectHandler<Serializable>
             os.writeObject(object);
             os.flush();
             return true;
-        } catch (Exception e)
+        } catch (FileNotFoundException e)
+        {
+            LogUtils.e("putSerializable:" + e);
+        } catch (IOException e)
         {
             LogUtils.e("putSerializable:" + e);
         } finally
@@ -60,7 +65,13 @@ class SerializableHandler extends AObjectHandler<Serializable>
         {
             is = new ObjectInputStream(new FileInputStream(file));
             return (Serializable) is.readObject();
-        } catch (Exception e)
+        } catch (FileNotFoundException e)
+        {
+            LogUtils.e("getSerializable:" + e);
+        } catch (IOException e)
+        {
+            LogUtils.e("getSerializable:" + e);
+        } catch (ClassNotFoundException e)
         {
             LogUtils.e("getSerializable:" + e);
         } finally
