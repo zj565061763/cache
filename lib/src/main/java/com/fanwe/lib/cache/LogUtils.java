@@ -8,7 +8,7 @@ import android.util.Log;
 
 class LogUtils
 {
-    public static final String TAG = "SDDisk";
+    public static final String TAG = "FDisk";
 
     private static boolean mIsDebug;
 

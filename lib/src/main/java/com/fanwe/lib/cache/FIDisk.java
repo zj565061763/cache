@@ -21,7 +21,7 @@ import java.io.Serializable;
 /**
  * Created by zhengjun on 2017/9/1.
  */
-interface ISDDisk
+interface FIDisk
 {
     /**
      * 设置是否加密
@@ -29,7 +29,7 @@ interface ISDDisk
      * @param encrypt
      * @return
      */
-    ISDDisk setEncrypt(boolean encrypt);
+    FIDisk setEncrypt(boolean encrypt);
 
     /**
      * 设置加解密转换器
@@ -37,7 +37,7 @@ interface ISDDisk
      * @param encryptConverter
      * @return
      */
-    ISDDisk setEncryptConverter(IEncryptConverter encryptConverter);
+    FIDisk setEncryptConverter(IEncryptConverter encryptConverter);
 
     /**
      * 设置对象转换器
@@ -45,7 +45,7 @@ interface ISDDisk
      * @param objectConverter
      * @return
      */
-    ISDDisk setObjectConverter(IObjectConverter objectConverter);
+    FIDisk setObjectConverter(IObjectConverter objectConverter);
 
     /**
      * 设置是否支持内存存储
@@ -53,7 +53,7 @@ interface ISDDisk
      * @param memorySupport
      * @return
      */
-    ISDDisk setMemorySupport(boolean memorySupport);
+    FIDisk setMemorySupport(boolean memorySupport);
 
     /**
      * 返回当前对象关联的目录

@@ -24,7 +24,7 @@ class ObjectHandler extends AObjectHandler<Object>
 {
     private StringHandler mStringHandler;
 
-    public ObjectHandler(ISDDiskInfo diskInfo)
+    public ObjectHandler(FIDiskInfo diskInfo)
     {
         super(diskInfo);
     }

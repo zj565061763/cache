@@ -21,7 +21,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-abstract class ASDDisk implements ISDDisk, ISDDiskInfo
+abstract class FAbstractDisk implements FIDisk, FIDiskInfo
 {
     private File mDirectory;
 
@@ -36,7 +36,7 @@ abstract class ASDDisk implements ISDDisk, ISDDiskInfo
     private boolean mMemorySupport;
     private static final Map<String, Object> MAP_MEMORY = new ConcurrentHashMap<>();
 
-    protected ASDDisk(File directory)
+    protected FAbstractDisk(File directory)
     {
         mDirectory = directory;
     }
@@ -77,28 +77,28 @@ abstract class ASDDisk implements ISDDisk, ISDDiskInfo
     }
 
     @Override
-    public ASDDisk setEncrypt(boolean encrypt)
+    public FAbstractDisk setEncrypt(boolean encrypt)
     {
         mEncrypt = encrypt;
         return this;
     }
 
     @Override
-    public ASDDisk setEncryptConverter(IEncryptConverter encryptConverter)
+    public FAbstractDisk setEncryptConverter(IEncryptConverter encryptConverter)
     {
         mEncryptConverter = encryptConverter;
         return this;
     }
 
     @Override
-    public ASDDisk setObjectConverter(IObjectConverter objectConverter)
+    public FAbstractDisk setObjectConverter(IObjectConverter objectConverter)
     {
         mObjectConverter = objectConverter;
         return this;
     }
 
     @Override
-    public ASDDisk setMemorySupport(boolean memorySupport)
+    public FAbstractDisk setMemorySupport(boolean memorySupport)
     {
         mMemorySupport = memorySupport;
         return this;
@@ -157,6 +157,8 @@ abstract class ASDDisk implements ISDDisk, ISDDiskInfo
         return mMemorySupport;
     }
 
+    //---------- memory start ----------
+
     protected final void removeMemory(String key, AObjectHandler handler)
     {
         MAP_MEMORY.remove(handler.getRealKey(key));
@@ -180,6 +182,8 @@ abstract class ASDDisk implements ISDDisk, ISDDiskInfo
             return null;
         }
     }
+
+    //---------- memory end ----------
 
     //---------- util method start ----------
 

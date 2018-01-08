@@ -24,10 +24,10 @@ import java.io.File;
  */
 abstract class AObjectHandler<T> implements IObjectHandler<T>
 {
-    private ISDDiskInfo mDiskInfo;
+    private FIDiskInfo mDiskInfo;
     private String mKeyPrefix;
 
-    public AObjectHandler(ISDDiskInfo diskInfo)
+    public AObjectHandler(FIDiskInfo diskInfo)
     {
         if (diskInfo == null)
         {
@@ -57,7 +57,7 @@ abstract class AObjectHandler<T> implements IObjectHandler<T>
         return getKeyPrefix() + Utils.MD5(key);
     }
 
-    protected final ISDDiskInfo getDiskInfo()
+    protected final FIDiskInfo getDiskInfo()
     {
         return mDiskInfo;
     }

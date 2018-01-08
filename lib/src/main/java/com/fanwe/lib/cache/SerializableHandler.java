@@ -29,7 +29,7 @@ import java.io.Serializable;
  */
 class SerializableHandler extends AObjectHandler<Serializable>
 {
-    public SerializableHandler(ISDDiskInfo diskInfo)
+    public SerializableHandler(FIDiskInfo diskInfo)
     {
         super(diskInfo);
     }

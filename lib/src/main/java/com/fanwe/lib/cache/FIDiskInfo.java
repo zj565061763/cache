@@ -20,7 +20,7 @@ import java.io.File;
 /**
  * Created by zhengjun on 2017/9/1.
  */
-interface ISDDiskInfo
+interface FIDiskInfo
 {
     /**
      * 存取的目录

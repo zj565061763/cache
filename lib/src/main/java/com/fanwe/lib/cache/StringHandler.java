@@ -24,7 +24,7 @@ class StringHandler extends AObjectHandler<String>
 {
     private SerializableHandler mSerializableHandler;
 
-    public StringHandler(ISDDiskInfo diskInfo)
+    public StringHandler(FIDiskInfo diskInfo)
     {
         super(diskInfo);
     }

@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SDDisk extends ASDDisk
+public class FDisk extends FAbstractDisk
 {
     private static final String DEFAULT_FILE_DIR = "disk_file";
     private static final String DEFAULT_CACHE_DIR = "disk_cache";
@@ -38,9 +38,9 @@ public class SDDisk extends ASDDisk
     private ObjectHandler mObjectHandler;
     private SerializableHandler mSerializableHandler;
 
-    private static final Map<String, SDDisk> MAP_INSTANCE = new HashMap<>();
+    private static final Map<String, FDisk> MAP_INSTANCE = new HashMap<>();
 
-    protected SDDisk(File directory)
+    protected FDisk(File directory)
     {
         super(directory);
     }
@@ -50,7 +50,7 @@ public class SDDisk extends ASDDisk
      *
      * @return
      */
-    public static SDDisk open()
+    public static FDisk open()
     {
         return openDir(getExternalFilesDir(DEFAULT_FILE_DIR));
     }
@@ -61,7 +61,7 @@ public class SDDisk extends ASDDisk
      * @param dirName
      * @return
      */
-    public static SDDisk open(String dirName)
+    public static FDisk open(String dirName)
     {
         return openDir(getExternalFilesDir(dirName));
     }
@@ -71,7 +71,7 @@ public class SDDisk extends ASDDisk
      *
      * @return
      */
-    public static SDDisk openCache()
+    public static FDisk openCache()
     {
         return openDir(getExternalCacheDir(DEFAULT_CACHE_DIR));
     }
@@ -82,7 +82,7 @@ public class SDDisk extends ASDDisk
      * @param dirName
      * @return
      */
-    public static SDDisk openCache(String dirName)
+    public static FDisk openCache(String dirName)
     {
         return openDir(getExternalCacheDir(dirName));
     }
@@ -92,7 +92,7 @@ public class SDDisk extends ASDDisk
      *
      * @return
      */
-    public static SDDisk openInternal()
+    public static FDisk openInternal()
     {
         return openDir(getInternalFilesDir(DEFAULT_FILE_DIR));
     }
@@ -103,7 +103,7 @@ public class SDDisk extends ASDDisk
      * @param dirName
      * @return
      */
-    public static SDDisk openInternal(String dirName)
+    public static FDisk openInternal(String dirName)
     {
         return openDir(getInternalFilesDir(dirName));
     }
@@ -113,7 +113,7 @@ public class SDDisk extends ASDDisk
      *
      * @return
      */
-    public static SDDisk openInternalCache()
+    public static FDisk openInternalCache()
     {
         return openDir(getInternalCacheDir(DEFAULT_CACHE_DIR));
     }
@@ -124,7 +124,7 @@ public class SDDisk extends ASDDisk
      * @param dirName
      * @return
      */
-    public static SDDisk openInternalCache(String dirName)
+    public static FDisk openInternalCache(String dirName)
     {
         return openDir(getInternalCacheDir(dirName));
     }
@@ -135,7 +135,7 @@ public class SDDisk extends ASDDisk
      * @param directory
      * @return
      */
-    public synchronized static SDDisk openDir(File directory)
+    public synchronized static FDisk openDir(File directory)
     {
         if (directory == null)
         {
@@ -149,38 +149,38 @@ public class SDDisk extends ASDDisk
         }
 
         final String path = directory.getAbsolutePath();
-        SDDisk instance = MAP_INSTANCE.get(path);
+        FDisk instance = MAP_INSTANCE.get(path);
         if (instance == null)
         {
-            instance = new SDDisk(directory);
+            instance = new FDisk(directory);
             MAP_INSTANCE.put(path, instance);
         }
         return instance;
     }
 
     @Override
-    public SDDisk setEncrypt(boolean encrypt)
+    public FDisk setEncrypt(boolean encrypt)
     {
         super.setEncrypt(encrypt);
         return this;
     }
 
     @Override
-    public SDDisk setEncryptConverter(IEncryptConverter encryptConverter)
+    public FDisk setEncryptConverter(IEncryptConverter encryptConverter)
     {
         super.setEncryptConverter(encryptConverter);
         return this;
     }
 
     @Override
-    public SDDisk setObjectConverter(IObjectConverter objectConverter)
+    public FDisk setObjectConverter(IObjectConverter objectConverter)
     {
         super.setObjectConverter(objectConverter);
         return this;
     }
 
     @Override
-    public SDDisk setMemorySupport(boolean memorySupport)
+    public FDisk setMemorySupport(boolean memorySupport)
     {
         super.setMemorySupport(memorySupport);
         return this;
@@ -191,7 +191,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasInt(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(INT);
 
@@ -202,7 +202,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean removeInt(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(INT);
 
@@ -214,7 +214,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean putInt(String key, int value)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(INT);
 
@@ -230,7 +230,7 @@ public class SDDisk extends ASDDisk
     @Override
     public int getInt(String key, int defValue)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(INT);
 
@@ -256,7 +256,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasLong(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(LONG);
 
@@ -267,7 +267,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean removeLong(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(LONG);
 
@@ -279,7 +279,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean putLong(String key, long value)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(LONG);
 
@@ -295,7 +295,7 @@ public class SDDisk extends ASDDisk
     @Override
     public long getLong(String key, long defValue)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(LONG);
 
@@ -321,7 +321,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasFloat(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(FLOAT);
 
@@ -332,7 +332,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean removeFloat(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(FLOAT);
 
@@ -344,7 +344,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean putFloat(String key, float value)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(FLOAT);
 
@@ -360,7 +360,7 @@ public class SDDisk extends ASDDisk
     @Override
     public float getFloat(String key, float defValue)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(FLOAT);
 
@@ -386,7 +386,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasDouble(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(DOUBLE);
 
@@ -397,7 +397,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean removeDouble(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(DOUBLE);
 
@@ -409,7 +409,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean putDouble(String key, double value)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(DOUBLE);
 
@@ -425,7 +425,7 @@ public class SDDisk extends ASDDisk
     @Override
     public double getDouble(String key, double defValue)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(DOUBLE);
 
@@ -451,7 +451,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasBoolean(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(BOOLEAN);
 
@@ -462,7 +462,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean removeBoolean(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(BOOLEAN);
 
@@ -474,7 +474,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean putBoolean(String key, boolean value)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(BOOLEAN);
 
@@ -490,7 +490,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean getBoolean(String key, boolean defValue)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(BOOLEAN);
 
@@ -527,7 +527,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasString(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(STRING);
 
@@ -538,7 +538,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean removeString(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(STRING);
 
@@ -550,7 +550,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean putString(String key, String value)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(STRING);
 
@@ -566,7 +566,7 @@ public class SDDisk extends ASDDisk
     @Override
     public String getString(String key)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             getStringHandler().setKeyPrefix(STRING);
 
@@ -596,7 +596,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasObject(Class clazz)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             return getObjectHandler().hasObject(clazz.getName());
         }
@@ -605,7 +605,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean removeObject(Class clazz)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             removeMemory(clazz.getName(), getObjectHandler());
             return getObjectHandler().removeObject(clazz.getName());
@@ -615,7 +615,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean putObject(Object object)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             boolean result = getObjectHandler().putObject(object.getClass().getName(), object);
             if (result)
@@ -629,7 +629,7 @@ public class SDDisk extends ASDDisk
     @Override
     public <T> T getObject(Class<T> clazz)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             if (isMemorySupport())
             {
@@ -656,7 +656,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean hasSerializable(Class clazz)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             return getSerializableHandler().hasObject(clazz.getName());
         }
@@ -665,7 +665,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean removeSerializable(Class clazz)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             removeMemory(clazz.getName(), getSerializableHandler());
             return getSerializableHandler().removeObject(clazz.getName());
@@ -675,7 +675,7 @@ public class SDDisk extends ASDDisk
     @Override
     public boolean putSerializable(Serializable object)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             boolean result = getSerializableHandler().putObject(object.getClass().getName(), object);
             if (result)
@@ -689,7 +689,7 @@ public class SDDisk extends ASDDisk
     @Override
     public <T extends Serializable> T getSerializable(Class<T> clazz)
     {
-        synchronized (SDDisk.class)
+        synchronized (FDisk.class)
         {
             if (isMemorySupport())
             {
