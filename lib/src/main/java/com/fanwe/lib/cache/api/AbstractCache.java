@@ -8,7 +8,7 @@ import com.fanwe.lib.cache.handler.ICacheHandler;
  */
 public abstract class AbstractCache<T>
 {
-    private Class<T> mObjectClass;
+    private Class<T> mValueClass;
     private final ICacheHandler<T> mCacheHandler;
 
     public AbstractCache(IDiskInfo diskInfo)
@@ -18,16 +18,16 @@ public abstract class AbstractCache<T>
 
     public final void setValueClass(Class<T> clazz)
     {
-        mObjectClass = clazz;
+        mValueClass = clazz;
     }
 
     public final Class<T> getValueClass()
     {
-        if (mObjectClass == null)
+        if (mValueClass == null)
         {
-            throw new NullPointerException("mObjectClass is null, you must invoke setValueClass(clazz) before this");
+            throw new NullPointerException("value class is null, you must invoke setValueClass(clazz) before this");
         }
-        return mObjectClass;
+        return mValueClass;
     }
 
     public final ICacheHandler<T> getCacheHandler()
