@@ -33,18 +33,18 @@ public interface IDiskInfo
     File getDirectory();
 
     /**
-     * 是否支持内存存取
-     *
-     * @return
-     */
-    boolean isMemorySupport();
-
-    /**
      * 是否需要加密
      *
      * @return
      */
     boolean isEncrypt();
+
+    /**
+     * 是否支持内存存取
+     *
+     * @return
+     */
+    boolean isMemorySupport();
 
     /**
      * 返回加解密转换器

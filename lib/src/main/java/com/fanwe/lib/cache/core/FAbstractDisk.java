@@ -71,10 +71,19 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
         sGlobalObjectConverter = globalObjectConverter;
     }
 
+    //---------- IDisk start ----------
+
     @Override
     public FAbstractDisk setEncrypt(boolean encrypt)
     {
         mEncrypt = encrypt;
+        return this;
+    }
+
+    @Override
+    public FAbstractDisk setMemorySupport(boolean memorySupport)
+    {
+        mMemorySupport = memorySupport;
         return this;
     }
 
@@ -93,14 +102,21 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
     }
 
     @Override
-    public FAbstractDisk setMemorySupport(boolean memorySupport)
+    public final long size()
     {
-        mMemorySupport = memorySupport;
-        return this;
+        return mDirectory.length();
     }
 
     @Override
-    public File getDirectory()
+    public final synchronized void delete()
+    {
+        deleteFileOrDir(mDirectory);
+    }
+
+    //---------- IDisk end ----------
+
+    @Override
+    public final File getDirectory()
     {
         if (!mDirectory.exists())
         {
@@ -110,27 +126,15 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
     }
 
     @Override
-    public long size()
-    {
-        return mDirectory.length();
-    }
-
-    @Override
-    public synchronized void delete()
-    {
-        deleteFileOrDir(mDirectory);
-    }
-
-    @Override
-    public boolean isMemorySupport()
-    {
-        return mMemorySupport;
-    }
-
-    @Override
     public final boolean isEncrypt()
     {
         return mEncrypt;
+    }
+
+    @Override
+    public final boolean isMemorySupport()
+    {
+        return mMemorySupport;
     }
 
     @Override
@@ -178,7 +182,7 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
      * @param dirName
      * @return
      */
-    protected static File getExternalFilesDir(String dirName)
+    protected static final File getExternalFilesDir(String dirName)
     {
         checkContext();
         File dir = getContext().getExternalFilesDir(dirName);
@@ -191,7 +195,7 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
      * @param dirName
      * @return
      */
-    protected static File getExternalCacheDir(String dirName)
+    protected static final File getExternalCacheDir(String dirName)
     {
         checkContext();
         File dir = new File(getContext().getExternalCacheDir(), dirName);
@@ -204,7 +208,7 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
      * @param dirName
      * @return
      */
-    protected static File getInternalFilesDir(String dirName)
+    protected static final File getInternalFilesDir(String dirName)
     {
         checkContext();
         File dir = new File(getContext().getFilesDir(), dirName);
@@ -217,7 +221,7 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
      * @param dirName
      * @return
      */
-    protected static File getInternalCacheDir(String dirName)
+    protected static final File getInternalCacheDir(String dirName)
     {
         checkContext();
         File dir = new File(getContext().getCacheDir(), dirName);
