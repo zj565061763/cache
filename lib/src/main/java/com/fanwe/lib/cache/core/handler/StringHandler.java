@@ -17,65 +17,31 @@ package com.fanwe.lib.cache.core.handler;
 
 import com.fanwe.lib.cache.core.IDiskInfo;
 
-import java.io.File;
-
 /**
  * Created by zhengjun on 2017/8/31.
  */
-public class StringHandler extends CacheHandler<String>
+public class StringHandler extends AbstractStringHandler<String>
 {
-    private SerializableHandler<CacheModel> mSerializableHandler;
-
     public StringHandler(IDiskInfo diskInfo)
     {
         super(diskInfo);
     }
 
-    private SerializableHandler<CacheModel> getSerializableHandler()
+    @Override
+    protected String valueToString(String value)
     {
-        if (mSerializableHandler == null)
-        {
-            mSerializableHandler = new SerializableHandler(getDiskInfo())
-            {
-                @Override
-                protected String getKeyPrefix()
-                {
-                    return StringHandler.this.getKeyPrefix();
-                }
-            };
-        }
-        return mSerializableHandler;
+        return value;
+    }
+
+    @Override
+    protected String stringToValue(String string)
+    {
+        return string;
     }
 
     @Override
     protected String getKeyPrefix()
     {
         return "string_";
-    }
-
-    @Override
-    protected boolean putCacheImpl(String key, String value, File file)
-    {
-        checkEncryptConverter();
-
-        final CacheModel model = new CacheModel();
-        model.setData(value);
-        model.setEncrypt(getDiskInfo().isEncrypt());
-        model.encryptIfNeed(getDiskInfo().getEncryptConverter());
-
-        return getSerializableHandler().putCache(key, model);
-    }
-
-    @Override
-    protected String getCacheImpl(String key, Class clazz, File file)
-    {
-        final CacheModel model = getSerializableHandler().getCache(key, CacheModel.class);
-        if (model == null)
-        {
-            return null;
-        }
-
-        model.decryptIfNeed(getDiskInfo().getEncryptConverter());
-        return model.getData();
     }
 }

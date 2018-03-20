@@ -154,11 +154,6 @@ abstract class CacheHandler<T> implements ICacheHandler<T>
 
     //---------- memory start ----------
 
-    private void removeMemory(String key)
-    {
-        MAP_MEMORY.remove(getRealKey(key));
-    }
-
     private void putMemoryIfNeed(String key, Object value)
     {
         if (getDiskInfo().isMemorySupport())
@@ -176,6 +171,11 @@ abstract class CacheHandler<T> implements ICacheHandler<T>
         {
             return null;
         }
+    }
+
+    private void removeMemory(String key)
+    {
+        MAP_MEMORY.remove(getRealKey(key));
     }
 
     //---------- memory end ----------
