@@ -19,7 +19,7 @@ public class DoubleHandler extends AbstractStringHandler<Double>
     }
 
     @Override
-    protected Double stringToValue(String string)
+    protected Double stringToValue(String string, Class<Double> clazz)
     {
         return Double.valueOf(string);
     }

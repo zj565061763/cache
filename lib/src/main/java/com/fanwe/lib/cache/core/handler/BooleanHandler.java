@@ -19,7 +19,7 @@ public class BooleanHandler extends AbstractStringHandler<Boolean>
     }
 
     @Override
-    protected Boolean stringToValue(String string)
+    protected Boolean stringToValue(String string, Class<Boolean> clazz)
     {
         return Boolean.valueOf(string);
     }

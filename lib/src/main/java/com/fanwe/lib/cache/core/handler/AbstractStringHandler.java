@@ -50,7 +50,7 @@ abstract class AbstractStringHandler<T> extends CacheHandler<T>
     }
 
     @Override
-    protected T getCacheImpl(String key, Class clazz, File file)
+    protected T getCacheImpl(String key, Class<T> clazz, File file)
     {
         final CacheModel model = getSerializableHandler().getCache(key, CacheModel.class);
         if (model == null)
@@ -61,12 +61,12 @@ abstract class AbstractStringHandler<T> extends CacheHandler<T>
         model.decryptIfNeed(getDiskInfo().getEncryptConverter());
         final String string = model.data;
 
-        return stringToValue(string);
+        return stringToValue(string, clazz);
     }
 
     protected abstract String valueToString(T value);
 
-    protected abstract T stringToValue(String string);
+    protected abstract T stringToValue(String string, Class<T> clazz);
 
 
     private static class CacheModel implements Serializable

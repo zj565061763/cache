@@ -19,7 +19,7 @@ public class IntegerHandler extends AbstractStringHandler<Integer>
     }
 
     @Override
-    protected Integer stringToValue(String string)
+    protected Integer stringToValue(String string, Class<Integer> clazz)
     {
         return Integer.valueOf(string);
     }

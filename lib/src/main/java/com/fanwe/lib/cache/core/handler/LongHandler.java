@@ -19,7 +19,7 @@ public class LongHandler extends AbstractStringHandler<Long>
     }
 
     @Override
-    protected Long stringToValue(String string)
+    protected Long stringToValue(String string, Class<Long> clazz)
     {
         return Long.valueOf(string);
     }

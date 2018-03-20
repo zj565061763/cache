@@ -111,7 +111,7 @@ abstract class CacheHandler<T> implements ICacheHandler<T>
     }
 
     @Override
-    public final T getCache(String key, Class clazz)
+    public final T getCache(String key, Class<T> clazz)
     {
         if (getDiskInfo().isMemorySupport())
         {
@@ -180,5 +180,5 @@ abstract class CacheHandler<T> implements ICacheHandler<T>
 
     protected abstract boolean putCacheImpl(String key, T value, File file);
 
-    protected abstract T getCacheImpl(String key, Class clazz, File file);
+    protected abstract T getCacheImpl(String key, Class<T> clazz, File file);
 }

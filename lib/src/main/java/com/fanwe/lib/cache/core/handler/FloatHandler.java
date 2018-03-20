@@ -19,7 +19,7 @@ public class FloatHandler extends AbstractStringHandler<Float>
     }
 
     @Override
-    protected Float stringToValue(String string)
+    protected Float stringToValue(String string, Class<Float> clazz)
     {
         return Float.valueOf(string);
     }

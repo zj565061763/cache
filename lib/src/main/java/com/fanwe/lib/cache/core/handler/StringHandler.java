@@ -19,7 +19,7 @@ public class StringHandler extends AbstractStringHandler<String>
     }
 
     @Override
-    protected String stringToValue(String string)
+    protected String stringToValue(String string, Class<String> clazz)
     {
         return string;
     }
