@@ -115,15 +115,7 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
 
     //---------- IDisk end ----------
 
-    @Override
-    public final File getDirectory()
-    {
-        if (!mDirectory.exists())
-        {
-            mDirectory.mkdirs();
-        }
-        return mDirectory;
-    }
+    //---------- IDiskInfo start ----------
 
     @Override
     public final boolean isEncrypt()
@@ -135,6 +127,16 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
     public final boolean isMemorySupport()
     {
         return mMemorySupport;
+    }
+
+    @Override
+    public final File getDirectory()
+    {
+        if (!mDirectory.exists())
+        {
+            mDirectory.mkdirs();
+        }
+        return mDirectory;
     }
 
     @Override
@@ -160,6 +162,8 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
             return sGlobalObjectConverter;
         }
     }
+
+    //---------- IDiskInfo end ----------
 
     //---------- util method start ----------
 
