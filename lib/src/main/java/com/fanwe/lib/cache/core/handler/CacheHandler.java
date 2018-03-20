@@ -89,12 +89,8 @@ abstract class CacheHandler<T> implements ICacheHandler<T>
     {
         final String realKey = getRealKey(key);
         final File dir = getDiskInfo().getDirectory();
-        if (!dir.exists())
-        {
-            dir.mkdirs();
-        }
-        File file = new File(dir, realKey);
-        return file;
+
+        return new File(dir, realKey);
     }
 
     @Override

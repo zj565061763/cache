@@ -102,6 +102,10 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
     @Override
     public File getDirectory()
     {
+        if (!mDirectory.exists())
+        {
+            mDirectory.mkdirs();
+        }
         return mDirectory;
     }
 
@@ -115,6 +119,12 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
     public synchronized void delete()
     {
         deleteFileOrDir(mDirectory);
+    }
+
+    @Override
+    public boolean isMemorySupport()
+    {
+        return mMemorySupport;
     }
 
     @Override
@@ -145,11 +155,6 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
         {
             return sGlobalObjectConverter;
         }
-    }
-
-    public boolean isMemorySupport()
-    {
-        return mMemorySupport;
     }
 
     //---------- util method start ----------

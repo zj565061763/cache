@@ -32,6 +32,11 @@ public interface IDiskInfo
      */
     File getDirectory();
 
+    /**
+     * 是否支持内存存取
+     *
+     * @return
+     */
     boolean isMemorySupport();
 
     /**
