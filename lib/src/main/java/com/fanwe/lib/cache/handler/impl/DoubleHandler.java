@@ -1,7 +1,8 @@
-package com.fanwe.lib.cache.handler;
+package com.fanwe.lib.cache.handler.impl;
 
 import com.fanwe.lib.cache.IDiskInfo;
 import com.fanwe.lib.cache.api.ICommonCache;
+import com.fanwe.lib.cache.handler.StringConverterHandler;
 
 /**
  * Double处理类

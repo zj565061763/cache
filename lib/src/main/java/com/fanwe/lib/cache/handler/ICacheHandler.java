@@ -3,7 +3,7 @@ package com.fanwe.lib.cache.handler;
 /**
  * Created by zhengjun on 2018/3/20.
  */
-interface ICacheHandler<T>
+public interface ICacheHandler<T>
 {
     boolean putCache(String key, T value);
 

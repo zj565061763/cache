@@ -7,7 +7,7 @@ public interface IObjectCache<T>
 {
     boolean put(T value);
 
-    T get(Class<T> clazz);
+    T get();
 
-    boolean remove(Class<T> clazz);
+    boolean remove();
 }

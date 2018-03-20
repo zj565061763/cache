@@ -2,6 +2,7 @@ package com.fanwe.lib.cache.handler;
 
 import com.fanwe.lib.cache.IDiskInfo;
 import com.fanwe.lib.cache.converter.IEncryptConverter;
+import com.fanwe.lib.cache.handler.impl.SerializableHandler;
 
 import java.io.File;
 import java.io.Serializable;
@@ -9,7 +10,7 @@ import java.io.Serializable;
 /**
  * 值可以和字符串互相转换的处理类
  */
-abstract class StringConverterHandler<T> extends CacheHandler<T>
+public abstract class StringConverterHandler<T> extends CacheHandler<T>
 {
     private SerializableHandler<CacheModel> mSerializableHandler;
 

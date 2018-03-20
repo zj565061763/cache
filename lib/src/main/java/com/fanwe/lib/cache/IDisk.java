@@ -85,9 +85,9 @@ public interface IDisk
 
     ICommonCache<String> cacheString();
 
-    <T extends Serializable> IObjectCache<T> cacheSerializable();
+    <T extends Serializable> IObjectCache<T> cacheSerializable(Class<T> clazz);
 
-    <T> IObjectCache<T> cacheObject();
+    <T> IObjectCache<T> cacheObject(Class<T> clazz);
 
     //---------- cache end ----------
 }

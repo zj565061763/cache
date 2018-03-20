@@ -13,13 +13,17 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by zhengjun on 2018/3/20.
  */
-abstract class CacheHandler<T> implements ICacheHandler<T>
+public abstract class CacheHandler<T> implements ICacheHandler<T>
 {
     private IDiskInfo mDiskInfo;
     private static final Map<String, Object> MAP_MEMORY = new ConcurrentHashMap<>();
 
     public CacheHandler(IDiskInfo diskInfo)
     {
+        if (diskInfo == null)
+        {
+            throw new NullPointerException("diskInfo is null");
+        }
         mDiskInfo = diskInfo;
     }
 
@@ -44,33 +48,7 @@ abstract class CacheHandler<T> implements ICacheHandler<T>
         }
     }
 
-    private static String MD5(String value)
-    {
-        String result;
-        try
-        {
-            final MessageDigest digest = MessageDigest.getInstance("MD5");
-            digest.update(value.getBytes());
-            byte[] bytes = digest.digest();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.length; i++)
-            {
-                String hex = Integer.toHexString(0xFF & bytes[i]);
-                if (hex.length() == 1)
-                {
-                    sb.append('0');
-                }
-                sb.append(hex);
-            }
-            result = sb.toString();
-        } catch (NoSuchAlgorithmException e)
-        {
-            result = null;
-        }
-        return result;
-    }
-
-    public final String getRealKey(final String key)
+    private final String getRealKey(final String key)
     {
         if (TextUtils.isEmpty(key))
         {
@@ -105,7 +83,7 @@ abstract class CacheHandler<T> implements ICacheHandler<T>
         final boolean result = putCacheImpl(key, value, getCacheFile(key));
         if (result)
         {
-            putMemoryIfNeed(key, value);
+            putMemory(key, value);
         }
         return result;
     }
@@ -113,10 +91,10 @@ abstract class CacheHandler<T> implements ICacheHandler<T>
     @Override
     public final T getCache(String key, Class<T> clazz)
     {
-        if (getDiskInfo().isMemorySupport())
+        final T result = getMemory(key);
+        if (result != null)
         {
-            T result = getMemory(key);
-            if (result != null) return result;
+            return result;
         }
 
         final File file = getCacheFile(key);
@@ -150,7 +128,7 @@ abstract class CacheHandler<T> implements ICacheHandler<T>
 
     //---------- memory start ----------
 
-    private void putMemoryIfNeed(String key, Object value)
+    private void putMemory(String key, Object value)
     {
         if (getDiskInfo().isMemorySupport())
         {
@@ -181,4 +159,34 @@ abstract class CacheHandler<T> implements ICacheHandler<T>
     protected abstract boolean putCacheImpl(String key, T value, File file);
 
     protected abstract T getCacheImpl(String key, Class<T> clazz, File file);
+
+    //---------- utils start ----------
+
+    private static String MD5(String value)
+    {
+        String result;
+        try
+        {
+            final MessageDigest digest = MessageDigest.getInstance("MD5");
+            digest.update(value.getBytes());
+            byte[] bytes = digest.digest();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++)
+            {
+                String hex = Integer.toHexString(0xFF & bytes[i]);
+                if (hex.length() == 1)
+                {
+                    sb.append('0');
+                }
+                sb.append(hex);
+            }
+            result = sb.toString();
+        } catch (NoSuchAlgorithmException e)
+        {
+            result = null;
+        }
+        return result;
+    }
+
+    //---------- utils end ----------
 }

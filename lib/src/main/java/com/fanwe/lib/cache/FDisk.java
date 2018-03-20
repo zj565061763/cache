@@ -2,16 +2,16 @@ package com.fanwe.lib.cache;
 
 import com.fanwe.lib.cache.api.ICommonCache;
 import com.fanwe.lib.cache.api.IObjectCache;
+import com.fanwe.lib.cache.api.impl.ObjectCache;
+import com.fanwe.lib.cache.api.impl.SerializableCache;
 import com.fanwe.lib.cache.converter.IEncryptConverter;
 import com.fanwe.lib.cache.converter.IObjectConverter;
-import com.fanwe.lib.cache.handler.BooleanHandler;
-import com.fanwe.lib.cache.handler.DoubleHandler;
-import com.fanwe.lib.cache.handler.FloatHandler;
-import com.fanwe.lib.cache.handler.IntegerHandler;
-import com.fanwe.lib.cache.handler.LongHandler;
-import com.fanwe.lib.cache.handler.ObjectHandler;
-import com.fanwe.lib.cache.handler.SerializableHandler;
-import com.fanwe.lib.cache.handler.StringHandler;
+import com.fanwe.lib.cache.handler.impl.BooleanHandler;
+import com.fanwe.lib.cache.handler.impl.DoubleHandler;
+import com.fanwe.lib.cache.handler.impl.FloatHandler;
+import com.fanwe.lib.cache.handler.impl.IntegerHandler;
+import com.fanwe.lib.cache.handler.impl.LongHandler;
+import com.fanwe.lib.cache.handler.impl.StringHandler;
 
 import java.io.File;
 import java.io.Serializable;
@@ -191,8 +191,8 @@ public class FDisk extends FAbstractDisk
     private BooleanHandler mBooleanHandler;
     private StringHandler mStringHandler;
 
-    private SerializableHandler mSerializableHandler;
-    private ObjectHandler mObjectHandler;
+    private ObjectCache mObjectCache;
+    private SerializableCache mSerializableCache;
 
     @Override
     public ICommonCache<Integer> cacheInteger()
@@ -255,23 +255,25 @@ public class FDisk extends FAbstractDisk
     }
 
     @Override
-    public <T extends Serializable> IObjectCache<T> cacheSerializable()
+    public <T extends Serializable> IObjectCache<T> cacheSerializable(Class<T> clazz)
     {
-        if (mSerializableHandler == null)
+        if (mSerializableCache == null)
         {
-            mSerializableHandler = new SerializableHandler(this);
+            mSerializableCache = new SerializableCache(this);
         }
-        return mSerializableHandler;
+        mSerializableCache.setObjectClass(clazz);
+        return mSerializableCache;
     }
 
     @Override
-    public <T> IObjectCache<T> cacheObject()
+    public <T> IObjectCache<T> cacheObject(Class<T> clazz)
     {
-        if (mObjectHandler == null)
+        if (mObjectCache == null)
         {
-            mObjectHandler = new ObjectHandler(this);
+            mObjectCache = new ObjectCache(this);
         }
-        return mObjectHandler;
+        mObjectCache.setObjectClass(clazz);
+        return mObjectCache;
     }
 
     //---------- cache end ----------

@@ -6,8 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.fanwe.www.cache.converter.FastjsonObjectConverter;
+import com.fanwe.lib.cache.FDisk;
 import com.fanwe.www.cache.converter.GlobalEncryptConverter;
+import com.fanwe.www.cache.converter.GsonObjectConverter;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -21,7 +22,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         FDisk.init(this); //初始化
-        FDisk.setDebug(true);
 
         /**
          * 当数据量较大的时候建议用XXXObject方法，性能会比XXXSerializable好非常多
@@ -40,8 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          * putSerializable在600毫秒左右
          * getSerializable在700毫秒左右
          */
-        FDisk.setGlobalObjectConverter(new FastjsonObjectConverter());//配置Fastjson对象转换器
-//        FDisk.setGlobalObjectConverter(new GsonObjectConverter());//配置Gson对象转换器
+        FDisk.setGlobalObjectConverter(new GsonObjectConverter());//配置Gson对象转换器
         FDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
 
         //不同的open方法可以关联不同的目录
@@ -62,26 +61,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void putData()
     {
-        FDisk.open().putInt(key, 1);
-        FDisk.open().putLong(key, 2);
-        FDisk.open().putFloat(key, 3.3f);
-        FDisk.open().putDouble(key, 4.4444d);
-        FDisk.open().putBoolean(key, true);
-        FDisk.open().putString(key, "hello String");
-        FDisk.open().putSerializable(new TestModel());
-        FDisk.open().setEncrypt(true).putObject(new TestModel()); //加密实体
+        FDisk.open().cacheInteger().put(key, 1);
+        FDisk.open().cacheLong().put(key, 2L);
+        FDisk.open().cacheFloat().put(key, 3.3F);
+        FDisk.open().cacheDouble().put(key, 4.4444D);
+        FDisk.open().cacheBoolean().put(key, true);
+        FDisk.open().cacheString().put(key, "hello String");
+        FDisk.open().cacheSerializable(TestModel.class).put(new TestModel());
+        FDisk.open().setEncrypt(true).cacheObject(TestModel.class).put(new TestModel()); //加密实体
     }
 
     private void printData()
     {
-        Log.i(TAG, "getInt:" + FDisk.open().getInt(key, 0));
-        Log.i(TAG, "getLong:" + FDisk.open().getLong(key, 0));
-        Log.i(TAG, "getFloat:" + FDisk.open().getFloat(key, 0));
-        Log.i(TAG, "getDouble:" + FDisk.open().getDouble(key, 0));
-        Log.i(TAG, "getBoolean:" + FDisk.open().getBoolean(key, false));
-        Log.i(TAG, "getString:" + FDisk.open().getString(key));
-        Log.i(TAG, "getSerializable:" + FDisk.open().getSerializable(TestModel.class));
-        Log.i(TAG, "getObject:" + FDisk.open().getObject(TestModel.class));
+        Log.i(TAG, "getInt:" + FDisk.open().cacheInteger().get(key));
+        Log.i(TAG, "getLong:" + FDisk.open().cacheLong().get(key));
+        Log.i(TAG, "getFloat:" + FDisk.open().cacheFloat().get(key));
+        Log.i(TAG, "getDouble:" + FDisk.open().cacheDouble().get(key));
+        Log.i(TAG, "getBoolean:" + FDisk.open().cacheBoolean().get(key));
+        Log.i(TAG, "getString:" + FDisk.open().cacheString().get(key));
+        Log.i(TAG, "getSerializable:" + FDisk.open().cacheSerializable(TestModel.class).get());
+        Log.i(TAG, "getObject:" + FDisk.open().cacheObject(TestModel.class).get());
     }
 
     private TestModel mTestModel = new TestModel();
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run()
             {
-                FDisk.open().setMemorySupport(false).putObject(mTestModel);
+                FDisk.open().setMemorySupport(false).cacheObject(TestModel.class).put(mTestModel);
             }
         });
         SDTimeLogger.test("getObject", new Runnable()
@@ -102,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run()
             {
-                FDisk.open().setMemorySupport(false).getObject(TestModel.class);
+                FDisk.open().setMemorySupport(false).cacheObject(TestModel.class).get();
             }
         });
 
@@ -111,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run()
             {
-                FDisk.open().setMemorySupport(false).putSerializable(mTestModel);
+                FDisk.open().setMemorySupport(false).cacheSerializable(TestModel.class).put(mTestModel);
             }
         });
         SDTimeLogger.test("getSerializable", new Runnable()
@@ -119,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run()
             {
-                FDisk.open().setMemorySupport(false).getSerializable(TestModel.class);
+                FDisk.open().setMemorySupport(false).cacheSerializable(TestModel.class).get();
             }
         });
     }

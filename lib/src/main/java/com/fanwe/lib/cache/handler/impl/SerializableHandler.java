@@ -1,7 +1,7 @@
-package com.fanwe.lib.cache.handler;
+package com.fanwe.lib.cache.handler.impl;
 
 import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.api.IObjectCache;
+import com.fanwe.lib.cache.handler.CacheHandler;
 
 import java.io.Closeable;
 import java.io.File;
@@ -14,7 +14,7 @@ import java.io.Serializable;
 /**
  * 序列化处理类
  */
-public class SerializableHandler<T extends Serializable> extends CacheHandler<T> implements IObjectCache<T>
+public class SerializableHandler<T extends Serializable> extends CacheHandler<T>
 {
     public SerializableHandler(IDiskInfo diskInfo)
     {
@@ -76,31 +76,5 @@ public class SerializableHandler<T extends Serializable> extends CacheHandler<T>
             {
             }
         }
-    }
-
-    @Override
-    public boolean put(T value)
-    {
-        if (value == null)
-        {
-            return false;
-        }
-
-        final String key = value.getClass().getName();
-        return putCache(key, value);
-    }
-
-    @Override
-    public T get(Class<T> clazz)
-    {
-        final String key = clazz.getName();
-        return getCache(key, clazz);
-    }
-
-    @Override
-    public boolean remove(Class<T> clazz)
-    {
-        final String key = clazz.getName();
-        return removeCache(key);
     }
 }
