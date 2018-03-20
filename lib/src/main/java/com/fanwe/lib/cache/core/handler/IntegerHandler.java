@@ -18,30 +18,30 @@ package com.fanwe.lib.cache.core.handler;
 import com.fanwe.lib.cache.core.IDiskInfo;
 
 /**
- * String处理类
+ * Integer处理类
  */
-public class StringHandler extends AbstractStringHandler<String>
+public class IntegerHandler extends AbstractStringHandler<Integer>
 {
-    public StringHandler(IDiskInfo diskInfo)
+    public IntegerHandler(IDiskInfo diskInfo)
     {
         super(diskInfo);
     }
 
     @Override
-    protected String valueToString(String value)
+    protected String valueToString(Integer value)
     {
-        return value;
+        return String.valueOf(value);
     }
 
     @Override
-    protected String stringToValue(String string)
+    protected Integer stringToValue(String string)
     {
-        return string;
+        return Integer.valueOf(string);
     }
 
     @Override
     protected String getKeyPrefix()
     {
-        return "string_";
+        return "integer_";
     }
 }

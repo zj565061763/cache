@@ -18,30 +18,30 @@ package com.fanwe.lib.cache.core.handler;
 import com.fanwe.lib.cache.core.IDiskInfo;
 
 /**
- * String处理类
+ * Long处理类
  */
-public class StringHandler extends AbstractStringHandler<String>
+public class LongHandler extends AbstractStringHandler<Long>
 {
-    public StringHandler(IDiskInfo diskInfo)
+    public LongHandler(IDiskInfo diskInfo)
     {
         super(diskInfo);
     }
 
     @Override
-    protected String valueToString(String value)
+    protected String valueToString(Long value)
     {
-        return value;
+        return String.valueOf(value);
     }
 
     @Override
-    protected String stringToValue(String string)
+    protected Long stringToValue(String string)
     {
-        return string;
+        return Long.valueOf(string);
     }
 
     @Override
     protected String getKeyPrefix()
     {
-        return "string_";
+        return "long_";
     }
 }
