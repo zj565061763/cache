@@ -49,7 +49,7 @@ class StringHandler extends AObjectHandler<String>
         model.setEncrypt(getDiskInfo().isEncrypt());
         model.encryptIfNeed(getDiskInfo().getEncryptConverter());
 
-        LogUtils.i("put " + getKeyPrefix() + key + ":" + object);
+        LogUtils.i("putCache " + getKeyPrefix() + key + ":" + object);
         return getSerializableHandler().putObject(key, model);
     }
 
@@ -63,7 +63,7 @@ class StringHandler extends AObjectHandler<String>
             model.decryptIfNeed(getDiskInfo().getEncryptConverter());
             result = model.getData();
         }
-        LogUtils.i("get " + getKeyPrefix() + key + ":" + result);
+        LogUtils.i("getCache " + getKeyPrefix() + key + ":" + result);
         return result;
     }
 }
