@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.core.IDiskInfo;
 /**
  * Double处理类
  */
-public class DoubleHandler extends AbstractStringHandler<Double>
+public class DoubleHandler extends StringConverterHandler<Double>
 {
     public DoubleHandler(IDiskInfo diskInfo)
     {

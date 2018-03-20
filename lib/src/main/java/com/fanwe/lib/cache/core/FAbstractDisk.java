@@ -17,8 +17,8 @@ package com.fanwe.lib.cache.core;
 
 import android.content.Context;
 
-import com.fanwe.lib.cache.IEncryptConverter;
-import com.fanwe.lib.cache.IObjectConverter;
+import com.fanwe.lib.cache.core.converter.IEncryptConverter;
+import com.fanwe.lib.cache.core.converter.IObjectConverter;
 
 import java.io.File;
 

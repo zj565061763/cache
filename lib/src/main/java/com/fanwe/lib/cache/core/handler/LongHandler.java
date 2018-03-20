@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.core.IDiskInfo;
 /**
  * Long处理类
  */
-public class LongHandler extends AbstractStringHandler<Long>
+public class LongHandler extends StringConverterHandler<Long>
 {
     public LongHandler(IDiskInfo diskInfo)
     {

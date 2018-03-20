@@ -15,8 +15,9 @@
  */
 package com.fanwe.lib.cache.core;
 
-import com.fanwe.lib.cache.IEncryptConverter;
-import com.fanwe.lib.cache.IObjectConverter;
+import com.fanwe.lib.cache.core.api.ICommonCache;
+import com.fanwe.lib.cache.core.converter.IEncryptConverter;
+import com.fanwe.lib.cache.core.converter.IObjectConverter;
 
 /**
  * Created by zhengjun on 2017/9/1.
@@ -66,4 +67,10 @@ public interface IDisk
      * 删除该目录以及目录下的所有缓存
      */
     void delete();
+
+    //---------- cache start ----------
+
+    ICommonCache<String> cacheString();
+
+    //---------- cache end ----------
 }

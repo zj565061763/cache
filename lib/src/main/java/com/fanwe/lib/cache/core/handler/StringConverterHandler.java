@@ -1,7 +1,7 @@
 package com.fanwe.lib.cache.core.handler;
 
-import com.fanwe.lib.cache.IEncryptConverter;
 import com.fanwe.lib.cache.core.IDiskInfo;
+import com.fanwe.lib.cache.core.converter.IEncryptConverter;
 
 import java.io.File;
 import java.io.Serializable;
@@ -9,11 +9,11 @@ import java.io.Serializable;
 /**
  * 值可以和字符串互相转换的处理类
  */
-abstract class AbstractStringHandler<T> extends CacheHandler<T>
+abstract class StringConverterHandler<T> extends CacheHandler<T>
 {
     private SerializableHandler<CacheModel> mSerializableHandler;
 
-    public AbstractStringHandler(IDiskInfo diskInfo)
+    public StringConverterHandler(IDiskInfo diskInfo)
     {
         super(diskInfo);
     }
@@ -27,7 +27,7 @@ abstract class AbstractStringHandler<T> extends CacheHandler<T>
                 @Override
                 protected String getKeyPrefix()
                 {
-                    return AbstractStringHandler.this.getKeyPrefix();
+                    return StringConverterHandler.this.getKeyPrefix();
                 }
             };
         }

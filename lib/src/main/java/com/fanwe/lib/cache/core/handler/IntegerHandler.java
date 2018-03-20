@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.core.IDiskInfo;
 /**
  * Integer处理类
  */
-public class IntegerHandler extends AbstractStringHandler<Integer>
+public class IntegerHandler extends StringConverterHandler<Integer>
 {
     public IntegerHandler(IDiskInfo diskInfo)
     {

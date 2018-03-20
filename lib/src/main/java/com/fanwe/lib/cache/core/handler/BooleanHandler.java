@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.core.IDiskInfo;
 /**
  * Boolean处理类
  */
-public class BooleanHandler extends AbstractStringHandler<Boolean>
+public class BooleanHandler extends StringConverterHandler<Boolean>
 {
     public BooleanHandler(IDiskInfo diskInfo)
     {

@@ -13,28 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.fanwe.lib.cache;
+package com.fanwe.lib.cache.core.converter;
 
 /**
- * 对象转换器
+ * 加解密转换器
  */
-public interface IObjectConverter
+public interface IEncryptConverter
 {
     /**
-     * 对象转字符串
+     * 加密字符串
      *
-     * @param object
+     * @param content
      * @return
      */
-    String objectToString(Object object);
+    String encrypt(String content);
 
     /**
-     * 字符串转对象
+     * 解密字符串
      *
-     * @param string
-     * @param clazz
-     * @param <T>
+     * @param content
      * @return
      */
-    <T> T stringToObject(String string, Class<T> clazz);
+    String decrypt(String content);
 }

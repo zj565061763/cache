@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.core.IDiskInfo;
 /**
  * Float处理类
  */
-public class FloatHandler extends AbstractStringHandler<Float>
+public class FloatHandler extends StringConverterHandler<Float>
 {
     public FloatHandler(IDiskInfo diskInfo)
     {

@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.core.IDiskInfo;
 /**
  * Object处理类
  */
-public class ObjectHandler<T> extends AbstractStringHandler<T>
+public class ObjectHandler<T> extends StringConverterHandler<T>
 {
     public ObjectHandler(IDiskInfo diskInfo)
     {

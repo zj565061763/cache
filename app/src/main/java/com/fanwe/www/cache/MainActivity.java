@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.fanwe.lib.cache.FDisk;
 import com.fanwe.www.cache.converter.FastjsonObjectConverter;
 import com.fanwe.www.cache.converter.GlobalEncryptConverter;
 

@@ -1,8 +1,9 @@
 package com.fanwe.lib.cache.core;
 
-import com.fanwe.lib.cache.IEncryptConverter;
-import com.fanwe.lib.cache.IObjectConverter;
 import com.fanwe.lib.cache.core.api.ICommonCache;
+import com.fanwe.lib.cache.core.converter.IEncryptConverter;
+import com.fanwe.lib.cache.core.converter.IObjectConverter;
+import com.fanwe.lib.cache.core.handler.StringHandler;
 
 import java.io.File;
 import java.util.HashMap;
@@ -172,22 +173,20 @@ public class FDisk extends FAbstractDisk
 
     //---------- Override end ----------
 
+    //---------- cache start ----------
+
+    private StringHandler mStringHandler;
+
+    @Override
     public ICommonCache<String> cacheString()
     {
-        return new ICommonCache<String>()
+        if (mStringHandler == null)
         {
-            @Override
-            public boolean put(String key, String value)
-            {
-                return false;
-            }
-
-            @Override
-            public String get(String key)
-            {
-                return null;
-            }
-        };
+            mStringHandler = new StringHandler(this);
+        }
+        return mStringHandler;
     }
+
+    //---------- cache end ----------
 
 }
