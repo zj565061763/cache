@@ -16,8 +16,11 @@
 package com.fanwe.lib.cache.core;
 
 import com.fanwe.lib.cache.core.api.ICommonCache;
+import com.fanwe.lib.cache.core.api.IObjectCache;
 import com.fanwe.lib.cache.core.converter.IEncryptConverter;
 import com.fanwe.lib.cache.core.converter.IObjectConverter;
+
+import java.io.Serializable;
 
 /**
  * Created by zhengjun on 2017/9/1.
@@ -70,7 +73,21 @@ public interface IDisk
 
     //---------- cache start ----------
 
+    ICommonCache<Integer> cacheInteger();
+
+    ICommonCache<Long> cacheLong();
+
+    ICommonCache<Float> cacheFloat();
+
+    ICommonCache<Double> cacheDouble();
+
+    ICommonCache<Boolean> cacheBoolean();
+
     ICommonCache<String> cacheString();
+
+    <T extends Serializable> IObjectCache<T> cacheSerializable();
+
+    <T> IObjectCache<T> cacheObject();
 
     //---------- cache end ----------
 }

@@ -1,11 +1,20 @@
 package com.fanwe.lib.cache.core;
 
 import com.fanwe.lib.cache.core.api.ICommonCache;
+import com.fanwe.lib.cache.core.api.IObjectCache;
 import com.fanwe.lib.cache.core.converter.IEncryptConverter;
 import com.fanwe.lib.cache.core.converter.IObjectConverter;
+import com.fanwe.lib.cache.core.handler.BooleanHandler;
+import com.fanwe.lib.cache.core.handler.DoubleHandler;
+import com.fanwe.lib.cache.core.handler.FloatHandler;
+import com.fanwe.lib.cache.core.handler.IntegerHandler;
+import com.fanwe.lib.cache.core.handler.LongHandler;
+import com.fanwe.lib.cache.core.handler.ObjectHandler;
+import com.fanwe.lib.cache.core.handler.SerializableHandler;
 import com.fanwe.lib.cache.core.handler.StringHandler;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -151,6 +160,13 @@ public class FDisk extends FAbstractDisk
     }
 
     @Override
+    public FDisk setMemorySupport(boolean memorySupport)
+    {
+        super.setMemorySupport(memorySupport);
+        return this;
+    }
+
+    @Override
     public FDisk setEncryptConverter(IEncryptConverter encryptConverter)
     {
         super.setEncryptConverter(encryptConverter);
@@ -164,18 +180,69 @@ public class FDisk extends FAbstractDisk
         return this;
     }
 
-    @Override
-    public FDisk setMemorySupport(boolean memorySupport)
-    {
-        super.setMemorySupport(memorySupport);
-        return this;
-    }
-
     //---------- Override end ----------
 
     //---------- cache start ----------
 
+    private IntegerHandler mIntegerHandler;
+    private LongHandler mLongHandler;
+    private FloatHandler mFloatHandler;
+    private DoubleHandler mDoubleHandler;
+    private BooleanHandler mBooleanHandler;
     private StringHandler mStringHandler;
+
+    private SerializableHandler mSerializableHandler;
+    private ObjectHandler mObjectHandler;
+
+    @Override
+    public ICommonCache<Integer> cacheInteger()
+    {
+        if (mIntegerHandler == null)
+        {
+            mIntegerHandler = new IntegerHandler(this);
+        }
+        return mIntegerHandler;
+    }
+
+    @Override
+    public ICommonCache<Long> cacheLong()
+    {
+        if (mLongHandler == null)
+        {
+            mLongHandler = new LongHandler(this);
+        }
+        return mLongHandler;
+    }
+
+    @Override
+    public ICommonCache<Float> cacheFloat()
+    {
+        if (mFloatHandler == null)
+        {
+            mFloatHandler = new FloatHandler(this);
+        }
+        return mFloatHandler;
+    }
+
+    @Override
+    public ICommonCache<Double> cacheDouble()
+    {
+        if (mDoubleHandler == null)
+        {
+            mDoubleHandler = new DoubleHandler(this);
+        }
+        return mDoubleHandler;
+    }
+
+    @Override
+    public ICommonCache<Boolean> cacheBoolean()
+    {
+        if (mBooleanHandler == null)
+        {
+            mBooleanHandler = new BooleanHandler(this);
+        }
+        return mBooleanHandler;
+    }
 
     @Override
     public ICommonCache<String> cacheString()
@@ -187,6 +254,25 @@ public class FDisk extends FAbstractDisk
         return mStringHandler;
     }
 
-    //---------- cache end ----------
+    @Override
+    public <T extends Serializable> IObjectCache<T> cacheSerializable()
+    {
+        if (mSerializableHandler == null)
+        {
+            mSerializableHandler = new SerializableHandler(this);
+        }
+        return mSerializableHandler;
+    }
 
+    @Override
+    public <T> IObjectCache<T> cacheObject()
+    {
+        if (mObjectHandler == null)
+        {
+            mObjectHandler = new ObjectHandler(this);
+        }
+        return mObjectHandler;
+    }
+
+    //---------- cache end ----------
 }
