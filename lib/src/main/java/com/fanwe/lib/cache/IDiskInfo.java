@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.fanwe.lib.cache.core;
+package com.fanwe.lib.cache;
 
-import com.fanwe.lib.cache.core.converter.IEncryptConverter;
-import com.fanwe.lib.cache.core.converter.IObjectConverter;
+import com.fanwe.lib.cache.converter.IEncryptConverter;
+import com.fanwe.lib.cache.converter.IObjectConverter;
 
 import java.io.File;
 

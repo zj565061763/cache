@@ -1,8 +1,8 @@
-package com.fanwe.lib.cache.core.handler;
+package com.fanwe.lib.cache.handler;
 
 import android.text.TextUtils;
 
-import com.fanwe.lib.cache.core.IDiskInfo;
+import com.fanwe.lib.cache.IDiskInfo;
 
 import java.io.File;
 import java.security.MessageDigest;

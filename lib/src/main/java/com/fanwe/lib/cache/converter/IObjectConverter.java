@@ -1,4 +1,4 @@
-package com.fanwe.lib.cache.core.converter;
+package com.fanwe.lib.cache.converter;
 
 /**
  * 对象转换器

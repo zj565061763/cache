@@ -17,11 +17,12 @@ package com.fanwe.lib.cache;
 
 import android.content.Context;
 
-import java.io.File;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.fanwe.lib.cache.converter.IEncryptConverter;
+import com.fanwe.lib.cache.converter.IObjectConverter;
 
-abstract class FAbstractDisk implements FIDisk, FIDiskInfo
+import java.io.File;
+
+abstract class FAbstractDisk implements IDisk, IDiskInfo
 {
     private File mDirectory;
 
@@ -34,7 +35,6 @@ abstract class FAbstractDisk implements FIDisk, FIDiskInfo
     private IObjectConverter mObjectConverter;
 
     private boolean mMemorySupport;
-    private static final Map<String, Object> MAP_MEMORY = new ConcurrentHashMap<>();
 
     protected FAbstractDisk(File directory)
     {
@@ -49,11 +49,6 @@ abstract class FAbstractDisk implements FIDisk, FIDiskInfo
     public static void init(Context context)
     {
         mContext = context.getApplicationContext();
-    }
-
-    public static void setDebug(boolean debug)
-    {
-        LogUtils.setDebug(debug);
     }
 
     /**
@@ -76,10 +71,19 @@ abstract class FAbstractDisk implements FIDisk, FIDiskInfo
         sGlobalObjectConverter = globalObjectConverter;
     }
 
+    //---------- IDisk start ----------
+
     @Override
     public FAbstractDisk setEncrypt(boolean encrypt)
     {
         mEncrypt = encrypt;
+        return this;
+    }
+
+    @Override
+    public FAbstractDisk setMemorySupport(boolean memorySupport)
+    {
+        mMemorySupport = memorySupport;
         return this;
     }
 
@@ -98,34 +102,39 @@ abstract class FAbstractDisk implements FIDisk, FIDiskInfo
     }
 
     @Override
-    public FAbstractDisk setMemorySupport(boolean memorySupport)
-    {
-        mMemorySupport = memorySupport;
-        return this;
-    }
-
-    @Override
-    public File getDirectory()
-    {
-        return mDirectory;
-    }
-
-    @Override
-    public long size()
+    public final long size()
     {
         return mDirectory.length();
     }
 
     @Override
-    public synchronized void delete()
+    public final synchronized void delete()
     {
-        Utils.deleteFileOrDir(mDirectory);
+        deleteFileOrDir(mDirectory);
+    }
+
+    //---------- IDisk end ----------
+
+    @Override
+    public final File getDirectory()
+    {
+        if (!mDirectory.exists())
+        {
+            mDirectory.mkdirs();
+        }
+        return mDirectory;
     }
 
     @Override
     public final boolean isEncrypt()
     {
         return mEncrypt;
+    }
+
+    @Override
+    public final boolean isMemorySupport()
+    {
+        return mMemorySupport;
     }
 
     @Override
@@ -152,39 +161,6 @@ abstract class FAbstractDisk implements FIDisk, FIDiskInfo
         }
     }
 
-    public boolean isMemorySupport()
-    {
-        return mMemorySupport;
-    }
-
-    //---------- memory start ----------
-
-    protected final void removeMemory(String key, AObjectHandler handler)
-    {
-        MAP_MEMORY.remove(handler.getRealKey(key));
-    }
-
-    protected final void putMemory(String key, Object object, AObjectHandler handler)
-    {
-        if (isMemorySupport())
-        {
-            MAP_MEMORY.put(handler.getRealKey(key), object);
-        }
-    }
-
-    protected final <T> T getMemory(String key, AObjectHandler handler)
-    {
-        if (isMemorySupport())
-        {
-            return (T) MAP_MEMORY.get(handler.getRealKey(key));
-        } else
-        {
-            return null;
-        }
-    }
-
-    //---------- memory end ----------
-
     //---------- util method start ----------
 
     private static Context getContext()
@@ -206,7 +182,7 @@ abstract class FAbstractDisk implements FIDisk, FIDiskInfo
      * @param dirName
      * @return
      */
-    protected static File getExternalFilesDir(String dirName)
+    protected static final File getExternalFilesDir(String dirName)
     {
         checkContext();
         File dir = getContext().getExternalFilesDir(dirName);
@@ -219,7 +195,7 @@ abstract class FAbstractDisk implements FIDisk, FIDiskInfo
      * @param dirName
      * @return
      */
-    protected static File getExternalCacheDir(String dirName)
+    protected static final File getExternalCacheDir(String dirName)
     {
         checkContext();
         File dir = new File(getContext().getExternalCacheDir(), dirName);
@@ -232,7 +208,7 @@ abstract class FAbstractDisk implements FIDisk, FIDiskInfo
      * @param dirName
      * @return
      */
-    protected static File getInternalFilesDir(String dirName)
+    protected static final File getInternalFilesDir(String dirName)
     {
         checkContext();
         File dir = new File(getContext().getFilesDir(), dirName);
@@ -245,11 +221,32 @@ abstract class FAbstractDisk implements FIDisk, FIDiskInfo
      * @param dirName
      * @return
      */
-    protected static File getInternalCacheDir(String dirName)
+    protected static final File getInternalCacheDir(String dirName)
     {
         checkContext();
         File dir = new File(getContext().getCacheDir(), dirName);
         return dir;
+    }
+
+    private static boolean deleteFileOrDir(File path)
+    {
+        if (path == null || !path.exists())
+        {
+            return true;
+        }
+        if (path.isFile())
+        {
+            return path.delete();
+        }
+        File[] files = path.listFiles();
+        if (files != null)
+        {
+            for (File file : files)
+            {
+                deleteFileOrDir(file);
+            }
+        }
+        return path.delete();
     }
 
     //---------- util method end ----------

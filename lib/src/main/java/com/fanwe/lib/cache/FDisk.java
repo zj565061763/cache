@@ -1,17 +1,17 @@
-package com.fanwe.lib.cache.core;
+package com.fanwe.lib.cache;
 
-import com.fanwe.lib.cache.core.api.ICommonCache;
-import com.fanwe.lib.cache.core.api.IObjectCache;
-import com.fanwe.lib.cache.core.converter.IEncryptConverter;
-import com.fanwe.lib.cache.core.converter.IObjectConverter;
-import com.fanwe.lib.cache.core.handler.BooleanHandler;
-import com.fanwe.lib.cache.core.handler.DoubleHandler;
-import com.fanwe.lib.cache.core.handler.FloatHandler;
-import com.fanwe.lib.cache.core.handler.IntegerHandler;
-import com.fanwe.lib.cache.core.handler.LongHandler;
-import com.fanwe.lib.cache.core.handler.ObjectHandler;
-import com.fanwe.lib.cache.core.handler.SerializableHandler;
-import com.fanwe.lib.cache.core.handler.StringHandler;
+import com.fanwe.lib.cache.api.ICommonCache;
+import com.fanwe.lib.cache.api.IObjectCache;
+import com.fanwe.lib.cache.converter.IEncryptConverter;
+import com.fanwe.lib.cache.converter.IObjectConverter;
+import com.fanwe.lib.cache.handler.BooleanHandler;
+import com.fanwe.lib.cache.handler.DoubleHandler;
+import com.fanwe.lib.cache.handler.FloatHandler;
+import com.fanwe.lib.cache.handler.IntegerHandler;
+import com.fanwe.lib.cache.handler.LongHandler;
+import com.fanwe.lib.cache.handler.ObjectHandler;
+import com.fanwe.lib.cache.handler.SerializableHandler;
+import com.fanwe.lib.cache.handler.StringHandler;
 
 import java.io.File;
 import java.io.Serializable;

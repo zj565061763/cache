@@ -1,7 +1,7 @@
-package com.fanwe.lib.cache.core.handler;
+package com.fanwe.lib.cache.handler;
 
-import com.fanwe.lib.cache.core.IDiskInfo;
-import com.fanwe.lib.cache.core.converter.IEncryptConverter;
+import com.fanwe.lib.cache.IDiskInfo;
+import com.fanwe.lib.cache.converter.IEncryptConverter;
 
 import java.io.File;
 import java.io.Serializable;

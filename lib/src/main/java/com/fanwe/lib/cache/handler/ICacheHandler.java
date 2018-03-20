@@ -1,4 +1,4 @@
-package com.fanwe.lib.cache.core.handler;
+package com.fanwe.lib.cache.handler;
 
 /**
  * Created by zhengjun on 2018/3/20.

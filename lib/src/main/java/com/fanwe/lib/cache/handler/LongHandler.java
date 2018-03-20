@@ -1,7 +1,7 @@
-package com.fanwe.lib.cache.core.handler;
+package com.fanwe.lib.cache.handler;
 
-import com.fanwe.lib.cache.core.IDiskInfo;
-import com.fanwe.lib.cache.core.api.ICommonCache;
+import com.fanwe.lib.cache.IDiskInfo;
+import com.fanwe.lib.cache.api.ICommonCache;
 
 /**
  * Long处理类

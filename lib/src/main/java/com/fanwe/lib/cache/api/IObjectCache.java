@@ -1,4 +1,4 @@
-package com.fanwe.lib.cache.core.api;
+package com.fanwe.lib.cache.api;
 
 /**
  * Created by zhengjun on 2018/3/20.
