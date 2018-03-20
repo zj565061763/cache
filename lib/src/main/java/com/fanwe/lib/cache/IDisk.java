@@ -28,7 +28,7 @@ import java.io.Serializable;
 public interface IDisk
 {
     /**
-     * 设置是否加密
+     * 设置是否加解密
      *
      * @param encrypt
      * @return
