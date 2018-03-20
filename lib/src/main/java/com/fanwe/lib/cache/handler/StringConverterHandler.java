@@ -36,7 +36,7 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
     }
 
     @Override
-    protected boolean putCacheImpl(String key, T value, File file)
+    protected final boolean putCacheImpl(String key, T value, File file)
     {
         checkEncryptConverter();
 
@@ -51,7 +51,7 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
     }
 
     @Override
-    protected T getCacheImpl(String key, Class<T> clazz, File file)
+    protected final T getCacheImpl(String key, Class<T> clazz, File file)
     {
         final CacheModel model = getSerializableHandler().getCache(key, CacheModel.class);
         if (model == null)
@@ -70,7 +70,7 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
     protected abstract T stringToValue(String string, Class<T> clazz);
 
 
-    private static class CacheModel implements Serializable
+    private static final class CacheModel implements Serializable
     {
         static final long serialVersionUID = 0L;
 
