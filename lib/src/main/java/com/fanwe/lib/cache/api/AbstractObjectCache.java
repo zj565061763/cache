@@ -15,21 +15,18 @@ public abstract class AbstractObjectCache<T> extends AbstractCache<T> implements
     @Override
     public final boolean put(T value)
     {
-        final String key = getObjectClass().getName();
-        return getCacheHandler().putCache(key, value);
+        return getCacheHandler().putCache(getValueClass().getName(), value);
     }
 
     @Override
     public final T get()
     {
-        final String key = getObjectClass().getName();
-        return getCacheHandler().getCache(key, getObjectClass());
+        return getCacheHandler().getCache(getValueClass().getName(), getValueClass());
     }
 
     @Override
     public final boolean remove()
     {
-        final String key = getObjectClass().getName();
-        return getCacheHandler().removeCache(key);
+        return getCacheHandler().removeCache(getValueClass().getName());
     }
 }

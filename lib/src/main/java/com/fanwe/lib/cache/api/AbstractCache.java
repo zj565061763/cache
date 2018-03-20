@@ -16,16 +16,16 @@ public abstract class AbstractCache<T>
         mCacheHandler = onCreateCacheHandler(diskInfo);
     }
 
-    public final void setObjectClass(Class<T> clazz)
+    public final void setValueClass(Class<T> clazz)
     {
         mObjectClass = clazz;
     }
 
-    public final Class<T> getObjectClass()
+    public final Class<T> getValueClass()
     {
         if (mObjectClass == null)
         {
-            throw new NullPointerException("mObjectClass is null, you must invoke setObjectClass(clazz) before this");
+            throw new NullPointerException("mObjectClass is null, you must invoke setValueClass(clazz) before this");
         }
         return mObjectClass;
     }

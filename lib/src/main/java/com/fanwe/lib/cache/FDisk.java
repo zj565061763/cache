@@ -261,7 +261,7 @@ public class FDisk extends FAbstractDisk
         {
             mSerializableCache = new SerializableCache(this);
         }
-        mSerializableCache.setObjectClass(clazz);
+        mSerializableCache.setValueClass(clazz);
         return mSerializableCache;
     }
 
@@ -272,7 +272,7 @@ public class FDisk extends FAbstractDisk
         {
             mObjectCache = new ObjectCache(this);
         }
-        mObjectCache.setObjectClass(clazz);
+        mObjectCache.setValueClass(clazz);
         return mObjectCache;
     }
 
