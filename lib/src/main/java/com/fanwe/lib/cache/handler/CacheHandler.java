@@ -89,13 +89,8 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
         {
             return null;
         }
-        return getCacheImpl(key, clazz, file);
-    }
 
-    @Override
-    public final boolean hasCache(String key)
-    {
-        return getCacheFile(key).exists();
+        return getCacheImpl(key, clazz, file);
     }
 
     @Override

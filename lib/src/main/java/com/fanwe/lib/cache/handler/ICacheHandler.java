@@ -9,7 +9,5 @@ public interface ICacheHandler<T>
 
     T getCache(String key, Class<T> clazz);
 
-    boolean hasCache(String key);
-
     boolean removeCache(String key);
 }
