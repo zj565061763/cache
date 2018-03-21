@@ -13,7 +13,9 @@ import com.fanwe.www.cache.converter.GsonObjectConverter;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
     private static final String TAG = "MainActivity";
-    private String key = "key";
+
+    private final String key = "key";
+    private final TestModel mTestModel = new TestModel();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,8 +57,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FDisk.open().cacheBoolean().put(key, true);
         FDisk.open().cacheString().put(key, "hello String");
 
-        FDisk.open().cacheSerializable(TestModel.class).put(new TestModel());
-        FDisk.open().setEncrypt(true).cacheObject(TestModel.class).put(new TestModel()); //加密实体
+        FDisk.open().cacheSerializable().put(new TestModel());
+        FDisk.open().cacheObject().put(new TestModel());
     }
 
     private void printData()
@@ -67,11 +69,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i(TAG, "getDouble:" + FDisk.open().cacheDouble().get(key));
         Log.i(TAG, "getBoolean:" + FDisk.open().cacheBoolean().get(key));
         Log.i(TAG, "getString:" + FDisk.open().cacheString().get(key));
-        Log.i(TAG, "getSerializable:" + FDisk.open().cacheSerializable(TestModel.class).get());
-        Log.i(TAG, "getObject:" + FDisk.open().cacheObject(TestModel.class).get());
+        Log.i(TAG, "getSerializable:" + FDisk.open().cacheSerializable().get(TestModel.class));
+        Log.i(TAG, "getObject:" + FDisk.open().cacheObject().get(TestModel.class));
     }
 
-    private TestModel mTestModel = new TestModel();
 
     @Override
     public void onClick(View v)
@@ -81,15 +82,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run()
             {
-                FDisk.open().cacheObject(TestModel.class).put(mTestModel);
+                FDisk.open().cacheSerializable().put(mTestModel);
             }
         });
+
         SDTimeLogger.test("cacheSerializable get", new Runnable()
         {
             @Override
             public void run()
             {
-                FDisk.open().cacheObject(TestModel.class).get();
+                FDisk.open().cacheSerializable().get(TestModel.class);
             }
         });
     }
