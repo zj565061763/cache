@@ -1,7 +1,6 @@
 package com.fanwe.lib.cache.api.impl;
 
 import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.api.AbstractObjectCache;
 import com.fanwe.lib.cache.handler.ICacheHandler;
 import com.fanwe.lib.cache.handler.impl.ObjectHandler;
 

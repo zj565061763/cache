@@ -14,7 +14,7 @@ import java.io.Serializable;
 /**
  * 序列化处理类
  */
-public class SerializableHandler<T extends Serializable> extends CacheHandler<T>
+public class SerializableHandler extends CacheHandler<Serializable>
 {
     public SerializableHandler(IDiskInfo diskInfo)
     {
@@ -28,7 +28,7 @@ public class SerializableHandler<T extends Serializable> extends CacheHandler<T>
     }
 
     @Override
-    protected boolean putCacheImpl(String key, T value, File file)
+    protected boolean putCacheImpl(String key, Serializable value, File file)
     {
         ObjectOutputStream os = null;
         try
@@ -48,13 +48,13 @@ public class SerializableHandler<T extends Serializable> extends CacheHandler<T>
     }
 
     @Override
-    protected T getCacheImpl(String key, Class<T> clazz, File file)
+    protected Serializable getCacheImpl(String key, Class<Serializable> clazz, File file)
     {
         ObjectInputStream is = null;
         try
         {
             is = new ObjectInputStream(new FileInputStream(file));
-            return (T) is.readObject();
+            return (Serializable) is.readObject();
         } catch (Exception e)
         {
             e.printStackTrace();

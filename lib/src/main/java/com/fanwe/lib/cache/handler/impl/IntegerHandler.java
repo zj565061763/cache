@@ -1,13 +1,12 @@
 package com.fanwe.lib.cache.handler.impl;
 
 import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.api.ICommonCache;
 import com.fanwe.lib.cache.handler.StringConverterHandler;
 
 /**
  * Integer处理类
  */
-public class IntegerHandler extends StringConverterHandler<Integer> implements ICommonCache<Integer>
+public class IntegerHandler extends StringConverterHandler<Integer>
 {
     public IntegerHandler(IDiskInfo diskInfo)
     {
@@ -30,17 +29,5 @@ public class IntegerHandler extends StringConverterHandler<Integer> implements I
     protected String getKeyPrefix()
     {
         return "integer_";
-    }
-
-    @Override
-    public boolean put(String key, Integer value)
-    {
-        return putCache(key, value);
-    }
-
-    @Override
-    public Integer get(String key)
-    {
-        return getCache(key, null);
     }
 }

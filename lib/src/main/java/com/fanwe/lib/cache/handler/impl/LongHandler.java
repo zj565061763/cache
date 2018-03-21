@@ -1,13 +1,12 @@
 package com.fanwe.lib.cache.handler.impl;
 
 import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.api.ICommonCache;
 import com.fanwe.lib.cache.handler.StringConverterHandler;
 
 /**
  * Long处理类
  */
-public class LongHandler extends StringConverterHandler<Long> implements ICommonCache<Long>
+public class LongHandler extends StringConverterHandler<Long>
 {
     public LongHandler(IDiskInfo diskInfo)
     {
@@ -30,17 +29,5 @@ public class LongHandler extends StringConverterHandler<Long> implements ICommon
     protected String getKeyPrefix()
     {
         return "long_";
-    }
-
-    @Override
-    public boolean put(String key, Long value)
-    {
-        return putCache(key, value);
-    }
-
-    @Override
-    public Long get(String key)
-    {
-        return getCache(key, null);
     }
 }

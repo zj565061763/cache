@@ -1,13 +1,12 @@
 package com.fanwe.lib.cache.handler.impl;
 
 import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.api.ICommonCache;
 import com.fanwe.lib.cache.handler.StringConverterHandler;
 
 /**
  * Float处理类
  */
-public class FloatHandler extends StringConverterHandler<Float> implements ICommonCache<Float>
+public class FloatHandler extends StringConverterHandler<Float>
 {
     public FloatHandler(IDiskInfo diskInfo)
     {
@@ -30,17 +29,5 @@ public class FloatHandler extends StringConverterHandler<Float> implements IComm
     protected String getKeyPrefix()
     {
         return "float_";
-    }
-
-    @Override
-    public boolean put(String key, Float value)
-    {
-        return putCache(key, value);
-    }
-
-    @Override
-    public Float get(String key)
-    {
-        return getCache(key, null);
     }
 }

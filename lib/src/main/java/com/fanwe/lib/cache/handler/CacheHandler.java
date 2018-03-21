@@ -3,6 +3,7 @@ package com.fanwe.lib.cache.handler;
 import android.text.TextUtils;
 
 import com.fanwe.lib.cache.IDiskInfo;
+import com.fanwe.lib.cache.api.ICommonCache;
 
 import java.io.File;
 import java.security.MessageDigest;
@@ -13,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by zhengjun on 2018/3/20.
  */
-public abstract class CacheHandler<T> implements ICacheHandler<T>
+public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<T>
 {
     private IDiskInfo mDiskInfo;
     private static final Map<String, Object> MAP_MEMORY = new ConcurrentHashMap<>();
@@ -71,6 +72,8 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>
         return new File(dir, realKey);
     }
 
+    //---------- ICacheHandler start ----------
+
     @Override
     public final boolean putCache(String key, T value)
     {
@@ -125,6 +128,26 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>
             return true;
         }
     }
+
+    //---------- ICacheHandler end ----------
+
+
+    //---------- ICommonCache start ----------
+
+    @Override
+    public final boolean put(String key, T value)
+    {
+        return putCache(key, value);
+    }
+
+    @Override
+    public final T get(String key)
+    {
+        return getCache(key, null);
+    }
+
+    //---------- ICommonCache end ----------
+
 
     //---------- memory start ----------
 
