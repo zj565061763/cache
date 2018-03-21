@@ -2,6 +2,7 @@ package com.fanwe.lib.cache.handler;
 
 import android.text.TextUtils;
 
+import com.fanwe.lib.cache.FDisk;
 import com.fanwe.lib.cache.IDiskInfo;
 import com.fanwe.lib.cache.api.ICommonCache;
 
@@ -67,51 +68,60 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
     @Override
     public final boolean putCache(String key, T value)
     {
-        if (value == null)
+        synchronized (FDisk.class)
         {
-            removeCache(key);
-            return true;
-        }
+            if (value == null)
+            {
+                removeCache(key);
+                return true;
+            }
 
-        final File file = getCacheFile(key);
-        final boolean result = putCacheImpl(key, value, file);
-        if (result)
-        {
-            putMemory(key, value);
+            final File file = getCacheFile(key);
+            final boolean result = putCacheImpl(key, value, file);
+            if (result)
+            {
+                putMemory(key, value);
+            }
+            return result;
         }
-        return result;
     }
 
     @Override
     public final T getCache(String key, Class<T> clazz)
     {
-        final T result = getMemory(key);
-        if (result != null)
+        synchronized (FDisk.class)
         {
-            return result;
-        }
+            final T result = getMemory(key);
+            if (result != null)
+            {
+                return result;
+            }
 
-        final File file = getCacheFile(key);
-        if (!file.exists())
-        {
-            return null;
-        }
+            final File file = getCacheFile(key);
+            if (!file.exists())
+            {
+                return null;
+            }
 
-        return getCacheImpl(key, clazz, file);
+            return getCacheImpl(key, clazz, file);
+        }
     }
 
     @Override
     public final boolean removeCache(String key)
     {
-        removeMemory(key);
+        synchronized (FDisk.class)
+        {
+            removeMemory(key);
 
-        final File file = getCacheFile(key);
-        if (file.exists())
-        {
-            return file.delete();
-        } else
-        {
-            return true;
+            final File file = getCacheFile(key);
+            if (file.exists())
+            {
+                return file.delete();
+            } else
+            {
+                return true;
+            }
         }
     }
 

@@ -108,9 +108,12 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
     }
 
     @Override
-    public final synchronized void delete()
+    public final void delete()
     {
-        deleteFileOrDir(mDirectory);
+        synchronized (FDisk.class)
+        {
+            deleteFileOrDir(mDirectory);
+        }
     }
 
     //---------- IDisk end ----------
