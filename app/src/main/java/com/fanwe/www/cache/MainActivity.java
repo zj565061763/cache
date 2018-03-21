@@ -26,15 +26,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         /**
          * 当数据量较大的时候建议用XXXObject方法，性能会比XXXSerializable好非常多
          * 如果要用XXXObject方法，需要配置对象转换器
-         *
-         * 用魅族MX6测试，测试对象中的map有10000条数据，测试结果如下：
-         *
-         * Gson2.8.1版本对象转换器:
-         * putObject在65毫秒左右
-         * getObject在140毫秒左右
-         *
-         * putSerializable在600毫秒左右
-         * getSerializable在700毫秒左右
          */
         FDisk.setGlobalObjectConverter(new GsonObjectConverter());//配置Gson对象转换器
         FDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
@@ -85,37 +76,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v)
     {
-        SDTimeLogger.test("putObject", new Runnable()
+        SDTimeLogger.test("cacheInteger put", new Runnable()
         {
             @Override
             public void run()
             {
-                FDisk.open().setMemorySupport(false).cacheObject(TestModel.class).put(mTestModel);
-            }
-        });
-        SDTimeLogger.test("getObject", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                FDisk.open().setMemorySupport(false).cacheObject(TestModel.class).get();
-            }
-        });
-
-        SDTimeLogger.test("putSerializable", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                FDisk.open().setMemorySupport(false).cacheSerializable(TestModel.class).put(mTestModel);
-            }
-        });
-        SDTimeLogger.test("getSerializable", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                FDisk.open().setMemorySupport(false).cacheSerializable(TestModel.class).get();
+                for (int i = 0; i < 100; i++)
+                {
+                    FDisk.open().cacheInteger().put(key, 1);
+                }
             }
         });
     }
