@@ -155,7 +155,8 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
     {
         if (getDiskInfo().isMemorySupport())
         {
-            MAP_MEMORY.put(getRealKey(key), value);
+            final String realKey = getRealKey(key);
+            MAP_MEMORY.put(realKey, value);
         }
     }
 
@@ -163,7 +164,8 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
     {
         if (getDiskInfo().isMemorySupport())
         {
-            return (T) MAP_MEMORY.get(getRealKey(key));
+            final String realKey = getRealKey(key);
+            return (T) MAP_MEMORY.get(realKey);
         } else
         {
             return null;
@@ -172,7 +174,12 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
 
     private void removeMemory(String key)
     {
-        MAP_MEMORY.remove(getRealKey(key));
+        if (MAP_MEMORY.isEmpty())
+        {
+            return;
+        }
+        final String realKey = getRealKey(key);
+        MAP_MEMORY.remove(realKey);
     }
 
     //---------- memory end ----------
