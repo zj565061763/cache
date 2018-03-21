@@ -179,7 +179,7 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
     {
         if (mContext == null)
         {
-            throw new NullPointerException("you must invoke init() method before this");
+            throw new NullPointerException("you must invoke FDisk.init(Context) method before this");
         }
     }
 
