@@ -184,71 +184,40 @@ public class FDisk extends FAbstractDisk
 
     //---------- cache start ----------
 
-    private IntegerHandler mIntegerHandler;
-    private LongHandler mLongHandler;
-    private FloatHandler mFloatHandler;
-    private DoubleHandler mDoubleHandler;
-    private BooleanHandler mBooleanHandler;
-    private StringHandler mStringHandler;
-
     @Override
     public ICommonCache<Integer> cacheInteger()
     {
-        if (mIntegerHandler == null)
-        {
-            mIntegerHandler = new IntegerHandler(this);
-        }
-        return mIntegerHandler;
+        return new IntegerHandler(this);
     }
 
     @Override
     public ICommonCache<Long> cacheLong()
     {
-        if (mLongHandler == null)
-        {
-            mLongHandler = new LongHandler(this);
-        }
-        return mLongHandler;
+        return new LongHandler(this);
     }
 
     @Override
     public ICommonCache<Float> cacheFloat()
     {
-        if (mFloatHandler == null)
-        {
-            mFloatHandler = new FloatHandler(this);
-        }
-        return mFloatHandler;
+        return new FloatHandler(this);
     }
 
     @Override
     public ICommonCache<Double> cacheDouble()
     {
-        if (mDoubleHandler == null)
-        {
-            mDoubleHandler = new DoubleHandler(this);
-        }
-        return mDoubleHandler;
+        return new DoubleHandler(this);
     }
 
     @Override
     public ICommonCache<Boolean> cacheBoolean()
     {
-        if (mBooleanHandler == null)
-        {
-            mBooleanHandler = new BooleanHandler(this);
-        }
-        return mBooleanHandler;
+        return new BooleanHandler(this);
     }
 
     @Override
     public ICommonCache<String> cacheString()
     {
-        if (mStringHandler == null)
-        {
-            mStringHandler = new StringHandler(this);
-        }
-        return mStringHandler;
+        return new StringHandler(this);
     }
 
     @Override
