@@ -59,7 +59,9 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
             return null;
         }
 
+        checkEncryptConverter();
         model.decryptIfNeed(getDiskInfo().getEncryptConverter());
+
         final String string = model.data;
 
         return stringToValue(string, clazz);
