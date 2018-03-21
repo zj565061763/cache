@@ -15,8 +15,6 @@ import com.fanwe.lib.cache.handler.impl.StringHandler;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by zhengjun on 2018/3/20.
@@ -25,8 +23,6 @@ public class FDisk extends FAbstractDisk
 {
     private static final String DEFAULT_FILE_DIR = "disk_file";
     private static final String DEFAULT_CACHE_DIR = "disk_cache";
-
-    private static final Map<String, FDisk> MAP_INSTANCE = new HashMap<>();
 
     protected FDisk(File directory)
     {
@@ -125,7 +121,7 @@ public class FDisk extends FAbstractDisk
      * @param directory
      * @return
      */
-    public synchronized static FDisk openDir(File directory)
+    public static FDisk openDir(File directory)
     {
         if (directory == null)
         {
@@ -138,14 +134,7 @@ public class FDisk extends FAbstractDisk
             }
         }
 
-        final String path = directory.getAbsolutePath();
-        FDisk instance = MAP_INSTANCE.get(path);
-        if (instance == null)
-        {
-            instance = new FDisk(directory);
-            MAP_INSTANCE.put(path, instance);
-        }
-        return instance;
+        return new FDisk(directory);
     }
 
     //---------- open end ----------
