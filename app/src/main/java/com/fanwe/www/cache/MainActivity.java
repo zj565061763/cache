@@ -81,10 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run()
             {
-                for (int i = 0; i < 100; i++)
-                {
-                    FDisk.open().cacheSerializable(TestModel.class).put(mTestModel);
-                }
+                FDisk.open().cacheObject(TestModel.class).put(mTestModel);
             }
         });
         SDTimeLogger.test("cacheSerializable get", new Runnable()
@@ -92,10 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run()
             {
-                for (int i = 0; i < 100; i++)
-                {
-                    FDisk.open().cacheSerializable(TestModel.class).get();
-                }
+                FDisk.open().cacheObject(TestModel.class).get();
             }
         });
     }
