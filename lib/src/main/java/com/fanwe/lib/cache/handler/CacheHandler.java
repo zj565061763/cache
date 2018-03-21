@@ -33,14 +33,6 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
         return mDiskInfo;
     }
 
-    protected final void checkObjectConverter()
-    {
-        if (getDiskInfo().getObjectConverter() == null)
-        {
-            throw new NullPointerException("you must provide an IObjectConverter instance before this");
-        }
-    }
-
     private final String getRealKey(final String key)
     {
         if (TextUtils.isEmpty(key))

@@ -32,4 +32,12 @@ public class ObjectHandler<T> extends StringConverterHandler<T>
     {
         return "object_";
     }
+
+    private void checkObjectConverter()
+    {
+        if (getDiskInfo().getObjectConverter() == null)
+        {
+            throw new NullPointerException("you must provide an IObjectConverter instance before this");
+        }
+    }
 }
