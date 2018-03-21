@@ -33,7 +33,7 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
         return mDiskInfo;
     }
 
-    private final String getRealKey(final String key)
+    private final String getRealKey(final String key, boolean encrypt)
     {
         if (TextUtils.isEmpty(key))
         {
@@ -45,12 +45,18 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
             throw new IllegalArgumentException("key prefix is null or empty");
         }
 
-        return prefix + MD5(key);
+        if (encrypt)
+        {
+            return prefix + MD5(key);
+        } else
+        {
+            return prefix + key;
+        }
     }
 
     private File getCacheFile(String key)
     {
-        final String realKey = getRealKey(key);
+        final String realKey = getRealKey(key, true);
         final File dir = getDiskInfo().getDirectory();
 
         return new File(dir, realKey);
@@ -67,7 +73,8 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
             return true;
         }
 
-        final boolean result = putCacheImpl(key, value, getCacheFile(key));
+        final File file = getCacheFile(key);
+        final boolean result = putCacheImpl(key, value, file);
         if (result)
         {
             putMemory(key, value);
@@ -134,7 +141,7 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
     {
         if (getDiskInfo().isMemorySupport())
         {
-            final String realKey = getRealKey(key);
+            final String realKey = getRealKey(key, false);
             MAP_MEMORY.put(realKey, value);
         }
     }
@@ -143,7 +150,7 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
     {
         if (getDiskInfo().isMemorySupport())
         {
-            final String realKey = getRealKey(key);
+            final String realKey = getRealKey(key, false);
             return (T) MAP_MEMORY.get(realKey);
         } else
         {
@@ -157,7 +164,7 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
         {
             return;
         }
-        final String realKey = getRealKey(key);
+        final String realKey = getRealKey(key, false);
         MAP_MEMORY.remove(realKey);
     }
 
