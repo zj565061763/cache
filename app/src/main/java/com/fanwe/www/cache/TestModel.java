@@ -25,7 +25,7 @@ public class TestModel implements Serializable
 
     public TestModel()
     {
-        for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < 100; i++)
         {
             mapString.put(String.valueOf(i), String.valueOf(i + i));
         }

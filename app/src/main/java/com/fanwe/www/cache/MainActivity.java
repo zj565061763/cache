@@ -76,14 +76,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v)
     {
-        SDTimeLogger.test("cacheInteger put", new Runnable()
+        SDTimeLogger.test("cacheSerializable put", new Runnable()
         {
             @Override
             public void run()
             {
                 for (int i = 0; i < 100; i++)
                 {
-                    FDisk.open().cacheInteger().put(key, 1);
+                    FDisk.open().cacheSerializable(TestModel.class).put(mTestModel);
+                }
+            }
+        });
+
+        SDTimeLogger.test("cacheSerializable get", new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    FDisk.open().cacheSerializable(TestModel.class).get();
                 }
             }
         });
