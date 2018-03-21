@@ -1,7 +1,7 @@
 package com.fanwe.lib.cache.handler;
 
 /**
- * Created by zhengjun on 2018/3/20.
+ * 缓存处理接口
  */
 public interface ICacheHandler<T>
 {

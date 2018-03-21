@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.Serializable;
 
 /**
- * 值可以和字符串互相转换的处理类
+ * 缓存可以和字符串互相转换的处理类
  */
 public abstract class StringConverterHandler<T> extends CacheHandler<T>
 {

@@ -1,7 +1,7 @@
 package com.fanwe.lib.cache.api;
 
 /**
- * Created by zhengjun on 2018/3/20.
+ * 通用缓存接口
  */
 public interface ICommonCache<T>
 {

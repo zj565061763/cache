@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by zhengjun on 2018/3/20.
+ * 缓存处理基类
  */
 public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<T>
 {

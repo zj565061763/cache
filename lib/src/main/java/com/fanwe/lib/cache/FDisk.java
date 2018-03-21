@@ -16,9 +16,6 @@ import com.fanwe.lib.cache.handler.impl.StringHandler;
 
 import java.io.File;
 
-/**
- * Created by zhengjun on 2018/3/20.
- */
 public class FDisk extends FAbstractDisk
 {
     private static final String DEFAULT_FILE_DIR = "disk_file";

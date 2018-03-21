@@ -7,7 +7,7 @@ import com.fanwe.lib.cache.handler.impl.SerializableHandler;
 import java.io.Serializable;
 
 /**
- * 序列化缓存处理类
+ * 序列化缓存
  */
 public class SerializableCache implements ISerializableCache
 {

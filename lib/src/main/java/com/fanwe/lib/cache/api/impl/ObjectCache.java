@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.api.IObjectCache;
 import com.fanwe.lib.cache.handler.impl.ObjectHandler;
 
 /**
- * 对象缓存处理类
+ * 对象缓存
  */
 public class ObjectCache implements IObjectCache
 {
