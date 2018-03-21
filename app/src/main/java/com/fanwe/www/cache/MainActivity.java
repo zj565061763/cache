@@ -29,10 +29,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          *
          * 用魅族MX6测试，测试对象中的map有10000条数据，测试结果如下：
          *
-         * Fastjson1.1.62版本对象转换器:
-         * putObject在70毫秒左右
-         * getObject在140毫秒左右
-         *
          * Gson2.8.1版本对象转换器:
          * putObject在65毫秒左右
          * getObject在140毫秒左右
@@ -67,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FDisk.open().cacheDouble().put(key, 4.4444D);
         FDisk.open().cacheBoolean().put(key, true);
         FDisk.open().cacheString().put(key, "hello String");
+
         FDisk.open().cacheSerializable(TestModel.class).put(new TestModel());
         FDisk.open().setEncrypt(true).cacheObject(TestModel.class).put(new TestModel()); //加密实体
     }
