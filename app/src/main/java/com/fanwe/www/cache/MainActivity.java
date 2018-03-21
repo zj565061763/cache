@@ -26,11 +26,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FDisk.init(this); //初始化
 
         /**
-         * 当数据量较大的时候建议用XXXObject方法，性能会比XXXSerializable好非常多
-         * 如果要用XXXObject方法，需要配置对象转换器
+         * 当数据量较大的时候建议用cacheObject()方法，性能会比cacheSerializable()好很多
+         * 如果要用cacheObject()方法，需要配置对象转换器
          */
-        FDisk.setGlobalObjectConverter(new GsonObjectConverter());//配置Gson对象转换器
-        FDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
+        FDisk.setGlobalObjectConverter(new GsonObjectConverter());     //配置全局Gson对象转换器
+        FDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，配置全局加解密转换器
 
         //不同的open方法可以关联不同的目录
         FDisk.open();                    // 外部存储"Android/data/包名/files/disk_file"目录

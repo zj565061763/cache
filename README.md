@@ -18,55 +18,51 @@ public class MainActivity extends AppCompatActivity
         FDisk.init(this); //初始化
 
         /**
-         * 当数据量较大的时候建议用XXXObject方法，性能会比XXXSerializable好非常多
-         * 如果要用XXXObject方法，需要配置对象转换器
-         *
-         * 用魅族MX6测试，测试对象中的map有10000条数据，测试结果如下：
-         *
-         * Fastjson1.1.62版本对象转换器:
-         * putObject在70毫秒左右
-         * getObject在140毫秒左右
-         *
-         * Gson2.8.1版本对象转换器:
-         * putObject在65毫秒左右
-         * getObject在140毫秒左右
-         *
-         * putSerializable在600毫秒左右
-         * getSerializable在700毫秒左右
+         * 当数据量较大的时候建议用cacheObject()方法，性能会比cacheSerializable()好很多
+         * 如果要用cacheObject()方法，需要配置对象转换器
          */
-        FDisk.setGlobalObjectConverter(new FastjsonObjectConverter());//配置Fastjson对象转换器
-//        FDisk.setGlobalObjectConverter(new GsonObjectConverter());//配置Gson对象转换器
-        FDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，需要配置加解密转换器
+        FDisk.setGlobalObjectConverter(new GsonObjectConverter());     //配置全局Gson对象转换器
+        FDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，配置全局加解密转换器
 
         //不同的open方法可以关联不同的目录
-        FDisk.open();             //"Android/data/包名/files/disk_file"
-        FDisk.open("hello");      //"Android/data/包名/files/hello"
-        FDisk.openCache();        //"Android/data/包名/cache/disk_cache"
-        FDisk.openCache("hello"); //"Android/data/包名/cache/hello"
+        FDisk.open();                    // 外部存储"Android/data/包名/files/disk_file"目录
+        FDisk.open("hello");             // 外部存储"Android/data/包名/files/hello"目录
+        FDisk.openCache();               // 外部存储"Android/data/包名/cache/disk_cache"目录
+        FDisk.openCache("hello");        // 外部存储"Android/data/包名/cache/hello"目录
+
+        FDisk.openInternal();             // 内部存储"/data/包名/files/disk_file"目录
+        FDisk.openInternal("hello");      // 内部存储"/data/包名/files/hello"目录
+        FDisk.openInternalCache();        // 内部存储"/data/包名/cache/disk_cache"目录
+        FDisk.openInternalCache("hello"); // 内部存储"/data/包名/cache/hello"目录
         FDisk.openDir(Environment.getExternalStorageDirectory()); //关联指定的目录
 
-        FDisk.open().putInt(key, 1);
-        FDisk.open().putLong(key, 2);
-        FDisk.open().putFloat(key, 3.3f);
-        FDisk.open().putDouble(key, 4.4444d);
-        FDisk.open().putBoolean(key, true);
-        FDisk.open().putString(key, "hello String");
-        FDisk.open().putSerializable(new TestModel());
-        FDisk.open().setEncrypt(true).putObject(new TestModel()); //加密实体
-
-        print();
+        putData();
+        printData();
     }
 
-    private void print()
+    private void putData()
     {
-        Log.i(TAG, "getInt:" + FDisk.open().getInt(key, 0));
-        Log.i(TAG, "getLong:" + FDisk.open().getLong(key, 0));
-        Log.i(TAG, "getFloat:" + FDisk.open().getFloat(key, 0));
-        Log.i(TAG, "getDouble:" + FDisk.open().getDouble(key, 0));
-        Log.i(TAG, "getBoolean:" + FDisk.open().getBoolean(key, false));
-        Log.i(TAG, "getString:" + FDisk.open().getString(key));
-        Log.i(TAG, "getSerializable:" + FDisk.open().getSerializable(TestModel.class));
-        Log.i(TAG, "getObject:" + FDisk.open().getObject(TestModel.class));
+        FDisk.open().cacheInteger().put(key, 1);
+        FDisk.open().cacheLong().put(key, 2L);
+        FDisk.open().cacheFloat().put(key, 3.3F);
+        FDisk.open().cacheDouble().put(key, 4.4444D);
+        FDisk.open().cacheBoolean().put(key, true);
+        FDisk.open().cacheString().put(key, "hello String");
+
+        FDisk.open().cacheSerializable().put(new TestModel());
+        FDisk.open().cacheObject().put(new TestModel());
+    }
+
+    private void printData()
+    {
+        Log.i(TAG, "getInt:" + FDisk.open().cacheInteger().get(key));
+        Log.i(TAG, "getLong:" + FDisk.open().cacheLong().get(key));
+        Log.i(TAG, "getFloat:" + FDisk.open().cacheFloat().get(key));
+        Log.i(TAG, "getDouble:" + FDisk.open().cacheDouble().get(key));
+        Log.i(TAG, "getBoolean:" + FDisk.open().cacheBoolean().get(key));
+        Log.i(TAG, "getString:" + FDisk.open().cacheString().get(key));
+        Log.i(TAG, "getSerializable:" + FDisk.open().cacheSerializable().get(TestModel.class));
+        Log.i(TAG, "getObject:" + FDisk.open().cacheObject().get(TestModel.class));
     }
 
     @Override
@@ -80,18 +76,20 @@ public class MainActivity extends AppCompatActivity
 
 ## 创建对象转换器
 ```java
-public class GlobalObjectConverter implements IObjectConverter
+public class GsonObjectConverter implements IObjectConverter
 {
+    private static final Gson GSON = new Gson();
+
     @Override
     public String objectToString(Object object)
     {
-        return JSON.toJSONString(object); //对象转json
+        return GSON.toJson(object); //对象转json
     }
 
     @Override
     public <T> T stringToObject(String string, Class<T> clazz)
     {
-        return JSON.parseObject(string, clazz); //json转对象
+        return GSON.fromJson(string, clazz); //json转对象
     }
 }
 ```
