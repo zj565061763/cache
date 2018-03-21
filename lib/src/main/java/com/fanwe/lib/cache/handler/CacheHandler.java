@@ -9,8 +9,8 @@ import com.fanwe.lib.cache.api.ICommonCache;
 import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by zhengjun on 2018/3/20.
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<T>
 {
     private IDiskInfo mDiskInfo;
-    private static final Map<String, Object> MAP_MEMORY = new ConcurrentHashMap<>();
+    private static final Map<String, Object> MAP_MEMORY = new HashMap<>();
 
     public CacheHandler(IDiskInfo diskInfo)
     {
