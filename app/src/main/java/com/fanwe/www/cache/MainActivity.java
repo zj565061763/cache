@@ -98,28 +98,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
-
-        SDTimeLogger.test("cacheObject put", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                for (int i = 0; i < 100; i++)
-                {
-                    FDisk.open().cacheObject(TestModel.class).put(mTestModel);
-                }
-            }
-        });
-        SDTimeLogger.test("cacheObject get", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                for (int i = 0; i < 100; i++)
-                {
-                    FDisk.open().cacheObject(TestModel.class).get();
-                }
-            }
-        });
     }
 }
