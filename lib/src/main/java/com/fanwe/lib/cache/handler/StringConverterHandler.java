@@ -38,14 +38,27 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
     @Override
     protected final boolean putCacheImpl(String key, T value, File file)
     {
-        checkEncryptConverter(getDiskInfo().isEncrypt());
+        final boolean encrypt = getDiskInfo().isEncrypt();
+        final IEncryptConverter converter = getDiskInfo().getEncryptConverter();
+        if (encrypt && converter == null)
+        {
+            throw new RuntimeException("you must provide an IEncryptConverter instance before this");
+        }
+
+        final String data = valueToString(value);
+        if (data == null)
+        {
+            throw new RuntimeException("valueToString(String) method can not return null");
+        }
 
         final CacheModel model = new CacheModel();
-        final String data = valueToString(value);
+        model.data = encrypt ? converter.encrypt(data) : data;
+        model.isEncrypted = encrypt;
 
-        model.data = data;
-        model.encrypt = getDiskInfo().isEncrypt();
-        model.encryptIfNeed(getDiskInfo().getEncryptConverter());
+        if (model.data == null)
+        {
+            throw new RuntimeException("IEncryptConverter.encrypt(String) method can not return null");
+        }
 
         return getSerializableHandler().putCache(key, model);
     }
@@ -59,11 +72,20 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
             return null;
         }
 
-        checkEncryptConverter(model.encrypt);
-        model.decryptIfNeed(getDiskInfo().getEncryptConverter());
+        final boolean isEncrypted = model.isEncrypted;
+        final IEncryptConverter converter = getDiskInfo().getEncryptConverter();
+        if (isEncrypted && converter == null)
+        {
+            throw new RuntimeException("content is encrypted but IEncryptConverter not found when try decrypt");
+        }
 
-        final String string = model.data;
-        return stringToValue(string, clazz);
+        if (isEncrypted)
+        {
+            // 需要解密
+            model.data = converter.decrypt(model.data);
+        }
+
+        return stringToValue(model.data, clazz);
     }
 
     protected abstract String valueToString(T value);
@@ -75,33 +97,7 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
     {
         static final long serialVersionUID = 0L;
 
-        public String data;
-        public boolean encrypt;
-
-        /**
-         * 加密
-         *
-         * @param converter
-         */
-        public void encryptIfNeed(IEncryptConverter converter)
-        {
-            if (encrypt && converter != null)
-            {
-                data = converter.encrypt(data);
-            }
-        }
-
-        /**
-         * 解密
-         *
-         * @param converter
-         */
-        public void decryptIfNeed(IEncryptConverter converter)
-        {
-            if (encrypt && converter != null)
-            {
-                data = converter.decrypt(data);
-            }
-        }
+        public boolean isEncrypted = false;
+        public String data = null;
     }
 }

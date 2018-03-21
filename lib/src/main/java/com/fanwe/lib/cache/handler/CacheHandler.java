@@ -33,14 +33,6 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
         return mDiskInfo;
     }
 
-    protected final void checkEncryptConverter(boolean encrypt)
-    {
-        if (encrypt && getDiskInfo().getEncryptConverter() == null)
-        {
-            throw new NullPointerException("you must provide an IEncryptConverter instance before this");
-        }
-    }
-
     protected final void checkObjectConverter()
     {
         if (getDiskInfo().getObjectConverter() == null)
