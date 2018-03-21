@@ -17,10 +17,9 @@ package com.fanwe.lib.cache;
 
 import com.fanwe.lib.cache.api.ICommonCache;
 import com.fanwe.lib.cache.api.IObjectCache;
+import com.fanwe.lib.cache.api.ISerializableCache;
 import com.fanwe.lib.cache.converter.IEncryptConverter;
 import com.fanwe.lib.cache.converter.IObjectConverter;
-
-import java.io.Serializable;
 
 /**
  * Created by zhengjun on 2017/9/1.
@@ -85,9 +84,9 @@ public interface IDisk
 
     ICommonCache<String> cacheString();
 
-    <T extends Serializable> IObjectCache<T> cacheSerializable(Class<T> clazz);
+    ISerializableCache cacheSerializable();
 
-    <T> IObjectCache<T> cacheObject(Class<T> clazz);
+    IObjectCache cacheObject();
 
     //---------- cache end ----------
 }

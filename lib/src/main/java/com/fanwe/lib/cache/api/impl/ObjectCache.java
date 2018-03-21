@@ -1,23 +1,44 @@
 package com.fanwe.lib.cache.api.impl;
 
 import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.api.AbstractObjectCache;
-import com.fanwe.lib.cache.handler.ICacheHandler;
+import com.fanwe.lib.cache.api.IObjectCache;
 import com.fanwe.lib.cache.handler.impl.ObjectHandler;
 
 /**
  * 对象缓存处理类
  */
-public class ObjectCache<T> extends AbstractObjectCache<T>
+public class ObjectCache implements IObjectCache
 {
-    public ObjectCache(IDiskInfo diskInfo, Class<T> clazz)
+    private final IDiskInfo mDiskInfo;
+
+    public ObjectCache(IDiskInfo diskInfo)
     {
-        super(diskInfo, clazz);
+        mDiskInfo = diskInfo;
     }
 
     @Override
-    protected ICacheHandler<T> onCreateCacheHandler(IDiskInfo diskInfo)
+    public boolean put(Object value)
     {
-        return new ObjectHandler<>(diskInfo);
+        if (value == null)
+        {
+            return false;
+        }
+
+        final String key = value.getClass().getName();
+        return new ObjectHandler<>(mDiskInfo).putCache(key, value);
+    }
+
+    @Override
+    public <T> T get(Class<T> clazz)
+    {
+        final String key = clazz.getName();
+        return new ObjectHandler<T>(mDiskInfo).getCache(key, clazz);
+    }
+
+    @Override
+    public boolean remove(Class clazz)
+    {
+        final String key = clazz.getName();
+        return new ObjectHandler<>(mDiskInfo).removeCache(key);
     }
 }

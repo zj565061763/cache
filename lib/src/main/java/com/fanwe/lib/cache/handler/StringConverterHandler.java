@@ -38,7 +38,7 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
     @Override
     protected final boolean putCacheImpl(String key, T value, File file)
     {
-        checkEncryptConverter();
+        checkEncryptConverter(getDiskInfo().isEncrypt());
 
         final CacheModel model = new CacheModel();
         final String data = valueToString(value);
@@ -59,11 +59,10 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
             return null;
         }
 
-        checkEncryptConverter();
+        checkEncryptConverter(model.encrypt);
         model.decryptIfNeed(getDiskInfo().getEncryptConverter());
 
         final String string = model.data;
-
         return stringToValue(string, clazz);
     }
 

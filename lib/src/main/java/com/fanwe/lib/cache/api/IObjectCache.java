@@ -3,11 +3,11 @@ package com.fanwe.lib.cache.api;
 /**
  * 对象缓存接口
  */
-public interface IObjectCache<T>
+public interface IObjectCache
 {
-    boolean put(T value);
+    boolean put(Object value);
 
-    T get();
+    <T> T get(Class<T> clazz);
 
-    boolean remove();
+    boolean remove(Class clazz);
 }

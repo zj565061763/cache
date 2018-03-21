@@ -2,6 +2,7 @@ package com.fanwe.lib.cache;
 
 import com.fanwe.lib.cache.api.ICommonCache;
 import com.fanwe.lib.cache.api.IObjectCache;
+import com.fanwe.lib.cache.api.ISerializableCache;
 import com.fanwe.lib.cache.api.impl.ObjectCache;
 import com.fanwe.lib.cache.api.impl.SerializableCache;
 import com.fanwe.lib.cache.converter.IEncryptConverter;
@@ -14,7 +15,6 @@ import com.fanwe.lib.cache.handler.impl.LongHandler;
 import com.fanwe.lib.cache.handler.impl.StringHandler;
 
 import java.io.File;
-import java.io.Serializable;
 
 /**
  * Created by zhengjun on 2018/3/20.
@@ -210,15 +210,15 @@ public class FDisk extends FAbstractDisk
     }
 
     @Override
-    public <T extends Serializable> IObjectCache<T> cacheSerializable(Class<T> clazz)
+    public ISerializableCache cacheSerializable()
     {
-        return new SerializableCache(this, clazz);
+        return new SerializableCache(this);
     }
 
     @Override
-    public <T> IObjectCache<T> cacheObject(Class<T> clazz)
+    public IObjectCache cacheObject()
     {
-        return new ObjectCache(this, clazz);
+        return new ObjectCache(this);
     }
 
     //---------- cache end ----------
