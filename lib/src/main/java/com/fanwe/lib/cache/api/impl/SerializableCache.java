@@ -1,46 +1,25 @@
 package com.fanwe.lib.cache.api.impl;
 
 import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.api.ISerializableCache;
+import com.fanwe.lib.cache.api.AbstractObjectCache;
 import com.fanwe.lib.cache.handler.ICacheHandler;
 import com.fanwe.lib.cache.handler.impl.SerializableHandler;
 
 import java.io.Serializable;
 
 /**
- * Created by zhengjun on 2018/3/20.
+ * 序列化缓存处理类
  */
-public class SerializableCache implements ISerializableCache
+public class SerializableCache<T extends Serializable> extends AbstractObjectCache<T>
 {
-    private final SerializableHandler mSerializableHandler;
-
-    public SerializableCache(IDiskInfo diskInfo)
+    public SerializableCache(IDiskInfo diskInfo, Class<T> clazz)
     {
-        mSerializableHandler = new SerializableHandler(diskInfo);
+        super(diskInfo, clazz);
     }
 
     @Override
-    public boolean put(Serializable value)
+    protected ICacheHandler<T> onCreateCacheHandler(IDiskInfo diskInfo)
     {
-        if (value == null)
-        {
-            return false;
-        }
-
-        final String key = value.getClass().getName();
-        return mSerializableHandler.putCache(key, value);
-    }
-
-    @Override
-    public <T extends Serializable> T get(Class<T> clazz)
-    {
-        mSerializableHandler.getCache("", clazz);
-        return null;
-    }
-
-    @Override
-    public boolean remove()
-    {
-        return false;
+        return new SerializableHandler<>(diskInfo);
     }
 }

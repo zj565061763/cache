@@ -191,9 +191,6 @@ public class FDisk extends FAbstractDisk
     private BooleanHandler mBooleanHandler;
     private StringHandler mStringHandler;
 
-    private ObjectCache mObjectCache;
-    private SerializableCache mSerializableCache;
-
     @Override
     public ICommonCache<Integer> cacheInteger()
     {
@@ -257,23 +254,13 @@ public class FDisk extends FAbstractDisk
     @Override
     public <T extends Serializable> IObjectCache<T> cacheSerializable(Class<T> clazz)
     {
-        if (mSerializableCache == null)
-        {
-            mSerializableCache = new SerializableCache(this);
-        }
-        mSerializableCache.setValueClass(clazz);
-        return mSerializableCache;
+        return new SerializableCache(this, clazz);
     }
 
     @Override
     public <T> IObjectCache<T> cacheObject(Class<T> clazz)
     {
-        if (mObjectCache == null)
-        {
-            mObjectCache = new ObjectCache(this);
-        }
-        mObjectCache.setValueClass(clazz);
-        return mObjectCache;
+        return new ObjectCache(this, clazz);
     }
 
     //---------- cache end ----------
