@@ -88,8 +88,21 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
         return stringToValue(model.data, clazz);
     }
 
+    /**
+     * 把缓存转为字符串
+     *
+     * @param value
+     * @return
+     */
     protected abstract String valueToString(T value);
 
+    /**
+     * 把字符串转为缓存
+     *
+     * @param string
+     * @param clazz
+     * @return
+     */
     protected abstract T stringToValue(String string, Class<T> clazz);
 
 
