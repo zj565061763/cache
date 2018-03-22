@@ -89,12 +89,15 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
     }
 
     /**
-     * 把缓存转为字符串
+     * 把缓存转为字符串，默认直接返回对象的toString()方法的返回值，可以重写改变规则
      *
      * @param value
      * @return
      */
-    protected abstract String valueToString(T value);
+    protected String valueToString(T value)
+    {
+        return value.toString();
+    }
 
     /**
      * 把字符串转为缓存

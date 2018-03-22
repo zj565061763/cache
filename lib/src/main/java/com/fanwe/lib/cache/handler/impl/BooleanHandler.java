@@ -14,12 +14,6 @@ public class BooleanHandler extends StringConverterHandler<Boolean>
     }
 
     @Override
-    protected String valueToString(Boolean value)
-    {
-        return value.toString();
-    }
-
-    @Override
     protected Boolean stringToValue(String string, Class<Boolean> clazz)
     {
         return Boolean.valueOf(string);

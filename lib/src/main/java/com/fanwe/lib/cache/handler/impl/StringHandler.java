@@ -14,12 +14,6 @@ public class StringHandler extends StringConverterHandler<String>
     }
 
     @Override
-    protected String valueToString(String value)
-    {
-        return value;
-    }
-
-    @Override
     protected String stringToValue(String string, Class<String> clazz)
     {
         return string;

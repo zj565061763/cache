@@ -14,12 +14,6 @@ public class DoubleHandler extends StringConverterHandler<Double>
     }
 
     @Override
-    protected String valueToString(Double value)
-    {
-        return value.toString();
-    }
-
-    @Override
     protected Double stringToValue(String string, Class<Double> clazz)
     {
         return Double.valueOf(string);

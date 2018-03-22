@@ -14,12 +14,6 @@ public class FloatHandler extends StringConverterHandler<Float>
     }
 
     @Override
-    protected String valueToString(Float value)
-    {
-        return value.toString();
-    }
-
-    @Override
     protected Float stringToValue(String string, Class<Float> clazz)
     {
         return Float.valueOf(string);

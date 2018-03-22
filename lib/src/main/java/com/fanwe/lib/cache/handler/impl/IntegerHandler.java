@@ -14,12 +14,6 @@ public class IntegerHandler extends StringConverterHandler<Integer>
     }
 
     @Override
-    protected String valueToString(Integer value)
-    {
-        return value.toString();
-    }
-
-    @Override
     protected Integer stringToValue(String string, Class<Integer> clazz)
     {
         return Integer.valueOf(string);
