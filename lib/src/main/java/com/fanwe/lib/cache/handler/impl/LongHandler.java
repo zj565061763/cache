@@ -16,7 +16,7 @@ public class LongHandler extends StringConverterHandler<Long>
     @Override
     protected String valueToString(Long value)
     {
-        return String.valueOf(value);
+        return value.toString();
     }
 
     @Override

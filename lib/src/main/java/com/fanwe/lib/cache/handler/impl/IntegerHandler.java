@@ -16,7 +16,7 @@ public class IntegerHandler extends StringConverterHandler<Integer>
     @Override
     protected String valueToString(Integer value)
     {
-        return String.valueOf(value);
+        return value.toString();
     }
 
     @Override
