@@ -91,10 +91,10 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
     {
         synchronized (FDisk.class)
         {
-            final T result = getMemory(key);
+            final Object result = getMemory(key);
             if (result != null)
             {
-                return result;
+                return (T) result;
             }
 
             final File file = getCacheFile(key);
@@ -156,12 +156,12 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
         }
     }
 
-    private <T> T getMemory(String key)
+    private Object getMemory(String key)
     {
         if (getDiskInfo().isMemorySupport())
         {
             final String realKey = getRealKey(key, false);
-            return (T) MAP_MEMORY.get(realKey);
+            return MAP_MEMORY.get(realKey);
         } else
         {
             return null;
