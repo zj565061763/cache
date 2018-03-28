@@ -139,7 +139,14 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
     @Override
     public final T get(String key)
     {
-        return getCache(key, null);
+        return get(key, null);
+    }
+
+    @Override
+    public final T get(String key, T defaultValue)
+    {
+        final T cache = getCache(key, null);
+        return cache == null ? defaultValue : cache;
     }
 
     //---------- ICommonCache end ----------
