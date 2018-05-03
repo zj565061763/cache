@@ -80,7 +80,7 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
             final boolean result = putCacheImpl(key, value, file);
             if (result)
             {
-                putMemory(key, value);
+                putMemoryIfNeed(key, value);
             }
             return result;
         }
@@ -103,7 +103,12 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
                 return null;
             }
 
-            return getCacheImpl(key, clazz, file);
+            final T cache = getCacheImpl(key, clazz, file);
+            if (cache != null)
+            {
+                putMemoryIfNeed(key, cache);
+            }
+            return cache;
         }
     }
 
@@ -154,7 +159,7 @@ public abstract class CacheHandler<T> implements ICacheHandler<T>, ICommonCache<
 
     //---------- memory start ----------
 
-    private void putMemory(String key, Object value)
+    private void putMemoryIfNeed(String key, Object value)
     {
         if (getDiskInfo().isMemorySupport())
         {
