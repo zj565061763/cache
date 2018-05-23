@@ -31,7 +31,7 @@ public class FDisk extends BaseDisk<FDisk>
      *
      * @return
      */
-    public static FDisk open()
+    public static Disk open()
     {
         return openDir(getExternalFilesDir(DEFAULT_FILE_DIR));
     }
@@ -42,7 +42,7 @@ public class FDisk extends BaseDisk<FDisk>
      * @param dirName
      * @return
      */
-    public static FDisk open(String dirName)
+    public static Disk open(String dirName)
     {
         return openDir(getExternalFilesDir(dirName));
     }
@@ -52,7 +52,7 @@ public class FDisk extends BaseDisk<FDisk>
      *
      * @return
      */
-    public static FDisk openCache()
+    public static Disk openCache()
     {
         return openDir(getExternalCacheDir(DEFAULT_CACHE_DIR));
     }
@@ -63,7 +63,7 @@ public class FDisk extends BaseDisk<FDisk>
      * @param dirName
      * @return
      */
-    public static FDisk openCache(String dirName)
+    public static Disk openCache(String dirName)
     {
         return openDir(getExternalCacheDir(dirName));
     }
@@ -73,7 +73,7 @@ public class FDisk extends BaseDisk<FDisk>
      *
      * @return
      */
-    public static FDisk openInternal()
+    public static Disk openInternal()
     {
         return openDir(getInternalFilesDir(DEFAULT_FILE_DIR));
     }
@@ -84,7 +84,7 @@ public class FDisk extends BaseDisk<FDisk>
      * @param dirName
      * @return
      */
-    public static FDisk openInternal(String dirName)
+    public static Disk openInternal(String dirName)
     {
         return openDir(getInternalFilesDir(dirName));
     }
@@ -94,7 +94,7 @@ public class FDisk extends BaseDisk<FDisk>
      *
      * @return
      */
-    public static FDisk openInternalCache()
+    public static Disk openInternalCache()
     {
         return openDir(getInternalCacheDir(DEFAULT_CACHE_DIR));
     }
@@ -105,7 +105,7 @@ public class FDisk extends BaseDisk<FDisk>
      * @param dirName
      * @return
      */
-    public static FDisk openInternalCache(String dirName)
+    public static Disk openInternalCache(String dirName)
     {
         return openDir(getInternalCacheDir(dirName));
     }
@@ -116,18 +116,13 @@ public class FDisk extends BaseDisk<FDisk>
      * @param directory
      * @return
      */
-    public static FDisk openDir(File directory)
+    public static Disk openDir(File directory)
     {
         if (directory == null)
-        {
             throw new NullPointerException("directory must not be null");
-        } else
-        {
-            if (!directory.exists() && !directory.mkdirs())
-            {
-                throw new IllegalArgumentException("directory can not be create, theck the directory path");
-            }
-        }
+
+        if (!directory.exists() && !directory.mkdirs())
+            throw new IllegalArgumentException("directory create failed, theck the directory:" + directory.getAbsolutePath());
 
         return new FDisk(directory);
     }

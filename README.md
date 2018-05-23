@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity
 
 ## 创建对象转换器
 ```java
-public class GsonObjectConverter implements IObjectConverter
+public class GsonObjectConverter implements ObjectConverter
 {
     private static final Gson GSON = new Gson();
 
@@ -96,7 +96,7 @@ public class GsonObjectConverter implements IObjectConverter
 
 ## 创建加解密转换器
 ```java
-public class GlobalEncryptConverter implements IEncryptConverter
+public class GlobalEncryptConverter implements EncryptConverter
 {
     @Override
     public String encrypt(String content)

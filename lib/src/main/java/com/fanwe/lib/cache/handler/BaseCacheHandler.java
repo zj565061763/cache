@@ -2,8 +2,8 @@ package com.fanwe.lib.cache.handler;
 
 import android.text.TextUtils;
 
+import com.fanwe.lib.cache.Disk;
 import com.fanwe.lib.cache.DiskInfo;
-import com.fanwe.lib.cache.FDisk;
 import com.fanwe.lib.cache.api.CommonCache;
 
 import java.io.File;
@@ -60,7 +60,7 @@ public abstract class BaseCacheHandler<T> implements CacheHandler<T>, CommonCach
     @Override
     public final boolean putCache(String key, T value)
     {
-        synchronized (FDisk.class)
+        synchronized (Disk.class)
         {
             if (value == null)
             {
@@ -81,7 +81,7 @@ public abstract class BaseCacheHandler<T> implements CacheHandler<T>, CommonCach
     @Override
     public final T getCache(String key, Class<T> clazz)
     {
-        synchronized (FDisk.class)
+        synchronized (Disk.class)
         {
             final Object result = getMemory(key);
             if (result != null)
@@ -102,7 +102,7 @@ public abstract class BaseCacheHandler<T> implements CacheHandler<T>, CommonCach
     @Override
     public final boolean removeCache(String key)
     {
-        synchronized (FDisk.class)
+        synchronized (Disk.class)
         {
             removeMemory(key);
 

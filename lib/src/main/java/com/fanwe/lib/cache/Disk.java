@@ -12,7 +12,7 @@ import com.fanwe.lib.cache.converter.ObjectConverter;
 public interface Disk<T extends Disk>
 {
     /**
-     * 设置是否加解密
+     * 设置保存缓存的时候是否加密
      *
      * @param encrypt
      * @return

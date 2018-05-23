@@ -9,7 +9,7 @@ import java.io.File;
 
 abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
 {
-    private File mDirectory;
+    private final File mDirectory;
 
     private static Context mContext;
     private static EncryptConverter sGlobalEncryptConverter;
@@ -23,6 +23,8 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
 
     protected BaseDisk(File directory)
     {
+        if (directory == null)
+            throw new NullPointerException("directory is null");
         mDirectory = directory;
     }
 
@@ -43,7 +45,10 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
      */
     public static void setGlobalEncryptConverter(EncryptConverter globalEncryptConverter)
     {
-        sGlobalEncryptConverter = globalEncryptConverter;
+        synchronized (Disk.class)
+        {
+            sGlobalEncryptConverter = globalEncryptConverter;
+        }
     }
 
     /**
@@ -53,7 +58,10 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
      */
     public static void setGlobalObjectConverter(ObjectConverter globalObjectConverter)
     {
-        sGlobalObjectConverter = globalObjectConverter;
+        synchronized (Disk.class)
+        {
+            sGlobalObjectConverter = globalObjectConverter;
+        }
     }
 
     //---------- Disk start ----------
@@ -61,29 +69,41 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     @Override
     public T setEncrypt(boolean encrypt)
     {
-        mEncrypt = encrypt;
-        return (T) this;
+        synchronized (Disk.class)
+        {
+            mEncrypt = encrypt;
+            return (T) this;
+        }
     }
 
     @Override
     public T setMemorySupport(boolean memorySupport)
     {
-        mMemorySupport = memorySupport;
-        return (T) this;
+        synchronized (Disk.class)
+        {
+            mMemorySupport = memorySupport;
+            return (T) this;
+        }
     }
 
     @Override
     public T setEncryptConverter(EncryptConverter encryptConverter)
     {
-        mEncryptConverter = encryptConverter;
-        return (T) this;
+        synchronized (Disk.class)
+        {
+            mEncryptConverter = encryptConverter;
+            return (T) this;
+        }
     }
 
     @Override
     public T setObjectConverter(ObjectConverter objectConverter)
     {
-        mObjectConverter = objectConverter;
-        return (T) this;
+        synchronized (Disk.class)
+        {
+            mObjectConverter = objectConverter;
+            return (T) this;
+        }
     }
 
     @Override
@@ -95,7 +115,7 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     @Override
     public final void delete()
     {
-        synchronized (FDisk.class)
+        synchronized (Disk.class)
         {
             deleteFileOrDir(mDirectory);
         }
@@ -103,7 +123,7 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
 
     //---------- Disk end ----------
 
-    //---------- IDiskInfo start ----------
+    //---------- DiskInfo start ----------
 
     @Override
     public final boolean isEncrypt()
@@ -122,7 +142,11 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     {
         if (!mDirectory.exists())
         {
-            mDirectory.mkdirs();
+            synchronized (Disk.class)
+            {
+                if (!mDirectory.exists())
+                    mDirectory.mkdirs();
+            }
         }
         return mDirectory;
     }
@@ -130,28 +154,16 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     @Override
     public final EncryptConverter getEncryptConverter()
     {
-        if (mEncryptConverter != null)
-        {
-            return mEncryptConverter;
-        } else
-        {
-            return sGlobalEncryptConverter;
-        }
+        return mEncryptConverter != null ? mEncryptConverter : sGlobalEncryptConverter;
     }
 
     @Override
     public final ObjectConverter getObjectConverter()
     {
-        if (mObjectConverter != null)
-        {
-            return mObjectConverter;
-        } else
-        {
-            return sGlobalObjectConverter;
-        }
+        return mObjectConverter != null ? mObjectConverter : sGlobalObjectConverter;
     }
 
-    //---------- IDiskInfo end ----------
+    //---------- DiskInfo end ----------
 
     //---------- util method start ----------
 
@@ -163,9 +175,7 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     private static void checkContext()
     {
         if (mContext == null)
-        {
             throw new NullPointerException("you must invoke FDisk.init(Context) method before this");
-        }
     }
 
     /**
@@ -177,8 +187,7 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     protected static final File getExternalFilesDir(String dirName)
     {
         checkContext();
-        File dir = getContext().getExternalFilesDir(dirName);
-        return dir;
+        return getContext().getExternalFilesDir(dirName);
     }
 
     /**
@@ -190,8 +199,7 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     protected static final File getExternalCacheDir(String dirName)
     {
         checkContext();
-        File dir = new File(getContext().getExternalCacheDir(), dirName);
-        return dir;
+        return new File(getContext().getExternalCacheDir(), dirName);
     }
 
     /**
@@ -203,8 +211,7 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     protected static final File getInternalFilesDir(String dirName)
     {
         checkContext();
-        File dir = new File(getContext().getFilesDir(), dirName);
-        return dir;
+        return new File(getContext().getFilesDir(), dirName);
     }
 
     /**
@@ -216,20 +223,17 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     protected static final File getInternalCacheDir(String dirName)
     {
         checkContext();
-        File dir = new File(getContext().getCacheDir(), dirName);
-        return dir;
+        return new File(getContext().getCacheDir(), dirName);
     }
 
     private static boolean deleteFileOrDir(File path)
     {
         if (path == null || !path.exists())
-        {
             return true;
-        }
+
         if (path.isFile())
-        {
             return path.delete();
-        }
+
         File[] files = path.listFiles();
         if (files != null)
         {
