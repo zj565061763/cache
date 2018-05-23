@@ -1,8 +1,7 @@
+# Gradle
+`implementation 'com.fanwe.android:cache:1.0.24-rc1'`
 
-## Gradle
-[![](https://jitpack.io/v/zj565061763/cache.svg)](https://jitpack.io/#zj565061763/cache)
-
-## 简单demo
+# 简单demo
 ```java
 public class MainActivity extends AppCompatActivity
 {
@@ -74,40 +73,44 @@ public class MainActivity extends AppCompatActivity
 }
 ```
 
-## 创建对象转换器
+# 创建对象转换器
 ```java
 public class GsonObjectConverter implements ObjectConverter
 {
     private static final Gson GSON = new Gson();
 
     @Override
-    public String objectToString(Object object)
+    public byte[] objectToByte(Object object)
     {
-        return GSON.toJson(object); //对象转json
+        // 对象转byte
+        return GSON.toJson(object).getBytes();
     }
 
     @Override
-    public <T> T stringToObject(String string, Class<T> clazz)
+    public <T> T byteToObject(byte[] bytes, Class<T> clazz)
     {
-        return GSON.fromJson(string, clazz); //json转对象
+        // byte转对象
+        return GSON.fromJson(new String(bytes), clazz);
     }
 }
 ```
 
-## 创建加解密转换器
+# 创建加解密转换器
 ```java
 public class GlobalEncryptConverter implements EncryptConverter
 {
     @Override
-    public String encrypt(String content)
+    public byte[] encrypt(byte[] bytes)
     {
-        return AESUtil.encrypt(content); //加密
+        // 加密
+        return bytes;
     }
 
     @Override
-    public String decrypt(String content)
+    public byte[] decrypt(byte[] bytes)
     {
-        return AESUtil.decrypt(content); //解密
+        // 解密
+        return bytes;
     }
 }
 ```
