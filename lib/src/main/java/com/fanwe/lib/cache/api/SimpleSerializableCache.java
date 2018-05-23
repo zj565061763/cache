@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * 序列化缓存
  */
-public class SimpleSerializableCache implements com.fanwe.lib.cache.api.SerializableCache
+public class SimpleSerializableCache implements SerializableCache
 {
     private final DiskInfo mDiskInfo;
 
@@ -21,9 +21,7 @@ public class SimpleSerializableCache implements com.fanwe.lib.cache.api.Serializ
     public <T extends Serializable> boolean put(T value)
     {
         if (value == null)
-        {
             return false;
-        }
 
         final String key = value.getClass().getName();
         return new SerializableHandler<T>(mDiskInfo).putCache(key, value);

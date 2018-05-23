@@ -6,7 +6,7 @@ import com.fanwe.lib.cache.handler.ObjectHandler;
 /**
  * 对象缓存
  */
-public class SimpleObjectCache implements com.fanwe.lib.cache.api.ObjectCache
+public class SimpleObjectCache implements ObjectCache
 {
     private final DiskInfo mDiskInfo;
 
@@ -19,9 +19,7 @@ public class SimpleObjectCache implements com.fanwe.lib.cache.api.ObjectCache
     public boolean put(Object value)
     {
         if (value == null)
-        {
             return false;
-        }
 
         final String key = value.getClass().getName();
         return new ObjectHandler<>(mDiskInfo).putCache(key, value);
