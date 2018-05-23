@@ -30,7 +30,7 @@ public interface CommonCache<T>
     boolean put(String key, T value);
 
     /**
-     * 获得缓存对象
+     * 返回key对应的缓存
      *
      * @param key
      * @return
