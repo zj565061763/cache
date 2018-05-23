@@ -12,7 +12,7 @@ import com.fanwe.lib.cache.handler.StringHandler;
 
 import java.io.File;
 
-public class FDisk extends FAbstractDisk<FDisk>
+public class FDisk extends BaseDisk<FDisk>
 {
     private static final String DEFAULT_FILE_DIR = "disk_file";
     private static final String DEFAULT_CACHE_DIR = "disk_cache";

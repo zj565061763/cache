@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * 缓存可以和字符串互相转换的处理类
  */
-public abstract class StringConverterHandler<T> extends AbstractCacheHandler<T>
+public abstract class StringConverterHandler<T> extends BaseCacheHandler<T>
 {
     private SerializableHandler<CacheModel> mSerializableHandler;
 

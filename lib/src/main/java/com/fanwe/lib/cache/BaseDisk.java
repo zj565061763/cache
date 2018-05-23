@@ -7,7 +7,7 @@ import com.fanwe.lib.cache.converter.ObjectConverter;
 
 import java.io.File;
 
-abstract class FAbstractDisk<T extends FAbstractDisk> implements Disk<T>, DiskInfo
+abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
 {
     private File mDirectory;
 
@@ -21,7 +21,7 @@ abstract class FAbstractDisk<T extends FAbstractDisk> implements Disk<T>, DiskIn
 
     private boolean mMemorySupport;
 
-    protected FAbstractDisk(File directory)
+    protected BaseDisk(File directory)
     {
         mDirectory = directory;
     }

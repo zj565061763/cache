@@ -13,7 +13,7 @@ import java.io.Serializable;
 /**
  * 序列化处理类
  */
-public class SerializableHandler<T extends Serializable> extends AbstractCacheHandler<T>
+public class SerializableHandler<T extends Serializable> extends BaseCacheHandler<T>
 {
     public SerializableHandler(DiskInfo diskInfo)
     {

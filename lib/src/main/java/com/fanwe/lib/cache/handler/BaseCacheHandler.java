@@ -15,12 +15,12 @@ import java.util.Map;
 /**
  * 缓存处理基类
  */
-public abstract class AbstractCacheHandler<T> implements CacheHandler<T>, CommonCache<T>
+public abstract class BaseCacheHandler<T> implements CacheHandler<T>, CommonCache<T>
 {
     private final DiskInfo mDiskInfo;
     private static final Map<String, Object> MAP_MEMORY = new HashMap<>();
 
-    public AbstractCacheHandler(DiskInfo diskInfo)
+    public BaseCacheHandler(DiskInfo diskInfo)
     {
         if (diskInfo == null)
             throw new NullPointerException("diskInfo is null");
