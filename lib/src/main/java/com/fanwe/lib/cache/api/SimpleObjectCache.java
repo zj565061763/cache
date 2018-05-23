@@ -1,4 +1,4 @@
-package com.fanwe.lib.cache.api.impl;
+package com.fanwe.lib.cache.api;
 
 import com.fanwe.lib.cache.DiskInfo;
 import com.fanwe.lib.cache.handler.ObjectHandler;
