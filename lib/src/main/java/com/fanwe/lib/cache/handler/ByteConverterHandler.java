@@ -81,7 +81,12 @@ public abstract class ByteConverterHandler<T> extends BaseCacheHandler<T>
         final boolean isEncrypted = model.isEncrypted;
         final Disk.EncryptConverter converter = getDiskInfo().getEncryptConverter();
         if (isEncrypted && converter == null)
-            throw new RuntimeException("content is encrypted but EncryptConverter not found when try decrypt");
+        {
+            final Disk.ExceptionHandler handler = getDiskInfo().getExceptionHandler();
+            if (handler != null)
+                handler.onException(new RuntimeException("content is encrypted but EncryptConverter not found when try decrypt"));
+            return null;
+        }
 
         if (isEncrypted)
             model.data = converter.decrypt(model.data);

@@ -15,6 +15,7 @@
  */
 package com.fanwe.lib.cache.handler;
 
+import com.fanwe.lib.cache.Disk;
 import com.fanwe.lib.cache.DiskInfo;
 
 import java.io.Closeable;
@@ -53,6 +54,8 @@ public class SerializableHandler<T extends Serializable> extends BaseCacheHandle
             return true;
         } catch (Exception e)
         {
+            final Disk.ExceptionHandler handler = getDiskInfo().getExceptionHandler();
+            if (handler != null) handler.onException(e);
             e.printStackTrace();
         } finally
         {
@@ -71,6 +74,8 @@ public class SerializableHandler<T extends Serializable> extends BaseCacheHandle
             return (T) is.readObject();
         } catch (Exception e)
         {
+            final Disk.ExceptionHandler handler = getDiskInfo().getExceptionHandler();
+            if (handler != null) handler.onException(e);
             e.printStackTrace();
         } finally
         {
