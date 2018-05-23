@@ -1,22 +1,18 @@
 package com.fanwe.lib.cache;
 
-import com.fanwe.lib.cache.api.ICommonCache;
-import com.fanwe.lib.cache.api.IObjectCache;
-import com.fanwe.lib.cache.api.ISerializableCache;
-import com.fanwe.lib.cache.api.impl.ObjectCache;
-import com.fanwe.lib.cache.api.impl.SerializableCache;
-import com.fanwe.lib.cache.converter.IEncryptConverter;
-import com.fanwe.lib.cache.converter.IObjectConverter;
-import com.fanwe.lib.cache.handler.impl.BooleanHandler;
-import com.fanwe.lib.cache.handler.impl.DoubleHandler;
-import com.fanwe.lib.cache.handler.impl.FloatHandler;
-import com.fanwe.lib.cache.handler.impl.IntegerHandler;
-import com.fanwe.lib.cache.handler.impl.LongHandler;
-import com.fanwe.lib.cache.handler.impl.StringHandler;
+import com.fanwe.lib.cache.api.CommonCache;
+import com.fanwe.lib.cache.api.ObjectCache;
+import com.fanwe.lib.cache.api.SerializableCache;
+import com.fanwe.lib.cache.handler.BooleanHandler;
+import com.fanwe.lib.cache.handler.DoubleHandler;
+import com.fanwe.lib.cache.handler.FloatHandler;
+import com.fanwe.lib.cache.handler.IntegerHandler;
+import com.fanwe.lib.cache.handler.LongHandler;
+import com.fanwe.lib.cache.handler.StringHandler;
 
 import java.io.File;
 
-public class FDisk extends FAbstractDisk
+public class FDisk extends FAbstractDisk<FDisk>
 {
     private static final String DEFAULT_FILE_DIR = "disk_file";
     private static final String DEFAULT_CACHE_DIR = "disk_cache";
@@ -136,86 +132,54 @@ public class FDisk extends FAbstractDisk
 
     //---------- open end ----------
 
-    //---------- Override start ----------
-
-    @Override
-    public FDisk setEncrypt(boolean encrypt)
-    {
-        super.setEncrypt(encrypt);
-        return this;
-    }
-
-    @Override
-    public FDisk setMemorySupport(boolean memorySupport)
-    {
-        super.setMemorySupport(memorySupport);
-        return this;
-    }
-
-    @Override
-    public FDisk setEncryptConverter(IEncryptConverter encryptConverter)
-    {
-        super.setEncryptConverter(encryptConverter);
-        return this;
-    }
-
-    @Override
-    public FDisk setObjectConverter(IObjectConverter objectConverter)
-    {
-        super.setObjectConverter(objectConverter);
-        return this;
-    }
-
-    //---------- Override end ----------
-
     //---------- cache start ----------
 
     @Override
-    public ICommonCache<Integer> cacheInteger()
+    public CommonCache<Integer> cacheInteger()
     {
         return new IntegerHandler(this);
     }
 
     @Override
-    public ICommonCache<Long> cacheLong()
+    public CommonCache<Long> cacheLong()
     {
         return new LongHandler(this);
     }
 
     @Override
-    public ICommonCache<Float> cacheFloat()
+    public CommonCache<Float> cacheFloat()
     {
         return new FloatHandler(this);
     }
 
     @Override
-    public ICommonCache<Double> cacheDouble()
+    public CommonCache<Double> cacheDouble()
     {
         return new DoubleHandler(this);
     }
 
     @Override
-    public ICommonCache<Boolean> cacheBoolean()
+    public CommonCache<Boolean> cacheBoolean()
     {
         return new BooleanHandler(this);
     }
 
     @Override
-    public ICommonCache<String> cacheString()
+    public CommonCache<String> cacheString()
     {
         return new StringHandler(this);
     }
 
     @Override
-    public ISerializableCache cacheSerializable()
+    public SerializableCache cacheSerializable()
     {
-        return new SerializableCache(this);
+        return new com.fanwe.lib.cache.api.impl.SerializableCache(this);
     }
 
     @Override
-    public IObjectCache cacheObject()
+    public ObjectCache cacheObject()
     {
-        return new ObjectCache(this);
+        return new com.fanwe.lib.cache.api.impl.ObjectCache(this);
     }
 
     //---------- cache end ----------

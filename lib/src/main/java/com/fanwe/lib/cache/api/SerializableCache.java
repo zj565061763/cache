@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * 序列化缓存接口
  */
-public interface ISerializableCache
+public interface SerializableCache
 {
     <T extends Serializable> boolean put(T value);
 

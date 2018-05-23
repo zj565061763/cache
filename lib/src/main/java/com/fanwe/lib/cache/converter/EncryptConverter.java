@@ -3,7 +3,7 @@ package com.fanwe.lib.cache.converter;
 /**
  * 加解密转换器
  */
-public interface IEncryptConverter
+public interface EncryptConverter
 {
     /**
      * 加密字符串

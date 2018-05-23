@@ -1,8 +1,7 @@
 package com.fanwe.lib.cache.handler;
 
-import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.converter.IEncryptConverter;
-import com.fanwe.lib.cache.handler.impl.SerializableHandler;
+import com.fanwe.lib.cache.DiskInfo;
+import com.fanwe.lib.cache.converter.EncryptConverter;
 
 import java.io.File;
 import java.io.Serializable;
@@ -10,11 +9,11 @@ import java.io.Serializable;
 /**
  * 缓存可以和字符串互相转换的处理类
  */
-public abstract class StringConverterHandler<T> extends CacheHandler<T>
+public abstract class StringConverterHandler<T> extends AbstractCacheHandler<T>
 {
     private SerializableHandler<CacheModel> mSerializableHandler;
 
-    public StringConverterHandler(IDiskInfo diskInfo)
+    public StringConverterHandler(DiskInfo diskInfo)
     {
         super(diskInfo);
     }
@@ -39,26 +38,20 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
     protected final boolean putCacheImpl(String key, T value, File file)
     {
         final boolean encrypt = getDiskInfo().isEncrypt();
-        final IEncryptConverter converter = getDiskInfo().getEncryptConverter();
+        final EncryptConverter converter = getDiskInfo().getEncryptConverter();
         if (encrypt && converter == null)
-        {
-            throw new RuntimeException("you must provide an IEncryptConverter instance before this");
-        }
+            throw new RuntimeException("you must provide an EncryptConverter instance before this");
 
         final String data = valueToString(value);
         if (data == null)
-        {
             throw new RuntimeException("valueToString(String) method can not return null");
-        }
 
         final CacheModel model = new CacheModel();
         model.data = encrypt ? converter.encrypt(data) : data;
         model.isEncrypted = encrypt;
 
         if (model.data == null)
-        {
-            throw new RuntimeException("IEncryptConverter.encrypt(String) method can not return null");
-        }
+            throw new RuntimeException("EncryptConverter.encrypt(String) method can not return null");
 
         return getSerializableHandler().putCache(key, model);
     }
@@ -68,22 +61,15 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
     {
         final CacheModel model = getSerializableHandler().getCache(key, CacheModel.class);
         if (model == null)
-        {
             return null;
-        }
 
         final boolean isEncrypted = model.isEncrypted;
-        final IEncryptConverter converter = getDiskInfo().getEncryptConverter();
+        final EncryptConverter converter = getDiskInfo().getEncryptConverter();
         if (isEncrypted && converter == null)
-        {
-            throw new RuntimeException("content is encrypted but IEncryptConverter not found when try decrypt");
-        }
+            throw new RuntimeException("content is encrypted but EncryptConverter not found when try decrypt");
 
         if (isEncrypted)
-        {
-            // 需要解密
             model.data = converter.decrypt(model.data);
-        }
 
         return stringToValue(model.data, clazz);
     }
@@ -107,7 +93,6 @@ public abstract class StringConverterHandler<T> extends CacheHandler<T>
      * @return
      */
     protected abstract T stringToValue(String string, Class<T> clazz);
-
 
     private static final class CacheModel implements Serializable
     {

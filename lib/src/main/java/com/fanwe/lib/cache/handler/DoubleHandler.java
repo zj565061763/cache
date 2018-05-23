@@ -1,14 +1,13 @@
-package com.fanwe.lib.cache.handler.impl;
+package com.fanwe.lib.cache.handler;
 
-import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.handler.StringConverterHandler;
+import com.fanwe.lib.cache.DiskInfo;
 
 /**
  * Double处理类
  */
 public class DoubleHandler extends StringConverterHandler<Double>
 {
-    public DoubleHandler(IDiskInfo diskInfo)
+    public DoubleHandler(DiskInfo diskInfo)
     {
         super(diskInfo);
     }

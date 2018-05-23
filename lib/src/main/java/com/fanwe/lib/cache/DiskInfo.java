@@ -1,14 +1,14 @@
 package com.fanwe.lib.cache;
 
-import com.fanwe.lib.cache.converter.IEncryptConverter;
-import com.fanwe.lib.cache.converter.IObjectConverter;
+import com.fanwe.lib.cache.converter.EncryptConverter;
+import com.fanwe.lib.cache.converter.ObjectConverter;
 
 import java.io.File;
 
 /**
  * Created by zhengjun on 2017/9/1.
  */
-public interface IDiskInfo
+public interface DiskInfo
 {
     /**
      * 是否需要加解密
@@ -36,12 +36,12 @@ public interface IDiskInfo
      *
      * @return
      */
-    IEncryptConverter getEncryptConverter();
+    EncryptConverter getEncryptConverter();
 
     /**
      * 返回对象转换器
      *
      * @return
      */
-    IObjectConverter getObjectConverter();
+    ObjectConverter getObjectConverter();
 }

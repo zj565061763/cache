@@ -1,12 +1,12 @@
 package com.fanwe.www.cache.converter;
 
-import com.fanwe.lib.cache.converter.IObjectConverter;
+import com.fanwe.lib.cache.converter.ObjectConverter;
 import com.google.gson.Gson;
 
 /**
  * Created by Administrator on 2017/8/29.
  */
-public class GsonObjectConverter implements IObjectConverter
+public class GsonObjectConverter implements ObjectConverter
 {
     private static final Gson GSON = new Gson();
 

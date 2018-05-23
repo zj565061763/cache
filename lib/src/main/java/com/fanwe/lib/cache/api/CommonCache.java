@@ -3,10 +3,23 @@ package com.fanwe.lib.cache.api;
 /**
  * 通用缓存接口
  */
-public interface ICommonCache<T>
+public interface CommonCache<T>
 {
+    /**
+     * 放入缓存对象
+     *
+     * @param key
+     * @param value
+     * @return
+     */
     boolean put(String key, T value);
 
+    /**
+     * 获得缓存对象
+     *
+     * @param key
+     * @return
+     */
     T get(String key);
 
     /**

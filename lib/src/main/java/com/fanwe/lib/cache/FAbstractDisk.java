@@ -2,22 +2,22 @@ package com.fanwe.lib.cache;
 
 import android.content.Context;
 
-import com.fanwe.lib.cache.converter.IEncryptConverter;
-import com.fanwe.lib.cache.converter.IObjectConverter;
+import com.fanwe.lib.cache.converter.EncryptConverter;
+import com.fanwe.lib.cache.converter.ObjectConverter;
 
 import java.io.File;
 
-abstract class FAbstractDisk implements IDisk, IDiskInfo
+abstract class FAbstractDisk<T extends FAbstractDisk> implements Disk<T>, DiskInfo
 {
     private File mDirectory;
 
     private static Context mContext;
-    private static IEncryptConverter sGlobalEncryptConverter;
-    private static IObjectConverter sGlobalObjectConverter;
+    private static EncryptConverter sGlobalEncryptConverter;
+    private static ObjectConverter sGlobalObjectConverter;
 
     private boolean mEncrypt;
-    private IEncryptConverter mEncryptConverter;
-    private IObjectConverter mObjectConverter;
+    private EncryptConverter mEncryptConverter;
+    private ObjectConverter mObjectConverter;
 
     private boolean mMemorySupport;
 
@@ -41,7 +41,7 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
      *
      * @param globalEncryptConverter
      */
-    public static void setGlobalEncryptConverter(IEncryptConverter globalEncryptConverter)
+    public static void setGlobalEncryptConverter(EncryptConverter globalEncryptConverter)
     {
         sGlobalEncryptConverter = globalEncryptConverter;
     }
@@ -51,39 +51,39 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
      *
      * @param globalObjectConverter
      */
-    public static void setGlobalObjectConverter(IObjectConverter globalObjectConverter)
+    public static void setGlobalObjectConverter(ObjectConverter globalObjectConverter)
     {
         sGlobalObjectConverter = globalObjectConverter;
     }
 
-    //---------- IDisk start ----------
+    //---------- Disk start ----------
 
     @Override
-    public FAbstractDisk setEncrypt(boolean encrypt)
+    public T setEncrypt(boolean encrypt)
     {
         mEncrypt = encrypt;
-        return this;
+        return (T) this;
     }
 
     @Override
-    public FAbstractDisk setMemorySupport(boolean memorySupport)
+    public T setMemorySupport(boolean memorySupport)
     {
         mMemorySupport = memorySupport;
-        return this;
+        return (T) this;
     }
 
     @Override
-    public FAbstractDisk setEncryptConverter(IEncryptConverter encryptConverter)
+    public T setEncryptConverter(EncryptConverter encryptConverter)
     {
         mEncryptConverter = encryptConverter;
-        return this;
+        return (T) this;
     }
 
     @Override
-    public FAbstractDisk setObjectConverter(IObjectConverter objectConverter)
+    public T setObjectConverter(ObjectConverter objectConverter)
     {
         mObjectConverter = objectConverter;
-        return this;
+        return (T) this;
     }
 
     @Override
@@ -101,7 +101,7 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
         }
     }
 
-    //---------- IDisk end ----------
+    //---------- Disk end ----------
 
     //---------- IDiskInfo start ----------
 
@@ -128,7 +128,7 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
     }
 
     @Override
-    public final IEncryptConverter getEncryptConverter()
+    public final EncryptConverter getEncryptConverter()
     {
         if (mEncryptConverter != null)
         {
@@ -140,7 +140,7 @@ abstract class FAbstractDisk implements IDisk, IDiskInfo
     }
 
     @Override
-    public final IObjectConverter getObjectConverter()
+    public final ObjectConverter getObjectConverter()
     {
         if (mObjectConverter != null)
         {

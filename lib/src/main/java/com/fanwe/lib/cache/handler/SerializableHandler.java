@@ -1,7 +1,6 @@
-package com.fanwe.lib.cache.handler.impl;
+package com.fanwe.lib.cache.handler;
 
-import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.handler.CacheHandler;
+import com.fanwe.lib.cache.DiskInfo;
 
 import java.io.Closeable;
 import java.io.File;
@@ -14,9 +13,9 @@ import java.io.Serializable;
 /**
  * 序列化处理类
  */
-public class SerializableHandler<T extends Serializable> extends CacheHandler<T>
+public class SerializableHandler<T extends Serializable> extends AbstractCacheHandler<T>
 {
-    public SerializableHandler(IDiskInfo diskInfo)
+    public SerializableHandler(DiskInfo diskInfo)
     {
         super(diskInfo);
     }

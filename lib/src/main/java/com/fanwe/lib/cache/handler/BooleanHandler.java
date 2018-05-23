@@ -1,14 +1,13 @@
-package com.fanwe.lib.cache.handler.impl;
+package com.fanwe.lib.cache.handler;
 
-import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.handler.StringConverterHandler;
+import com.fanwe.lib.cache.DiskInfo;
 
 /**
  * Boolean处理类
  */
 public class BooleanHandler extends StringConverterHandler<Boolean>
 {
-    public BooleanHandler(IDiskInfo diskInfo)
+    public BooleanHandler(DiskInfo diskInfo)
     {
         super(diskInfo);
     }

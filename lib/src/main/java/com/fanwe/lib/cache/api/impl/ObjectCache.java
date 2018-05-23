@@ -1,17 +1,16 @@
 package com.fanwe.lib.cache.api.impl;
 
-import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.api.IObjectCache;
-import com.fanwe.lib.cache.handler.impl.ObjectHandler;
+import com.fanwe.lib.cache.DiskInfo;
+import com.fanwe.lib.cache.handler.ObjectHandler;
 
 /**
  * 对象缓存
  */
-public class ObjectCache implements IObjectCache
+public class ObjectCache implements com.fanwe.lib.cache.api.ObjectCache
 {
-    private final IDiskInfo mDiskInfo;
+    private final DiskInfo mDiskInfo;
 
-    public ObjectCache(IDiskInfo diskInfo)
+    public ObjectCache(DiskInfo diskInfo)
     {
         mDiskInfo = diskInfo;
     }

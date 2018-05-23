@@ -1,19 +1,18 @@
 package com.fanwe.lib.cache.api.impl;
 
-import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.api.ISerializableCache;
-import com.fanwe.lib.cache.handler.impl.SerializableHandler;
+import com.fanwe.lib.cache.DiskInfo;
+import com.fanwe.lib.cache.handler.SerializableHandler;
 
 import java.io.Serializable;
 
 /**
  * 序列化缓存
  */
-public class SerializableCache implements ISerializableCache
+public class SerializableCache implements com.fanwe.lib.cache.api.SerializableCache
 {
-    private final IDiskInfo mDiskInfo;
+    private final DiskInfo mDiskInfo;
 
-    public SerializableCache(IDiskInfo diskInfo)
+    public SerializableCache(DiskInfo diskInfo)
     {
         mDiskInfo = diskInfo;
     }

@@ -1,14 +1,13 @@
-package com.fanwe.lib.cache.handler.impl;
+package com.fanwe.lib.cache.handler;
 
-import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.handler.StringConverterHandler;
+import com.fanwe.lib.cache.DiskInfo;
 
 /**
  * Object处理类
  */
 public class ObjectHandler<T> extends StringConverterHandler<T>
 {
-    public ObjectHandler(IDiskInfo diskInfo)
+    public ObjectHandler(DiskInfo diskInfo)
     {
         super(diskInfo);
     }
@@ -37,7 +36,7 @@ public class ObjectHandler<T> extends StringConverterHandler<T>
     {
         if (getDiskInfo().getObjectConverter() == null)
         {
-            throw new NullPointerException("you must provide an IObjectConverter instance before this");
+            throw new NullPointerException("you must provide an ObjectConverter instance before this");
         }
     }
 }

@@ -3,7 +3,7 @@ package com.fanwe.lib.cache.converter;
 /**
  * 对象转换器
  */
-public interface IObjectConverter
+public interface ObjectConverter
 {
     /**
      * 对象转字符串

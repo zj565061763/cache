@@ -1,14 +1,13 @@
-package com.fanwe.lib.cache.handler.impl;
+package com.fanwe.lib.cache.handler;
 
-import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.handler.StringConverterHandler;
+import com.fanwe.lib.cache.DiskInfo;
 
 /**
  * Integer处理类
  */
 public class IntegerHandler extends StringConverterHandler<Integer>
 {
-    public IntegerHandler(IDiskInfo diskInfo)
+    public IntegerHandler(DiskInfo diskInfo)
     {
         super(diskInfo);
     }

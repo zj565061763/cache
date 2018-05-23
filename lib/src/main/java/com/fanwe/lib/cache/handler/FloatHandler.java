@@ -1,14 +1,13 @@
-package com.fanwe.lib.cache.handler.impl;
+package com.fanwe.lib.cache.handler;
 
-import com.fanwe.lib.cache.IDiskInfo;
-import com.fanwe.lib.cache.handler.StringConverterHandler;
+import com.fanwe.lib.cache.DiskInfo;
 
 /**
  * Float处理类
  */
 public class FloatHandler extends StringConverterHandler<Float>
 {
-    public FloatHandler(IDiskInfo diskInfo)
+    public FloatHandler(DiskInfo diskInfo)
     {
         super(diskInfo);
     }
