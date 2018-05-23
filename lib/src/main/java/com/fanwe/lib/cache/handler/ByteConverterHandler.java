@@ -15,8 +15,8 @@
  */
 package com.fanwe.lib.cache.handler;
 
+import com.fanwe.lib.cache.Disk;
 import com.fanwe.lib.cache.DiskInfo;
-import com.fanwe.lib.cache.converter.EncryptConverter;
 
 import java.io.File;
 import java.io.Serializable;
@@ -53,7 +53,7 @@ public abstract class ByteConverterHandler<T> extends BaseCacheHandler<T>
     protected final boolean putCacheImpl(String key, T value, File file)
     {
         final boolean encrypt = getDiskInfo().isEncrypt();
-        final EncryptConverter converter = getDiskInfo().getEncryptConverter();
+        final Disk.EncryptConverter converter = getDiskInfo().getEncryptConverter();
         if (encrypt && converter == null)
             throw new RuntimeException("you must provide an EncryptConverter instance before this");
 
@@ -79,7 +79,7 @@ public abstract class ByteConverterHandler<T> extends BaseCacheHandler<T>
             return null;
 
         final boolean isEncrypted = model.isEncrypted;
-        final EncryptConverter converter = getDiskInfo().getEncryptConverter();
+        final Disk.EncryptConverter converter = getDiskInfo().getEncryptConverter();
         if (isEncrypted && converter == null)
             throw new RuntimeException("content is encrypted but EncryptConverter not found when try decrypt");
 

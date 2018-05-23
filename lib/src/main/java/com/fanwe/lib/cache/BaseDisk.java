@@ -17,9 +17,6 @@ package com.fanwe.lib.cache;
 
 import android.content.Context;
 
-import com.fanwe.lib.cache.converter.EncryptConverter;
-import com.fanwe.lib.cache.converter.ObjectConverter;
-
 import java.io.File;
 
 abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
@@ -33,6 +30,7 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     private boolean mEncrypt;
     private EncryptConverter mEncryptConverter;
     private ObjectConverter mObjectConverter;
+    private ExceptionHandler mExceptionHandler;
 
     private boolean mMemorySupport;
 
@@ -60,10 +58,7 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
      */
     public static void setGlobalEncryptConverter(EncryptConverter globalEncryptConverter)
     {
-        synchronized (Disk.class)
-        {
-            sGlobalEncryptConverter = globalEncryptConverter;
-        }
+        sGlobalEncryptConverter = globalEncryptConverter;
     }
 
     /**
@@ -73,10 +68,7 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
      */
     public static void setGlobalObjectConverter(ObjectConverter globalObjectConverter)
     {
-        synchronized (Disk.class)
-        {
-            sGlobalObjectConverter = globalObjectConverter;
-        }
+        sGlobalObjectConverter = globalObjectConverter;
     }
 
     //---------- Disk start ----------
@@ -84,41 +76,36 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     @Override
     public T setEncrypt(boolean encrypt)
     {
-        synchronized (Disk.class)
-        {
-            mEncrypt = encrypt;
-            return (T) this;
-        }
+        mEncrypt = encrypt;
+        return (T) this;
     }
 
     @Override
     public T setMemorySupport(boolean memorySupport)
     {
-        synchronized (Disk.class)
-        {
-            mMemorySupport = memorySupport;
-            return (T) this;
-        }
+        mMemorySupport = memorySupport;
+        return (T) this;
     }
 
     @Override
     public T setEncryptConverter(EncryptConverter encryptConverter)
     {
-        synchronized (Disk.class)
-        {
-            mEncryptConverter = encryptConverter;
-            return (T) this;
-        }
+        mEncryptConverter = encryptConverter;
+        return (T) this;
     }
 
     @Override
     public T setObjectConverter(ObjectConverter objectConverter)
     {
-        synchronized (Disk.class)
-        {
-            mObjectConverter = objectConverter;
-            return (T) this;
-        }
+        mObjectConverter = objectConverter;
+        return (T) this;
+    }
+
+    @Override
+    public T setExceptionHandler(ExceptionHandler exceptionHandler)
+    {
+        mExceptionHandler = exceptionHandler;
+        return null;
     }
 
     @Override
@@ -176,6 +163,12 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     public final ObjectConverter getObjectConverter()
     {
         return mObjectConverter != null ? mObjectConverter : sGlobalObjectConverter;
+    }
+
+    @Override
+    public ExceptionHandler getExceptionHandler()
+    {
+        return mExceptionHandler;
     }
 
     //---------- DiskInfo end ----------

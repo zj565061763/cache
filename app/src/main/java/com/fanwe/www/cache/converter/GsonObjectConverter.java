@@ -1,12 +1,12 @@
 package com.fanwe.www.cache.converter;
 
-import com.fanwe.lib.cache.converter.ObjectConverter;
+import com.fanwe.lib.cache.Disk;
 import com.google.gson.Gson;
 
 /**
  * Created by Administrator on 2017/8/29.
  */
-public class GsonObjectConverter implements ObjectConverter
+public class GsonObjectConverter implements Disk.ObjectConverter
 {
     private static final Gson GSON = new Gson();
 

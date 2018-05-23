@@ -15,6 +15,7 @@
  */
 package com.fanwe.lib.cache.handler;
 
+import com.fanwe.lib.cache.Disk;
 import com.fanwe.lib.cache.DiskInfo;
 
 /**
@@ -30,15 +31,17 @@ public class ObjectHandler<T> extends ByteConverterHandler<T>
     @Override
     protected byte[] valueToByte(T value)
     {
-        checkObjectConverter();
-        return getDiskInfo().getObjectConverter().objectToByte(value);
+        final Disk.ObjectConverter converter = getDiskInfo().getObjectConverter();
+        checkObjectConverter(converter);
+        return converter.objectToByte(value);
     }
 
     @Override
     protected T byteToValue(byte[] bytes, Class<T> clazz)
     {
-        checkObjectConverter();
-        return getDiskInfo().getObjectConverter().byteToObject(bytes, clazz);
+        final Disk.ObjectConverter converter = getDiskInfo().getObjectConverter();
+        checkObjectConverter(converter);
+        return converter.byteToObject(bytes, clazz);
     }
 
     @Override
@@ -47,9 +50,9 @@ public class ObjectHandler<T> extends ByteConverterHandler<T>
         return "object_";
     }
 
-    private void checkObjectConverter()
+    private void checkObjectConverter(Disk.ObjectConverter converter)
     {
-        if (getDiskInfo().getObjectConverter() == null)
+        if (converter == null)
             throw new NullPointerException("you must provide an ObjectConverter instance before this");
     }
 }

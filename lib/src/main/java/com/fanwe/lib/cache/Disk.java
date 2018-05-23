@@ -18,8 +18,6 @@ package com.fanwe.lib.cache;
 import com.fanwe.lib.cache.api.CommonCache;
 import com.fanwe.lib.cache.api.ObjectCache;
 import com.fanwe.lib.cache.api.SerializableCache;
-import com.fanwe.lib.cache.converter.EncryptConverter;
-import com.fanwe.lib.cache.converter.ObjectConverter;
 
 /**
  * Created by zhengjun on 2017/9/1.
@@ -59,6 +57,14 @@ public interface Disk<T extends Disk>
     T setObjectConverter(ObjectConverter objectConverter);
 
     /**
+     * 设置异常处理对象
+     *
+     * @param exceptionHandler
+     * @return
+     */
+    T setExceptionHandler(ExceptionHandler exceptionHandler);
+
+    /**
      * 返回当前目录的大小
      *
      * @return
@@ -89,4 +95,58 @@ public interface Disk<T extends Disk>
     ObjectCache cacheObject();
 
     //---------- cache end ----------
+
+    /**
+     * 对象转换器
+     */
+    interface ObjectConverter
+    {
+        /**
+         * 对象转byte
+         *
+         * @param object
+         * @return
+         */
+        byte[] objectToByte(Object object);
+
+        /**
+         * byte转对象
+         *
+         * @param bytes
+         * @param clazz
+         * @param <T>
+         * @return
+         */
+        <T> T byteToObject(byte[] bytes, Class<T> clazz);
+    }
+
+    /**
+     * 加解密转换器
+     */
+    interface EncryptConverter
+    {
+        /**
+         * 加密数据
+         *
+         * @param bytes
+         * @return
+         */
+        byte[] encrypt(byte[] bytes);
+
+        /**
+         * 解密数据
+         *
+         * @param bytes
+         * @return
+         */
+        byte[] decrypt(byte[] bytes);
+    }
+
+    /**
+     * 异常处理类
+     */
+    interface ExceptionHandler
+    {
+        void onException(Exception e);
+    }
 }

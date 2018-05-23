@@ -15,9 +15,6 @@
  */
 package com.fanwe.lib.cache;
 
-import com.fanwe.lib.cache.converter.EncryptConverter;
-import com.fanwe.lib.cache.converter.ObjectConverter;
-
 import java.io.File;
 
 /**
@@ -51,12 +48,14 @@ public interface DiskInfo
      *
      * @return
      */
-    EncryptConverter getEncryptConverter();
+    Disk.EncryptConverter getEncryptConverter();
 
     /**
      * 返回对象转换器
      *
      * @return
      */
-    ObjectConverter getObjectConverter();
+    Disk.ObjectConverter getObjectConverter();
+
+    Disk.ExceptionHandler getExceptionHandler();
 }

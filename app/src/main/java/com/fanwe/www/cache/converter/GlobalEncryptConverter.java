@@ -1,12 +1,12 @@
 package com.fanwe.www.cache.converter;
 
-import com.fanwe.lib.cache.converter.EncryptConverter;
+import com.fanwe.lib.cache.Disk;
 
 /**
  * Created by Administrator on 2017/8/29.
  */
 
-public class GlobalEncryptConverter implements EncryptConverter
+public class GlobalEncryptConverter implements Disk.EncryptConverter
 {
     @Override
     public byte[] encrypt(byte[] bytes)
