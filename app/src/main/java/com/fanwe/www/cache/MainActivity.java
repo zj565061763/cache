@@ -50,10 +50,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void putData()
     {
-        FDisk.open().cacheInteger().put(key, 1);
-        FDisk.open().cacheLong().put(key, 2L);
-        FDisk.open().cacheFloat().put(key, 3.3F);
-        FDisk.open().cacheDouble().put(key, 4.4444D);
+        FDisk.open().cacheInteger().put(key, 100);
+        FDisk.open().cacheLong().put(key, 200L);
+        FDisk.open().cacheFloat().put(key, 300.333F);
+        FDisk.open().cacheDouble().put(key, 400.4444D);
         FDisk.open().cacheBoolean().put(key, true);
         FDisk.open().cacheString().put(key, "hello String");
 
