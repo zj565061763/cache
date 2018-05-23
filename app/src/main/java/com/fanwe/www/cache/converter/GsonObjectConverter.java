@@ -13,14 +13,14 @@ public class GsonObjectConverter implements ObjectConverter
     @Override
     public byte[] objectToByte(Object object)
     {
-        // 对象转二进制
+        // 对象转byte
         return GSON.toJson(object).getBytes();
     }
 
     @Override
     public <T> T byteToObject(byte[] bytes, Class<T> clazz)
     {
-        // 二进制转对象
+        // byte转对象
         return GSON.fromJson(new String(bytes), clazz);
     }
 }

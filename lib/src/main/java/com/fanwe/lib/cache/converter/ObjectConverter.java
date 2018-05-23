@@ -6,7 +6,7 @@ package com.fanwe.lib.cache.converter;
 public interface ObjectConverter
 {
     /**
-     * 对象转二进制
+     * 对象转byte
      *
      * @param object
      * @return
@@ -14,7 +14,7 @@ public interface ObjectConverter
     byte[] objectToByte(Object object);
 
     /**
-     * 二进制转对象
+     * byte转对象
      *
      * @param bytes
      * @param clazz

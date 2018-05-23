@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.Serializable;
 
 /**
- * 缓存可以和二进制数据互相转换的处理类
+ * 缓存可以和byte互相转换的处理类
  */
 public abstract class ByteConverterHandler<T> extends BaseCacheHandler<T>
 {
@@ -75,7 +75,7 @@ public abstract class ByteConverterHandler<T> extends BaseCacheHandler<T>
     }
 
     /**
-     * 把缓存转为二进制数据
+     * 缓存转byte
      *
      * @param value
      * @return
@@ -83,7 +83,7 @@ public abstract class ByteConverterHandler<T> extends BaseCacheHandler<T>
     protected abstract byte[] valueToByte(T value);
 
     /**
-     * 把字符串转为缓存
+     * byte转缓存
      *
      * @param bytes
      * @param clazz
