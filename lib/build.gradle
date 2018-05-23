@@ -26,7 +26,7 @@ publish {
     groupId = 'com.fanwe.android'
 
     artifactId = 'cache'
-    publishVersion = '1.0.24-rc1'
+    publishVersion = '1.0.24-rc2'
     desc = 'android cache library'
     website = 'https://github.com/zj565061763/cache'
 }

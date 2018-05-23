@@ -1,5 +1,5 @@
 # Gradle
-`implementation 'com.fanwe.android:cache:1.0.24-rc1'`
+`implementation 'com.fanwe.android:cache:1.0.24-rc2'`
 
 # 简单demo
 ```java
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity
 
 # 创建对象转换器
 ```java
-public class GsonObjectConverter implements ObjectConverter
+public class GsonObjectConverter implements Disk.ObjectConverter
 {
     private static final Gson GSON = new Gson();
 
@@ -97,7 +97,7 @@ public class GsonObjectConverter implements ObjectConverter
 
 # 创建加解密转换器
 ```java
-public class GlobalEncryptConverter implements EncryptConverter
+public class GlobalEncryptConverter implements Disk.EncryptConverter
 {
     @Override
     public byte[] encrypt(byte[] bytes)
