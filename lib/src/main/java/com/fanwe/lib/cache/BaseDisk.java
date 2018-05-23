@@ -105,7 +105,7 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     public T setExceptionHandler(ExceptionHandler exceptionHandler)
     {
         mExceptionHandler = exceptionHandler;
-        return null;
+        return (T) this;
     }
 
     @Override
