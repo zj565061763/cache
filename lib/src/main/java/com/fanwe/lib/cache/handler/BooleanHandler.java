@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.DiskInfo;
 /**
  * Boolean处理类
  */
-public class BooleanHandler extends StringConverterHandler<Boolean>
+public class BooleanHandler extends ByteConverterHandler<Boolean>
 {
     public BooleanHandler(DiskInfo diskInfo)
     {
@@ -13,9 +13,15 @@ public class BooleanHandler extends StringConverterHandler<Boolean>
     }
 
     @Override
-    protected Boolean stringToValue(String string, Class<Boolean> clazz)
+    protected byte[] valueToByte(Boolean value)
     {
-        return Boolean.valueOf(string);
+        return value.toString().getBytes();
+    }
+
+    @Override
+    protected Boolean byteToValue(byte[] bytes, Class<Boolean> clazz)
+    {
+        return Boolean.valueOf(new String(bytes));
     }
 
     @Override

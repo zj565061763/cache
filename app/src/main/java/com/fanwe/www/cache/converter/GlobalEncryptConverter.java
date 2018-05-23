@@ -1,7 +1,6 @@
 package com.fanwe.www.cache.converter;
 
 import com.fanwe.lib.cache.converter.EncryptConverter;
-import com.fanwe.www.cache.AESUtil;
 
 /**
  * Created by Administrator on 2017/8/29.
@@ -10,14 +9,16 @@ import com.fanwe.www.cache.AESUtil;
 public class GlobalEncryptConverter implements EncryptConverter
 {
     @Override
-    public String encrypt(String content)
+    public byte[] encrypt(byte[] bytes)
     {
-        return AESUtil.encrypt(content); //加密
+        // 加密
+        return bytes;
     }
 
     @Override
-    public String decrypt(String content)
+    public byte[] decrypt(byte[] bytes)
     {
-        return AESUtil.decrypt(content); //解密
+        // 解密
+        return bytes;
     }
 }

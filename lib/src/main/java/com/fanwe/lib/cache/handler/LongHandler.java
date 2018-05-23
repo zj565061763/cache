@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.DiskInfo;
 /**
  * Long处理类
  */
-public class LongHandler extends StringConverterHandler<Long>
+public class LongHandler extends ByteConverterHandler<Long>
 {
     public LongHandler(DiskInfo diskInfo)
     {
@@ -13,9 +13,15 @@ public class LongHandler extends StringConverterHandler<Long>
     }
 
     @Override
-    protected Long stringToValue(String string, Class<Long> clazz)
+    protected byte[] valueToByte(Long value)
     {
-        return Long.valueOf(string);
+        return value.toString().getBytes();
+    }
+
+    @Override
+    protected Long byteToValue(byte[] bytes, Class<Long> clazz)
+    {
+        return Long.valueOf(new String(bytes));
     }
 
     @Override

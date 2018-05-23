@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.DiskInfo;
 /**
  * Double处理类
  */
-public class DoubleHandler extends StringConverterHandler<Double>
+public class DoubleHandler extends ByteConverterHandler<Double>
 {
     public DoubleHandler(DiskInfo diskInfo)
     {
@@ -13,9 +13,15 @@ public class DoubleHandler extends StringConverterHandler<Double>
     }
 
     @Override
-    protected Double stringToValue(String string, Class<Double> clazz)
+    protected byte[] valueToByte(Double value)
     {
-        return Double.valueOf(string);
+        return value.toString().getBytes();
+    }
+
+    @Override
+    protected Double byteToValue(byte[] bytes, Class<Double> clazz)
+    {
+        return Double.valueOf(new String(bytes));
     }
 
     @Override

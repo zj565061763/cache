@@ -7,13 +7,13 @@ import java.io.File;
 import java.io.Serializable;
 
 /**
- * 缓存可以和字符串互相转换的处理类
+ * 缓存可以和二进制数据互相转换的处理类
  */
-public abstract class StringConverterHandler<T> extends BaseCacheHandler<T>
+public abstract class ByteConverterHandler<T> extends BaseCacheHandler<T>
 {
     private SerializableHandler<CacheModel> mSerializableHandler;
 
-    public StringConverterHandler(DiskInfo diskInfo)
+    public ByteConverterHandler(DiskInfo diskInfo)
     {
         super(diskInfo);
     }
@@ -27,7 +27,7 @@ public abstract class StringConverterHandler<T> extends BaseCacheHandler<T>
                 @Override
                 protected String getKeyPrefix()
                 {
-                    return StringConverterHandler.this.getKeyPrefix();
+                    return ByteConverterHandler.this.getKeyPrefix();
                 }
             };
         }
@@ -42,16 +42,16 @@ public abstract class StringConverterHandler<T> extends BaseCacheHandler<T>
         if (encrypt && converter == null)
             throw new RuntimeException("you must provide an EncryptConverter instance before this");
 
-        final String data = valueToString(value);
+        final byte[] data = valueToByte(value);
         if (data == null)
-            throw new RuntimeException("valueToString(String) method can not return null");
+            throw new RuntimeException("valueToByte(T) method return null");
 
         final CacheModel model = new CacheModel();
         model.data = encrypt ? converter.encrypt(data) : data;
         model.isEncrypted = encrypt;
 
         if (model.data == null)
-            throw new RuntimeException("EncryptConverter.encrypt(String) method can not return null");
+            throw new RuntimeException("EncryptConverter.encrypt(byte[]) method return null");
 
         return getSerializableHandler().putCache(key, model);
     }
@@ -71,34 +71,31 @@ public abstract class StringConverterHandler<T> extends BaseCacheHandler<T>
         if (isEncrypted)
             model.data = converter.decrypt(model.data);
 
-        return stringToValue(model.data, clazz);
+        return byteToValue(model.data, clazz);
     }
 
     /**
-     * 把缓存转为字符串，默认返回对象toString()方法的返回值，可以重写改变规则
+     * 把缓存转为二进制数据
      *
      * @param value
      * @return
      */
-    protected String valueToString(T value)
-    {
-        return value.toString();
-    }
+    protected abstract byte[] valueToByte(T value);
 
     /**
      * 把字符串转为缓存
      *
-     * @param string
+     * @param bytes
      * @param clazz
      * @return
      */
-    protected abstract T stringToValue(String string, Class<T> clazz);
+    protected abstract T byteToValue(byte[] bytes, Class<T> clazz);
 
     private static final class CacheModel implements Serializable
     {
         static final long serialVersionUID = 0L;
 
         public boolean isEncrypted = false;
-        public String data = null;
+        public byte[] data = null;
     }
 }

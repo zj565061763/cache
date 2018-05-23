@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.DiskInfo;
 /**
  * Float处理类
  */
-public class FloatHandler extends StringConverterHandler<Float>
+public class FloatHandler extends ByteConverterHandler<Float>
 {
     public FloatHandler(DiskInfo diskInfo)
     {
@@ -13,9 +13,15 @@ public class FloatHandler extends StringConverterHandler<Float>
     }
 
     @Override
-    protected Float stringToValue(String string, Class<Float> clazz)
+    protected byte[] valueToByte(Float value)
     {
-        return Float.valueOf(string);
+        return value.toString().getBytes();
+    }
+
+    @Override
+    protected Float byteToValue(byte[] bytes, Class<Float> clazz)
+    {
+        return Float.valueOf(new String(bytes));
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.DiskInfo;
 /**
  * String处理类
  */
-public class StringHandler extends StringConverterHandler<String>
+public class StringHandler extends ByteConverterHandler<String>
 {
     public StringHandler(DiskInfo diskInfo)
     {
@@ -13,9 +13,15 @@ public class StringHandler extends StringConverterHandler<String>
     }
 
     @Override
-    protected String stringToValue(String string, Class<String> clazz)
+    protected byte[] valueToByte(String value)
     {
-        return string;
+        return value.getBytes();
+    }
+
+    @Override
+    protected String byteToValue(byte[] bytes, Class<String> clazz)
+    {
+        return new String(bytes);
     }
 
     @Override

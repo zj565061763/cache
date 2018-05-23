@@ -6,20 +6,20 @@ package com.fanwe.lib.cache.converter;
 public interface ObjectConverter
 {
     /**
-     * 对象转字符串
+     * 对象转二进制
      *
      * @param object
      * @return
      */
-    String objectToString(Object object);
+    byte[] objectToByte(Object object);
 
     /**
-     * 字符串转对象
+     * 二进制转对象
      *
-     * @param string
+     * @param bytes
      * @param clazz
      * @param <T>
      * @return
      */
-    <T> T stringToObject(String string, Class<T> clazz);
+    <T> T byteToObject(byte[] bytes, Class<T> clazz);
 }

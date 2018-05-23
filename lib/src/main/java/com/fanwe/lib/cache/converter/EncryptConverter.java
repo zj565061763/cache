@@ -6,18 +6,18 @@ package com.fanwe.lib.cache.converter;
 public interface EncryptConverter
 {
     /**
-     * 加密字符串
+     * 加密数据
      *
-     * @param content
+     * @param bytes
      * @return
      */
-    String encrypt(String content);
+    byte[] encrypt(byte[] bytes);
 
     /**
-     * 解密字符串
+     * 解密数据
      *
-     * @param content
+     * @param bytes
      * @return
      */
-    String decrypt(String content);
+    byte[] decrypt(byte[] bytes);
 }

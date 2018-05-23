@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.DiskInfo;
 /**
  * Object处理类
  */
-public class ObjectHandler<T> extends StringConverterHandler<T>
+public class ObjectHandler<T> extends ByteConverterHandler<T>
 {
     public ObjectHandler(DiskInfo diskInfo)
     {
@@ -13,17 +13,17 @@ public class ObjectHandler<T> extends StringConverterHandler<T>
     }
 
     @Override
-    protected String valueToString(T value)
+    protected byte[] valueToByte(T value)
     {
         checkObjectConverter();
-        return getDiskInfo().getObjectConverter().objectToString(value);
+        return getDiskInfo().getObjectConverter().objectToByte(value);
     }
 
     @Override
-    protected T stringToValue(String string, Class<T> clazz)
+    protected T byteToValue(byte[] bytes, Class<T> clazz)
     {
         checkObjectConverter();
-        return getDiskInfo().getObjectConverter().stringToObject(string, clazz);
+        return getDiskInfo().getObjectConverter().byteToObject(bytes, clazz);
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.fanwe.lib.cache.DiskInfo;
 /**
  * Integer处理类
  */
-public class IntegerHandler extends StringConverterHandler<Integer>
+public class IntegerHandler extends ByteConverterHandler<Integer>
 {
     public IntegerHandler(DiskInfo diskInfo)
     {
@@ -13,9 +13,15 @@ public class IntegerHandler extends StringConverterHandler<Integer>
     }
 
     @Override
-    protected Integer stringToValue(String string, Class<Integer> clazz)
+    protected byte[] valueToByte(Integer value)
     {
-        return Integer.valueOf(string);
+        return value.toString().getBytes();
+    }
+
+    @Override
+    protected Integer byteToValue(byte[] bytes, Class<Integer> clazz)
+    {
+        return Integer.valueOf(new String(bytes));
     }
 
     @Override
