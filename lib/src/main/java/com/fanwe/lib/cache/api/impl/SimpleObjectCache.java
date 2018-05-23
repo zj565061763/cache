@@ -6,11 +6,11 @@ import com.fanwe.lib.cache.handler.ObjectHandler;
 /**
  * 对象缓存
  */
-public class ObjectCache implements com.fanwe.lib.cache.api.ObjectCache
+public class SimpleObjectCache implements com.fanwe.lib.cache.api.ObjectCache
 {
     private final DiskInfo mDiskInfo;
 
-    public ObjectCache(DiskInfo diskInfo)
+    public SimpleObjectCache(DiskInfo diskInfo)
     {
         mDiskInfo = diskInfo;
     }

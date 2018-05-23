@@ -8,11 +8,11 @@ import java.io.Serializable;
 /**
  * 序列化缓存
  */
-public class SerializableCache implements com.fanwe.lib.cache.api.SerializableCache
+public class SimpleSerializableCache implements com.fanwe.lib.cache.api.SerializableCache
 {
     private final DiskInfo mDiskInfo;
 
-    public SerializableCache(DiskInfo diskInfo)
+    public SimpleSerializableCache(DiskInfo diskInfo)
     {
         mDiskInfo = diskInfo;
     }

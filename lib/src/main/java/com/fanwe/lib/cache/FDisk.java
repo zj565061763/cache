@@ -3,6 +3,8 @@ package com.fanwe.lib.cache;
 import com.fanwe.lib.cache.api.CommonCache;
 import com.fanwe.lib.cache.api.ObjectCache;
 import com.fanwe.lib.cache.api.SerializableCache;
+import com.fanwe.lib.cache.api.impl.SimpleObjectCache;
+import com.fanwe.lib.cache.api.impl.SimpleSerializableCache;
 import com.fanwe.lib.cache.handler.BooleanHandler;
 import com.fanwe.lib.cache.handler.DoubleHandler;
 import com.fanwe.lib.cache.handler.FloatHandler;
@@ -173,13 +175,13 @@ public class FDisk extends BaseDisk<FDisk>
     @Override
     public SerializableCache cacheSerializable()
     {
-        return new com.fanwe.lib.cache.api.impl.SerializableCache(this);
+        return new SimpleSerializableCache(this);
     }
 
     @Override
     public ObjectCache cacheObject()
     {
-        return new com.fanwe.lib.cache.api.impl.ObjectCache(this);
+        return new SimpleObjectCache(this);
     }
 
     //---------- cache end ----------
