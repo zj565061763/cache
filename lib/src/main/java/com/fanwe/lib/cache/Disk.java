@@ -65,7 +65,7 @@ public interface Disk
     Disk setExceptionHandler(ExceptionHandler exceptionHandler);
 
     /**
-     * 返回当前目录的大小
+     * 返回当前目录下所有缓存文件的总大小(字节B)
      *
      * @return
      */
