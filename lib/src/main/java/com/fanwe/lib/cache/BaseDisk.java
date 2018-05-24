@@ -37,7 +37,8 @@ abstract class BaseDisk implements Disk, DiskInfo
     protected BaseDisk(File directory)
     {
         if (directory == null)
-            throw new NullPointerException("directory is null");
+            throw new NullPointerException("directory must not be null");
+
         mDirectory = directory;
     }
 
@@ -146,8 +147,8 @@ abstract class BaseDisk implements Disk, DiskInfo
         {
             synchronized (Disk.class)
             {
-                if (!mDirectory.exists())
-                    mDirectory.mkdirs();
+                if (!mDirectory.exists() && !mDirectory.mkdirs())
+                    throw new RuntimeException("create directory failure, check the directory:" + mDirectory.getAbsolutePath());
             }
         }
         return mDirectory;

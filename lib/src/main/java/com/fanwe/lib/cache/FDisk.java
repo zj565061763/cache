@@ -133,12 +133,6 @@ public class FDisk extends BaseDisk
      */
     public static Disk openDir(File directory)
     {
-        if (directory == null)
-            throw new NullPointerException("directory must not be null");
-
-        if (!directory.exists() && !directory.mkdirs())
-            throw new IllegalArgumentException("directory create failed, theck the directory:" + directory.getAbsolutePath());
-
         return new FDisk(directory);
     }
 
