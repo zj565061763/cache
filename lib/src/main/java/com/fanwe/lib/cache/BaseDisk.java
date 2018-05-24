@@ -19,7 +19,7 @@ import android.content.Context;
 
 import java.io.File;
 
-abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
+abstract class BaseDisk implements Disk, DiskInfo
 {
     private final File mDirectory;
 
@@ -74,38 +74,38 @@ abstract class BaseDisk<T extends BaseDisk> implements Disk<T>, DiskInfo
     //---------- Disk start ----------
 
     @Override
-    public T setEncrypt(boolean encrypt)
+    public Disk setEncrypt(boolean encrypt)
     {
         mEncrypt = encrypt;
-        return (T) this;
+        return this;
     }
 
     @Override
-    public T setMemorySupport(boolean memorySupport)
+    public Disk setMemorySupport(boolean memorySupport)
     {
         mMemorySupport = memorySupport;
-        return (T) this;
+        return this;
     }
 
     @Override
-    public T setEncryptConverter(EncryptConverter encryptConverter)
+    public Disk setEncryptConverter(EncryptConverter encryptConverter)
     {
         mEncryptConverter = encryptConverter;
-        return (T) this;
+        return this;
     }
 
     @Override
-    public T setObjectConverter(ObjectConverter objectConverter)
+    public Disk setObjectConverter(ObjectConverter objectConverter)
     {
         mObjectConverter = objectConverter;
-        return (T) this;
+        return this;
     }
 
     @Override
-    public T setExceptionHandler(ExceptionHandler exceptionHandler)
+    public Disk setExceptionHandler(ExceptionHandler exceptionHandler)
     {
         mExceptionHandler = exceptionHandler;
-        return (T) this;
+        return this;
     }
 
     @Override

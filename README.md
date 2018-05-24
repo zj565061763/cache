@@ -1,5 +1,5 @@
 # Gradle
-`implementation 'com.fanwe.android:cache:1.0.24-rc2'`
+`implementation 'com.fanwe.android:cache:1.0.24-rc3'`
 
 # 简单demo
 ```java

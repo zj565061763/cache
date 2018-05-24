@@ -57,5 +57,10 @@ public interface DiskInfo
      */
     Disk.ObjectConverter getObjectConverter();
 
+    /**
+     * 返回设置的异常处理对象
+     *
+     * @return
+     */
     Disk.ExceptionHandler getExceptionHandler();
 }

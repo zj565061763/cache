@@ -14,6 +14,7 @@ package com.fanwe.lib.cache;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import com.fanwe.lib.cache.api.CommonCache;
 import com.fanwe.lib.cache.api.ObjectCache;
 import com.fanwe.lib.cache.api.SerializableCache;
@@ -28,7 +29,7 @@ import com.fanwe.lib.cache.handler.StringHandler;
 
 import java.io.File;
 
-public class FDisk extends BaseDisk<FDisk>
+public class FDisk extends BaseDisk
 {
     private static final String DEFAULT_FILE_DIR = "disk_file";
     private static final String DEFAULT_CACHE_DIR = "disk_cache";

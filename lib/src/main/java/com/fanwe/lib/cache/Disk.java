@@ -22,7 +22,7 @@ import com.fanwe.lib.cache.api.SerializableCache;
 /**
  * Created by zhengjun on 2017/9/1.
  */
-public interface Disk<T extends Disk>
+public interface Disk
 {
     /**
      * 设置保存缓存的时候是否加密
@@ -30,7 +30,7 @@ public interface Disk<T extends Disk>
      * @param encrypt
      * @return
      */
-    T setEncrypt(boolean encrypt);
+    Disk setEncrypt(boolean encrypt);
 
     /**
      * 设置是否支持内存存储
@@ -38,7 +38,7 @@ public interface Disk<T extends Disk>
      * @param memorySupport
      * @return
      */
-    T setMemorySupport(boolean memorySupport);
+    Disk setMemorySupport(boolean memorySupport);
 
     /**
      * 设置加解密转换器
@@ -46,7 +46,7 @@ public interface Disk<T extends Disk>
      * @param encryptConverter
      * @return
      */
-    T setEncryptConverter(EncryptConverter encryptConverter);
+    Disk setEncryptConverter(EncryptConverter encryptConverter);
 
     /**
      * 设置对象转换器
@@ -54,7 +54,7 @@ public interface Disk<T extends Disk>
      * @param objectConverter
      * @return
      */
-    T setObjectConverter(ObjectConverter objectConverter);
+    Disk setObjectConverter(ObjectConverter objectConverter);
 
     /**
      * 设置异常处理对象
@@ -62,7 +62,7 @@ public interface Disk<T extends Disk>
      * @param exceptionHandler
      * @return
      */
-    T setExceptionHandler(ExceptionHandler exceptionHandler);
+    Disk setExceptionHandler(ExceptionHandler exceptionHandler);
 
     /**
      * 返回当前目录的大小
