@@ -112,7 +112,7 @@ abstract class BaseDisk implements Disk, DiskInfo
     @Override
     public final long size()
     {
-        return mDirectory.length();
+        return getFileOrDirSize(mDirectory);
     }
 
     @Override
@@ -243,7 +243,7 @@ abstract class BaseDisk implements Disk, DiskInfo
         if (path.isFile())
             return path.delete();
 
-        File[] files = path.listFiles();
+        final File[] files = path.listFiles();
         if (files != null)
         {
             for (File file : files)
@@ -252,6 +252,26 @@ abstract class BaseDisk implements Disk, DiskInfo
             }
         }
         return path.delete();
+    }
+
+    private static long getFileOrDirSize(File file)
+    {
+        if (file == null || !file.exists())
+            return 0;
+
+        if (!file.isDirectory())
+            return file.length();
+
+        final File[] files = file.listFiles();
+        if (files == null || files.length <= 0)
+            return 0;
+
+        long length = 0;
+        for (File item : files)
+        {
+            length += getFileOrDirSize(item);
+        }
+        return length;
     }
 
     //---------- util method end ----------
