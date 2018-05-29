@@ -16,6 +16,7 @@
 package com.fanwe.lib.cache.api;
 
 import com.fanwe.lib.cache.DiskInfo;
+import com.fanwe.lib.cache.handler.CacheHandler;
 import com.fanwe.lib.cache.handler.ObjectHandler;
 
 /**
@@ -23,11 +24,11 @@ import com.fanwe.lib.cache.handler.ObjectHandler;
  */
 public class SimpleObjectCache implements ObjectCache
 {
-    private final DiskInfo mDiskInfo;
+    private final CacheHandler mCacheHandler;
 
     public SimpleObjectCache(DiskInfo diskInfo)
     {
-        mDiskInfo = diskInfo;
+        mCacheHandler = new ObjectHandler(diskInfo);
     }
 
     @Override
@@ -37,20 +38,20 @@ public class SimpleObjectCache implements ObjectCache
             return false;
 
         final String key = value.getClass().getName();
-        return new ObjectHandler<>(mDiskInfo).putCache(key, value);
+        return mCacheHandler.putCache(key, value);
     }
 
     @Override
     public <T> T get(Class<T> clazz)
     {
         final String key = clazz.getName();
-        return new ObjectHandler<T>(mDiskInfo).getCache(key, clazz);
+        return (T) mCacheHandler.getCache(key, clazz);
     }
 
     @Override
     public boolean remove(Class clazz)
     {
         final String key = clazz.getName();
-        return new ObjectHandler<>(mDiskInfo).removeCache(key);
+        return mCacheHandler.removeCache(key);
     }
 }
