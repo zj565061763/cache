@@ -15,6 +15,7 @@
  */
 package com.fanwe.lib.cache.api;
 
+import com.fanwe.lib.cache.Disk;
 import com.fanwe.lib.cache.DiskInfo;
 import com.fanwe.lib.cache.handler.CacheHandler;
 import com.fanwe.lib.cache.handler.ObjectHandler;
@@ -22,12 +23,13 @@ import com.fanwe.lib.cache.handler.ObjectHandler;
 /**
  * 对象缓存
  */
-public class SimpleObjectCache implements ObjectCache
+public class SimpleObjectCache extends BaseCache implements Disk.ObjectCache
 {
     private final CacheHandler mCacheHandler;
 
     public SimpleObjectCache(DiskInfo diskInfo)
     {
+        super(diskInfo);
         mCacheHandler = new ObjectHandler(diskInfo);
     }
 

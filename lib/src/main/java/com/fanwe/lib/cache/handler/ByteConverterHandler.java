@@ -24,7 +24,7 @@ import java.io.Serializable;
 /**
  * 缓存可以和byte互相转换的处理类
  */
-public abstract class ByteConverterHandler<T> extends BaseCacheHandler<T>
+public abstract class ByteConverterHandler<T> extends BaseHandler<T>
 {
     private SerializableHandler<CacheModel> mSerializableHandler;
 

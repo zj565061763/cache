@@ -15,7 +15,9 @@
  */
 package com.fanwe.lib.cache.api;
 
+import com.fanwe.lib.cache.Disk;
 import com.fanwe.lib.cache.DiskInfo;
+import com.fanwe.lib.cache.handler.CacheHandler;
 import com.fanwe.lib.cache.handler.SerializableHandler;
 
 import java.io.Serializable;
@@ -23,13 +25,14 @@ import java.io.Serializable;
 /**
  * 序列化缓存
  */
-public class SimpleSerializableCache implements SerializableCache
+public class SimpleSerializableCache extends BaseCache implements Disk.SerializableCache
 {
-    private final DiskInfo mDiskInfo;
+    private final CacheHandler mCacheHandler;
 
     public SimpleSerializableCache(DiskInfo diskInfo)
     {
-        mDiskInfo = diskInfo;
+        super(diskInfo);
+        mCacheHandler = new SerializableHandler(diskInfo);
     }
 
     @Override
@@ -39,20 +42,20 @@ public class SimpleSerializableCache implements SerializableCache
             return false;
 
         final String key = value.getClass().getName();
-        return new SerializableHandler<T>(mDiskInfo).putCache(key, value);
+        return mCacheHandler.putCache(key, value);
     }
 
     @Override
     public <T extends Serializable> T get(Class<T> clazz)
     {
         final String key = clazz.getName();
-        return new SerializableHandler<T>(mDiskInfo).getCache(key, clazz);
+        return (T) mCacheHandler.getCache(key, clazz);
     }
 
     @Override
     public <T extends Serializable> boolean remove(Class<T> clazz)
     {
         final String key = clazz.getName();
-        return new SerializableHandler<T>(mDiskInfo).removeCache(key);
+        return mCacheHandler.removeCache(key);
     }
 }

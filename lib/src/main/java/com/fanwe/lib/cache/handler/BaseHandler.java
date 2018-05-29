@@ -19,7 +19,6 @@ import android.text.TextUtils;
 
 import com.fanwe.lib.cache.Disk;
 import com.fanwe.lib.cache.DiskInfo;
-import com.fanwe.lib.cache.api.CommonCache;
 
 import java.io.File;
 import java.security.MessageDigest;
@@ -30,12 +29,12 @@ import java.util.Map;
 /**
  * 缓存处理基类
  */
-public abstract class BaseCacheHandler<T> implements CacheHandler<T>, CommonCache<T>
+public abstract class BaseHandler<T> implements CacheHandler<T>, Disk.CommonCache<T>
 {
     private final DiskInfo mDiskInfo;
     private static final Map<String, Object> MAP_MEMORY = new HashMap<>();
 
-    public BaseCacheHandler(DiskInfo diskInfo)
+    public BaseHandler(DiskInfo diskInfo)
     {
         if (diskInfo == null)
             throw new NullPointerException("diskInfo is null");

@@ -15,9 +15,6 @@ package com.fanwe.lib.cache;
  * limitations under the License.
  */
 
-import com.fanwe.lib.cache.api.CommonCache;
-import com.fanwe.lib.cache.api.ObjectCache;
-import com.fanwe.lib.cache.api.SerializableCache;
 import com.fanwe.lib.cache.api.SimpleObjectCache;
 import com.fanwe.lib.cache.api.SimpleSerializableCache;
 import com.fanwe.lib.cache.handler.BooleanHandler;
