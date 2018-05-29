@@ -26,14 +26,14 @@ import java.io.Serializable;
  */
 public abstract class ByteConverterHandler<T> extends BaseHandler<T>
 {
-    private SerializableHandler<CacheModel> mSerializableHandler;
+    private SerializableHandler mSerializableHandler;
 
     public ByteConverterHandler(DiskInfo diskInfo)
     {
         super(diskInfo);
     }
 
-    private final SerializableHandler<CacheModel> getSerializableHandler()
+    private final SerializableHandler getSerializableHandler()
     {
         if (mSerializableHandler == null)
         {
@@ -74,7 +74,7 @@ public abstract class ByteConverterHandler<T> extends BaseHandler<T>
     @Override
     protected final T getCacheImpl(String key, Class clazz, File file)
     {
-        final CacheModel model = getSerializableHandler().getCache(key, CacheModel.class);
+        final CacheModel model = (CacheModel) getSerializableHandler().getCache(key, CacheModel.class);
         if (model == null)
             return null;
 

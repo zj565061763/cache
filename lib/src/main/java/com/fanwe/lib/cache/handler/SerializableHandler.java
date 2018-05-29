@@ -29,7 +29,7 @@ import java.io.Serializable;
 /**
  * 序列化处理类
  */
-public class SerializableHandler<T extends Serializable> extends BaseHandler<T>
+public class SerializableHandler extends BaseHandler<Serializable> implements Disk.SerializableCache
 {
     public SerializableHandler(DiskInfo diskInfo)
     {
@@ -43,7 +43,7 @@ public class SerializableHandler<T extends Serializable> extends BaseHandler<T>
     }
 
     @Override
-    protected boolean putCacheImpl(String key, T value, File file)
+    protected boolean putCacheImpl(String key, Serializable value, File file)
     {
         ObjectOutputStream os = null;
         try
@@ -65,13 +65,13 @@ public class SerializableHandler<T extends Serializable> extends BaseHandler<T>
     }
 
     @Override
-    protected T getCacheImpl(String key, Class clazz, File file)
+    protected Serializable getCacheImpl(String key, Class clazz, File file)
     {
         ObjectInputStream is = null;
         try
         {
             is = new ObjectInputStream(new FileInputStream(file));
-            return (T) is.readObject();
+            return (Serializable) is.readObject();
         } catch (Exception e)
         {
             final Disk.ExceptionHandler handler = getDiskInfo().getExceptionHandler();
@@ -95,5 +95,26 @@ public class SerializableHandler<T extends Serializable> extends BaseHandler<T>
             {
             }
         }
+    }
+
+    @Override
+    public <T extends Serializable> boolean put(T value)
+    {
+        final String key = value.getClass().getName();
+        return putCache(key, value);
+    }
+
+    @Override
+    public <T extends Serializable> T get(Class<T> clazz)
+    {
+        final String key = clazz.getName();
+        return (T) getCache(key, clazz);
+    }
+
+    @Override
+    public <T extends Serializable> boolean remove(Class<T> clazz)
+    {
+        final String key = clazz.getName();
+        return removeCache(key);
     }
 }

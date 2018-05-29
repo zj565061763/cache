@@ -15,13 +15,13 @@ package com.fanwe.lib.cache;
  * limitations under the License.
  */
 
-import com.fanwe.lib.cache.api.SimpleSerializableCache;
 import com.fanwe.lib.cache.handler.BooleanHandler;
 import com.fanwe.lib.cache.handler.DoubleHandler;
 import com.fanwe.lib.cache.handler.FloatHandler;
 import com.fanwe.lib.cache.handler.IntegerHandler;
 import com.fanwe.lib.cache.handler.LongHandler;
 import com.fanwe.lib.cache.handler.ObjectHandler;
+import com.fanwe.lib.cache.handler.SerializableHandler;
 import com.fanwe.lib.cache.handler.StringHandler;
 
 import java.io.File;
@@ -144,7 +144,7 @@ public class FDisk extends BaseDisk
     private BooleanHandler mBooleanHandler;
     private StringHandler mStringHandler;
 
-    private SerializableCache mSerializableCache;
+    private SerializableHandler mSerializableHandler;
     private ObjectHandler mObjectHandler;
 
     @Override
@@ -198,9 +198,9 @@ public class FDisk extends BaseDisk
     @Override
     public SerializableCache cacheSerializable()
     {
-        if (mSerializableCache == null)
-            mSerializableCache = new SimpleSerializableCache(this);
-        return mSerializableCache;
+        if (mSerializableHandler == null)
+            mSerializableHandler = new SerializableHandler(this);
+        return mSerializableHandler;
     }
 
     @Override
