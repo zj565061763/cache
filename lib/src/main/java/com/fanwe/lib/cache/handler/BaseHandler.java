@@ -93,7 +93,7 @@ public abstract class BaseHandler<T> implements CacheHandler<T>, Disk.CommonCach
     }
 
     @Override
-    public final T getCache(String key, Class<T> clazz)
+    public final T getCache(String key, Class clazz)
     {
         synchronized (Disk.class)
         {
@@ -191,7 +191,7 @@ public abstract class BaseHandler<T> implements CacheHandler<T>, Disk.CommonCach
 
     protected abstract boolean putCacheImpl(String key, T value, File file);
 
-    protected abstract T getCacheImpl(String key, Class<T> clazz, File file);
+    protected abstract T getCacheImpl(String key, Class clazz, File file);
 
     //---------- utils start ----------
 

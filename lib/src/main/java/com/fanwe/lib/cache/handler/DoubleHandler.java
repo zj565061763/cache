@@ -34,7 +34,7 @@ public class DoubleHandler extends ByteConverterHandler<Double>
     }
 
     @Override
-    protected Double byteToValue(byte[] bytes, Class<Double> clazz)
+    protected Double byteToValue(byte[] bytes, Class clazz)
     {
         return Double.valueOf(new String(bytes));
     }

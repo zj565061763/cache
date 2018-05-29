@@ -22,7 +22,7 @@ public interface CacheHandler<T>
 {
     boolean putCache(String key, T value);
 
-    T getCache(String key, Class<T> clazz);
+    T getCache(String key, Class clazz);
 
     boolean removeCache(String key);
 }

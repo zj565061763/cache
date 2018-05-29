@@ -72,7 +72,7 @@ public abstract class ByteConverterHandler<T> extends BaseHandler<T>
     }
 
     @Override
-    protected final T getCacheImpl(String key, Class<T> clazz, File file)
+    protected final T getCacheImpl(String key, Class clazz, File file)
     {
         final CacheModel model = getSerializableHandler().getCache(key, CacheModel.class);
         if (model == null)
@@ -109,7 +109,7 @@ public abstract class ByteConverterHandler<T> extends BaseHandler<T>
      * @param clazz
      * @return
      */
-    protected abstract T byteToValue(byte[] bytes, Class<T> clazz);
+    protected abstract T byteToValue(byte[] bytes, Class clazz);
 
     private static final class CacheModel implements Serializable
     {

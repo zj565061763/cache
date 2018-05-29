@@ -37,11 +37,11 @@ public class ObjectHandler<T> extends ByteConverterHandler<T>
     }
 
     @Override
-    protected T byteToValue(byte[] bytes, Class<T> clazz)
+    protected T byteToValue(byte[] bytes, Class clazz)
     {
         final Disk.ObjectConverter converter = getDiskInfo().getObjectConverter();
         checkObjectConverter(converter);
-        return converter.byteToObject(bytes, clazz);
+        return (T) converter.byteToObject(bytes, clazz);
     }
 
     @Override

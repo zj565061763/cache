@@ -65,7 +65,7 @@ public class SerializableHandler<T extends Serializable> extends BaseHandler<T>
     }
 
     @Override
-    protected T getCacheImpl(String key, Class<T> clazz, File file)
+    protected T getCacheImpl(String key, Class clazz, File file)
     {
         ObjectInputStream is = null;
         try

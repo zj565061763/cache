@@ -34,7 +34,7 @@ public class BooleanHandler extends ByteConverterHandler<Boolean>
     }
 
     @Override
-    protected Boolean byteToValue(byte[] bytes, Class<Boolean> clazz)
+    protected Boolean byteToValue(byte[] bytes, Class clazz)
     {
         return Boolean.valueOf(new String(bytes));
     }

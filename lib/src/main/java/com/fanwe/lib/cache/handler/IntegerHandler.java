@@ -34,7 +34,7 @@ public class IntegerHandler extends ByteConverterHandler<Integer>
     }
 
     @Override
-    protected Integer byteToValue(byte[] bytes, Class<Integer> clazz)
+    protected Integer byteToValue(byte[] bytes, Class clazz)
     {
         return Integer.valueOf(new String(bytes));
     }

@@ -34,7 +34,7 @@ public class StringHandler extends ByteConverterHandler<String>
     }
 
     @Override
-    protected String byteToValue(byte[] bytes, Class<String> clazz)
+    protected String byteToValue(byte[] bytes, Class clazz)
     {
         return new String(bytes);
     }

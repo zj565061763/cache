@@ -34,7 +34,7 @@ public class FloatHandler extends ByteConverterHandler<Float>
     }
 
     @Override
-    protected Float byteToValue(byte[] bytes, Class<Float> clazz)
+    protected Float byteToValue(byte[] bytes, Class clazz)
     {
         return Float.valueOf(new String(bytes));
     }
