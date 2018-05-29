@@ -91,6 +91,9 @@ public abstract class ByteConverterHandler<T> extends BaseHandler<T>
         if (isEncrypted)
             model.data = converter.decrypt(model.data);
 
+        if (model.data == null)
+            throw new RuntimeException("EncryptConverter.decrypt(byte[]) method return null");
+
         return byteToValue(model.data, clazz);
     }
 
