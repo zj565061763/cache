@@ -140,52 +140,78 @@ public class FDisk extends BaseDisk
 
     //---------- cache start ----------
 
+    private IntegerHandler mIntegerHandler;
+    private LongHandler mLongHandler;
+    private FloatHandler mFloatHandler;
+    private DoubleHandler mDoubleHandler;
+    private BooleanHandler mBooleanHandler;
+    private StringHandler mStringHandler;
+
+    private SerializableCache mSerializableCache;
+    private ObjectCache mObjectCache;
+
     @Override
     public CommonCache<Integer> cacheInteger()
     {
-        return new IntegerHandler(this);
+        if (mIntegerHandler == null)
+            mIntegerHandler = new IntegerHandler(this);
+        return mIntegerHandler;
     }
 
     @Override
     public CommonCache<Long> cacheLong()
     {
-        return new LongHandler(this);
+        if (mLongHandler == null)
+            mLongHandler = new LongHandler(this);
+        return mLongHandler;
     }
 
     @Override
     public CommonCache<Float> cacheFloat()
     {
-        return new FloatHandler(this);
+        if (mFloatHandler == null)
+            mFloatHandler = new FloatHandler(this);
+        return mFloatHandler;
     }
 
     @Override
     public CommonCache<Double> cacheDouble()
     {
-        return new DoubleHandler(this);
+        if (mDoubleHandler == null)
+            mDoubleHandler = new DoubleHandler(this);
+        return mDoubleHandler;
     }
 
     @Override
     public CommonCache<Boolean> cacheBoolean()
     {
-        return new BooleanHandler(this);
+        if (mBooleanHandler == null)
+            mBooleanHandler = new BooleanHandler(this);
+        return mBooleanHandler;
     }
 
     @Override
     public CommonCache<String> cacheString()
     {
-        return new StringHandler(this);
+        if (mStringHandler == null)
+            mStringHandler = new StringHandler(this);
+        return mStringHandler;
     }
 
     @Override
     public SerializableCache cacheSerializable()
     {
-        return new SimpleSerializableCache(this);
+        if (mSerializableCache == null)
+            mSerializableCache = new SimpleSerializableCache(this);
+        return mSerializableCache;
     }
 
     @Override
     public ObjectCache cacheObject()
     {
-        return new SimpleObjectCache(this);
+        if (mObjectCache == null)
+            mObjectCache = new SimpleObjectCache(this);
+        return mObjectCache;
     }
 
     //---------- cache end ----------
