@@ -112,7 +112,10 @@ abstract class BaseDisk implements Disk, DiskInfo
     @Override
     public final long size()
     {
-        return getFileOrDirSize(mDirectory);
+        synchronized (Disk.class)
+        {
+            return getFileOrDirSize(mDirectory);
+        }
     }
 
     @Override
