@@ -1,4 +1,3 @@
-package com.fanwe.lib.cache;
 /*
  * Copyright (C) 2017 zhengjun, fanwe (http://www.fanwe.com)
  *
@@ -14,6 +13,7 @@ package com.fanwe.lib.cache;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.fanwe.lib.cache;
 
 import com.fanwe.lib.cache.handler.BooleanHandler;
 import com.fanwe.lib.cache.handler.DoubleHandler;
