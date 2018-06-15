@@ -1,5 +1,7 @@
 # Gradle
+```
 implementation 'com.fanwe.android:cache:1.0.27'
+```
 
 # 简单demo
 ```java
