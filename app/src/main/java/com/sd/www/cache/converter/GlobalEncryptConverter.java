@@ -1,6 +1,6 @@
-package com.fanwe.www.cache.converter;
+package com.sd.www.cache.converter;
 
-import com.fanwe.lib.cache.Disk;
+import com.sd.lib.cache.Disk;
 
 /**
  * Created by Administrator on 2017/8/29.

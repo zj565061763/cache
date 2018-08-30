@@ -1,4 +1,4 @@
-package com.fanwe.www.cache;
+package com.sd.www.cache;
 
 import android.os.Bundle;
 import android.os.Environment;
@@ -6,9 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.fanwe.lib.cache.FDisk;
-import com.fanwe.www.cache.converter.GlobalEncryptConverter;
-import com.fanwe.www.cache.converter.GsonObjectConverter;
+import com.sd.lib.cache.FDisk;
+import com.sd.www.cache.converter.GlobalEncryptConverter;
+import com.sd.www.cache.converter.GsonObjectConverter;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
