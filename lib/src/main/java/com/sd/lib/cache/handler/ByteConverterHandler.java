@@ -100,7 +100,14 @@ abstract class ByteConverterHandler<T> extends BaseHandler<T>
                 return null;
         }
 
-        return byteToValue(data, clazz);
+        try
+        {
+            return byteToValue(data, clazz);
+        } catch (Exception e)
+        {
+            getDiskInfo().getExceptionHandler().onException(e);
+            return null;
+        }
     }
 
     /**
