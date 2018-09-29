@@ -23,23 +23,23 @@ public class FDisk extends BaseDisk
     //---------- open start ----------
 
     /**
-     * 外部存储"Android/data/包名/files/disk_file"目录
+     * 内部存储"/data/包名/files/disk_file"目录
      *
      * @return
      */
     public static Disk open()
     {
-        return openDir(getExternalFilesDir(DEFAULT_FILE_DIR));
+        return openDir(getInternalFilesDir(DEFAULT_FILE_DIR));
     }
 
     /**
-     * 内部存储"/data/包名/files/disk_file"目录
+     * 外部存储"Android/data/包名/files/disk_file"目录
      *
      * @return
      */
-    public static Disk openInternal()
+    public static Disk openExternal()
     {
-        return openDir(getInternalFilesDir(DEFAULT_FILE_DIR));
+        return openDir(getExternalFilesDir(DEFAULT_FILE_DIR));
     }
 
     /**
