@@ -42,10 +42,7 @@ public class FDisk extends BaseDisk
     public static Disk openExternal()
     {
         final Disk disk = openDir(getExternalFilesDir(DEFAULT_FILE_DIR));
-        if (disk.checkDirectory())
-            return disk;
-        else
-            return open();
+        return disk.checkDirectory() ? disk : open();
     }
 
     /**
