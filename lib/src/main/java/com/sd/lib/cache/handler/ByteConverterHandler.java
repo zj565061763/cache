@@ -3,9 +3,6 @@ package com.sd.lib.cache.handler;
 import com.sd.lib.cache.Disk;
 import com.sd.lib.cache.DiskInfo;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,9 +46,8 @@ abstract class ByteConverterHandler<T> extends BaseHandler<T>
         OutputStream out = null;
         try
         {
-            out = new BufferedOutputStream(new FileOutputStream(file));
-            out.write(dataWithTag);
-            out.flush();
+            out = new FileOutputStream(file);
+            Utils.writeBytes(dataWithTag, out);
             return true;
         } catch (Exception e)
         {
@@ -59,7 +55,7 @@ abstract class ByteConverterHandler<T> extends BaseHandler<T>
             return false;
         } finally
         {
-            closeQuietly(out);
+            Utils.closeQuietly(out);
         }
     }
 
@@ -70,16 +66,15 @@ abstract class ByteConverterHandler<T> extends BaseHandler<T>
         InputStream in = null;
         try
         {
-            in = new BufferedInputStream(new FileInputStream(file));
-            data = new byte[in.available()];
-            in.read(data);
+            in = new FileInputStream(file);
+            data = Utils.readBytes(in);
         } catch (Exception e)
         {
             getDiskInfo().getExceptionHandler().onException(e);
             return null;
         } finally
         {
-            closeQuietly(in);
+            Utils.closeQuietly(in);
         }
 
 
@@ -126,17 +121,4 @@ abstract class ByteConverterHandler<T> extends BaseHandler<T>
      * @return
      */
     protected abstract T byteToValue(byte[] bytes, Class clazz);
-
-    private static void closeQuietly(Closeable closeable)
-    {
-        if (closeable != null)
-        {
-            try
-            {
-                closeable.close();
-            } catch (Throwable ignored)
-            {
-            }
-        }
-    }
 }
