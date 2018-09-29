@@ -23,10 +23,22 @@ public class MainActivity extends AppCompatActivity
         FDisk.setGlobalObjectConverter(new GsonObjectConverter());     //配置全局Gson对象转换器
         FDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，配置全局加解密转换器
 
-        //不同的open方法可以关联不同的目录
-        FDisk.open();                    // 外部存储"Android/data/包名/files/disk_file"目录
-        FDisk.openInternal();            // 内部存储"/data/包名/files/disk_file"目录
-        FDisk.openDir(Environment.getExternalStorageDirectory()); //关联指定的目录
+        /**
+         * 使用内部存储
+         *
+         * 内部存储目录"/data/包名/files/disk_file"
+         */
+        FDisk.open();
+        /**
+         * 优先使用外部存储，如果外部存储不存在，则使用内部存储
+         *
+         * 外部存储目录"Android/data/包名/files/disk_file"
+         */
+        FDisk.openExternal();
+        /**
+         * 使用指定的目录
+         */
+        FDisk.openDir(Environment.getExternalStorageDirectory());
 
         putData();
         printData();
