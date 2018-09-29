@@ -6,8 +6,6 @@ import com.sd.lib.cache.Disk;
 import com.sd.lib.cache.DiskInfo;
 
 import java.io.File;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +40,7 @@ abstract class BaseHandler<T> implements CacheHandler<T>, Disk.CommonCache<T>
             throw new IllegalArgumentException("key prefix is null or empty");
 
         if (encrypt)
-            return prefix + MD5(key);
+            return prefix + Utils.MD5(key);
         else
             return prefix + key;
     }
@@ -177,34 +175,4 @@ abstract class BaseHandler<T> implements CacheHandler<T>, Disk.CommonCache<T>
     protected abstract boolean putCacheImpl(String key, T value, File file);
 
     protected abstract T getCacheImpl(String key, Class clazz, File file);
-
-    //---------- utils start ----------
-
-    private static String MD5(String value)
-    {
-        String result;
-        try
-        {
-            final MessageDigest digest = MessageDigest.getInstance("MD5");
-            digest.update(value.getBytes());
-            byte[] bytes = digest.digest();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.length; i++)
-            {
-                String hex = Integer.toHexString(0xFF & bytes[i]);
-                if (hex.length() == 1)
-                {
-                    sb.append('0');
-                }
-                sb.append(hex);
-            }
-            result = sb.toString();
-        } catch (NoSuchAlgorithmException e)
-        {
-            result = null;
-        }
-        return result;
-    }
-
-    //---------- utils end ----------
 }
