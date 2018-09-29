@@ -34,14 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //不同的open方法可以关联不同的目录
         FDisk.open();                    // 外部存储"Android/data/包名/files/disk_file"目录
-        FDisk.open("hello");             // 外部存储"Android/data/包名/files/hello"目录
-        FDisk.openCache();               // 外部存储"Android/data/包名/cache/disk_cache"目录
-        FDisk.openCache("hello");        // 外部存储"Android/data/包名/cache/hello"目录
-
-        FDisk.openInternal();             // 内部存储"/data/包名/files/disk_file"目录
-        FDisk.openInternal("hello");      // 内部存储"/data/包名/files/hello"目录
-        FDisk.openInternalCache();        // 内部存储"/data/包名/cache/disk_cache"目录
-        FDisk.openInternalCache("hello"); // 内部存储"/data/包名/cache/hello"目录
+        FDisk.openInternal();            // 内部存储"/data/包名/files/disk_file"目录
         FDisk.openDir(Environment.getExternalStorageDirectory()); //关联指定的目录
 
         putData();

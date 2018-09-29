@@ -14,7 +14,6 @@ import java.io.File;
 public class FDisk extends BaseDisk
 {
     private static final String DEFAULT_FILE_DIR = "disk_file";
-    private static final String DEFAULT_CACHE_DIR = "disk_cache";
 
     protected FDisk(File directory)
     {
@@ -34,38 +33,6 @@ public class FDisk extends BaseDisk
     }
 
     /**
-     * 外部存储"Android/data/包名/files/dirName"目录
-     *
-     * @param dirName
-     * @return
-     */
-    public static Disk open(String dirName)
-    {
-        return openDir(getExternalFilesDir(dirName));
-    }
-
-    /**
-     * 外部存储"Android/data/包名/cache/disk_cache"目录
-     *
-     * @return
-     */
-    public static Disk openCache()
-    {
-        return openDir(getExternalCacheDir(DEFAULT_CACHE_DIR));
-    }
-
-    /**
-     * 外部存储"Android/data/包名/cache/dirName"目录
-     *
-     * @param dirName
-     * @return
-     */
-    public static Disk openCache(String dirName)
-    {
-        return openDir(getExternalCacheDir(dirName));
-    }
-
-    /**
      * 内部存储"/data/包名/files/disk_file"目录
      *
      * @return
@@ -73,38 +40,6 @@ public class FDisk extends BaseDisk
     public static Disk openInternal()
     {
         return openDir(getInternalFilesDir(DEFAULT_FILE_DIR));
-    }
-
-    /**
-     * 内部存储"/data/包名/files/dirName"目录
-     *
-     * @param dirName
-     * @return
-     */
-    public static Disk openInternal(String dirName)
-    {
-        return openDir(getInternalFilesDir(dirName));
-    }
-
-    /**
-     * 内部存储"/data/包名/cache/disk_cache"目录
-     *
-     * @return
-     */
-    public static Disk openInternalCache()
-    {
-        return openDir(getInternalCacheDir(DEFAULT_CACHE_DIR));
-    }
-
-    /**
-     * 内部存储"/data/包名/cache/dirName"目录
-     *
-     * @param dirName
-     * @return
-     */
-    public static Disk openInternalCache(String dirName)
-    {
-        return openDir(getInternalCacheDir(dirName));
     }
 
     /**

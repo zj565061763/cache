@@ -155,7 +155,7 @@ abstract class BaseDisk implements Disk, DiskInfo
     }
 
     @Override
-    public ExceptionHandler getExceptionHandler()
+    public final ExceptionHandler getExceptionHandler()
     {
         return mExceptionHandler;
     }
@@ -166,13 +166,9 @@ abstract class BaseDisk implements Disk, DiskInfo
 
     private static Context getContext()
     {
-        return mContext;
-    }
-
-    private static void checkContext()
-    {
         if (mContext == null)
             throw new NullPointerException("you must invoke FDisk.init(Context) method before this");
+        return mContext;
     }
 
     /**
@@ -183,20 +179,7 @@ abstract class BaseDisk implements Disk, DiskInfo
      */
     protected static final File getExternalFilesDir(String dirName)
     {
-        checkContext();
         return getContext().getExternalFilesDir(dirName);
-    }
-
-    /**
-     * 返回外部存储"Android/data/包名/cache/dirName"目录
-     *
-     * @param dirName
-     * @return
-     */
-    protected static final File getExternalCacheDir(String dirName)
-    {
-        checkContext();
-        return new File(getContext().getExternalCacheDir(), dirName);
     }
 
     /**
@@ -207,20 +190,7 @@ abstract class BaseDisk implements Disk, DiskInfo
      */
     protected static final File getInternalFilesDir(String dirName)
     {
-        checkContext();
         return new File(getContext().getFilesDir(), dirName);
-    }
-
-    /**
-     * 返回内部存储"/data/包名/cache/dirName"目录
-     *
-     * @param dirName
-     * @return
-     */
-    protected static final File getInternalCacheDir(String dirName)
-    {
-        checkContext();
-        return new File(getContext().getCacheDir(), dirName);
     }
 
     private static boolean deleteFileOrDir(File path)
