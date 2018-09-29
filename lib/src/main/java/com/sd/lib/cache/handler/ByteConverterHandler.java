@@ -3,35 +3,24 @@ package com.sd.lib.cache.handler;
 import com.sd.lib.cache.Disk;
 import com.sd.lib.cache.DiskInfo;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.Closeable;
 import java.io.File;
-import java.io.Serializable;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
 
 /**
  * 缓存可以和byte互相转换的处理类
  */
 public abstract class ByteConverterHandler<T> extends BaseHandler<T>
 {
-    private SerializableHandler mSerializableHandler;
-
     public ByteConverterHandler(DiskInfo diskInfo)
     {
         super(diskInfo);
-    }
-
-    private final SerializableHandler getSerializableHandler()
-    {
-        if (mSerializableHandler == null)
-        {
-            mSerializableHandler = new SerializableHandler(getDiskInfo())
-            {
-                @Override
-                protected String getKeyPrefix()
-                {
-                    return ByteConverterHandler.this.getKeyPrefix();
-                }
-            };
-        }
-        return mSerializableHandler;
     }
 
     @Override
@@ -42,28 +31,59 @@ public abstract class ByteConverterHandler<T> extends BaseHandler<T>
         if (encrypt && converter == null)
             throw new RuntimeException("you must provide an EncryptConverter instance before this");
 
-        final byte[] data = valueToByte(value);
+        byte[] data = valueToByte(value);
         if (data == null)
             throw new RuntimeException("valueToByte(T) method return null");
 
-        final CacheModel model = new CacheModel();
-        model.data = encrypt ? converter.encrypt(data) : data;
-        model.isEncrypted = encrypt;
+        if (encrypt)
+        {
+            data = converter.encrypt(data);
+            if (data == null)
+                throw new RuntimeException("EncryptConverter.encrypt(byte[]) method return null");
+        }
 
-        if (model.data == null)
-            throw new RuntimeException("EncryptConverter.encrypt(byte[]) method return null");
+        final byte[] dataWithTag = Arrays.copyOf(data, data.length + 1);
+        dataWithTag[dataWithTag.length - 1] = (byte) (encrypt ? 1 : 0);
 
-        return getSerializableHandler().putCache(key, model);
+
+        OutputStream out = null;
+        try
+        {
+            out = new BufferedOutputStream(new FileOutputStream(file));
+            out.write(dataWithTag);
+            out.flush();
+            return true;
+        } catch (Exception e)
+        {
+            getDiskInfo().getExceptionHandler().onException(e);
+            return false;
+        } finally
+        {
+            closeQuietly(out);
+        }
     }
 
     @Override
     protected final T getCacheImpl(String key, Class clazz, File file)
     {
-        final CacheModel model = (CacheModel) getSerializableHandler().getCache(key, CacheModel.class);
-        if (model == null)
+        byte[] data = null;
+        InputStream in = null;
+        try
+        {
+            in = new BufferedInputStream(new FileInputStream(file));
+            data = new byte[in.available()];
+            in.read(data);
+        } catch (Exception e)
+        {
+            getDiskInfo().getExceptionHandler().onException(e);
             return null;
+        } finally
+        {
+            closeQuietly(in);
+        }
 
-        final boolean isEncrypted = model.isEncrypted;
+
+        final boolean isEncrypted = data[data.length - 1] == 1;
         final Disk.EncryptConverter converter = getDiskInfo().getEncryptConverter();
         if (isEncrypted && converter == null)
         {
@@ -71,13 +91,16 @@ public abstract class ByteConverterHandler<T> extends BaseHandler<T>
             return null;
         }
 
+        data = Arrays.copyOf(data, data.length - 1);
+
         if (isEncrypted)
-            model.data = converter.decrypt(model.data);
+        {
+            data = converter.decrypt(data);
+            if (data == null)
+                return null;
+        }
 
-        if (model.data == null)
-            return null;
-
-        return byteToValue(model.data, clazz);
+        return byteToValue(data, clazz);
     }
 
     /**
@@ -97,11 +120,16 @@ public abstract class ByteConverterHandler<T> extends BaseHandler<T>
      */
     protected abstract T byteToValue(byte[] bytes, Class clazz);
 
-    private static final class CacheModel implements Serializable
+    private static void closeQuietly(Closeable closeable)
     {
-        static final long serialVersionUID = 0L;
-
-        public boolean isEncrypted = false;
-        public byte[] data = null;
+        if (closeable != null)
+        {
+            try
+            {
+                closeable.close();
+            } catch (Throwable ignored)
+            {
+            }
+        }
     }
 }
