@@ -77,6 +77,8 @@ public interface Disk
 
     CommonCache<String> cacheString();
 
+    CommonCache<byte[]> cacheBytes();
+
     SerializableCache cacheSerializable();
 
     ObjectCache cacheObject();

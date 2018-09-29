@@ -5,7 +5,7 @@ import com.sd.lib.cache.DiskInfo;
 /**
  * Double处理类
  */
-public class DoubleHandler extends ByteConverterHandler<Double>
+public class DoubleHandler extends BytesConverterHandler<Double>
 {
     public DoubleHandler(DiskInfo diskInfo)
     {

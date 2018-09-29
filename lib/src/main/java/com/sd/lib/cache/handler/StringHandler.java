@@ -5,7 +5,7 @@ import com.sd.lib.cache.DiskInfo;
 /**
  * String处理类
  */
-public class StringHandler extends ByteConverterHandler<String>
+public class StringHandler extends BytesConverterHandler<String>
 {
     public StringHandler(DiskInfo diskInfo)
     {

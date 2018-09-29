@@ -5,7 +5,7 @@ import com.sd.lib.cache.DiskInfo;
 /**
  * Boolean处理类
  */
-public class BooleanHandler extends ByteConverterHandler<Boolean>
+public class BooleanHandler extends BytesConverterHandler<Boolean>
 {
     public BooleanHandler(DiskInfo diskInfo)
     {

@@ -6,7 +6,7 @@ import com.sd.lib.cache.DiskInfo;
 /**
  * Object处理类
  */
-public class ObjectHandler extends ByteConverterHandler<Object> implements Disk.ObjectCache
+public class ObjectHandler extends BytesConverterHandler<Object> implements Disk.ObjectCache
 {
     public ObjectHandler(DiskInfo diskInfo)
     {

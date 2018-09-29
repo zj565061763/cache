@@ -1,6 +1,7 @@
 package com.sd.lib.cache;
 
 import com.sd.lib.cache.handler.BooleanHandler;
+import com.sd.lib.cache.handler.BytesHandler;
 import com.sd.lib.cache.handler.DoubleHandler;
 import com.sd.lib.cache.handler.FloatHandler;
 import com.sd.lib.cache.handler.IntegerHandler;
@@ -66,6 +67,7 @@ public class FDisk extends BaseDisk
     private DoubleHandler mDoubleHandler;
     private BooleanHandler mBooleanHandler;
     private StringHandler mStringHandler;
+    private BytesHandler mBytesHandler;
 
     private SerializableHandler mSerializableHandler;
     private ObjectHandler mObjectHandler;
@@ -116,6 +118,14 @@ public class FDisk extends BaseDisk
         if (mStringHandler == null)
             mStringHandler = new StringHandler(this);
         return mStringHandler;
+    }
+
+    @Override
+    public CommonCache<byte[]> cacheBytes()
+    {
+        if (mBytesHandler == null)
+            mBytesHandler = new BytesHandler(this);
+        return mBytesHandler;
     }
 
     @Override

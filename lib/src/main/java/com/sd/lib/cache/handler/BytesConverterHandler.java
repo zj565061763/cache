@@ -11,11 +11,11 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 /**
- * 缓存可以和byte互相转换的处理类
+ * 缓存可以和byte数组互相转换的处理类
  */
-abstract class ByteConverterHandler<T> extends BaseHandler<T>
+abstract class BytesConverterHandler<T> extends BaseHandler<T>
 {
-    public ByteConverterHandler(DiskInfo diskInfo)
+    public BytesConverterHandler(DiskInfo diskInfo)
     {
         super(diskInfo);
     }
