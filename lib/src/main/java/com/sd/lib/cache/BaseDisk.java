@@ -1,22 +1,17 @@
 package com.sd.lib.cache;
 
-import android.content.Context;
-
 import java.io.File;
 
 abstract class BaseDisk implements Disk, DiskInfo
 {
-    private final File mDirectory;
+    private static DiskConfig sDiskConfig;
 
-    private static Context mContext;
-    private static EncryptConverter sGlobalEncryptConverter;
-    private static ObjectConverter sGlobalObjectConverter;
+    private final File mDirectory;
 
     private boolean mEncrypt;
     private EncryptConverter mEncryptConverter;
     private ObjectConverter mObjectConverter;
     private ExceptionHandler mExceptionHandler;
-
     private boolean mMemorySupport;
 
     protected BaseDisk(File directory)
@@ -30,31 +25,32 @@ abstract class BaseDisk implements Disk, DiskInfo
     /**
      * 初始化
      *
-     * @param context
+     * @param config
      */
-    public static void init(Context context)
+    public static void init(DiskConfig config)
     {
-        mContext = context.getApplicationContext();
+        synchronized (Disk.class)
+        {
+            if (config == null)
+                throw new NullPointerException();
+
+            if (sDiskConfig == null)
+                sDiskConfig = config;
+            else
+                throw new RuntimeException("init method can only be called once");
+        }
     }
 
     /**
-     * 设置全局加解密转换器
+     * 返回config
      *
-     * @param globalEncryptConverter
+     * @return
      */
-    public static void setGlobalEncryptConverter(EncryptConverter globalEncryptConverter)
+    private static DiskConfig getDiskConfig()
     {
-        sGlobalEncryptConverter = globalEncryptConverter;
-    }
-
-    /**
-     * 设置全局对象转换器
-     *
-     * @param globalObjectConverter
-     */
-    public static void setGlobalObjectConverter(ObjectConverter globalObjectConverter)
-    {
-        sGlobalObjectConverter = globalObjectConverter;
+        if (sDiskConfig == null)
+            throw new NullPointerException("you must invoke FDisk.init(DiskConfig config) before this");
+        return sDiskConfig;
     }
 
     //---------- Disk start ----------
@@ -155,41 +151,24 @@ abstract class BaseDisk implements Disk, DiskInfo
     @Override
     public final EncryptConverter getEncryptConverter()
     {
-        return mEncryptConverter != null ? mEncryptConverter : sGlobalEncryptConverter;
+        return mEncryptConverter != null ? mEncryptConverter : getDiskConfig().mEncryptConverter;
     }
 
     @Override
     public final ObjectConverter getObjectConverter()
     {
-        return mObjectConverter != null ? mObjectConverter : sGlobalObjectConverter;
+        return mObjectConverter != null ? mObjectConverter : getDiskConfig().mObjectConverter;
     }
 
     @Override
     public final ExceptionHandler getExceptionHandler()
     {
-        if (mExceptionHandler == null)
-        {
-            mExceptionHandler = new ExceptionHandler()
-            {
-                @Override
-                public void onException(Exception e)
-                {
-                }
-            };
-        }
-        return mExceptionHandler;
+        return mExceptionHandler != null ? mExceptionHandler : getDiskConfig().mExceptionHandler;
     }
 
     //---------- DiskInfo end ----------
 
     //---------- util method start ----------
-
-    private static Context getContext()
-    {
-        if (mContext == null)
-            throw new NullPointerException("you must invoke FDisk.init(Context) method before this");
-        return mContext;
-    }
 
     /**
      * 返回外部存储"Android/data/包名/files/dirName"目录
@@ -199,7 +178,7 @@ abstract class BaseDisk implements Disk, DiskInfo
      */
     protected static final File getExternalFilesDir(String dirName)
     {
-        return getContext().getExternalFilesDir(dirName);
+        return getDiskConfig().mContext.getExternalFilesDir(dirName);
     }
 
     /**
@@ -210,7 +189,7 @@ abstract class BaseDisk implements Disk, DiskInfo
      */
     protected static final File getInternalFilesDir(String dirName)
     {
-        return new File(getContext().getFilesDir(), dirName);
+        return new File(getDiskConfig().mContext.getFilesDir(), dirName);
     }
 
     private static boolean deleteFileOrDir(File path)

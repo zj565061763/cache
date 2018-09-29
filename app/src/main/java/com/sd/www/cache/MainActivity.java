@@ -7,30 +7,17 @@ import android.util.Log;
 import android.view.View;
 
 import com.sd.lib.cache.FDisk;
-import com.sd.www.cache.converter.GlobalEncryptConverter;
-import com.sd.www.cache.converter.GsonObjectConverter;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
-    private static final String TAG = "MainActivity";
-
-    private final String key = "key";
-    private final TestModel mTestModel = new TestModel();
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String KEY = "key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        FDisk.init(this); //初始化
-
-        /**
-         * 当数据量较大的时候建议用cacheObject()方法，性能会比cacheSerializable()好很多
-         * 如果要用cacheObject()方法，需要配置对象转换器
-         */
-        FDisk.setGlobalObjectConverter(new GsonObjectConverter());     //配置全局Gson对象转换器
-        FDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，配置全局加解密转换器
 
         /**
          * 使用内部存储
@@ -55,12 +42,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void putData()
     {
-        FDisk.open().cacheInteger().put(key, 1);
-        FDisk.open().cacheLong().put(key, 22L);
-        FDisk.open().cacheFloat().put(key, 333.333F);
-        FDisk.open().cacheDouble().put(key, 4444.4444D);
-        FDisk.open().cacheBoolean().put(key, true);
-        FDisk.open().cacheString().put(key, "hello String");
+        FDisk.open().cacheInteger().put(KEY, 1);
+        FDisk.open().cacheLong().put(KEY, 22L);
+        FDisk.open().cacheFloat().put(KEY, 333.333F);
+        FDisk.open().cacheDouble().put(KEY, 4444.4444D);
+        FDisk.open().cacheBoolean().put(KEY, true);
+        FDisk.open().cacheString().put(KEY, "hello String");
 
         FDisk.open().cacheSerializable().put(new TestModel());
         FDisk.open().cacheObject().put(new TestModel());
@@ -68,16 +55,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void printData()
     {
-        Log.i(TAG, "getInt:" + FDisk.open().cacheInteger().get(key));
-        Log.i(TAG, "getLong:" + FDisk.open().cacheLong().get(key));
-        Log.i(TAG, "getFloat:" + FDisk.open().cacheFloat().get(key));
-        Log.i(TAG, "getDouble:" + FDisk.open().cacheDouble().get(key));
-        Log.i(TAG, "getBoolean:" + FDisk.open().cacheBoolean().get(key));
-        Log.i(TAG, "getString:" + FDisk.open().cacheString().get(key));
+        Log.i(TAG, "getInt:" + FDisk.open().cacheInteger().get(KEY));
+        Log.i(TAG, "getLong:" + FDisk.open().cacheLong().get(KEY));
+        Log.i(TAG, "getFloat:" + FDisk.open().cacheFloat().get(KEY));
+        Log.i(TAG, "getDouble:" + FDisk.open().cacheDouble().get(KEY));
+        Log.i(TAG, "getBoolean:" + FDisk.open().cacheBoolean().get(KEY));
+        Log.i(TAG, "getString:" + FDisk.open().cacheString().get(KEY));
         Log.i(TAG, "getSerializable:" + FDisk.open().cacheSerializable().get(TestModel.class));
         Log.i(TAG, "getObject:" + FDisk.open().cacheObject().get(TestModel.class));
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        // 删除该目录对应的所有缓存
+        FDisk.open().delete();
+    }
 
     @Override
     public void onClick(View v)
