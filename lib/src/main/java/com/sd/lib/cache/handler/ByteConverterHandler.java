@@ -16,7 +16,7 @@ import java.util.Arrays;
 /**
  * 缓存可以和byte互相转换的处理类
  */
-public abstract class ByteConverterHandler<T> extends BaseHandler<T>
+abstract class ByteConverterHandler<T> extends BaseHandler<T>
 {
     public ByteConverterHandler(DiskInfo diskInfo)
     {

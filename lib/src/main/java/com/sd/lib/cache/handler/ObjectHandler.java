@@ -16,17 +16,13 @@ public class ObjectHandler extends ByteConverterHandler<Object> implements Disk.
     @Override
     protected byte[] valueToByte(Object value)
     {
-        final Disk.ObjectConverter converter = getDiskInfo().getObjectConverter();
-        checkObjectConverter(converter);
-        return converter.objectToByte(value);
+        return getObjectConverter().objectToByte(value);
     }
 
     @Override
     protected Object byteToValue(byte[] bytes, Class clazz)
     {
-        final Disk.ObjectConverter converter = getDiskInfo().getObjectConverter();
-        checkObjectConverter(converter);
-        return converter.byteToObject(bytes, clazz);
+        return getObjectConverter().byteToObject(bytes, clazz);
     }
 
     @Override
@@ -35,10 +31,12 @@ public class ObjectHandler extends ByteConverterHandler<Object> implements Disk.
         return "object_";
     }
 
-    private void checkObjectConverter(Disk.ObjectConverter converter)
+    private Disk.ObjectConverter getObjectConverter()
     {
+        final Disk.ObjectConverter converter = getDiskInfo().getObjectConverter();
         if (converter == null)
             throw new NullPointerException("you must provide an ObjectConverter instance before this");
+        return converter;
     }
 
     @Override

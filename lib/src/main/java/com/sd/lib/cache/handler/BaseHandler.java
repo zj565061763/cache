@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * 缓存处理基类
  */
-public abstract class BaseHandler<T> implements CacheHandler<T>, Disk.CommonCache<T>
+abstract class BaseHandler<T> implements CacheHandler<T>, Disk.CommonCache<T>
 {
     private final DiskInfo mDiskInfo;
     private static final Map<String, Object> MAP_MEMORY = new HashMap<>();
