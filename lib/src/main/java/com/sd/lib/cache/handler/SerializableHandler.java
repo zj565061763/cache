@@ -39,9 +39,7 @@ public class SerializableHandler extends BaseHandler<Serializable> implements Di
             return true;
         } catch (Exception e)
         {
-            final Disk.ExceptionHandler handler = getDiskInfo().getExceptionHandler();
-            if (handler != null)
-                handler.onException(e);
+            getDiskInfo().getExceptionHandler().onException(e);
         } finally
         {
             closeQuietly(os);
@@ -59,9 +57,7 @@ public class SerializableHandler extends BaseHandler<Serializable> implements Di
             return (Serializable) is.readObject();
         } catch (Exception e)
         {
-            final Disk.ExceptionHandler handler = getDiskInfo().getExceptionHandler();
-            if (handler != null)
-                handler.onException(e);
+            getDiskInfo().getExceptionHandler().onException(e);
         } finally
         {
             closeQuietly(is);

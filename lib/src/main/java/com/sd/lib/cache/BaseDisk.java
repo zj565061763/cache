@@ -167,6 +167,16 @@ abstract class BaseDisk implements Disk, DiskInfo
     @Override
     public final ExceptionHandler getExceptionHandler()
     {
+        if (mExceptionHandler == null)
+        {
+            mExceptionHandler = new ExceptionHandler()
+            {
+                @Override
+                public void onException(Exception e)
+                {
+                }
+            };
+        }
         return mExceptionHandler;
     }
 
