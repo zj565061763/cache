@@ -63,30 +63,30 @@ abstract class BaseDisk implements Disk, DiskInfo
     }
 
     @Override
-    public Disk setMemorySupport(boolean memorySupport)
+    public Disk setMemorySupport(boolean support)
     {
-        mMemorySupport = memorySupport;
+        mMemorySupport = support;
         return this;
     }
 
     @Override
-    public Disk setEncryptConverter(EncryptConverter encryptConverter)
+    public Disk setEncryptConverter(EncryptConverter converter)
     {
-        mEncryptConverter = encryptConverter;
+        mEncryptConverter = converter;
         return this;
     }
 
     @Override
-    public Disk setObjectConverter(ObjectConverter objectConverter)
+    public Disk setObjectConverter(ObjectConverter converter)
     {
-        mObjectConverter = objectConverter;
+        mObjectConverter = converter;
         return this;
     }
 
     @Override
-    public Disk setExceptionHandler(ExceptionHandler exceptionHandler)
+    public Disk setExceptionHandler(ExceptionHandler handler)
     {
-        mExceptionHandler = exceptionHandler;
+        mExceptionHandler = handler;
         return this;
     }
 

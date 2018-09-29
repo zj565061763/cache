@@ -15,34 +15,34 @@ public interface Disk
     /**
      * 设置是否支持内存存储
      *
-     * @param memorySupport
+     * @param support
      * @return
      */
-    Disk setMemorySupport(boolean memorySupport);
+    Disk setMemorySupport(boolean support);
 
     /**
      * 设置加解密转换器
      *
-     * @param encryptConverter
+     * @param converter
      * @return
      */
-    Disk setEncryptConverter(EncryptConverter encryptConverter);
+    Disk setEncryptConverter(EncryptConverter converter);
 
     /**
      * 设置对象转换器
      *
-     * @param objectConverter
+     * @param converter
      * @return
      */
-    Disk setObjectConverter(ObjectConverter objectConverter);
+    Disk setObjectConverter(ObjectConverter converter);
 
     /**
      * 设置异常处理对象
      *
-     * @param exceptionHandler
+     * @param handler
      * @return
      */
-    Disk setExceptionHandler(ExceptionHandler exceptionHandler);
+    Disk setExceptionHandler(ExceptionHandler handler);
 
     /**
      * 检查目录是否可用
