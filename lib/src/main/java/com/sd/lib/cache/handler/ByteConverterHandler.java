@@ -67,9 +67,7 @@ public abstract class ByteConverterHandler<T> extends BaseHandler<T>
         final Disk.EncryptConverter converter = getDiskInfo().getEncryptConverter();
         if (isEncrypted && converter == null)
         {
-            final Disk.ExceptionHandler handler = getDiskInfo().getExceptionHandler();
-            if (handler != null)
-                handler.onException(new RuntimeException("content is encrypted but EncryptConverter not found when try decrypt"));
+            getDiskInfo().getExceptionHandler().onException(new RuntimeException("content is encrypted but EncryptConverter not found when try decrypt"));
             return null;
         }
 
@@ -77,7 +75,7 @@ public abstract class ByteConverterHandler<T> extends BaseHandler<T>
             model.data = converter.decrypt(model.data);
 
         if (model.data == null)
-            throw new RuntimeException("EncryptConverter.decrypt(byte[]) method return null");
+            return null;
 
         return byteToValue(model.data, clazz);
     }
