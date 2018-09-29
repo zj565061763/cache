@@ -23,7 +23,7 @@ public class FDisk extends BaseDisk
     //---------- open start ----------
 
     /**
-     * 内部存储"/data/包名/files/disk_file"目录
+     * 内部存储目录"/data/包名/files/disk_file"
      *
      * @return
      */
@@ -33,7 +33,9 @@ public class FDisk extends BaseDisk
     }
 
     /**
-     * 外部存储"Android/data/包名/files/disk_file"目录
+     * 优先使用外部存储，如果外部存储不存在，则使用内部存储
+     * <p>
+     * 外部存储目录"Android/data/包名/files/disk_file"
      *
      * @return
      */
