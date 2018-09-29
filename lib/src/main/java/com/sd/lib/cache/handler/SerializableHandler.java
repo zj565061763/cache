@@ -3,7 +3,6 @@ package com.sd.lib.cache.handler;
 import com.sd.lib.cache.Disk;
 import com.sd.lib.cache.DiskInfo;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -42,7 +41,7 @@ public class SerializableHandler extends BaseHandler<Serializable> implements Di
             getDiskInfo().getExceptionHandler().onException(e);
         } finally
         {
-            closeQuietly(os);
+            Utils.closeQuietly(os);
         }
         return false;
     }
@@ -60,22 +59,9 @@ public class SerializableHandler extends BaseHandler<Serializable> implements Di
             getDiskInfo().getExceptionHandler().onException(e);
         } finally
         {
-            closeQuietly(is);
+            Utils.closeQuietly(is);
         }
         return null;
-    }
-
-    private static void closeQuietly(Closeable closeable)
-    {
-        if (closeable != null)
-        {
-            try
-            {
-                closeable.close();
-            } catch (Throwable ignored)
-            {
-            }
-        }
     }
 
     @Override
