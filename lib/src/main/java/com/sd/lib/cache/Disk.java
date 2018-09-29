@@ -45,6 +45,13 @@ public interface Disk
     Disk setExceptionHandler(ExceptionHandler exceptionHandler);
 
     /**
+     * 检查目录是否可用
+     *
+     * @return
+     */
+    boolean checkDirectory();
+
+    /**
      * 返回当前目录下所有缓存文件的总大小(字节B)
      *
      * @return

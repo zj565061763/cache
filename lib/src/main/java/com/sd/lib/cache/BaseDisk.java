@@ -95,6 +95,21 @@ abstract class BaseDisk implements Disk, DiskInfo
     }
 
     @Override
+    public final boolean checkDirectory()
+    {
+        if (mDirectory.exists())
+            return true;
+
+        synchronized (Disk.class)
+        {
+            if (mDirectory.exists())
+                return true;
+
+            return mDirectory.mkdirs();
+        }
+    }
+
+    @Override
     public final long size()
     {
         synchronized (Disk.class)
@@ -131,15 +146,10 @@ abstract class BaseDisk implements Disk, DiskInfo
     @Override
     public final File getDirectory()
     {
-        if (!mDirectory.exists())
-        {
-            synchronized (Disk.class)
-            {
-                if (!mDirectory.exists() && !mDirectory.mkdirs())
-                    throw new RuntimeException("create directory failure, check the directory:" + mDirectory.getAbsolutePath());
-            }
-        }
-        return mDirectory;
+        if (checkDirectory())
+            return mDirectory;
+        else
+            throw new RuntimeException("directory is not available:" + mDirectory.getAbsolutePath());
     }
 
     @Override
