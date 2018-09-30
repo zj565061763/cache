@@ -1,4 +1,4 @@
-package com.sd.lib.cache.handler;
+package com.sd.lib.cache.store;
 
 import android.text.TextUtils;
 
@@ -19,7 +19,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * 文件缓存实现类
  */
-public class FileCacheHandler implements RealCacheHandler
+public class FileCacheStore implements CacheStore
 {
     protected final File getCacheFile(String key, DiskInfo info)
     {

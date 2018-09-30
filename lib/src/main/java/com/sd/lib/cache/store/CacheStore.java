@@ -1,8 +1,8 @@
-package com.sd.lib.cache.handler;
+package com.sd.lib.cache.store;
 
 import com.sd.lib.cache.DiskInfo;
 
-public interface RealCacheHandler
+public interface CacheStore
 {
     /**
      * 保存缓存

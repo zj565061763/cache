@@ -4,6 +4,8 @@ import android.text.TextUtils;
 
 import com.sd.lib.cache.Disk;
 import com.sd.lib.cache.DiskInfo;
+import com.sd.lib.cache.store.CacheStore;
+import com.sd.lib.cache.store.FileCacheStore;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,7 +18,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
 {
     private final DiskInfo mDiskInfo;
     private static final Map<String, byte[]> MAP_MEMORY = new HashMap<>();
-    private RealCacheHandler mRealCacheHandler;
+    private CacheStore mCacheStore;
 
     public BaseCacheHandler(DiskInfo diskInfo)
     {
@@ -45,11 +47,11 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
         return prefix + key;
     }
 
-    private RealCacheHandler getRealCacheHandler()
+    private CacheStore getCacheStore()
     {
-        if (mRealCacheHandler == null)
-            mRealCacheHandler = new FileCacheHandler();
-        return mRealCacheHandler;
+        if (mCacheStore == null)
+            mCacheStore = new FileCacheStore();
+        return mCacheStore;
     }
 
     //---------- CacheHandler start ----------
@@ -67,7 +69,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
             if (data == null)
                 throw new NullPointerException();
 
-            final boolean result = getRealCacheHandler().putCache(key, data, getDiskInfo());
+            final boolean result = getCacheStore().putCache(key, data, getDiskInfo());
 
             if (result)
                 putMemoryIfNeed(key, data);
@@ -87,7 +89,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
             if (data != null)
                 return transformByteToValue(data, clazz);
 
-            data = getRealCacheHandler().getCache(key, clazz, getDiskInfo());
+            data = getCacheStore().getCache(key, clazz, getDiskInfo());
             if (data != null)
             {
                 putMemoryIfNeed(key, data);
@@ -106,7 +108,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
             key = transformKey(key);
 
             removeMemory(key);
-            return getRealCacheHandler().removeCache(key, getDiskInfo());
+            return getCacheStore().removeCache(key, getDiskInfo());
         }
     }
 
