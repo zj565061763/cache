@@ -69,6 +69,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
              * 内部存储目录"/data/包名/files/disk_file"
              */
             mCache = FDisk.open();
+
+            /**
+             * 设置是否支持内存存储
+             */
+            mCache.setMemorySupport(false);
+
+            /**
+             * 设置保存缓存的时候是否加密
+             */
+            mCache.setEncrypt(false);
         }
         return mCache;
     }
