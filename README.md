@@ -1,41 +1,38 @@
+# About
+封装了一层存储的api，支持加解密，支持对象存储，支持自定义底层不同的存储方案，比如：
+* 用java原生api把缓存写入文件
+* 用Map保存在内存中
+* 基于以上两种实现的带二级缓存的方案
+* 基于腾讯[MMKV](https://github.com/Tencent/MMKV)的实现
+
 # Gradle
 [![](https://jitpack.io/v/zj565061763/cache.svg)](https://jitpack.io/#zj565061763/cache)
 
-# 简单demo
+# 初始化
 ```java
-public class App extends Application
-{
-    @Override
-    public void onCreate()
-    {
-        super.onCreate();
-
-        // 初始化
-        FCache.init(new CacheConfig.Builder()
-                // 如果需要加解密，设置全局加解密转换器
-                .setEncryptConverter(new GlobalEncryptConverter())
-                // 设置全局Gson对象转换器
-                .setObjectConverter(new GsonObjectConverter())
-                // 设置全局异常监听
-                .setExceptionHandler(new Cache.ExceptionHandler()
-                {
-                    @Override
-                    public void onException(Exception e)
-                    {
-
-                    }
-                })
-                .build(this)
-        );
-    }
-}
+// 初始化
+FCache.init(new CacheConfig.Builder()
+        // 如果需要加解密，设置全局加解密转换器
+        .setEncryptConverter(new GlobalEncryptConverter())
+        // 设置全局Gson对象转换器
+        .setObjectConverter(new GsonObjectConverter())
+        // 设置全局异常监听
+        .setExceptionHandler(new GlobalExceptionHandler())
+        .build(this)
+);
 ```
+
+# 简单demo
 
 ```java
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
     private static final String TAG = MainActivity.class.getSimpleName();
+
     private static final String KEY = "key";
+    private static final TestModel TEST_MODEL = new TestModel();
+
+    private Cache mCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -43,61 +40,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /**
-         * 使用内部存储
-         *
-         * 内部存储目录"/data/包名/files/disk_file"
-         */
-        FDisk.open();
-        /**
-         * 优先使用外部存储，如果外部存储不存在，则使用内部存储
-         *
-         * 外部存储目录"Android/data/包名/files/disk_file"
-         */
-        FDisk.openExternal();
-        /**
-         * 使用指定的目录
-         */
-        FDisk.openDir(Environment.getExternalStorageDirectory());
-
         putData();
         printData();
     }
 
+    private Cache getCache()
+    {
+        if (mCache == null)
+        {
+            /**
+             * 自定义Cache，底层用腾讯微信的MMKV库实现存储
+             */
+            mCache = new MMKVCache();
+
+            /**
+             * 使用指定的目录
+             */
+            mCache = FDisk.openDir(Environment.getExternalStorageDirectory());
+
+            /**
+             * 优先使用外部存储，如果外部存储不存在，则使用内部存储
+             *
+             * 外部存储目录"Android/data/包名/files/disk_file"
+             */
+            mCache = FDisk.openExternal();
+
+            /**
+             * 使用内部存储
+             *
+             * 内部存储目录"/data/包名/files/disk_file"
+             */
+            mCache = FDisk.open();
+        }
+        return mCache;
+    }
+
     private void putData()
     {
-        FDisk.open().cacheInteger().put(KEY, 1);
-        FDisk.open().cacheLong().put(KEY, 22L);
-        FDisk.open().cacheFloat().put(KEY, 333.333F);
-        FDisk.open().cacheDouble().put(KEY, 4444.4444D);
-        FDisk.open().cacheBoolean().put(KEY, true);
-        FDisk.open().cacheString().put(KEY, "hello String");
-        FDisk.open().cacheObject().put(new TestModel());
+        getCache().cacheInteger().put(KEY, 1);
+        getCache().cacheLong().put(KEY, 22L);
+        getCache().cacheFloat().put(KEY, 333.333F);
+        getCache().cacheDouble().put(KEY, 4444.4444D);
+        getCache().cacheBoolean().put(KEY, true);
+        getCache().cacheString().put(KEY, "hello String");
+        getCache().cacheObject().put(TEST_MODEL);
     }
 
     private void printData()
     {
-        Log.i(TAG, "getInt:" + FDisk.open().cacheInteger().get(KEY));
-        Log.i(TAG, "getLong:" + FDisk.open().cacheLong().get(KEY));
-        Log.i(TAG, "getFloat:" + FDisk.open().cacheFloat().get(KEY));
-        Log.i(TAG, "getDouble:" + FDisk.open().cacheDouble().get(KEY));
-        Log.i(TAG, "getBoolean:" + FDisk.open().cacheBoolean().get(KEY));
-        Log.i(TAG, "getString:" + FDisk.open().cacheString().get(KEY));
-        Log.i(TAG, "getObject:" + FDisk.open().cacheObject().get(TestModel.class));
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-
-        // 删除该目录对应的所有缓存
-        FDisk.open().delete();
+        Log.i(TAG, "getInt:" + getCache().cacheInteger().get(KEY));
+        Log.i(TAG, "getLong:" + getCache().cacheLong().get(KEY));
+        Log.i(TAG, "getFloat:" + getCache().cacheFloat().get(KEY));
+        Log.i(TAG, "getDouble:" + getCache().cacheDouble().get(KEY));
+        Log.i(TAG, "getBoolean:" + getCache().cacheBoolean().get(KEY));
+        Log.i(TAG, "getString:" + getCache().cacheString().get(KEY));
+        Log.i(TAG, "getObject:" + getCache().cacheObject().get(TestModel.class));
     }
 }
 ```
 
-# 创建对象转换器
+# 对象转换器
 ```java
 public class GsonObjectConverter implements Cache.ObjectConverter
 {
@@ -119,7 +121,7 @@ public class GsonObjectConverter implements Cache.ObjectConverter
 }
 ```
 
-# 创建加解密转换器
+# 加解密转换器
 ```java
 public class GlobalEncryptConverter implements Cache.EncryptConverter
 {
@@ -136,5 +138,45 @@ public class GlobalEncryptConverter implements Cache.EncryptConverter
         // 解密
         return bytes;
     }
+}
+```
+
+# 自定义Cache
+
+```java
+/**
+ * 自定义Cache，底层用腾讯微信的MMKV库实现存储
+ */
+public class MMKVCache extends FCache
+{
+    private final MMKV mMMKV = MMKV.defaultMMKV();
+
+    @Override
+    public CacheStore getCacheStore()
+    {
+        return mCacheStore;
+    }
+
+    private final CacheStore mCacheStore = new CacheStore()
+    {
+        @Override
+        public boolean putCache(String key, byte[] value, CacheInfo info)
+        {
+            return mMMKV.encode(key, value);
+        }
+
+        @Override
+        public byte[] getCache(String key, Class clazz, CacheInfo info)
+        {
+            return mMMKV.decodeBytes(key);
+        }
+
+        @Override
+        public boolean removeCache(String key, CacheInfo info)
+        {
+            mMMKV.remove(key);
+            return true;
+        }
+    };
 }
 ```
