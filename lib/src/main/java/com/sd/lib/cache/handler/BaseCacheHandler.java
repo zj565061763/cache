@@ -45,15 +45,10 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
         return prefix + key;
     }
 
-    public final void setRealCacheHandler(RealCacheHandler realCacheHandler)
-    {
-        mRealCacheHandler = realCacheHandler;
-    }
-
     private RealCacheHandler getRealCacheHandler()
     {
         if (mRealCacheHandler == null)
-            throw new NullPointerException("you must provide a CacheHandler");
+            mRealCacheHandler = new FileCacheHandler();
         return mRealCacheHandler;
     }
 
