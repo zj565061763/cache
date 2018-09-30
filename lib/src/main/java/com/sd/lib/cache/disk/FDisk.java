@@ -72,6 +72,7 @@ public class FDisk extends FCache implements DiskCache
     @Override
     public DiskCache setMemorySupport(boolean support)
     {
+        // synchronized ?
         mCacheStore.setMemorySupport(support);
         return this;
     }
