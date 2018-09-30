@@ -1,13 +1,13 @@
 package com.sd.lib.cache.handler;
 
-import com.sd.lib.cache.DiskInfo;
+import com.sd.lib.cache.CacheInfo;
 
 /**
  * Long处理类
  */
 public class LongHandler extends BaseCacheHandler<Long>
 {
-    public LongHandler(DiskInfo diskInfo)
+    public LongHandler(CacheInfo diskInfo)
     {
         super(diskInfo);
     }

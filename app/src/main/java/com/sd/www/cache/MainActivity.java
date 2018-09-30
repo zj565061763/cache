@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.sd.lib.cache.FDisk;
+import com.sd.lib.cache.disk.FDisk;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {

@@ -2,32 +2,29 @@ package com.sd.lib.cache.handler;
 
 import android.text.TextUtils;
 
-import com.sd.lib.cache.Disk;
-import com.sd.lib.cache.DiskInfo;
+import com.sd.lib.cache.Cache;
+import com.sd.lib.cache.CacheInfo;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 缓存处理基类
  */
-abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<T>
+abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache<T>
 {
-    private final DiskInfo mDiskInfo;
-    private static final Map<String, byte[]> MAP_MEMORY = new HashMap<>();
+    private final CacheInfo mCacheInfo;
 
-    public BaseCacheHandler(DiskInfo diskInfo)
+    public BaseCacheHandler(CacheInfo cacheInfo)
     {
-        if (diskInfo == null)
-            throw new NullPointerException("diskInfo is null");
+        if (cacheInfo == null)
+            throw new NullPointerException();
 
-        mDiskInfo = diskInfo;
+        mCacheInfo = cacheInfo;
     }
 
-    protected final DiskInfo getDiskInfo()
+    protected final CacheInfo getCacheInfo()
     {
-        return mDiskInfo;
+        return mCacheInfo;
     }
 
     protected abstract String getKeyPrefix();
@@ -44,9 +41,9 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
         return prefix + key;
     }
 
-    private Disk.CacheStore getCacheStore()
+    private Cache.CacheStore getCacheStore()
     {
-        return getDiskInfo().getCacheStore();
+        return getCacheInfo().getCacheStore();
     }
 
     //---------- CacheHandler start ----------
@@ -54,7 +51,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
     @Override
     public final boolean putCache(String key, T value)
     {
-        synchronized (Disk.class)
+        synchronized (Cache.class)
         {
             if (value == null)
                 return removeCache(key);
@@ -64,46 +61,33 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
             if (data == null)
                 throw new NullPointerException();
 
-            final boolean result = getCacheStore().putCache(key, data, getDiskInfo());
-
-            if (result)
-                putMemoryIfNeed(key, data);
-
-            return result;
+            return getCacheStore().putCache(key, data, getCacheInfo());
         }
     }
 
     @Override
     public final T getCache(String key, Class clazz)
     {
-        synchronized (Disk.class)
+        synchronized (Cache.class)
         {
             key = transformKey(key);
 
-            byte[] data = getMemory(key);
-            if (data != null)
-                return transformByteToValue(data, clazz);
+            byte[] data = getCacheStore().getCache(key, clazz, getCacheInfo());
+            if (data == null)
+                return null;
 
-            data = getCacheStore().getCache(key, clazz, getDiskInfo());
-            if (data != null)
-            {
-                putMemoryIfNeed(key, data);
-                return transformByteToValue(data, clazz);
-            }
-
-            return null;
+            return transformByteToValue(data, clazz);
         }
     }
 
     @Override
     public final boolean removeCache(String key)
     {
-        synchronized (Disk.class)
+        synchronized (Cache.class)
         {
             key = transformKey(key);
 
-            removeMemory(key);
-            return getCacheStore().removeCache(key, getDiskInfo());
+            return getCacheStore().removeCache(key, getCacheInfo());
         }
     }
 
@@ -133,35 +117,13 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
 
     //---------- CommonCache end ----------
 
-
-    //---------- memory start ----------
-
-    private void putMemoryIfNeed(String key, byte[] value)
-    {
-        if (getDiskInfo().isMemorySupport())
-            MAP_MEMORY.put(key, value);
-    }
-
-    private byte[] getMemory(String key)
-    {
-        return getDiskInfo().isMemorySupport() ? MAP_MEMORY.get(key) : null;
-    }
-
-    private void removeMemory(String key)
-    {
-        if (!MAP_MEMORY.isEmpty())
-            MAP_MEMORY.remove(key);
-    }
-
-    //---------- memory end ----------
-
     private byte[] transformValueToByte(T value)
     {
         if (value == null)
             throw new NullPointerException();
 
-        final boolean encrypt = getDiskInfo().isEncrypt();
-        final Disk.EncryptConverter converter = getDiskInfo().getEncryptConverter();
+        final boolean encrypt = getCacheInfo().isEncrypt();
+        final Cache.EncryptConverter converter = getCacheInfo().getEncryptConverter();
         if (encrypt && converter == null)
             throw new RuntimeException("you must provide an EncryptConverter instance before this");
 
@@ -188,10 +150,10 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
             throw new NullPointerException();
 
         final boolean isEncrypted = data[data.length - 1] == 1;
-        final Disk.EncryptConverter converter = getDiskInfo().getEncryptConverter();
+        final Cache.EncryptConverter converter = getCacheInfo().getEncryptConverter();
         if (isEncrypted && converter == null)
         {
-            getDiskInfo().getExceptionHandler().onException(new RuntimeException("content is encrypted but EncryptConverter not found when try decrypt"));
+            getCacheInfo().getExceptionHandler().onException(new RuntimeException("content is encrypted but EncryptConverter not found when try decrypt"));
             return null;
         }
 
@@ -209,7 +171,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
             return byteToValue(data, clazz);
         } catch (Exception e)
         {
-            getDiskInfo().getExceptionHandler().onException(e);
+            getCacheInfo().getExceptionHandler().onException(e);
             return null;
         }
     }

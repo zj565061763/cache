@@ -1,12 +1,12 @@
 package com.sd.www.cache.converter;
 
-import com.sd.lib.cache.Disk;
+import com.sd.lib.cache.Cache;
 
 /**
  * Created by Administrator on 2017/8/29.
  */
 
-public class GlobalEncryptConverter implements Disk.EncryptConverter
+public class GlobalEncryptConverter implements Cache.EncryptConverter
 {
     @Override
     public byte[] encrypt(byte[] bytes)

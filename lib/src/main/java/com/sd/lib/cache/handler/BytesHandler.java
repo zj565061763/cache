@@ -1,13 +1,13 @@
 package com.sd.lib.cache.handler;
 
-import com.sd.lib.cache.DiskInfo;
+import com.sd.lib.cache.CacheInfo;
 
 /**
  * byte数组处理类
  */
 public class BytesHandler extends BaseCacheHandler<byte[]>
 {
-    public BytesHandler(DiskInfo diskInfo)
+    public BytesHandler(CacheInfo diskInfo)
     {
         super(diskInfo);
     }

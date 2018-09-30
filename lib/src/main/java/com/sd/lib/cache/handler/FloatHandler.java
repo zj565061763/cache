@@ -1,13 +1,13 @@
 package com.sd.lib.cache.handler;
 
-import com.sd.lib.cache.DiskInfo;
+import com.sd.lib.cache.CacheInfo;
 
 /**
  * Float处理类
  */
 public class FloatHandler extends BaseCacheHandler<Float>
 {
-    public FloatHandler(DiskInfo diskInfo)
+    public FloatHandler(CacheInfo diskInfo)
     {
         super(diskInfo);
     }

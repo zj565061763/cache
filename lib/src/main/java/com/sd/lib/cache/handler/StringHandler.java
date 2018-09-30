@@ -1,13 +1,13 @@
 package com.sd.lib.cache.handler;
 
-import com.sd.lib.cache.DiskInfo;
+import com.sd.lib.cache.CacheInfo;
 
 /**
  * String处理类
  */
 public class StringHandler extends BaseCacheHandler<String>
 {
-    public StringHandler(DiskInfo diskInfo)
+    public StringHandler(CacheInfo diskInfo)
     {
         super(diskInfo);
     }

@@ -1,13 +1,13 @@
 package com.sd.lib.cache.handler;
 
-import com.sd.lib.cache.DiskInfo;
+import com.sd.lib.cache.CacheInfo;
 
 /**
  * Integer处理类
  */
 public class IntegerHandler extends BaseCacheHandler<Integer>
 {
-    public IntegerHandler(DiskInfo diskInfo)
+    public IntegerHandler(CacheInfo diskInfo)
     {
         super(diskInfo);
     }

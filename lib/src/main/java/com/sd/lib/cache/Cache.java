@@ -1,6 +1,6 @@
 package com.sd.lib.cache;
 
-public interface Disk
+public interface Cache
 {
     /**
      * 设置保存缓存的时候是否加密
@@ -8,15 +8,7 @@ public interface Disk
      * @param encrypt
      * @return
      */
-    Disk setEncrypt(boolean encrypt);
-
-    /**
-     * 设置是否支持内存存储
-     *
-     * @param support
-     * @return
-     */
-    Disk setMemorySupport(boolean support);
+    Cache setEncrypt(boolean encrypt);
 
     /**
      * 设置对象转换器
@@ -24,7 +16,7 @@ public interface Disk
      * @param converter
      * @return
      */
-    Disk setObjectConverter(ObjectConverter converter);
+    Cache setObjectConverter(ObjectConverter converter);
 
     /**
      * 设置加解密转换器
@@ -32,7 +24,7 @@ public interface Disk
      * @param converter
      * @return
      */
-    Disk setEncryptConverter(EncryptConverter converter);
+    Cache setEncryptConverter(EncryptConverter converter);
 
     /**
      * 设置异常处理对象
@@ -40,26 +32,7 @@ public interface Disk
      * @param handler
      * @return
      */
-    Disk setExceptionHandler(ExceptionHandler handler);
-
-    /**
-     * 检查目录是否可用
-     *
-     * @return
-     */
-    boolean checkDirectory();
-
-    /**
-     * 返回当前目录下所有缓存文件的总大小(字节B)
-     *
-     * @return
-     */
-    long size();
-
-    /**
-     * 删除该目录以及目录下的所有缓存
-     */
-    void delete();
+    Cache setExceptionHandler(ExceptionHandler handler);
 
     //---------- cache start ----------
 
@@ -135,7 +108,7 @@ public interface Disk
          * @param info
          * @return true-保存成功，false-保存失败
          */
-        boolean putCache(String key, byte[] value, DiskInfo info);
+        boolean putCache(String key, byte[] value, CacheInfo info);
 
         /**
          * 获得缓存
@@ -145,7 +118,7 @@ public interface Disk
          * @param info
          * @return
          */
-        byte[] getCache(String key, Class clazz, DiskInfo info);
+        byte[] getCache(String key, Class clazz, CacheInfo info);
 
         /**
          * 删除缓存
@@ -154,7 +127,7 @@ public interface Disk
          * @param info
          * @return true-此次方法调用后删除了缓存，false-删除失败或者缓存不存在
          */
-        boolean removeCache(String key, DiskInfo info);
+        boolean removeCache(String key, CacheInfo info);
     }
 
     /**

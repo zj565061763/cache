@@ -1,13 +1,13 @@
 package com.sd.lib.cache.handler;
 
-import com.sd.lib.cache.DiskInfo;
+import com.sd.lib.cache.CacheInfo;
 
 /**
  * Boolean处理类
  */
 public class BooleanHandler extends BaseCacheHandler<Boolean>
 {
-    public BooleanHandler(DiskInfo diskInfo)
+    public BooleanHandler(CacheInfo diskInfo)
     {
         super(diskInfo);
     }

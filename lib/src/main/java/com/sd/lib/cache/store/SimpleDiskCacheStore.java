@@ -1,6 +1,10 @@
-package com.sd.lib.cache;
+package com.sd.lib.cache.store;
 
 import android.text.TextUtils;
+
+import com.sd.lib.cache.Cache;
+import com.sd.lib.cache.CacheInfo;
+import com.sd.lib.cache.disk.FDisk;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -17,15 +21,37 @@ import java.security.NoSuchAlgorithmException;
 /**
  * 文件缓存实现类
  */
-public class FileCacheStore implements Disk.CacheStore
+public class SimpleDiskCacheStore implements Cache.CacheStore
 {
-    protected final File getCacheFile(String key, DiskInfo info)
+    private final File mDirectory;
+
+    public SimpleDiskCacheStore(File directory)
+    {
+        if (directory == null)
+            throw new NullPointerException();
+        mDirectory = directory;
+    }
+
+    /**
+     * 返回缓存目录
+     *
+     * @return
+     */
+    public final File getDirectory()
+    {
+        if (FDisk.checkDirectory(mDirectory))
+            return mDirectory;
+        else
+            throw new RuntimeException("directory is not available:" + mDirectory.getAbsolutePath());
+    }
+
+    protected final File getCacheFile(String key, CacheInfo info)
     {
         key = transformKey(key);
         if (TextUtils.isEmpty(key))
             throw new NullPointerException();
 
-        return new File(info.getDirectory(), key);
+        return new File(getDirectory(), key);
     }
 
     protected String transformKey(String key)
@@ -34,7 +60,7 @@ public class FileCacheStore implements Disk.CacheStore
     }
 
     @Override
-    public boolean putCache(String key, byte[] value, DiskInfo info)
+    public boolean putCache(String key, byte[] value, CacheInfo info)
     {
         final File file = getCacheFile(key, info);
 
@@ -56,7 +82,7 @@ public class FileCacheStore implements Disk.CacheStore
     }
 
     @Override
-    public byte[] getCache(String key, Class clazz, DiskInfo info)
+    public byte[] getCache(String key, Class clazz, CacheInfo info)
     {
         final File file = getCacheFile(key, info);
 
@@ -89,7 +115,7 @@ public class FileCacheStore implements Disk.CacheStore
     }
 
     @Override
-    public boolean removeCache(String key, DiskInfo info)
+    public boolean removeCache(String key, CacheInfo info)
     {
         final File file = getCacheFile(key, info);
 

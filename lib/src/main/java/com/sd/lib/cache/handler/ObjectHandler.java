@@ -1,14 +1,14 @@
 package com.sd.lib.cache.handler;
 
-import com.sd.lib.cache.Disk;
-import com.sd.lib.cache.DiskInfo;
+import com.sd.lib.cache.Cache;
+import com.sd.lib.cache.CacheInfo;
 
 /**
  * Object处理类
  */
-public class ObjectHandler extends BaseCacheHandler<Object> implements Disk.ObjectCache
+public class ObjectHandler extends BaseCacheHandler<Object> implements Cache.ObjectCache
 {
-    public ObjectHandler(DiskInfo diskInfo)
+    public ObjectHandler(CacheInfo diskInfo)
     {
         super(diskInfo);
     }
@@ -31,9 +31,9 @@ public class ObjectHandler extends BaseCacheHandler<Object> implements Disk.Obje
         return "object_";
     }
 
-    private Disk.ObjectConverter getObjectConverter()
+    private Cache.ObjectConverter getObjectConverter()
     {
-        final Disk.ObjectConverter converter = getDiskInfo().getObjectConverter();
+        final Cache.ObjectConverter converter = getCacheInfo().getObjectConverter();
         if (converter == null)
             throw new NullPointerException("you must provide an ObjectConverter instance before this");
         return converter;
