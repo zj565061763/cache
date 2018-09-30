@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SimpleMemoryCacheStore implements Cache.CacheStore
 {
-    private final Map<String, byte[]> MAP_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, byte[]> MAP_CACHE = new ConcurrentHashMap<>();
 
     @Override
     public boolean putCache(String key, byte[] value, CacheInfo info)
