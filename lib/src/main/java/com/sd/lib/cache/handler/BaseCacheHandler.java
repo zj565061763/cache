@@ -76,7 +76,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
             if (data == null)
                 return null;
 
-            return transformByteToValue(data, clazz);
+            return transformByteToValue(key, data, clazz);
         }
     }
 
@@ -144,7 +144,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
         return dataWithTag;
     }
 
-    private T transformByteToValue(byte[] data, Class clazz)
+    private T transformByteToValue(String key, byte[] data, Class clazz)
     {
         if (data == null)
             throw new NullPointerException();
@@ -153,7 +153,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
         final Cache.EncryptConverter converter = getCacheInfo().getEncryptConverter();
         if (isEncrypted && converter == null)
         {
-            getCacheInfo().getExceptionHandler().onException(new RuntimeException("Data is encrypted but EncryptConverter not found while try decrypt."));
+            getCacheInfo().getExceptionHandler().onException(new RuntimeException("Data is encrypted but EncryptConverter not found while try decrypt. key:" + key));
             return null;
         }
 
@@ -164,7 +164,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
             data = converter.decrypt(data);
             if (data == null)
             {
-                getCacheInfo().getExceptionHandler().onException(new RuntimeException("EncryptConverter.decrypt return null."));
+                getCacheInfo().getExceptionHandler().onException(new RuntimeException("EncryptConverter.decrypt return null. key:" + key));
                 return null;
             }
         }
