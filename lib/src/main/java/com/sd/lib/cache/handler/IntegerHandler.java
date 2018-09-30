@@ -5,7 +5,7 @@ import com.sd.lib.cache.DiskInfo;
 /**
  * Integer处理类
  */
-public class IntegerHandler extends BytesConverterHandler<Integer>
+public class IntegerHandler extends BaseCacheHandler<Integer>
 {
     public IntegerHandler(DiskInfo diskInfo)
     {

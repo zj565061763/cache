@@ -5,7 +5,7 @@ import com.sd.lib.cache.DiskInfo;
 /**
  * Float处理类
  */
-public class FloatHandler extends BytesConverterHandler<Float>
+public class FloatHandler extends BaseCacheHandler<Float>
 {
     public FloatHandler(DiskInfo diskInfo)
     {

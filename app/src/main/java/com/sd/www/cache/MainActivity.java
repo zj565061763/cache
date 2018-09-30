@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FDisk.open().cacheDouble().put(KEY, 4444.4444D);
         FDisk.open().cacheBoolean().put(KEY, true);
         FDisk.open().cacheString().put(KEY, "hello String");
-
-        FDisk.open().cacheSerializable().put(new TestModel());
         FDisk.open().cacheObject().put(new TestModel());
     }
 
@@ -61,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i(TAG, "getDouble:" + FDisk.open().cacheDouble().get(KEY));
         Log.i(TAG, "getBoolean:" + FDisk.open().cacheBoolean().get(KEY));
         Log.i(TAG, "getString:" + FDisk.open().cacheString().get(KEY));
-        Log.i(TAG, "getSerializable:" + FDisk.open().cacheSerializable().get(TestModel.class));
         Log.i(TAG, "getObject:" + FDisk.open().cacheObject().get(TestModel.class));
     }
 

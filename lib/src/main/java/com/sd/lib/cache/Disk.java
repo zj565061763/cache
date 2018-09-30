@@ -1,7 +1,5 @@
 package com.sd.lib.cache;
 
-import java.io.Serializable;
-
 public interface Disk
 {
     /**
@@ -79,8 +77,6 @@ public interface Disk
 
     CommonCache<byte[]> cacheBytes();
 
-    SerializableCache cacheSerializable();
-
     ObjectCache cacheObject();
 
     //---------- cache end ----------
@@ -127,18 +123,6 @@ public interface Disk
         <T> T get(Class<T> clazz);
 
         boolean remove(Class clazz);
-    }
-
-    /**
-     * 序列化缓存接口
-     */
-    interface SerializableCache
-    {
-        <T extends Serializable> boolean put(T value);
-
-        <T extends Serializable> T get(Class<T> clazz);
-
-        <T extends Serializable> boolean remove(Class<T> clazz);
     }
 
     /**

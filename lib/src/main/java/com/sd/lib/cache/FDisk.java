@@ -7,7 +7,6 @@ import com.sd.lib.cache.handler.FloatHandler;
 import com.sd.lib.cache.handler.IntegerHandler;
 import com.sd.lib.cache.handler.LongHandler;
 import com.sd.lib.cache.handler.ObjectHandler;
-import com.sd.lib.cache.handler.SerializableHandler;
 import com.sd.lib.cache.handler.StringHandler;
 
 import java.io.File;
@@ -69,7 +68,6 @@ public class FDisk extends BaseDisk
     private StringHandler mStringHandler;
     private BytesHandler mBytesHandler;
 
-    private SerializableHandler mSerializableHandler;
     private ObjectHandler mObjectHandler;
 
     @Override
@@ -126,14 +124,6 @@ public class FDisk extends BaseDisk
         if (mBytesHandler == null)
             mBytesHandler = new BytesHandler(this);
         return mBytesHandler;
-    }
-
-    @Override
-    public SerializableCache cacheSerializable()
-    {
-        if (mSerializableHandler == null)
-            mSerializableHandler = new SerializableHandler(this);
-        return mSerializableHandler;
     }
 
     @Override

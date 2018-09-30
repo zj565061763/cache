@@ -5,7 +5,7 @@ import com.sd.lib.cache.DiskInfo;
 /**
  * Long处理类
  */
-public class LongHandler extends BytesConverterHandler<Long>
+public class LongHandler extends BaseCacheHandler<Long>
 {
     public LongHandler(DiskInfo diskInfo)
     {
