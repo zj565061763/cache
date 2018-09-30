@@ -14,6 +14,7 @@ public abstract class FCache implements Cache, CacheInfo
     private static CacheConfig sCacheConfig;
 
     private boolean mEncrypt;
+    private boolean mMemorySupport;
     private ObjectConverter mObjectConverter;
     private EncryptConverter mEncryptConverter;
     private ExceptionHandler mExceptionHandler;
@@ -64,6 +65,13 @@ public abstract class FCache implements Cache, CacheInfo
     public final Cache setEncrypt(boolean encrypt)
     {
         mEncrypt = encrypt;
+        return this;
+    }
+
+    @Override
+    public final Cache setMemorySupport(boolean support)
+    {
+        mMemorySupport = support;
         return this;
     }
 
@@ -160,6 +168,12 @@ public abstract class FCache implements Cache, CacheInfo
     public final boolean isEncrypt()
     {
         return mEncrypt;
+    }
+
+    @Override
+    public final boolean isMemorySupport()
+    {
+        return mMemorySupport;
     }
 
     @Override

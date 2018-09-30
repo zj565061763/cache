@@ -10,6 +10,13 @@ public interface CacheInfo
     boolean isEncrypt();
 
     /**
+     * 是否支持内存存储
+     *
+     * @return
+     */
+    boolean isMemorySupport();
+
+    /**
      * 返回缓存存取对象
      *
      * @return

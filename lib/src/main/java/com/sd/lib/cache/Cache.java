@@ -11,6 +11,14 @@ public interface Cache
     Cache setEncrypt(boolean encrypt);
 
     /**
+     * 设置是否支持内存存储
+     *
+     * @param support
+     * @return
+     */
+    Cache setMemorySupport(boolean support);
+
+    /**
      * 设置对象转换器
      *
      * @param converter

@@ -6,6 +6,8 @@ import com.sd.lib.cache.Cache;
 import com.sd.lib.cache.CacheInfo;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 缓存处理基类
@@ -13,6 +15,7 @@ import java.util.Arrays;
 abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache<T>
 {
     private final CacheInfo mCacheInfo;
+    private static final Map<String, byte[]> MAP_MEMORY = new HashMap<>();
 
     public BaseCacheHandler(CacheInfo cacheInfo)
     {
@@ -61,7 +64,11 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
             if (data == null)
                 throw new NullPointerException();
 
-            return getCacheStore().putCache(key, data, getCacheInfo());
+            final boolean result = getCacheStore().putCache(key, data, getCacheInfo());
+            if (result)
+                putMemory(key, data);
+
+            return result;
         }
     }
 
@@ -72,11 +79,14 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
         {
             key = transformKey(key);
 
-            byte[] data = getCacheStore().getCache(key, clazz, getCacheInfo());
+            byte[] data = getMemory(key);
             if (data == null)
-                return null;
+                data = getCacheStore().getCache(key, clazz, getCacheInfo());
 
-            return transformByteToValue(key, data, clazz);
+            if (data != null)
+                return transformByteToValue(key, data, clazz);
+
+            return null;
         }
     }
 
@@ -87,11 +97,33 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
         {
             key = transformKey(key);
 
+            removeMemory(key);
             return getCacheStore().removeCache(key, getCacheInfo());
         }
     }
 
     //---------- CacheHandler end ----------
+
+    //---------- memory start ----------
+
+    private void putMemory(String key, byte[] value)
+    {
+        if (getCacheInfo().isMemorySupport())
+            MAP_MEMORY.put(key, value);
+    }
+
+    private byte[] getMemory(String key)
+    {
+        return getCacheInfo().isMemorySupport() ? MAP_MEMORY.get(key) : null;
+    }
+
+    private void removeMemory(String key)
+    {
+        if (!MAP_MEMORY.isEmpty())
+            MAP_MEMORY.remove(key);
+    }
+
+    //---------- memory end ----------
 
 
     //---------- CommonCache start ----------
