@@ -6,12 +6,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.sd.lib.cache.Cache;
 import com.sd.lib.cache.disk.FDisk;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
     private static final String TAG = MainActivity.class.getSimpleName();
+
     private static final String KEY = "key";
+    private static final TestModel TEST_MODEL = new TestModel();
+
+    private Cache mCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -19,56 +24,61 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /**
-         * 使用内部存储
-         *
-         * 内部存储目录"/data/包名/files/disk_file"
-         */
-        FDisk.open();
-        /**
-         * 优先使用外部存储，如果外部存储不存在，则使用内部存储
-         *
-         * 外部存储目录"Android/data/包名/files/disk_file"
-         */
-        FDisk.openExternal();
-        /**
-         * 使用指定的目录
-         */
-        FDisk.openDir(Environment.getExternalStorageDirectory());
-
         putData();
         printData();
     }
 
+    private Cache getCache()
+    {
+        if (mCache == null)
+        {
+            /**
+             * 自定义Cache，底层用腾讯微信的MMKV库实现存储
+             */
+            mCache = new MMKVCache();
+
+            /**
+             * 使用指定的目录
+             */
+            mCache = FDisk.openDir(Environment.getExternalStorageDirectory());
+
+            /**
+             * 优先使用外部存储，如果外部存储不存在，则使用内部存储
+             *
+             * 外部存储目录"Android/data/包名/files/disk_file"
+             */
+            mCache = FDisk.openExternal();
+
+            /**
+             * 使用内部存储
+             *
+             * 内部存储目录"/data/包名/files/disk_file"
+             */
+            mCache = FDisk.open();
+        }
+        return mCache;
+    }
+
     private void putData()
     {
-        FDisk.open().cacheInteger().put(KEY, 1);
-        FDisk.open().cacheLong().put(KEY, 22L);
-        FDisk.open().cacheFloat().put(KEY, 333.333F);
-        FDisk.open().cacheDouble().put(KEY, 4444.4444D);
-        FDisk.open().cacheBoolean().put(KEY, true);
-        FDisk.open().cacheString().put(KEY, "hello String");
-        FDisk.open().cacheObject().put(new TestModel());
+        getCache().cacheInteger().put(KEY, 1);
+        getCache().cacheLong().put(KEY, 22L);
+        getCache().cacheFloat().put(KEY, 333.333F);
+        getCache().cacheDouble().put(KEY, 4444.4444D);
+        getCache().cacheBoolean().put(KEY, true);
+        getCache().cacheString().put(KEY, "hello String");
+        getCache().cacheObject().put(TEST_MODEL);
     }
 
     private void printData()
     {
-        Log.i(TAG, "getInt:" + FDisk.open().cacheInteger().get(KEY));
-        Log.i(TAG, "getLong:" + FDisk.open().cacheLong().get(KEY));
-        Log.i(TAG, "getFloat:" + FDisk.open().cacheFloat().get(KEY));
-        Log.i(TAG, "getDouble:" + FDisk.open().cacheDouble().get(KEY));
-        Log.i(TAG, "getBoolean:" + FDisk.open().cacheBoolean().get(KEY));
-        Log.i(TAG, "getString:" + FDisk.open().cacheString().get(KEY));
-        Log.i(TAG, "getObject:" + FDisk.open().cacheObject().get(TestModel.class));
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-
-        // 删除该目录对应的所有缓存
-        FDisk.open().delete();
+        Log.i(TAG, "getInt:" + getCache().cacheInteger().get(KEY));
+        Log.i(TAG, "getLong:" + getCache().cacheLong().get(KEY));
+        Log.i(TAG, "getFloat:" + getCache().cacheFloat().get(KEY));
+        Log.i(TAG, "getDouble:" + getCache().cacheDouble().get(KEY));
+        Log.i(TAG, "getBoolean:" + getCache().cacheBoolean().get(KEY));
+        Log.i(TAG, "getString:" + getCache().cacheString().get(KEY));
+        Log.i(TAG, "getObject:" + getCache().cacheObject().get(TestModel.class));
     }
 
     @Override

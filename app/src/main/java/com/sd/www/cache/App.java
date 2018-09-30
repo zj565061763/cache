@@ -7,6 +7,7 @@ import com.sd.lib.cache.CacheConfig;
 import com.sd.lib.cache.FCache;
 import com.sd.www.cache.converter.GlobalEncryptConverter;
 import com.sd.www.cache.converter.GsonObjectConverter;
+import com.tencent.mmkv.MMKV;
 
 public class App extends Application
 {
@@ -14,6 +15,8 @@ public class App extends Application
     public void onCreate()
     {
         super.onCreate();
+
+        MMKV.initialize(this);
 
         // 初始化
         FCache.init(new CacheConfig.Builder()
