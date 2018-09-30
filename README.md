@@ -3,25 +3,45 @@
 
 # 简单demo
 ```java
-public class MainActivity extends AppCompatActivity
+public class App extends Application
 {
-    private static final String TAG = "MainActivity";
-    private String key = "key";
+    @Override
+    public void onCreate()
+    {
+        super.onCreate();
+
+        // 初始化
+        FCache.init(new CacheConfig.Builder()
+                // 如果需要加解密，设置全局加解密转换器
+                .setEncryptConverter(new GlobalEncryptConverter())
+                // 设置全局Gson对象转换器
+                .setObjectConverter(new GsonObjectConverter())
+                // 设置全局异常监听
+                .setExceptionHandler(new Cache.ExceptionHandler()
+                {
+                    @Override
+                    public void onException(Exception e)
+                    {
+
+                    }
+                })
+                .build(this)
+        );
+    }
+}
+```
+
+```java
+public class MainActivity extends AppCompatActivity implements View.OnClickListener
+{
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String KEY = "key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        FDisk.init(this); //初始化
-
-        /**
-         * 当数据量较大的时候建议用cacheObject()方法，性能会比cacheSerializable()好很多
-         * 如果要用cacheObject()方法，需要配置对象转换器
-         */
-        FDisk.setGlobalObjectConverter(new GsonObjectConverter());     //配置全局Gson对象转换器
-        FDisk.setGlobalEncryptConverter(new GlobalEncryptConverter()); //如果需要加解密，配置全局加解密转换器
 
         /**
          * 使用内部存储
@@ -46,26 +66,23 @@ public class MainActivity extends AppCompatActivity
 
     private void putData()
     {
-        FDisk.open().cacheInteger().put(key, 1);
-        FDisk.open().cacheLong().put(key, 2L);
-        FDisk.open().cacheFloat().put(key, 3.3F);
-        FDisk.open().cacheDouble().put(key, 4.4444D);
-        FDisk.open().cacheBoolean().put(key, true);
-        FDisk.open().cacheString().put(key, "hello String");
-
-        FDisk.open().cacheSerializable().put(new TestModel());
+        FDisk.open().cacheInteger().put(KEY, 1);
+        FDisk.open().cacheLong().put(KEY, 22L);
+        FDisk.open().cacheFloat().put(KEY, 333.333F);
+        FDisk.open().cacheDouble().put(KEY, 4444.4444D);
+        FDisk.open().cacheBoolean().put(KEY, true);
+        FDisk.open().cacheString().put(KEY, "hello String");
         FDisk.open().cacheObject().put(new TestModel());
     }
 
     private void printData()
     {
-        Log.i(TAG, "getInt:" + FDisk.open().cacheInteger().get(key));
-        Log.i(TAG, "getLong:" + FDisk.open().cacheLong().get(key));
-        Log.i(TAG, "getFloat:" + FDisk.open().cacheFloat().get(key));
-        Log.i(TAG, "getDouble:" + FDisk.open().cacheDouble().get(key));
-        Log.i(TAG, "getBoolean:" + FDisk.open().cacheBoolean().get(key));
-        Log.i(TAG, "getString:" + FDisk.open().cacheString().get(key));
-        Log.i(TAG, "getSerializable:" + FDisk.open().cacheSerializable().get(TestModel.class));
+        Log.i(TAG, "getInt:" + FDisk.open().cacheInteger().get(KEY));
+        Log.i(TAG, "getLong:" + FDisk.open().cacheLong().get(KEY));
+        Log.i(TAG, "getFloat:" + FDisk.open().cacheFloat().get(KEY));
+        Log.i(TAG, "getDouble:" + FDisk.open().cacheDouble().get(KEY));
+        Log.i(TAG, "getBoolean:" + FDisk.open().cacheBoolean().get(KEY));
+        Log.i(TAG, "getString:" + FDisk.open().cacheString().get(KEY));
         Log.i(TAG, "getObject:" + FDisk.open().cacheObject().get(TestModel.class));
     }
 
@@ -73,14 +90,16 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        FDisk.open().delete(); //删除该目录对应的所有缓存
+
+        // 删除该目录对应的所有缓存
+        FDisk.open().delete();
     }
 }
 ```
 
 # 创建对象转换器
 ```java
-public class GsonObjectConverter implements Disk.ObjectConverter
+public class GsonObjectConverter implements Cache.ObjectConverter
 {
     private static final Gson GSON = new Gson();
 
@@ -102,7 +121,7 @@ public class GsonObjectConverter implements Disk.ObjectConverter
 
 # 创建加解密转换器
 ```java
-public class GlobalEncryptConverter implements Disk.EncryptConverter
+public class GlobalEncryptConverter implements Cache.EncryptConverter
 {
     @Override
     public byte[] encrypt(byte[] bytes)
