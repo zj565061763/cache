@@ -7,9 +7,9 @@ import com.sd.lib.cache.CacheInfo;
  */
 public class BooleanHandler extends BaseCacheHandler<Boolean>
 {
-    public BooleanHandler(CacheInfo diskInfo)
+    public BooleanHandler(CacheInfo info)
     {
-        super(diskInfo);
+        super(info);
     }
 
     @Override

@@ -7,9 +7,9 @@ import com.sd.lib.cache.CacheInfo;
  */
 public class FloatHandler extends BaseCacheHandler<Float>
 {
-    public FloatHandler(CacheInfo diskInfo)
+    public FloatHandler(CacheInfo info)
     {
-        super(diskInfo);
+        super(info);
     }
 
     @Override

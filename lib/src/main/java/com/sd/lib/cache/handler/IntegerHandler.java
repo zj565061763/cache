@@ -7,9 +7,9 @@ import com.sd.lib.cache.CacheInfo;
  */
 public class IntegerHandler extends BaseCacheHandler<Integer>
 {
-    public IntegerHandler(CacheInfo diskInfo)
+    public IntegerHandler(CacheInfo info)
     {
-        super(diskInfo);
+        super(info);
     }
 
     @Override

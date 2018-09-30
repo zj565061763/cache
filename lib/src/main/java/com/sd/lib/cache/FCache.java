@@ -11,7 +11,7 @@ import com.sd.lib.cache.handler.StringHandler;
 
 public abstract class FCache implements Cache, CacheInfo
 {
-    private static CacheConfig sDiskConfig;
+    private static CacheConfig sCacheConfig;
 
     private boolean mEncrypt;
     private ObjectConverter mObjectConverter;
@@ -39,8 +39,8 @@ public abstract class FCache implements Cache, CacheInfo
             if (config == null)
                 throw new NullPointerException();
 
-            if (sDiskConfig == null)
-                sDiskConfig = config;
+            if (sCacheConfig == null)
+                sCacheConfig = config;
             else
                 throw new RuntimeException("init method can only be called once");
         }
@@ -53,9 +53,9 @@ public abstract class FCache implements Cache, CacheInfo
      */
     public static final CacheConfig getCacheConfig()
     {
-        if (sDiskConfig == null)
+        if (sCacheConfig == null)
             throw new NullPointerException("you must invoke FCache.init(CacheConfig config) before this");
-        return sDiskConfig;
+        return sCacheConfig;
     }
 
     //---------- Cache start ----------

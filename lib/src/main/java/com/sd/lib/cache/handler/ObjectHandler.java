@@ -8,9 +8,9 @@ import com.sd.lib.cache.CacheInfo;
  */
 public class ObjectHandler extends BaseCacheHandler<Object> implements Cache.ObjectCache
 {
-    public ObjectHandler(CacheInfo diskInfo)
+    public ObjectHandler(CacheInfo info)
     {
-        super(diskInfo);
+        super(info);
     }
 
     @Override

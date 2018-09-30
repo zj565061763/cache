@@ -7,9 +7,9 @@ import com.sd.lib.cache.CacheInfo;
  */
 public class BytesHandler extends BaseCacheHandler<byte[]>
 {
-    public BytesHandler(CacheInfo diskInfo)
+    public BytesHandler(CacheInfo info)
     {
-        super(diskInfo);
+        super(info);
     }
 
     @Override

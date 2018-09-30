@@ -7,9 +7,9 @@ import com.sd.lib.cache.CacheInfo;
  */
 public class LongHandler extends BaseCacheHandler<Long>
 {
-    public LongHandler(CacheInfo diskInfo)
+    public LongHandler(CacheInfo info)
     {
-        super(diskInfo);
+        super(info);
     }
 
     @Override
