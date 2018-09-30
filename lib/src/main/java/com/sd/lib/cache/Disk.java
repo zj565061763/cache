@@ -19,20 +19,20 @@ public interface Disk
     Disk setMemorySupport(boolean support);
 
     /**
-     * 设置加解密转换器
-     *
-     * @param converter
-     * @return
-     */
-    Disk setEncryptConverter(EncryptConverter converter);
-
-    /**
      * 设置对象转换器
      *
      * @param converter
      * @return
      */
     Disk setObjectConverter(ObjectConverter converter);
+
+    /**
+     * 设置加解密转换器
+     *
+     * @param converter
+     * @return
+     */
+    Disk setEncryptConverter(EncryptConverter converter);
 
     /**
      * 设置异常处理对象
@@ -123,6 +123,38 @@ public interface Disk
         <T> T get(Class<T> clazz);
 
         boolean remove(Class clazz);
+    }
+
+    interface CacheStore
+    {
+        /**
+         * 保存缓存
+         *
+         * @param key
+         * @param value
+         * @param info
+         * @return true-保存成功，false-保存失败
+         */
+        boolean putCache(String key, byte[] value, DiskInfo info);
+
+        /**
+         * 获得缓存
+         *
+         * @param key
+         * @param clazz
+         * @param info
+         * @return
+         */
+        byte[] getCache(String key, Class clazz, DiskInfo info);
+
+        /**
+         * 删除缓存
+         *
+         * @param key
+         * @param info
+         * @return true-此次方法调用后删除了缓存，false-删除失败或者缓存不存在
+         */
+        boolean removeCache(String key, DiskInfo info);
     }
 
     /**

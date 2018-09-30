@@ -4,8 +4,6 @@ import android.text.TextUtils;
 
 import com.sd.lib.cache.Disk;
 import com.sd.lib.cache.DiskInfo;
-import com.sd.lib.cache.store.CacheStore;
-import com.sd.lib.cache.store.FileCacheStore;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,7 +16,6 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
 {
     private final DiskInfo mDiskInfo;
     private static final Map<String, byte[]> MAP_MEMORY = new HashMap<>();
-    private CacheStore mCacheStore;
 
     public BaseCacheHandler(DiskInfo diskInfo)
     {
@@ -47,11 +44,9 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Disk.CommonCache<
         return prefix + key;
     }
 
-    private CacheStore getCacheStore()
+    private Disk.CacheStore getCacheStore()
     {
-        if (mCacheStore == null)
-            mCacheStore = new FileCacheStore();
-        return mCacheStore;
+        return getDiskInfo().getCacheStore();
     }
 
     //---------- CacheHandler start ----------

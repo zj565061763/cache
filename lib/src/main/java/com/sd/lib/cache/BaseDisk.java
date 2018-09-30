@@ -9,10 +9,11 @@ abstract class BaseDisk implements Disk, DiskInfo
     private final File mDirectory;
 
     private boolean mEncrypt;
-    private EncryptConverter mEncryptConverter;
-    private ObjectConverter mObjectConverter;
-    private ExceptionHandler mExceptionHandler;
     private boolean mMemorySupport;
+
+    private ObjectConverter mObjectConverter;
+    private EncryptConverter mEncryptConverter;
+    private ExceptionHandler mExceptionHandler;
 
     protected BaseDisk(File directory)
     {
@@ -70,16 +71,16 @@ abstract class BaseDisk implements Disk, DiskInfo
     }
 
     @Override
-    public Disk setEncryptConverter(EncryptConverter converter)
+    public Disk setObjectConverter(ObjectConverter converter)
     {
-        mEncryptConverter = converter;
+        mObjectConverter = converter;
         return this;
     }
 
     @Override
-    public Disk setObjectConverter(ObjectConverter converter)
+    public Disk setEncryptConverter(EncryptConverter converter)
     {
-        mObjectConverter = converter;
+        mEncryptConverter = converter;
         return this;
     }
 
@@ -149,15 +150,21 @@ abstract class BaseDisk implements Disk, DiskInfo
     }
 
     @Override
-    public final EncryptConverter getEncryptConverter()
+    public CacheStore getCacheStore()
     {
-        return mEncryptConverter != null ? mEncryptConverter : getDiskConfig().mEncryptConverter;
+        return getDiskConfig().mCacheStore;
     }
 
     @Override
     public final ObjectConverter getObjectConverter()
     {
         return mObjectConverter != null ? mObjectConverter : getDiskConfig().mObjectConverter;
+    }
+
+    @Override
+    public final EncryptConverter getEncryptConverter()
+    {
+        return mEncryptConverter != null ? mEncryptConverter : getDiskConfig().mEncryptConverter;
     }
 
     @Override

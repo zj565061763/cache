@@ -26,11 +26,11 @@ public interface DiskInfo
     File getDirectory();
 
     /**
-     * 返回加解密转换器
+     * 返回缓存存取对象
      *
      * @return
      */
-    Disk.EncryptConverter getEncryptConverter();
+    Disk.CacheStore getCacheStore();
 
     /**
      * 返回对象转换器
@@ -38,6 +38,13 @@ public interface DiskInfo
      * @return
      */
     Disk.ObjectConverter getObjectConverter();
+
+    /**
+     * 返回加解密转换器
+     *
+     * @return
+     */
+    Disk.EncryptConverter getEncryptConverter();
 
     /**
      * 返回设置的异常处理对象

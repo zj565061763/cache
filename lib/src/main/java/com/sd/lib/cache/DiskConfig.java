@@ -5,15 +5,17 @@ import android.content.Context;
 public class DiskConfig
 {
     public final Context mContext;
-    public final Disk.EncryptConverter mEncryptConverter;
+    public final Disk.CacheStore mCacheStore;
     public final Disk.ObjectConverter mObjectConverter;
+    public final Disk.EncryptConverter mEncryptConverter;
     public final Disk.ExceptionHandler mExceptionHandler;
 
     private DiskConfig(Builder builder)
     {
         mContext = builder.mContext;
-        mEncryptConverter = builder.mEncryptConverter;
+        mCacheStore = builder.mCacheStore != null ? builder.mCacheStore : new FileCacheStore();
         mObjectConverter = builder.mObjectConverter;
+        mEncryptConverter = builder.mEncryptConverter;
         mExceptionHandler = builder.mExceptionHandler != null ? builder.mExceptionHandler : new Disk.ExceptionHandler()
         {
             @Override
@@ -26,19 +28,20 @@ public class DiskConfig
     public static final class Builder
     {
         private Context mContext;
-        private Disk.EncryptConverter mEncryptConverter;
+        private Disk.CacheStore mCacheStore;
         private Disk.ObjectConverter mObjectConverter;
+        private Disk.EncryptConverter mEncryptConverter;
         private Disk.ExceptionHandler mExceptionHandler;
 
         /**
-         * 设置加解密转换器
+         * 设置缓存存取对象
          *
-         * @param converter
+         * @param cacheStore
          * @return
          */
-        public Builder encryptConverter(Disk.EncryptConverter converter)
+        public Builder setCacheStore(Disk.CacheStore cacheStore)
         {
-            mEncryptConverter = converter;
+            mCacheStore = cacheStore;
             return this;
         }
 
@@ -48,9 +51,21 @@ public class DiskConfig
          * @param converter
          * @return
          */
-        public Builder objectConverter(Disk.ObjectConverter converter)
+        public Builder setObjectConverter(Disk.ObjectConverter converter)
         {
             mObjectConverter = converter;
+            return this;
+        }
+
+        /**
+         * 设置加解密转换器
+         *
+         * @param converter
+         * @return
+         */
+        public Builder setEncryptConverter(Disk.EncryptConverter converter)
+        {
+            mEncryptConverter = converter;
             return this;
         }
 
@@ -60,7 +75,7 @@ public class DiskConfig
          * @param handler
          * @return
          */
-        public Builder exceptionHandler(Disk.ExceptionHandler handler)
+        public Builder setExceptionHandler(Disk.ExceptionHandler handler)
         {
             mExceptionHandler = handler;
             return this;

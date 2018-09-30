@@ -1,8 +1,6 @@
-package com.sd.lib.cache.store;
+package com.sd.lib.cache;
 
 import android.text.TextUtils;
-
-import com.sd.lib.cache.DiskInfo;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -19,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * 文件缓存实现类
  */
-public class FileCacheStore implements CacheStore
+public class FileCacheStore implements Disk.CacheStore
 {
     protected final File getCacheFile(String key, DiskInfo info)
     {
