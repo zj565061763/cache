@@ -1,5 +1,5 @@
 # About
-封装了一层存储的api，支持加解密，支持对象存储，支持内存缓存，支持自定义底层不同的存储方案，比如：
+封装了一层存储的api，支持加解密，支持对象存储，支持内存存储，支持自定义底层不同的存储方案，比如：
 * 用java原生api把缓存写入文件
 * 基于腾讯[MMKV](https://github.com/Tencent/MMKV)的实现
 
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         putData();
-        printData();
+        getData();
     }
 
     private Cache getCache()
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getCache().cacheObject().put(TEST_MODEL);
     }
 
-    private void printData()
+    private void getData()
     {
         Log.i(TAG, "getInt:" + getCache().cacheInteger().get(KEY));
         Log.i(TAG, "getLong:" + getCache().cacheLong().get(KEY));

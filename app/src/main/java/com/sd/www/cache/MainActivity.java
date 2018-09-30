@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         putData();
-        printData();
+        getData();
     }
 
     private Cache getCache()
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getCache().cacheObject().put(TEST_MODEL);
     }
 
-    private void printData()
+    private void getData()
     {
         Log.i(TAG, "getInt:" + getCache().cacheInteger().get(KEY));
         Log.i(TAG, "getLong:" + getCache().cacheLong().get(KEY));
