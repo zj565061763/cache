@@ -5,6 +5,14 @@ import com.sd.lib.cache.Cache;
 public interface DiskCache extends Cache
 {
     /**
+     * 设置是否支持内存存储
+     *
+     * @param support
+     * @return
+     */
+    DiskCache setMemorySupport(boolean support);
+
+    /**
      * 返回当前目录下所有缓存文件的总大小(字节B)
      *
      * @return

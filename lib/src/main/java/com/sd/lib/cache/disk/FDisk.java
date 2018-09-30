@@ -2,7 +2,7 @@ package com.sd.lib.cache.disk;
 
 import com.sd.lib.cache.Cache;
 import com.sd.lib.cache.FCache;
-import com.sd.lib.cache.store.SimpleDiskCacheStore;
+import com.sd.lib.cache.store.SimpleMemoryDiskCacheStore;
 
 import java.io.File;
 
@@ -11,7 +11,7 @@ public class FDisk extends FCache implements DiskCache
     private static final String DEFAULT_FILE_DIR = "disk_file";
 
     private final File mDirectory;
-    private CacheStore mCacheStore;
+    private final SimpleMemoryDiskCacheStore mCacheStore;
 
     protected FDisk(File directory)
     {
@@ -19,6 +19,7 @@ public class FDisk extends FCache implements DiskCache
             throw new NullPointerException();
 
         mDirectory = directory;
+        mCacheStore = new SimpleMemoryDiskCacheStore(directory);
     }
 
     //---------- open start ----------
@@ -65,13 +66,18 @@ public class FDisk extends FCache implements DiskCache
     @Override
     public CacheStore getCacheStore()
     {
-        if (mCacheStore == null)
-            mCacheStore = new SimpleDiskCacheStore(mDirectory);
         return mCacheStore;
     }
 
     @Override
-    public final long size()
+    public DiskCache setMemorySupport(boolean support)
+    {
+        mCacheStore.setMemorySupport(support);
+        return this;
+    }
+
+    @Override
+    public long size()
     {
         synchronized (Cache.class)
         {
@@ -80,7 +86,7 @@ public class FDisk extends FCache implements DiskCache
     }
 
     @Override
-    public final void delete()
+    public void delete()
     {
         synchronized (Cache.class)
         {
