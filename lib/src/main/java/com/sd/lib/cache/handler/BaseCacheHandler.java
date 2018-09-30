@@ -57,7 +57,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
                 return removeCache(key);
 
             key = transformKey(key);
-            final byte[] data = transformValueToByte(value);
+            final byte[] data = transformValueToByte(key, value);
             if (data == null)
                 throw new NullPointerException();
 
@@ -117,7 +117,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
 
     //---------- CommonCache end ----------
 
-    private byte[] transformValueToByte(T value)
+    private byte[] transformValueToByte(String key, T value)
     {
         if (value == null)
             throw new NullPointerException();
@@ -125,17 +125,17 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
         final boolean encrypt = getCacheInfo().isEncrypt();
         final Cache.EncryptConverter converter = getCacheInfo().getEncryptConverter();
         if (encrypt && converter == null)
-            throw new RuntimeException("you must provide an EncryptConverter instance before this");
+            throw new RuntimeException("Encrypt is required but EncryptConverter is null. key:" + key);
 
         byte[] data = valueToByte(value);
         if (data == null)
-            throw new RuntimeException("valueToByte(T) method return null");
+            throw new RuntimeException("valueToByte(T) method return null. key:" + key);
 
         if (encrypt)
         {
             data = converter.encrypt(data);
             if (data == null)
-                throw new RuntimeException("EncryptConverter.encrypt(byte[]) method return null");
+                throw new RuntimeException("EncryptConverter.encrypt return null. key:" + key);
         }
 
         final byte[] dataWithTag = Arrays.copyOf(data, data.length + 1);
