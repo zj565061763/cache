@@ -1,5 +1,7 @@
 package com.sd.www.cache;
 
+import android.content.Context;
+
 import com.sd.lib.cache.Cache;
 import com.sd.lib.cache.CacheInfo;
 import com.tencent.mmkv.MMKV;
@@ -10,6 +12,11 @@ import com.tencent.mmkv.MMKV;
 public class MMKVCacheStore implements Cache.CacheStore
 {
     private final MMKV mMMKV = MMKV.defaultMMKV();
+
+    public MMKVCacheStore(Context context)
+    {
+        MMKV.initialize(context);
+    }
 
     @Override
     public boolean putCache(String key, byte[] value, CacheInfo info)
