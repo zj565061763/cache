@@ -22,46 +22,16 @@ public class FDisk extends FCache implements DiskCache
         mCacheStore = new SimpleDiskCacheStore(directory);
     }
 
-    //---------- open start ----------
-
     /**
-     * 内部存储目录"/data/包名/files/disk_file"
+     * 使用内部存储目录"/data/包名/files/disk_file"
      *
      * @return
      */
     public static final DiskCache open()
     {
-        return new FDisk(getInternalFilesDir(DEFAULT_FILE_DIR));
-    }
-
-    /**
-     * 优先使用外部存储，如果外部存储不存在，则使用内部存储
-     * <p>
-     * 外部存储目录"Android/data/包名/files/disk_file"
-     *
-     * @return
-     */
-    public static final DiskCache openExternal()
-    {
-        File directory = getExternalFilesDir(DEFAULT_FILE_DIR);
-        if (!checkDirectory(directory))
-            directory = getInternalFilesDir(DEFAULT_FILE_DIR);
-
+        final File directory = new File(getCacheConfig().mContext.getFilesDir(), DEFAULT_FILE_DIR);
         return new FDisk(directory);
     }
-
-    /**
-     * 使用指定的目录
-     *
-     * @param directory
-     * @return
-     */
-    public static final DiskCache openDir(File directory)
-    {
-        return new FDisk(directory);
-    }
-
-    //---------- open end ----------
 
     @Override
     public CacheStore getCacheStore()
@@ -84,48 +54,6 @@ public class FDisk extends FCache implements DiskCache
         synchronized (Cache.class)
         {
             deleteFileOrDir(mDirectory);
-        }
-    }
-
-    /**
-     * 返回外部存储"Android/data/包名/files/dirName"目录
-     *
-     * @param dirName
-     * @return
-     */
-    protected static final File getExternalFilesDir(String dirName)
-    {
-        return getCacheConfig().mContext.getExternalFilesDir(dirName);
-    }
-
-    /**
-     * 返回内部存储"/data/包名/files/dirName"目录
-     *
-     * @param dirName
-     * @return
-     */
-    protected static final File getInternalFilesDir(String dirName)
-    {
-        return new File(getCacheConfig().mContext.getFilesDir(), dirName);
-    }
-
-    /**
-     * 检查目录是否可用
-     *
-     * @param directory
-     * @return
-     */
-    protected static final boolean checkDirectory(File directory)
-    {
-        if (directory.exists())
-            return true;
-
-        synchronized (Cache.class)
-        {
-            if (directory.exists())
-                return true;
-
-            return directory.mkdirs();
         }
     }
 

@@ -1,7 +1,6 @@
 package com.sd.www.cache;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -38,21 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mCache = new MMKVCache();
 
             /**
-             * 使用指定的目录
-             */
-            mCache = FDisk.openDir(Environment.getExternalStorageDirectory());
-
-            /**
-             * 优先使用外部存储，如果外部存储不存在，则使用内部存储
-             *
-             * 外部存储目录"Android/data/包名/files/disk_file"
-             */
-            mCache = FDisk.openExternal();
-
-            /**
-             * 使用内部存储
-             *
-             * 内部存储目录"/data/包名/files/disk_file"
+             * 使用内部存储目录"/data/包名/files/disk_file"
              */
             mCache = FDisk.open();
 
