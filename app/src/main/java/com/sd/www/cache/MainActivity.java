@@ -76,6 +76,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v)
     {
-        getData();
+        SDTimeLogger.test(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    getCache().cacheString().put(KEY, "hello String");
+                    getCache().cacheString().get(KEY);
+                }
+            }
+        });
     }
 }
