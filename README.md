@@ -157,15 +157,16 @@ public class GlobalEncryptConverter implements Cache.EncryptConverter
 
 ```java
 /**
- * 自定义缓存
+ * 自定义CacheStore
  */
 public class MMKVCacheStore implements Cache.CacheStore
 {
-    private final MMKV mMMKV = MMKV.defaultMMKV();
+    private final MMKV mMMKV;
 
     public MMKVCacheStore(Context context)
     {
         MMKV.initialize(context);
+        mMMKV = MMKV.defaultMMKV();
     }
 
     @Override
