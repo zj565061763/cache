@@ -22,11 +22,11 @@ public class App extends Application
                  */
                 .setDiskCacheStore(new MMKVCacheStore(this))
                 /**
-                 * 设置全局Gson对象转换器
+                 * 设置对象转换器
                  */
                 .setObjectConverter(new GsonObjectConverter())
                 /**
-                 * 如果需要加解密，设置加解密转换器
+                 * 设置加解密转换器
                  */
                 .setEncryptConverter(new GlobalEncryptConverter())
                 /**
