@@ -1,7 +1,9 @@
 # About
-封装了一层存储的api，支持加解密，支持对象存储，支持内存存储，支持自定义底层不同的存储方案，比如：
-* 用java原生api把缓存写入文件
-* 基于腾讯[MMKV](https://github.com/Tencent/MMKV)的实现
+封装了一层存储的api
+* 支持加解密
+* 支持对象存储
+* 支持内存存储
+* 支持自定义底层的存储方案，比如直接用java原生的api把缓存保存到文件，或者用腾讯的[MMKV](https://github.com/Tencent/MMKV)实现
 
 # Gradle
 [![](https://jitpack.io/v/zj565061763/cache.svg)](https://jitpack.io/#zj565061763/cache)
