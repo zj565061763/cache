@@ -59,6 +59,26 @@ public abstract class FCache implements Cache, CacheInfo
         return sCacheConfig;
     }
 
+    /**
+     * 使用本地磁盘缓存
+     * <p>
+     * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置{@link CacheConfig.Builder#setDiskCacheStore(CacheStore)}
+     *
+     * @return
+     */
+    public static Cache disk()
+    {
+        final Cache cache = new FCache()
+        {
+            @Override
+            public CacheStore getCacheStore()
+            {
+                return FCache.getCacheConfig().mDiskCacheStore;
+            }
+        };
+        return cache;
+    }
+
     //---------- Cache start ----------
 
     @Override

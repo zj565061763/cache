@@ -2,12 +2,18 @@ package com.sd.lib.cache;
 
 import android.content.Context;
 
+import com.sd.lib.cache.store.SimpleDiskCacheStore;
+
+import java.io.File;
+
 public class CacheConfig
 {
     public final Context mContext;
     public final Cache.ObjectConverter mObjectConverter;
     public final Cache.EncryptConverter mEncryptConverter;
     public final Cache.ExceptionHandler mExceptionHandler;
+
+    public final Cache.CacheStore mDiskCacheStore;
 
     private CacheConfig(Builder builder)
     {
@@ -21,6 +27,8 @@ public class CacheConfig
             {
             }
         };
+
+        mDiskCacheStore = builder.mDiskCacheStore != null ? builder.mDiskCacheStore : new SimpleDiskCacheStore(new File(mContext.getFilesDir(), "disk_file"));
     }
 
     public static final class Builder
@@ -29,6 +37,8 @@ public class CacheConfig
         private Cache.ObjectConverter mObjectConverter;
         private Cache.EncryptConverter mEncryptConverter;
         private Cache.ExceptionHandler mExceptionHandler;
+
+        private Cache.CacheStore mDiskCacheStore;
 
         /**
          * 设置对象转换器
@@ -63,6 +73,18 @@ public class CacheConfig
         public Builder setExceptionHandler(Cache.ExceptionHandler handler)
         {
             mExceptionHandler = handler;
+            return this;
+        }
+
+        /**
+         * 设置本地磁盘缓存
+         *
+         * @param store
+         * @return
+         */
+        public Builder setDiskCacheStore(Cache.CacheStore store)
+        {
+            mDiskCacheStore = store;
             return this;
         }
 

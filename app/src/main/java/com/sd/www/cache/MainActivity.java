@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.sd.lib.cache.Cache;
-import com.sd.lib.cache.disk.FDisk;
+import com.sd.lib.cache.FCache;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -32,14 +32,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mCache == null)
         {
             /**
-             * 自定义Cache，底层用腾讯微信的MMKV库实现存储
+             * 使用本地磁盘缓存
+             * <p>
+             * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置{@link CacheConfig.Builder#setDiskCacheStore(CacheStore)}
              */
-            mCache = new MMKVCache();
-
-            /**
-             * 使用内部存储目录"/data/包名/files/disk_file"
-             */
-            mCache = FDisk.open();
+            mCache = FCache.disk();
 
             /**
              * 设置是否支持内存存储
