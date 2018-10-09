@@ -2,9 +2,7 @@ package com.sd.lib.cache;
 
 import android.content.Context;
 
-import com.sd.lib.cache.store.SimpleDiskCacheStore;
-
-import java.io.File;
+import com.sd.lib.cache.store.InternalDiskCacheStore;
 
 public class CacheConfig
 {
@@ -28,7 +26,7 @@ public class CacheConfig
             }
         };
 
-        mDiskCacheStore = builder.mDiskCacheStore != null ? builder.mDiskCacheStore : new SimpleDiskCacheStore(new File(mContext.getFilesDir(), "disk_file"));
+        mDiskCacheStore = builder.mDiskCacheStore != null ? builder.mDiskCacheStore : new InternalDiskCacheStore(mContext);
     }
 
     public static final class Builder
