@@ -10,16 +10,35 @@
 
 # 初始化
 ```java
-// 初始化
-FCache.init(new CacheConfig.Builder()
-        // 设置全局Gson对象转换器
-        .setObjectConverter(new GsonObjectConverter())
-        // 如果需要加解密，设置全局加解密转换器
-        .setEncryptConverter(new GlobalEncryptConverter())
-        // 设置全局异常监听
-        .setExceptionHandler(new GlobalExceptionHandler())
-        .build(this)
-);
+public class App extends Application
+{
+    @Override
+    public void onCreate()
+    {
+        super.onCreate();
+
+        // 初始化
+        FCache.init(new CacheConfig.Builder()
+                /**
+                 * 使用腾讯MMKV自定义的CacheStore，如果不设置，默认使用内部存储目录"/data/包名/files/disk_file"
+                 */
+                .setDiskCacheStore(new MMKVCacheStore(this))
+                /**
+                 * 设置全局Gson对象转换器
+                 */
+                .setObjectConverter(new GsonObjectConverter())
+                /**
+                 * 如果需要加解密，设置加解密转换器
+                 */
+                .setEncryptConverter(new GlobalEncryptConverter())
+                /**
+                 * 设置异常监听
+                 */
+                .setExceptionHandler(new GlobalExceptionHandler())
+                .build(this)
+        );
+    }
+}
 ```
 
 # 简单demo
@@ -49,28 +68,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mCache == null)
         {
             /**
-             * 自定义Cache，底层用腾讯微信的MMKV库实现存储
+             * 使用本地磁盘缓存
+             * <p>
+             * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置{@link CacheConfig.Builder#setDiskCacheStore(CacheStore)}
              */
-            mCache = new MMKVCache();
-
-            /**
-             * 使用指定的目录
-             */
-            mCache = FDisk.openDir(Environment.getExternalStorageDirectory());
-
-            /**
-             * 优先使用外部存储，如果外部存储不存在，则使用内部存储
-             *
-             * 外部存储目录"Android/data/包名/files/disk_file"
-             */
-            mCache = FDisk.openExternal();
-
-            /**
-             * 使用内部存储
-             *
-             * 内部存储目录"/data/包名/files/disk_file"
-             */
-            mCache = FDisk.open();
+            mCache = FCache.disk();
 
             /**
              * 设置是否支持内存存储
@@ -151,42 +153,38 @@ public class GlobalEncryptConverter implements Cache.EncryptConverter
 }
 ```
 
-# 自定义Cache
+# 自定义CacheStore
 
 ```java
 /**
- * 自定义Cache，底层用腾讯微信的MMKV库实现存储
+ * 自定义缓存
  */
-public class MMKVCache extends FCache
+public class MMKVCacheStore implements Cache.CacheStore
 {
     private final MMKV mMMKV = MMKV.defaultMMKV();
 
-    @Override
-    public CacheStore getCacheStore()
+    public MMKVCacheStore(Context context)
     {
-        return mCacheStore;
+        MMKV.initialize(context);
     }
 
-    private final CacheStore mCacheStore = new CacheStore()
+    @Override
+    public boolean putCache(String key, byte[] value, CacheInfo info)
     {
-        @Override
-        public boolean putCache(String key, byte[] value, CacheInfo info)
-        {
-            return mMMKV.encode(key, value);
-        }
+        return mMMKV.encode(key, value);
+    }
 
-        @Override
-        public byte[] getCache(String key, Class clazz, CacheInfo info)
-        {
-            return mMMKV.decodeBytes(key);
-        }
+    @Override
+    public byte[] getCache(String key, Class clazz, CacheInfo info)
+    {
+        return mMMKV.decodeBytes(key);
+    }
 
-        @Override
-        public boolean removeCache(String key, CacheInfo info)
-        {
-            mMMKV.remove(key);
-            return true;
-        }
-    };
+    @Override
+    public boolean removeCache(String key, CacheInfo info)
+    {
+        mMMKV.remove(key);
+        return true;
+    }
 }
 ```

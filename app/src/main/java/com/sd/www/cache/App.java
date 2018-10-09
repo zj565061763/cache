@@ -17,13 +17,21 @@ public class App extends Application
 
         // 初始化
         FCache.init(new CacheConfig.Builder()
-                // 使用腾讯MMKV自定义的CacheStore，如果不设置，默认使用内部存储目录"/data/包名/files/disk_file"
+                /**
+                 * 使用腾讯MMKV自定义的CacheStore，如果不设置，默认使用内部存储目录"/data/包名/files/disk_file"
+                 */
                 .setDiskCacheStore(new MMKVCacheStore(this))
-                // 设置全局Gson对象转换器
+                /**
+                 * 设置全局Gson对象转换器
+                 */
                 .setObjectConverter(new GsonObjectConverter())
-                // 如果需要加解密，设置全局加解密转换器
+                /**
+                 * 如果需要加解密，设置加解密转换器
+                 */
                 .setEncryptConverter(new GlobalEncryptConverter())
-                // 设置全局异常监听
+                /**
+                 * 设置异常监听
+                 */
                 .setExceptionHandler(new GlobalExceptionHandler())
                 .build(this)
         );
