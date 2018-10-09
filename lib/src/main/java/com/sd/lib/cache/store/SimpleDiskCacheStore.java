@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import com.sd.lib.cache.Cache;
 import com.sd.lib.cache.CacheInfo;
-import com.sd.lib.cache.disk.FDisk;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -32,17 +31,15 @@ public class SimpleDiskCacheStore implements Cache.CacheStore
         mDirectory = directory;
     }
 
-    /**
-     * 返回缓存目录
-     *
-     * @return
-     */
-    public final File getDirectory()
+    private File getDirectory()
     {
-        if (FDisk.checkDirectory(mDirectory))
+        if (mDirectory.exists())
             return mDirectory;
-        else
-            throw new RuntimeException("directory is not available:" + mDirectory.getAbsolutePath());
+
+        if (mDirectory.mkdirs())
+            return mDirectory;
+
+        throw new RuntimeException("directory is not available:" + mDirectory.getAbsolutePath());
     }
 
     protected final File getCacheFile(String key, CacheInfo info)
@@ -122,7 +119,7 @@ public class SimpleDiskCacheStore implements Cache.CacheStore
         return file.exists() ? file.delete() : false;
     }
 
-    private static String MD5(String value)
+    protected static String MD5(String value)
     {
         String result;
         try
@@ -148,7 +145,7 @@ public class SimpleDiskCacheStore implements Cache.CacheStore
         return result;
     }
 
-    private static void closeQuietly(Closeable closeable)
+    protected static void closeQuietly(Closeable closeable)
     {
         if (closeable != null)
         {

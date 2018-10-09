@@ -115,7 +115,7 @@ public class FDisk extends FCache implements DiskCache
      * @param directory
      * @return
      */
-    public static final boolean checkDirectory(File directory)
+    protected static final boolean checkDirectory(File directory)
     {
         if (directory.exists())
             return true;
