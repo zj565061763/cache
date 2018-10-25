@@ -7,9 +7,9 @@ android {
     compileSdkVersion 27
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 22
-        versionCode 20181009
-        versionName "1.2.0-rc2"
+        targetSdkVersion 27
+        versionCode 20181025
+        versionName "1.2.0-rc3"
     }
 
     buildTypes {
