@@ -1,66 +1,27 @@
 package com.sd.lib.cache.store;
 
-import android.text.TextUtils;
-
-import com.sd.lib.cache.Cache;
-import com.sd.lib.cache.CacheInfo;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * 文件缓存实现类
  */
-public class SimpleDiskCacheStore implements Cache.CacheStore
+public class SimpleDiskCacheStore extends DiskCacheStore
 {
-    private final File mDirectory;
-
     public SimpleDiskCacheStore(File directory)
     {
-        if (directory == null)
-            throw new NullPointerException();
-        mDirectory = directory;
-    }
-
-    private File getDirectory()
-    {
-        if (mDirectory.exists())
-            return mDirectory;
-
-        if (mDirectory.mkdirs())
-            return mDirectory;
-
-        throw new RuntimeException("directory is not available:" + mDirectory.getAbsolutePath());
-    }
-
-    protected final File getCacheFile(String key, CacheInfo info)
-    {
-        key = transformKey(key);
-        if (TextUtils.isEmpty(key))
-            throw new NullPointerException();
-
-        return new File(getDirectory(), key);
-    }
-
-    protected String transformKey(String key)
-    {
-        return MD5(key);
+        super(directory);
     }
 
     @Override
-    public boolean putCache(String key, byte[] value, CacheInfo info)
+    protected boolean putCacheImpl(String key, byte[] value, File file) throws Exception
     {
-        final File file = getCacheFile(key, info);
-
         OutputStream out = null;
         try
         {
@@ -68,10 +29,6 @@ public class SimpleDiskCacheStore implements Cache.CacheStore
             out.write(value);
             out.flush();
             return true;
-        } catch (Exception e)
-        {
-            info.getExceptionHandler().onException(e);
-            return false;
         } finally
         {
             closeQuietly(out);
@@ -79,82 +36,29 @@ public class SimpleDiskCacheStore implements Cache.CacheStore
     }
 
     @Override
-    public byte[] getCache(String key, Class clazz, CacheInfo info)
+    protected byte[] getCacheImpl(String key, Class clazz, File file) throws Exception
     {
-        final File file = getCacheFile(key, info);
-
         InputStream in = null;
-        ByteArrayOutputStream out = null;
+        ByteArrayOutputStream baos = null;
         try
         {
             in = new BufferedInputStream(new FileInputStream(file));
-            out = new ByteArrayOutputStream();
+            baos = new ByteArrayOutputStream();
 
             final byte[] buffer = new byte[1024];
-            int length = -1;
             while (true)
             {
-                length = in.read(buffer);
+                final int length = in.read(buffer);
                 if (length < 0)
                     break;
-                out.write(buffer, 0, length);
+
+                baos.write(buffer, 0, length);
             }
-            return out.toByteArray();
-        } catch (Exception e)
-        {
-            info.getExceptionHandler().onException(e);
-            return null;
+            return baos.toByteArray();
         } finally
         {
-            closeQuietly(out);
+            closeQuietly(baos);
             closeQuietly(in);
-        }
-    }
-
-    @Override
-    public boolean removeCache(String key, CacheInfo info)
-    {
-        final File file = getCacheFile(key, info);
-
-        return file.exists() ? file.delete() : false;
-    }
-
-    protected static String MD5(String value)
-    {
-        String result;
-        try
-        {
-            final MessageDigest digest = MessageDigest.getInstance("MD5");
-            digest.update(value.getBytes());
-            byte[] bytes = digest.digest();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.length; i++)
-            {
-                String hex = Integer.toHexString(0xFF & bytes[i]);
-                if (hex.length() == 1)
-                {
-                    sb.append('0');
-                }
-                sb.append(hex);
-            }
-            result = sb.toString();
-        } catch (NoSuchAlgorithmException e)
-        {
-            result = null;
-        }
-        return result;
-    }
-
-    protected static void closeQuietly(Closeable closeable)
-    {
-        if (closeable != null)
-        {
-            try
-            {
-                closeable.close();
-            } catch (Throwable ignored)
-            {
-            }
         }
     }
 }
