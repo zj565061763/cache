@@ -35,7 +35,7 @@ public abstract class DiskCacheStore implements Cache.CacheStore
         throw new RuntimeException("directory is not available:" + mDirectory.getAbsolutePath());
     }
 
-    protected final File getCacheFile(String key, CacheInfo info)
+    private File getCacheFile(String key, CacheInfo info)
     {
         key = transformKey(key);
         if (TextUtils.isEmpty(key))
