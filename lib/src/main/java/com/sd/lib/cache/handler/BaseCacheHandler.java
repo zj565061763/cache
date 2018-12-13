@@ -196,6 +196,9 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
         if (data == null)
             throw new NullPointerException();
 
+        if (data.length <= 0)
+            return null;
+
         final boolean isEncrypted = data[data.length - 1] == 1;
         final Cache.EncryptConverter converter = getCacheInfo().getEncryptConverter();
         if (isEncrypted && converter == null)
