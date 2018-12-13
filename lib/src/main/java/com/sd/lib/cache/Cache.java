@@ -84,6 +84,14 @@ public interface Cache
          * @return
          */
         T get(String key, T defaultValue);
+
+        /**
+         * 是否包含key对应的缓存
+         *
+         * @param key
+         * @return
+         */
+        boolean contains(String key);
     }
 
     /**
@@ -132,6 +140,15 @@ public interface Cache
          * @return true-此次方法调用后删除了缓存，false-删除失败或者缓存不存在
          */
         boolean removeCache(String key, CacheInfo info);
+
+        /**
+         * 是否有key对应的缓存
+         *
+         * @param key
+         * @param info
+         * @return
+         */
+        boolean containsCache(String key, CacheInfo info);
     }
 
     /**

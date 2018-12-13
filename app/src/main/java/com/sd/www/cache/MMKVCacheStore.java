@@ -37,4 +37,10 @@ public class MMKVCacheStore implements Cache.CacheStore
         mMMKV.remove(key);
         return true;
     }
+
+    @Override
+    public boolean containsCache(String key, CacheInfo info)
+    {
+        return mMMKV.contains(key);
+    }
 }

@@ -102,6 +102,20 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
         }
     }
 
+    @Override
+    public final boolean containsCache(String key)
+    {
+        synchronized (Cache.class)
+        {
+            key = transformKey(key);
+
+            if (getMemory(key) != null)
+                return true;
+
+            return getCacheStore().containsCache(key, getCacheInfo());
+        }
+    }
+
     //---------- CacheHandler end ----------
 
     //---------- memory start ----------
@@ -139,6 +153,12 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
     {
         final T cache = getCache(key, null);
         return cache == null ? defaultValue : cache;
+    }
+
+    @Override
+    public final boolean contains(String key)
+    {
+        return containsCache(key);
     }
 
     //---------- CommonCache end ----------

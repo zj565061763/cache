@@ -10,4 +10,6 @@ interface CacheHandler<T>
     T getCache(String key, Class clazz);
 
     boolean removeCache(String key);
+
+    boolean containsCache(String key);
 }
