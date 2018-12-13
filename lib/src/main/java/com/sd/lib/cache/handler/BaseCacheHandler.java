@@ -60,6 +60,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
                 return removeCache(key);
 
             key = transformKey(key);
+
             final byte[] data = transformValueToByte(key, value);
             if (data == null)
                 throw new NullPointerException();
