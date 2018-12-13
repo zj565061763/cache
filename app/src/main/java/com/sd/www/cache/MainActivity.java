@@ -64,12 +64,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void getData()
     {
-        Log.i(TAG, "getInt:" + getCache().cacheInteger().get(KEY));
-        Log.i(TAG, "getLong:" + getCache().cacheLong().get(KEY));
-        Log.i(TAG, "getFloat:" + getCache().cacheFloat().get(KEY));
-        Log.i(TAG, "getDouble:" + getCache().cacheDouble().get(KEY));
-        Log.i(TAG, "getBoolean:" + getCache().cacheBoolean().get(KEY));
-        Log.i(TAG, "getString:" + getCache().cacheString().get(KEY));
+        Log.i(TAG, "getInt:" + getCache().cacheInteger().get(KEY, 0));
+        Log.i(TAG, "getLong:" + getCache().cacheLong().get(KEY, 0L));
+        Log.i(TAG, "getFloat:" + getCache().cacheFloat().get(KEY, 0F));
+        Log.i(TAG, "getDouble:" + getCache().cacheDouble().get(KEY, 0D));
+        Log.i(TAG, "getBoolean:" + getCache().cacheBoolean().get(KEY, false));
+        Log.i(TAG, "getString:" + getCache().cacheString().get(KEY, null));
         Log.i(TAG, "getObject:" + getCache().cacheObject().get(TestModel.class));
     }
 
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 for (int i = 0; i < 100; i++)
                 {
                     getCache().cacheString().put(KEY, "hello String");
-                    getCache().cacheString().get(KEY);
+                    getCache().cacheString().get(KEY, null);
                 }
             }
         });

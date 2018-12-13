@@ -80,14 +80,6 @@ public interface Cache
          * 返回key对应的缓存
          *
          * @param key
-         * @return
-         */
-        T get(String key);
-
-        /**
-         * 返回key对应的缓存
-         *
-         * @param key
          * @param defaultValue 如果获取的缓存为null或者不存在，则返回这个值
          * @return
          */
@@ -104,6 +96,10 @@ public interface Cache
         <T> T get(Class<T> clazz);
 
         boolean remove(Class clazz);
+
+        boolean put(String key, Object value);
+
+        <T> T get(String key, Class<T> clazz);
     }
 
     interface CacheStore

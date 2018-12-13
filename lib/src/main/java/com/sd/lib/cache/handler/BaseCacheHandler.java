@@ -135,12 +135,6 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
     }
 
     @Override
-    public final T get(String key)
-    {
-        return get(key, null);
-    }
-
-    @Override
     public final T get(String key, T defaultValue)
     {
         final T cache = getCache(key, null);

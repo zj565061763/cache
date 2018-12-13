@@ -59,4 +59,10 @@ public class ObjectHandler extends BaseCacheHandler<Object> implements Cache.Obj
         final String key = clazz.getName();
         return removeCache(key);
     }
+
+    @Override
+    public <T> T get(String key, Class<T> clazz)
+    {
+        return (T) getCache(key, clazz);
+    }
 }
