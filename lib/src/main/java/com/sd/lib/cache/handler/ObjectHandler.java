@@ -61,6 +61,13 @@ public class ObjectHandler extends BaseCacheHandler<Object> implements Cache.Obj
     }
 
     @Override
+    public boolean contains(Class clazz)
+    {
+        final String key = clazz.getName();
+        return containsCache(key);
+    }
+
+    @Override
     public <T> T get(String key, Class<T> clazz)
     {
         return (T) getCache(key, clazz);

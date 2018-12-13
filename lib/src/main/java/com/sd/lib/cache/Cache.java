@@ -104,6 +104,8 @@ public interface Cache
         <T> T get(Class<T> clazz);
 
         boolean remove(Class clazz);
+
+        boolean contains(Class clazz);
     }
 
     interface MultiObjectCache
@@ -111,6 +113,8 @@ public interface Cache
         boolean put(String key, Object value);
 
         <T> T get(String key, Class<T> clazz);
+
+        boolean contains(String key);
     }
 
     interface CacheStore
