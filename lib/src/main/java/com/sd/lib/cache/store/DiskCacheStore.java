@@ -68,8 +68,6 @@ public abstract class DiskCacheStore implements Cache.CacheStore
     public final byte[] getCache(String key, Class clazz, CacheInfo info)
     {
         final File file = getCacheFile(key, info);
-        if (!file.exists())
-            return null;
 
         try
         {
@@ -99,8 +97,7 @@ public abstract class DiskCacheStore implements Cache.CacheStore
     @Override
     public final boolean containsCache(String key, CacheInfo info)
     {
-        final File file = getCacheFile(key, info);
-        return file.exists();
+        return getCacheFile(key, info).exists();
     }
 
     protected abstract boolean putCacheImpl(String key, byte[] value, File file) throws Exception;
