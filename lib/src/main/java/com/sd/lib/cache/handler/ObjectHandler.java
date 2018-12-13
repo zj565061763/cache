@@ -6,7 +6,7 @@ import com.sd.lib.cache.CacheInfo;
 /**
  * Object处理类
  */
-public class ObjectHandler extends BaseCacheHandler<Object> implements Cache.ObjectCache, Cache.MultiObjectCache
+public class ObjectHandler extends BaseCacheHandler<Object> implements Cache.ObjectCache
 {
     public ObjectHandler(CacheInfo info)
     {
@@ -65,11 +65,5 @@ public class ObjectHandler extends BaseCacheHandler<Object> implements Cache.Obj
     {
         final String key = clazz.getName();
         return containsCache(key);
-    }
-
-    @Override
-    public <T> T get(String key, Class<T> clazz)
-    {
-        return (T) getCache(key, clazz);
     }
 }

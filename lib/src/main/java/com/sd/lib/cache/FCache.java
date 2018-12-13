@@ -6,6 +6,7 @@ import com.sd.lib.cache.handler.DoubleHandler;
 import com.sd.lib.cache.handler.FloatHandler;
 import com.sd.lib.cache.handler.IntegerHandler;
 import com.sd.lib.cache.handler.LongHandler;
+import com.sd.lib.cache.handler.MultiObjectHandler;
 import com.sd.lib.cache.handler.ObjectHandler;
 import com.sd.lib.cache.handler.StringHandler;
 
@@ -27,6 +28,7 @@ public abstract class FCache implements Cache, CacheInfo
     private StringHandler mStringHandler;
     private BytesHandler mBytesHandler;
     private ObjectHandler mObjectHandler;
+    private MultiObjectHandler mMultiObjectHandler;
 
     /**
      * 初始化
@@ -183,9 +185,9 @@ public abstract class FCache implements Cache, CacheInfo
     @Override
     public final MultiObjectCache cacheMultiObject()
     {
-        if (mObjectHandler == null)
-            mObjectHandler = new ObjectHandler(this);
-        return mObjectHandler;
+        if (mMultiObjectHandler == null)
+            mMultiObjectHandler = new MultiObjectHandler(this);
+        return mMultiObjectHandler;
     }
 
     //---------- Cache end ----------
