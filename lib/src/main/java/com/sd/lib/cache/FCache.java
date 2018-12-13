@@ -180,6 +180,14 @@ public abstract class FCache implements Cache, CacheInfo
         return mObjectHandler;
     }
 
+    @Override
+    public final MultiObjectCache cacheMultiObject()
+    {
+        if (mObjectHandler == null)
+            mObjectHandler = new ObjectHandler(this);
+        return mObjectHandler;
+    }
+
     //---------- Cache end ----------
 
     //---------- CacheInfo start ----------

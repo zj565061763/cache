@@ -60,6 +60,8 @@ public interface Cache
 
     ObjectCache cacheObject();
 
+    MultiObjectCache cacheMultiObject();
+
     //---------- cache end ----------
 
     /**
