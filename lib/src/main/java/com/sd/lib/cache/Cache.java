@@ -104,7 +104,10 @@ public interface Cache
         <T> T get(Class<T> clazz);
 
         boolean remove(Class clazz);
+    }
 
+    interface MultiObjectCache
+    {
         boolean put(String key, Object value);
 
         <T> T get(String key, Class<T> clazz);

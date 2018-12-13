@@ -6,7 +6,7 @@ import com.sd.lib.cache.CacheInfo;
 /**
  * Object处理类
  */
-public class ObjectHandler extends BaseCacheHandler<Object> implements Cache.ObjectCache
+public class ObjectHandler extends BaseCacheHandler<Object> implements Cache.ObjectCache, Cache.MultiObjectCache
 {
     public ObjectHandler(CacheInfo info)
     {
