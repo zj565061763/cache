@@ -157,6 +157,12 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
     }
 
     @Override
+    public final boolean remove(String key)
+    {
+        return removeCache(key);
+    }
+
+    @Override
     public final boolean contains(String key)
     {
         return containsCache(key);

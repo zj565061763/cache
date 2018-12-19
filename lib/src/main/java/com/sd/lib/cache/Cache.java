@@ -88,6 +88,14 @@ public interface Cache
         T get(String key, T defaultValue);
 
         /**
+         * 移除key对应的缓存
+         *
+         * @param key
+         * @return
+         */
+        boolean remove(String key);
+
+        /**
          * 是否包含key对应的缓存
          *
          * @param key
