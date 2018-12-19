@@ -116,6 +116,8 @@ public interface Cache
 
         T get(String key);
 
+        boolean remove(String key);
+
         boolean contains(String key);
     }
 

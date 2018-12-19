@@ -48,6 +48,16 @@ public class SimpleMultiObjectCache<T> implements Cache.MultiObjectCache<T>
     }
 
     @Override
+    public boolean remove(String key)
+    {
+        if (TextUtils.isEmpty(key))
+            throw new IllegalArgumentException("key is null or empty");
+
+        key += mObjectClass.getName();
+        return mObjectHandler.removeCache(key);
+    }
+
+    @Override
     public boolean contains(String key)
     {
         if (TextUtils.isEmpty(key))
