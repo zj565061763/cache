@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getCache().cacheBoolean().put(KEY, true);
         getCache().cacheString().put(KEY, "hello String");
         getCache().cacheObject().put(TEST_MODEL);
-        getCache().cacheMultiObject().put(KEY, TEST_MODEL);
+        getCache().cacheMultiObject(TestModel.class).put(KEY, TEST_MODEL);
     }
 
     private void getData()
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i(TAG, "cacheBoolean:" + getCache().cacheBoolean().get(KEY, false));
         Log.i(TAG, "cacheString:" + getCache().cacheString().get(KEY, null));
         Log.i(TAG, "cacheObject:" + getCache().cacheObject().get(TestModel.class));
-        Log.i(TAG, "cacheMultiObject:" + getCache().cacheMultiObject().get(KEY, TestModel.class));
+        Log.i(TAG, "cacheMultiObject:" + getCache().cacheMultiObject(TestModel.class).get(KEY));
     }
 
     @Override

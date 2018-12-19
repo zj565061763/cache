@@ -6,9 +6,9 @@ import com.sd.lib.cache.handler.DoubleHandler;
 import com.sd.lib.cache.handler.FloatHandler;
 import com.sd.lib.cache.handler.IntegerHandler;
 import com.sd.lib.cache.handler.LongHandler;
-import com.sd.lib.cache.handler.MultiObjectHandler;
-import com.sd.lib.cache.handler.ObjectHandler;
 import com.sd.lib.cache.handler.StringHandler;
+import com.sd.lib.cache.simple.SimpleMultiObjectCache;
+import com.sd.lib.cache.simple.SimpleObjectCache;
 
 public abstract class FCache implements Cache, CacheInfo
 {
@@ -27,8 +27,9 @@ public abstract class FCache implements Cache, CacheInfo
     private BooleanHandler mBooleanHandler;
     private StringHandler mStringHandler;
     private BytesHandler mBytesHandler;
-    private ObjectHandler mObjectHandler;
-    private MultiObjectHandler mMultiObjectHandler;
+
+    private SimpleObjectCache mObjectCache;
+    private SimpleMultiObjectCache mMultiObjectCache;
 
     /**
      * 初始化
@@ -177,17 +178,17 @@ public abstract class FCache implements Cache, CacheInfo
     @Override
     public final ObjectCache cacheObject()
     {
-        if (mObjectHandler == null)
-            mObjectHandler = new ObjectHandler(this);
-        return mObjectHandler;
+        if (mObjectCache == null)
+            mObjectCache = new SimpleObjectCache(this);
+        return mObjectCache;
     }
 
     @Override
-    public final MultiObjectCache cacheMultiObject()
+    public <T> MultiObjectCache<T> cacheMultiObject(Class<T> clazz)
     {
-        if (mMultiObjectHandler == null)
-            mMultiObjectHandler = new MultiObjectHandler(this);
-        return mMultiObjectHandler;
+        if (mMultiObjectCache == null || mMultiObjectCache.mObjectClass != clazz)
+            mMultiObjectCache = new SimpleMultiObjectCache(this, clazz);
+        return mMultiObjectCache;
     }
 
     //---------- Cache end ----------

@@ -60,7 +60,7 @@ public interface Cache
 
     ObjectCache cacheObject();
 
-    MultiObjectCache cacheMultiObject();
+    <T> MultiObjectCache<T> cacheMultiObject(Class<T> clazz);
 
     //---------- cache end ----------
 
@@ -110,11 +110,11 @@ public interface Cache
         boolean contains(Class clazz);
     }
 
-    interface MultiObjectCache
+    interface MultiObjectCache<T>
     {
-        boolean put(String key, Object value);
+        boolean put(String key, T value);
 
-        <T> T get(String key, Class<T> clazz);
+        T get(String key);
 
         boolean contains(String key);
     }

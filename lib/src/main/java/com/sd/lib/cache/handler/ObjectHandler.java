@@ -6,7 +6,7 @@ import com.sd.lib.cache.CacheInfo;
 /**
  * Object处理类
  */
-public class ObjectHandler extends BaseCacheHandler<Object> implements Cache.ObjectCache
+public abstract class ObjectHandler extends BaseCacheHandler<Object>
 {
     public ObjectHandler(CacheInfo info)
     {
@@ -25,45 +25,11 @@ public class ObjectHandler extends BaseCacheHandler<Object> implements Cache.Obj
         return getObjectConverter().byteToObject(bytes, clazz);
     }
 
-    @Override
-    protected String getKeyPrefix()
-    {
-        return "object_";
-    }
-
     private Cache.ObjectConverter getObjectConverter()
     {
         final Cache.ObjectConverter converter = getCacheInfo().getObjectConverter();
         if (converter == null)
             throw new NullPointerException("you must provide an ObjectConverter instance before this");
         return converter;
-    }
-
-    @Override
-    public boolean put(Object value)
-    {
-        final String key = value.getClass().getName();
-        return putCache(key, value);
-    }
-
-    @Override
-    public <T> T get(Class<T> clazz)
-    {
-        final String key = clazz.getName();
-        return (T) getCache(key, clazz);
-    }
-
-    @Override
-    public boolean remove(Class clazz)
-    {
-        final String key = clazz.getName();
-        return removeCache(key);
-    }
-
-    @Override
-    public boolean contains(Class clazz)
-    {
-        final String key = clazz.getName();
-        return containsCache(key);
     }
 }
