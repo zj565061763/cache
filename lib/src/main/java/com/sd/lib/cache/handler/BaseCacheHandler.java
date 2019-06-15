@@ -20,8 +20,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
     public BaseCacheHandler(CacheInfo cacheInfo)
     {
         if (cacheInfo == null)
-            throw new NullPointerException();
-
+            throw new IllegalArgumentException("cacheInfo is null when create: " + getClass().getName());
         mCacheInfo = cacheInfo;
     }
 
