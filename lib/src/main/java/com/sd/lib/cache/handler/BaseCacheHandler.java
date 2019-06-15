@@ -62,7 +62,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
 
             final byte[] data = transformValueToByte(key, value);
             if (data == null)
-                throw new NullPointerException();
+                throw new NullPointerException("transformValueToByte return null when putCache: " + key);
 
             final boolean result = getCacheStore().putCache(key, data, getCacheInfo());
             if (result)
