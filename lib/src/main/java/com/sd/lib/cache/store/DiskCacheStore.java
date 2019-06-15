@@ -20,7 +20,7 @@ public abstract class DiskCacheStore implements Cache.CacheStore
     public DiskCacheStore(File directory)
     {
         if (directory == null)
-            throw new NullPointerException();
+            throw new IllegalArgumentException("directory is null when create: " + getClass().getName());
         mDirectory = directory;
     }
 
@@ -39,7 +39,7 @@ public abstract class DiskCacheStore implements Cache.CacheStore
     {
         key = transformKey(key);
         if (TextUtils.isEmpty(key))
-            throw new NullPointerException();
+            throw new NullPointerException("transformKey() return null when getCacheFile()");
 
         return new File(getDirectory(), key);
     }
