@@ -41,7 +41,7 @@ public abstract class FCache implements Cache, CacheInfo
         synchronized (Cache.class)
         {
             if (config == null)
-                throw new NullPointerException();
+                throw new IllegalArgumentException("config is null when init FCache");
 
             if (sCacheConfig == null)
                 sCacheConfig = config;
