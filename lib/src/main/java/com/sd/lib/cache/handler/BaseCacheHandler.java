@@ -172,7 +172,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
     private byte[] transformValueToByte(String key, T value)
     {
         if (value == null)
-            throw new NullPointerException();
+            throw new IllegalArgumentException("value is null when invoke transformValueToByte()");
 
         final boolean encrypt = getCacheInfo().isEncrypt();
         final Cache.EncryptConverter converter = getCacheInfo().getEncryptConverter();
