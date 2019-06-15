@@ -199,7 +199,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
     private T transformByteToValue(String key, byte[] data, Class clazz)
     {
         if (data == null)
-            throw new NullPointerException();
+            throw new IllegalArgumentException("data is null when invoke transformByteToValue()");
 
         if (data.length <= 0)
             return null;
