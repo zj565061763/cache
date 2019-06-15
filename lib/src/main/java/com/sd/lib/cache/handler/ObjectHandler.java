@@ -20,7 +20,7 @@ public abstract class ObjectHandler extends BaseCacheHandler<Object>
     }
 
     @Override
-    protected Object byteToValue(byte[] bytes, Class clazz)
+    protected Object byteToValue(byte[] bytes, Class<?> clazz)
     {
         return getObjectConverter().byteToObject(bytes, clazz);
     }

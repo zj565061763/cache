@@ -19,7 +19,7 @@ public class LongHandler extends BaseCacheHandler<Long>
     }
 
     @Override
-    protected Long byteToValue(byte[] bytes, Class clazz)
+    protected Long byteToValue(byte[] bytes, Class<?> clazz)
     {
         return Long.valueOf(new String(bytes));
     }

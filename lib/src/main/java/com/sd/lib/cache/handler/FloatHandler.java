@@ -19,7 +19,7 @@ public class FloatHandler extends BaseCacheHandler<Float>
     }
 
     @Override
-    protected Float byteToValue(byte[] bytes, Class clazz)
+    protected Float byteToValue(byte[] bytes, Class<?> clazz)
     {
         return Float.valueOf(new String(bytes));
     }

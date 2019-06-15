@@ -19,7 +19,7 @@ public class BytesHandler extends BaseCacheHandler<byte[]>
     }
 
     @Override
-    protected byte[] byteToValue(byte[] bytes, Class clazz)
+    protected byte[] byteToValue(byte[] bytes, Class<?> clazz)
     {
         return bytes;
     }

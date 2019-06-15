@@ -35,14 +35,14 @@ public class SimpleObjectCache implements Cache.ObjectCache
     }
 
     @Override
-    public boolean remove(Class clazz)
+    public boolean remove(Class<?> clazz)
     {
         final String key = clazz.getName();
         return mObjectHandler.removeCache(key);
     }
 
     @Override
-    public boolean contains(Class clazz)
+    public boolean contains(Class<?> clazz)
     {
         final String key = clazz.getName();
         return mObjectHandler.containsCache(key);

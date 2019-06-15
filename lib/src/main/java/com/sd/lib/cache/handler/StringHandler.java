@@ -19,7 +19,7 @@ public class StringHandler extends BaseCacheHandler<String>
     }
 
     @Override
-    protected String byteToValue(byte[] bytes, Class clazz)
+    protected String byteToValue(byte[] bytes, Class<?> clazz)
     {
         return new String(bytes);
     }

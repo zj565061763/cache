@@ -65,7 +65,7 @@ public abstract class DiskCacheStore implements Cache.CacheStore
     }
 
     @Override
-    public final byte[] getCache(String key, Class clazz, CacheInfo info)
+    public final byte[] getCache(String key, Class<?> clazz, CacheInfo info)
     {
         final File file = getCacheFile(key, info);
 
@@ -102,7 +102,7 @@ public abstract class DiskCacheStore implements Cache.CacheStore
 
     protected abstract boolean putCacheImpl(String key, byte[] value, File file) throws Exception;
 
-    protected abstract byte[] getCacheImpl(String key, Class clazz, File file) throws Exception;
+    protected abstract byte[] getCacheImpl(String key, Class<?> clazz, File file) throws Exception;
 
     protected boolean removeCacheImpl(String key, File file) throws Exception
     {

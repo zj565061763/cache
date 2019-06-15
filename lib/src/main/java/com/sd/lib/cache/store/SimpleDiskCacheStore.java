@@ -36,7 +36,7 @@ public class SimpleDiskCacheStore extends DiskCacheStore
     }
 
     @Override
-    protected byte[] getCacheImpl(String key, Class clazz, File file) throws Exception
+    protected byte[] getCacheImpl(String key, Class<?> clazz, File file) throws Exception
     {
         InputStream in = null;
         ByteArrayOutputStream baos = null;

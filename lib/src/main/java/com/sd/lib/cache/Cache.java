@@ -113,9 +113,9 @@ public interface Cache
 
         <T> T get(Class<T> clazz);
 
-        boolean remove(Class clazz);
+        boolean remove(Class<?> clazz);
 
-        boolean contains(Class clazz);
+        boolean contains(Class<?> clazz);
     }
 
     interface MultiObjectCache<T>
@@ -149,7 +149,7 @@ public interface Cache
          * @param info
          * @return
          */
-        byte[] getCache(String key, Class clazz, CacheInfo info);
+        byte[] getCache(String key, Class<?> clazz, CacheInfo info);
 
         /**
          * 删除缓存

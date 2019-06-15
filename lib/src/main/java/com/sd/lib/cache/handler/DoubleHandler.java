@@ -19,7 +19,7 @@ public class DoubleHandler extends BaseCacheHandler<Double>
     }
 
     @Override
-    protected Double byteToValue(byte[] bytes, Class clazz)
+    protected Double byteToValue(byte[] bytes, Class<?> clazz)
     {
         return Double.valueOf(new String(bytes));
     }

@@ -73,7 +73,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
     }
 
     @Override
-    public final T getCache(String key, Class clazz)
+    public final T getCache(String key, Class<?> clazz)
     {
         synchronized (Cache.class)
         {
@@ -196,7 +196,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
         return dataWithTag;
     }
 
-    private T transformByteToValue(String key, byte[] data, Class clazz)
+    private T transformByteToValue(String key, byte[] data, Class<?> clazz)
     {
         if (data == null)
             throw new IllegalArgumentException("data is null when invoke transformByteToValue()");
@@ -242,5 +242,5 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
      * @param clazz
      * @return
      */
-    protected abstract T byteToValue(byte[] bytes, Class clazz);
+    protected abstract T byteToValue(byte[] bytes, Class<?> clazz);
 }

@@ -19,7 +19,7 @@ public class IntegerHandler extends BaseCacheHandler<Integer>
     }
 
     @Override
-    protected Integer byteToValue(byte[] bytes, Class clazz)
+    protected Integer byteToValue(byte[] bytes, Class<?> clazz)
     {
         return Integer.valueOf(new String(bytes));
     }

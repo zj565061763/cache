@@ -178,7 +178,7 @@ public class MMKVCacheStore implements Cache.CacheStore
     }
 
     @Override
-    public byte[] getCache(String key, Class clazz, CacheInfo info)
+    public byte[] getCache(String key, Class<?> clazz, CacheInfo info)
     {
         return mMMKV.decodeBytes(key);
     }

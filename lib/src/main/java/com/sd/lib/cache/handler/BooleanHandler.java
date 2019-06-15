@@ -19,7 +19,7 @@ public class BooleanHandler extends BaseCacheHandler<Boolean>
     }
 
     @Override
-    protected Boolean byteToValue(byte[] bytes, Class clazz)
+    protected Boolean byteToValue(byte[] bytes, Class<?> clazz)
     {
         return Boolean.valueOf(new String(bytes));
     }
