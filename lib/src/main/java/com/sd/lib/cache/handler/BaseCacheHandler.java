@@ -224,14 +224,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
             }
         }
 
-        try
-        {
-            return byteToValue(data, clazz);
-        } catch (Exception e)
-        {
-            getCacheInfo().getExceptionHandler().onException(e);
-            return null;
-        }
+        return byteToValue(data, clazz);
     }
 
     /**
