@@ -12,8 +12,6 @@ import com.sd.lib.cache.simple.SimpleObjectCache;
 
 public abstract class FCache implements Cache, CacheInfo
 {
-    private static CacheConfig sCacheConfig;
-
     private boolean mEncrypt;
     private boolean mMemorySupport;
     private ObjectConverter mObjectConverter;
@@ -32,37 +30,6 @@ public abstract class FCache implements Cache, CacheInfo
     private SimpleMultiObjectCache mMultiObjectCache;
 
     /**
-     * 初始化
-     *
-     * @param config
-     */
-    public static final void init(CacheConfig config)
-    {
-        synchronized (Cache.class)
-        {
-            if (config == null)
-                throw new IllegalArgumentException("config is null when init FCache");
-
-            if (sCacheConfig == null)
-                sCacheConfig = config;
-            else
-                throw new RuntimeException("init method can only be called once");
-        }
-    }
-
-    /**
-     * 返回config
-     *
-     * @return
-     */
-    public static final CacheConfig getCacheConfig()
-    {
-        if (sCacheConfig == null)
-            throw new NullPointerException("you must invoke FCache.init(CacheConfig config) before this");
-        return sCacheConfig;
-    }
-
-    /**
      * 使用本地磁盘缓存
      * <p>
      * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置{@link CacheConfig.Builder#setDiskCacheStore(CacheStore)}
@@ -76,7 +43,7 @@ public abstract class FCache implements Cache, CacheInfo
             @Override
             public CacheStore getCacheStore()
             {
-                return FCache.getCacheConfig().mDiskCacheStore;
+                return CacheConfig.get().mDiskCacheStore;
             }
         };
         return cache;
@@ -210,19 +177,19 @@ public abstract class FCache implements Cache, CacheInfo
     @Override
     public final ObjectConverter getObjectConverter()
     {
-        return mObjectConverter != null ? mObjectConverter : getCacheConfig().mObjectConverter;
+        return mObjectConverter != null ? mObjectConverter : CacheConfig.get().mObjectConverter;
     }
 
     @Override
     public final EncryptConverter getEncryptConverter()
     {
-        return mEncryptConverter != null ? mEncryptConverter : getCacheConfig().mEncryptConverter;
+        return mEncryptConverter != null ? mEncryptConverter : CacheConfig.get().mEncryptConverter;
     }
 
     @Override
     public final ExceptionHandler getExceptionHandler()
     {
-        return mExceptionHandler != null ? mExceptionHandler : getCacheConfig().mExceptionHandler;
+        return mExceptionHandler != null ? mExceptionHandler : CacheConfig.get().mExceptionHandler;
     }
 
     //---------- CacheInfo end ----------

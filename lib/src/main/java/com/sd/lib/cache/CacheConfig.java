@@ -6,6 +6,8 @@ import com.sd.lib.cache.store.InternalDiskCacheStore;
 
 public class CacheConfig
 {
+    private static CacheConfig sConfig;
+
     public final Context mContext;
     public final Cache.ObjectConverter mObjectConverter;
     public final Cache.EncryptConverter mEncryptConverter;
@@ -27,6 +29,34 @@ public class CacheConfig
         };
 
         mDiskCacheStore = builder.mDiskCacheStore != null ? builder.mDiskCacheStore : new InternalDiskCacheStore(mContext);
+    }
+
+    /**
+     * 初始化
+     *
+     * @param config
+     */
+    public static synchronized void init(CacheConfig config)
+    {
+        if (config == null)
+            throw new IllegalArgumentException("config is null");
+
+        if (sConfig != null)
+            throw new RuntimeException(CacheConfig.class.getSimpleName() + " has been init");
+
+        sConfig = config;
+    }
+
+    /**
+     * 返回配置
+     *
+     * @return
+     */
+    public static CacheConfig get()
+    {
+        if (sConfig == null)
+            throw new RuntimeException(CacheConfig.class.getSimpleName() + "has not been init");
+        return sConfig;
     }
 
     public static final class Builder

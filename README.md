@@ -18,7 +18,7 @@ public class App extends Application
         super.onCreate();
 
         // 初始化
-        FCache.init(new CacheConfig.Builder()
+        CacheConfig.init(new CacheConfig.Builder()
                 /**
                  * 使用腾讯MMKV自定义的CacheStore，如果不设置，默认使用内部存储目录"/data/包名/files/disk_file"
                  */
