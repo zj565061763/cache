@@ -26,13 +26,10 @@ public abstract class DiskCacheStore implements Cache.CacheStore
 
     private File getDirectory()
     {
-        if (mDirectory.exists())
+        if (mDirectory.exists() || mDirectory.mkdirs())
             return mDirectory;
 
-        if (mDirectory.mkdirs())
-            return mDirectory;
-
-        throw new RuntimeException("directory is not available:" + mDirectory.getAbsolutePath());
+        return null;
     }
 
     private File getCacheFile(String key, CacheInfo info)
@@ -41,7 +38,14 @@ public abstract class DiskCacheStore implements Cache.CacheStore
         if (TextUtils.isEmpty(key))
             throw new NullPointerException("transformKey() return null when getCacheFile()");
 
-        return new File(getDirectory(), key);
+        final File dir = getDirectory();
+        if (dir == null)
+        {
+            info.getExceptionHandler().onException(new RuntimeException("directory is not available:" + mDirectory.getAbsolutePath()));
+            return null;
+        }
+
+        return new File(dir, key);
     }
 
     protected String transformKey(String key)
@@ -53,6 +57,8 @@ public abstract class DiskCacheStore implements Cache.CacheStore
     public final boolean putCache(String key, byte[] value, CacheInfo info)
     {
         final File file = getCacheFile(key, info);
+        if (file == null)
+            return false;
 
         try
         {
@@ -68,6 +74,8 @@ public abstract class DiskCacheStore implements Cache.CacheStore
     public final byte[] getCache(String key, Class<?> clazz, CacheInfo info)
     {
         final File file = getCacheFile(key, info);
+        if (file == null)
+            return null;
 
         try
         {
@@ -83,6 +91,8 @@ public abstract class DiskCacheStore implements Cache.CacheStore
     public final boolean removeCache(String key, CacheInfo info)
     {
         final File file = getCacheFile(key, info);
+        if (file == null)
+            return false;
 
         try
         {
@@ -97,7 +107,11 @@ public abstract class DiskCacheStore implements Cache.CacheStore
     @Override
     public final boolean containsCache(String key, CacheInfo info)
     {
-        return getCacheFile(key, info).exists();
+        final File file = getCacheFile(key, info);
+        if (file == null)
+            return false;
+
+        return file.exists();
     }
 
     protected abstract boolean putCacheImpl(String key, byte[] value, File file) throws Exception;
