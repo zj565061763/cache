@@ -28,6 +28,23 @@ public class SimpleObjectCache implements Cache.ObjectCache
     }
 
     @Override
+    public boolean put(Object value, Class<?> clazz)
+    {
+        if (clazz == null)
+            return put(value);
+
+        if (clazz.isInterface())
+            throw new IllegalArgumentException("clazz is interface " + clazz);
+
+        final Class<?> valueClass = value.getClass();
+        if (!clazz.isAssignableFrom(valueClass))
+            throw new IllegalArgumentException(clazz + " is not assignable from " + valueClass);
+
+        final String key = clazz.getName();
+        return mObjectHandler.putCache(key, value);
+    }
+
+    @Override
     public <T> T get(Class<T> clazz)
     {
         final String key = clazz.getName();
