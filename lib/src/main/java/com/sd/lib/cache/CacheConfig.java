@@ -41,10 +41,8 @@ public class CacheConfig
         if (config == null)
             throw new IllegalArgumentException("config is null");
 
-        if (sConfig != null)
-            throw new RuntimeException(CacheConfig.class.getSimpleName() + " has been init");
-
-        sConfig = config;
+        if (sConfig == null)
+            sConfig = config;
     }
 
     /**
