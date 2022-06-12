@@ -1,20 +1,18 @@
 plugins {
     id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
     id 'maven-publish'
 }
 
 def libGroupId = "com.sd.lib.android"
 def libArtifactId = "cache"
-def libVersionCode = 20210610
 def libVersionName = "1.2.2"
 
 android {
-    compileSdkVersion 30
+    compileSdk 30
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 30
-        versionCode libVersionCode
-        versionName libVersionName
+        minSdk 19
+        targetSdk 30
     }
 
     buildTypes {
@@ -27,11 +25,10 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        kotlinOptions.freeCompilerArgs += ['-module-name', "$libGroupId.$libArtifactId"]
     }
-
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 

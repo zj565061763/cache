@@ -1,13 +1,14 @@
 plugins {
     id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
-    compileSdkVersion 30
+    compileSdk 32
     defaultConfig {
         applicationId "com.sd.www.cache"
-        minSdkVersion 16
-        targetSdkVersion 30
+        minSdk 21
+        targetSdk 32
         versionCode 1
         versionName "1.0"
     }
@@ -25,8 +26,8 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.tencent:mmkv:1.2.13'
+
     implementation project(':lib')
-    implementation 'com.tencent:mmkv:1.0.10'
 }
