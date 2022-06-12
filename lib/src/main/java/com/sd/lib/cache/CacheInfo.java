@@ -1,7 +1,6 @@
 package com.sd.lib.cache;
 
-public interface CacheInfo
-{
+public interface CacheInfo {
     /**
      * 是否需要加解密
      *

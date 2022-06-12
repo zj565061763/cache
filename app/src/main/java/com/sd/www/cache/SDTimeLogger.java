@@ -5,23 +5,18 @@ import android.util.Log;
 /**
  * 计时打印帮助类
  */
-public class SDTimeLogger
-{
+public class SDTimeLogger {
     private static final String TAG = "SDTimeLogger";
     private static final String DEFAULT_PREFIX = " Time:";
 
-    public static void test(Runnable runnable)
-    {
+    public static void test(Runnable runnable) {
         test(null, runnable);
     }
 
-    public static void test(String prefix, Runnable runnable)
-    {
-        if (prefix == null)
-        {
+    public static void test(String prefix, Runnable runnable) {
+        if (prefix == null) {
             prefix = DEFAULT_PREFIX;
-        } else
-        {
+        } else {
             prefix = prefix + DEFAULT_PREFIX;
         }
         long startTime = System.currentTimeMillis();

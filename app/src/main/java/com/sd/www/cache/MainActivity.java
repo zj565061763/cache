@@ -1,15 +1,15 @@
 package com.sd.www.cache;
 
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.sd.lib.cache.Cache;
 import com.sd.lib.cache.FCache;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener
-{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String KEY = "key";
@@ -18,8 +18,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Cache mCache;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -27,10 +26,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getData();
     }
 
-    private Cache getCache()
-    {
-        if (mCache == null)
-        {
+    private Cache getCache() {
+        if (mCache == null) {
             /**
              * 使用本地磁盘缓存
              * <p>
@@ -51,8 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return mCache;
     }
 
-    private void putData()
-    {
+    private void putData() {
         getCache().cacheInteger().put(KEY, 1);
         getCache().cacheLong().put(KEY, 22L);
         getCache().cacheFloat().put(KEY, 333.333F);
@@ -63,8 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getCache().cacheMultiObject(TestModel.class).put(KEY, TEST_MODEL);
     }
 
-    private void getData()
-    {
+    private void getData() {
         Log.i(TAG, "cacheInteger:" + getCache().cacheInteger().get(KEY, 0));
         Log.i(TAG, "cacheLong:" + getCache().cacheLong().get(KEY, 0L));
         Log.i(TAG, "cacheFloat:" + getCache().cacheFloat().get(KEY, 0F));
@@ -76,15 +71,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v)
-    {
-        SDTimeLogger.test(new Runnable()
-        {
+    public void onClick(View v) {
+        SDTimeLogger.test(new Runnable() {
             @Override
-            public void run()
-            {
-                for (int i = 0; i < 100; i++)
-                {
+            public void run() {
+                for (int i = 0; i < 100; i++) {
                     getCache().cacheString().put(KEY, "hello String");
                     getCache().cacheString().get(KEY, null);
                 }

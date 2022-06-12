@@ -7,11 +7,9 @@ import com.sd.www.cache.converter.GlobalEncryptConverter;
 import com.sd.www.cache.converter.GlobalExceptionHandler;
 import com.sd.www.cache.converter.GsonObjectConverter;
 
-public class App extends Application
-{
+public class App extends Application {
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         super.onCreate();
 
         // 初始化

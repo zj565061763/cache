@@ -5,28 +5,23 @@ import com.sd.lib.cache.CacheInfo;
 /**
  * byte数组处理类
  */
-public class BytesHandler extends BaseCacheHandler<byte[]>
-{
-    public BytesHandler(CacheInfo info)
-    {
+public class BytesHandler extends BaseCacheHandler<byte[]> {
+    public BytesHandler(CacheInfo info) {
         super(info);
     }
 
     @Override
-    protected byte[] valueToByte(byte[] value)
-    {
+    protected byte[] valueToByte(byte[] value) {
         return value;
     }
 
     @Override
-    protected byte[] byteToValue(byte[] bytes, Class<?> clazz)
-    {
+    protected byte[] byteToValue(byte[] bytes, Class<?> clazz) {
         return bytes;
     }
 
     @Override
-    protected String getKeyPrefix()
-    {
+    protected String getKeyPrefix() {
         return "bytes_";
     }
 }

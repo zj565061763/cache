@@ -8,8 +8,7 @@ import java.util.Map;
  * Created by Administrator on 2017/8/29.
  */
 
-public class TestModel implements Serializable
-{
+public class TestModel implements Serializable {
     static final long serialVersionUID = 0;
 
     private int valueInt = 10;
@@ -23,17 +22,14 @@ public class TestModel implements Serializable
     private String valueString = "hello";
     private Map<String, String> mapString = new HashMap<>();
 
-    public TestModel()
-    {
-        for (int i = 0; i < 1000; i++)
-        {
+    public TestModel() {
+        for (int i = 0; i < 1000; i++) {
             mapString.put(String.valueOf(i), String.valueOf(i + i));
         }
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder sb = new StringBuilder("\r\n");
         sb.append("valueInt:").append(valueInt).append("\r\n");
         sb.append("valueLong:").append(valueLong).append("\r\n");

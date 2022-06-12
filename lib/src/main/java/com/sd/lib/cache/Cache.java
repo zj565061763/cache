@@ -1,7 +1,6 @@
 package com.sd.lib.cache;
 
-public interface Cache
-{
+public interface Cache {
     /**
      * 设置保存缓存的时候是否加密
      *
@@ -67,8 +66,7 @@ public interface Cache
     /**
      * 通用缓存接口
      */
-    interface CommonCache<T>
-    {
+    interface CommonCache<T> {
         /**
          * 放入缓存对象
          *
@@ -107,8 +105,7 @@ public interface Cache
     /**
      * 对象缓存接口
      */
-    interface ObjectCache
-    {
+    interface ObjectCache {
         boolean put(Object value);
 
         boolean put(Object value, Class<?> clazz);
@@ -120,8 +117,7 @@ public interface Cache
         boolean contains(Class<?> clazz);
     }
 
-    interface MultiObjectCache<T>
-    {
+    interface MultiObjectCache<T> {
         boolean put(String key, T value);
 
         T get(String key);
@@ -131,8 +127,7 @@ public interface Cache
         boolean contains(String key);
     }
 
-    interface CacheStore
-    {
+    interface CacheStore {
         /**
          * 保存缓存
          *
@@ -175,8 +170,7 @@ public interface Cache
     /**
      * 对象转换器
      */
-    interface ObjectConverter
-    {
+    interface ObjectConverter {
         /**
          * 对象转byte
          *
@@ -199,8 +193,7 @@ public interface Cache
     /**
      * 加解密转换器
      */
-    interface EncryptConverter
-    {
+    interface EncryptConverter {
         /**
          * 加密数据
          *
@@ -221,8 +214,7 @@ public interface Cache
     /**
      * 异常处理类
      */
-    interface ExceptionHandler
-    {
+    interface ExceptionHandler {
         void onException(Exception e);
     }
 }

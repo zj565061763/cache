@@ -4,8 +4,7 @@ import android.content.Context;
 
 import com.sd.lib.cache.store.InternalDiskCacheStore;
 
-public class CacheConfig
-{
+public class CacheConfig {
     private static CacheConfig sConfig;
 
     public final Context mContext;
@@ -15,16 +14,13 @@ public class CacheConfig
 
     public final Cache.CacheStore mDiskCacheStore;
 
-    private CacheConfig(Builder builder)
-    {
+    private CacheConfig(Builder builder) {
         mContext = builder.mContext;
         mObjectConverter = builder.mObjectConverter;
         mEncryptConverter = builder.mEncryptConverter;
-        mExceptionHandler = builder.mExceptionHandler != null ? builder.mExceptionHandler : new Cache.ExceptionHandler()
-        {
+        mExceptionHandler = builder.mExceptionHandler != null ? builder.mExceptionHandler : new Cache.ExceptionHandler() {
             @Override
-            public void onException(Exception e)
-            {
+            public void onException(Exception e) {
             }
         };
 
@@ -36,13 +32,14 @@ public class CacheConfig
      *
      * @param config
      */
-    public static synchronized void init(CacheConfig config)
-    {
-        if (config == null)
+    public static synchronized void init(CacheConfig config) {
+        if (config == null) {
             throw new IllegalArgumentException("config is null");
+        }
 
-        if (sConfig == null)
+        if (sConfig == null) {
             sConfig = config;
+        }
     }
 
     /**
@@ -50,15 +47,14 @@ public class CacheConfig
      *
      * @return
      */
-    public static CacheConfig get()
-    {
-        if (sConfig == null)
+    public static CacheConfig get() {
+        if (sConfig == null) {
             throw new RuntimeException(CacheConfig.class.getSimpleName() + "has not been init");
+        }
         return sConfig;
     }
 
-    public static final class Builder
-    {
+    public static final class Builder {
         private Context mContext;
         private Cache.ObjectConverter mObjectConverter;
         private Cache.EncryptConverter mEncryptConverter;
@@ -72,8 +68,7 @@ public class CacheConfig
          * @param converter
          * @return
          */
-        public Builder setObjectConverter(Cache.ObjectConverter converter)
-        {
+        public Builder setObjectConverter(Cache.ObjectConverter converter) {
             mObjectConverter = converter;
             return this;
         }
@@ -84,8 +79,7 @@ public class CacheConfig
          * @param converter
          * @return
          */
-        public Builder setEncryptConverter(Cache.EncryptConverter converter)
-        {
+        public Builder setEncryptConverter(Cache.EncryptConverter converter) {
             mEncryptConverter = converter;
             return this;
         }
@@ -96,8 +90,7 @@ public class CacheConfig
          * @param handler
          * @return
          */
-        public Builder setExceptionHandler(Cache.ExceptionHandler handler)
-        {
+        public Builder setExceptionHandler(Cache.ExceptionHandler handler) {
             mExceptionHandler = handler;
             return this;
         }
@@ -108,14 +101,12 @@ public class CacheConfig
          * @param store
          * @return
          */
-        public Builder setDiskCacheStore(Cache.CacheStore store)
-        {
+        public Builder setDiskCacheStore(Cache.CacheStore store) {
             mDiskCacheStore = store;
             return this;
         }
 
-        public CacheConfig build(Context context)
-        {
+        public CacheConfig build(Context context) {
             mContext = context.getApplicationContext();
             return new CacheConfig(this);
         }
