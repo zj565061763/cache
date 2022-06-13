@@ -2,8 +2,8 @@ package com.sd.lib.cache.store
 
 import com.sd.lib.cache.Cache.CacheStore
 import com.sd.lib.cache.CacheInfo
-import com.sd.lib.cache.LibUtils
 import java.io.File
+import java.security.MessageDigest
 
 /**
  * 文件缓存
@@ -55,7 +55,13 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     private fun getCacheFile(key: String, info: CacheInfo): File? {
         if (key.isEmpty()) return null
 
-        val fileKey = transformKey(key)
+        val fileKey = try {
+            transformKey(key)
+        } catch (e: Exception) {
+            info.exceptionHandler.onException(e)
+            return null
+        }
+
         if (fileKey.isEmpty()) {
             info.exceptionHandler.onException(RuntimeException("transformKey() return empty"))
             return null
@@ -69,8 +75,10 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         return File(dir, fileKey)
     }
 
+    @Throws(Exception::class)
     protected open fun transformKey(key: String): String {
-        return LibUtils.md5(key)
+        val bytes = MessageDigest.getInstance("MD5").digest(key.toByteArray())
+        return bytes.joinToString("") { "%02X".format(it) }
     }
 
     init {
