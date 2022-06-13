@@ -12,7 +12,7 @@ interface CacheInfo {
     val cacheStore: Cache.CacheStore
 
     /** 对象转换器 */
-    val objectConverter: Cache.ObjectConverter?
+    val objectConverter: Cache.ObjectConverter
 
     /** 加解密转换器 */
     val encryptConverter: Cache.EncryptConverter
