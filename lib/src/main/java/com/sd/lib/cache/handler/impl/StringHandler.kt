@@ -1,28 +1,20 @@
-package com.sd.lib.cache.handler.impl;
+package com.sd.lib.cache.handler.impl
 
-import com.sd.lib.cache.CacheInfo;
-import com.sd.lib.cache.handler.BaseCacheHandler;
+import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.handler.BaseCacheHandler
 
 /**
  * String处理类
  */
-public class StringHandler extends BaseCacheHandler<String> {
-    public StringHandler(CacheInfo info) {
-        super(info);
+internal class StringHandler(info: CacheInfo) : BaseCacheHandler<String>(info) {
+    override fun valueToByte(value: String): ByteArray {
+        return value.toByteArray()
     }
 
-    @Override
-    protected byte[] valueToByte(String value) {
-        return value.getBytes();
+    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): String {
+        return String(bytes)
     }
 
-    @Override
-    protected String byteToValue(byte[] bytes, Class<?> clazz) {
-        return new String(bytes);
-    }
-
-    @Override
-    protected String getKeyPrefix() {
-        return "string_";
-    }
+    override val keyPrefix: String
+        get() = "string_"
 }
