@@ -1,6 +1,5 @@
 package com.sd.lib.cache.handler
 
-import android.text.TextUtils
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.Cache.CacheStore
 import com.sd.lib.cache.Cache.CommonCache
@@ -37,9 +36,9 @@ internal abstract class BaseCacheHandler<T>(
     protected abstract val keyPrefix: String
 
     private fun transformKey(key: String): String {
-        require(!TextUtils.isEmpty(key)) { "key is null or empty" }
+        require(key.isNotEmpty()) { "key is empty" }
         val prefix = keyPrefix
-        check(!TextUtils.isEmpty(prefix)) { "key prefix is null or empty" }
+        check(prefix.isNotEmpty()) { "key prefix is empty" }
         return prefix + key
     }
 
