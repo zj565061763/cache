@@ -10,10 +10,11 @@ import java.security.MessageDigest
 abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     private val _directory: File
 
-    private val directory: File?
-        get() = if (_directory.exists() || _directory.mkdirs()) {
+    protected fun getDirectory(): File? {
+        return if (_directory.exists() || _directory.mkdirs()) {
             _directory
         } else null
+    }
 
     final override fun putCache(key: String, value: ByteArray): Boolean {
         val file = getCacheFile(key) ?: return false
@@ -60,7 +61,7 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
             throw RuntimeException("transformKey() return empty")
         }
 
-        val dir = directory ?: throw RuntimeException("directory is not available:" + _directory.absolutePath)
+        val dir = getDirectory() ?: throw RuntimeException("directory is not available:" + _directory.absolutePath)
         return File(dir, fileKey)
     }
 
