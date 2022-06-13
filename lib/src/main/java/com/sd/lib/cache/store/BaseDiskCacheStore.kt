@@ -65,7 +65,7 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
 
     @Throws(Exception::class)
     private fun getCacheFile(key: String): File {
-        return File(getDirectory(), transformKey(key))
+        return File(getDirectory(), packKey(key))
     }
 
     /**
@@ -74,7 +74,7 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     fun getCacheFileOrNull(key: String): File? {
         synchronized(Cache::class.java) {
             return try {
-                val file = File(getDirectory(), transformKey(key))
+                val file = File(getDirectory(), packKey(key))
                 if (file.exists()) file else null
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -105,8 +105,12 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     companion object {
         private const val KeyPrefix = "f_d_"
 
-        fun transformKey(key: String): String {
+        fun packKey(key: String): String {
             return KeyPrefix + key
+        }
+
+        fun unpackKey(key: String): String {
+            return key.removePrefix(KeyPrefix)
         }
     }
 }
