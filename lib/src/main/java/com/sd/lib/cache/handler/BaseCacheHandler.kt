@@ -15,7 +15,7 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CommonCache start ----------
 
-    override fun put(key: String, value: T): Boolean {
+    override fun put(key: String, value: T?): Boolean {
         return putCache(key, value)
     }
 

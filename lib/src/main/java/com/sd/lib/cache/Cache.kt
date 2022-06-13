@@ -2,7 +2,7 @@ package com.sd.lib.cache
 
 interface Cache {
     /**
-     * 是否加密
+     * 是否加密，默认否false
      */
     fun setEncrypt(encrypt: Boolean): Cache
 
@@ -44,7 +44,7 @@ interface Cache {
          * 放入缓存对象
          * @return true-成功；false-失败
          */
-        fun put(key: String, value: T): Boolean
+        fun put(key: String, value: T?): Boolean
 
         /**
          * 获取[key]对应的缓存
