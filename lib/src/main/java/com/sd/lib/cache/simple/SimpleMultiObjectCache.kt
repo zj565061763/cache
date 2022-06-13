@@ -5,12 +5,10 @@ import com.sd.lib.cache.CacheInfo
 import com.sd.lib.cache.handler.ObjectHandler
 
 internal class SimpleMultiObjectCache<T>(
-    info: CacheInfo,
-    objectClass: Class<T>,
-) : MultiObjectCache<T> {
-
     @JvmField
-    val objectClass: Class<T> = objectClass
+    val objectClass: Class<T>,
+    info: CacheInfo,
+) : MultiObjectCache<T> {
 
     private val _objectHandler: ObjectHandler by lazy {
         object : ObjectHandler(info) {

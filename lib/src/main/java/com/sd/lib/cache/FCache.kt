@@ -84,7 +84,7 @@ abstract class FCache : Cache, CacheInfo {
     override fun <T> cacheMultiObject(clazz: Class<T>): MultiObjectCache<T> {
         val cache = _multiObjectCache
         if (cache != null && cache.objectClass == clazz) return (cache as MultiObjectCache<T>)
-        return SimpleMultiObjectCache(this, clazz).also {
+        return SimpleMultiObjectCache(clazz, this).also {
             _multiObjectCache = it
         }
     }
