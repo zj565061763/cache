@@ -9,10 +9,10 @@ def libArtifactId = "cache"
 def libVersionName = "1.2.2"
 
 android {
-    compileSdk 30
+    compileSdk 32
     defaultConfig {
         minSdk 19
-        targetSdk 30
+        targetSdk 32
     }
 
     buildTypes {
