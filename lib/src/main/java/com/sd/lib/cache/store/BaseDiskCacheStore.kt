@@ -16,24 +16,24 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
             _directory
         } else null
 
-    override fun putCache(key: String, value: ByteArray, info: CacheInfo): Boolean {
+    final override fun putCache(key: String, value: ByteArray, info: CacheInfo): Boolean {
         val file = getCacheFile(key, info) ?: return false
         return putCacheImpl(key, value, file)
     }
 
-    override fun getCache(key: String, info: CacheInfo): ByteArray? {
+    final override fun getCache(key: String, info: CacheInfo): ByteArray? {
         val file = getCacheFile(key, info) ?: return null
         return getCacheImpl(key, file)
     }
 
-    override fun removeCache(key: String, info: CacheInfo): Boolean {
+    final override fun removeCache(key: String, info: CacheInfo): Boolean {
         val file = getCacheFile(key, info) ?: return false
         return removeCacheImpl(key, file)
     }
 
-    override fun containsCache(key: String, info: CacheInfo): Boolean {
+    final override fun containsCache(key: String, info: CacheInfo): Boolean {
         val file = getCacheFile(key, info) ?: return false
-        return file.exists()
+        return containsCacheImpl(key, file)
     }
 
     @Throws(Exception::class)
@@ -43,8 +43,13 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     protected abstract fun getCacheImpl(key: String, file: File): ByteArray
 
     @Throws(Exception::class)
-    protected fun removeCacheImpl(key: String, file: File): Boolean {
+    protected open fun removeCacheImpl(key: String, file: File): Boolean {
         return if (file.exists()) file.delete() else false
+    }
+
+    @Throws(Exception::class)
+    protected open fun containsCacheImpl(key: String, file: File): Boolean {
+        return file.exists()
     }
 
     private fun getCacheFile(key: String, info: CacheInfo): File? {

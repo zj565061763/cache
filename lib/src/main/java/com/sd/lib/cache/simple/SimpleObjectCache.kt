@@ -4,7 +4,7 @@ import com.sd.lib.cache.Cache.ObjectCache
 import com.sd.lib.cache.CacheInfo
 import com.sd.lib.cache.handler.ObjectHandler
 
-class SimpleObjectCache(info: CacheInfo) : ObjectCache {
+internal class SimpleObjectCache(info: CacheInfo) : ObjectCache {
 
     private val _handler: ObjectHandler by lazy {
         object : ObjectHandler(info) {

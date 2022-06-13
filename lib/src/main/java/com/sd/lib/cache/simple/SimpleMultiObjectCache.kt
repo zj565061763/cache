@@ -4,7 +4,7 @@ import com.sd.lib.cache.Cache.MultiObjectCache
 import com.sd.lib.cache.CacheInfo
 import com.sd.lib.cache.handler.ObjectHandler
 
-class SimpleMultiObjectCache<T>(
+internal class SimpleMultiObjectCache<T>(
     info: CacheInfo,
     objectClass: Class<T>,
 ) : MultiObjectCache<T> {
