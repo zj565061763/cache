@@ -1,45 +1,23 @@
-package com.sd.lib.cache;
+package com.sd.lib.cache
 
-public interface CacheInfo {
-    /**
-     * 是否需要加解密
-     *
-     * @return
-     */
-    boolean isEncrypt();
+import com.sd.lib.cache.Cache.*
 
-    /**
-     * 是否支持内存存储
-     *
-     * @return
-     */
-    boolean isMemorySupport();
+interface CacheInfo {
+    /** 是否需要加解密 */
+    val isEncrypt: Boolean
 
-    /**
-     * 返回缓存存取对象
-     *
-     * @return
-     */
-    Cache.CacheStore getCacheStore();
+    /** 是否支持内存存储 */
+    val isMemorySupport: Boolean
 
-    /**
-     * 返回对象转换器
-     *
-     * @return
-     */
-    Cache.ObjectConverter getObjectConverter();
+    /** 存取对象 */
+    val cacheStore: CacheStore
 
-    /**
-     * 返回加解密转换器
-     *
-     * @return
-     */
-    Cache.EncryptConverter getEncryptConverter();
+    /** 对象转换器 */
+    val objectConverter: ObjectConverter?
 
-    /**
-     * 返回设置的异常处理对象
-     *
-     * @return
-     */
-    Cache.ExceptionHandler getExceptionHandler();
+    /** 加解密转换器 */
+    val encryptConverter: EncryptConverter?
+
+    /** 异常处理对象 */
+    val exceptionHandler: Cache.ExceptionHandler?
 }
