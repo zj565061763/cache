@@ -28,7 +28,8 @@ internal class SimpleMultiObjectCache<T>(
 
     override fun get(key: String): T? {
         if (key.isEmpty()) return null
-        return _objectHandler.getCache(transformKey(key), objectClass) as T
+        val cache = _objectHandler.getCache(transformKey(key), objectClass) ?: return null
+        return cache as T
     }
 
     override fun remove(key: String): Boolean {
