@@ -8,15 +8,15 @@ import java.io.File
 open class SimpleDiskCacheStore(directory: File) : BaseDiskCacheStore(directory) {
 
     override fun putCacheImpl(key: String, value: ByteArray, file: File): Boolean {
-        return file.outputStream().buffered().use { outputStream ->
-            outputStream.write(value)
+        return file.outputStream().buffered().use {
+            it.write(value)
             true
         }
     }
 
     override fun getCacheImpl(key: String, clazz: Class<*>, file: File): ByteArray {
-        return file.inputStream().buffered().use { inputStream ->
-            inputStream.readBytes()
+        return file.inputStream().buffered().use {
+            it.readBytes()
         }
     }
 }

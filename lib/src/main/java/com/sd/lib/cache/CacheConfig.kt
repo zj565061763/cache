@@ -1,7 +1,8 @@
 package com.sd.lib.cache
 
 import android.content.Context
-import com.sd.lib.cache.store.InternalDiskCacheStore
+import com.sd.lib.cache.store.SimpleDiskCacheStore
+import java.io.File
 
 class CacheConfig private constructor(builder: Builder) {
     val context: Context
@@ -101,6 +102,6 @@ class CacheConfig private constructor(builder: Builder) {
             }
         }
         exceptionHandler = builder._exceptionHandler ?: Cache.ExceptionHandler { }
-        cacheStore = builder._cacheStore ?: InternalDiskCacheStore(context)
+        cacheStore = builder._cacheStore ?: SimpleDiskCacheStore(File(context.filesDir, "disk_file"))
     }
 }
