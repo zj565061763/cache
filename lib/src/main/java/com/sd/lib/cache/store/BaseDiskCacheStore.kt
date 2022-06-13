@@ -102,15 +102,15 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         }
     }
 
+    private fun packKey(key: String): String {
+        return KeyPrefix + key
+    }
+
+    fun unpackKey(key: String): String {
+        return key.removePrefix(KeyPrefix)
+    }
+
     companion object {
         private const val KeyPrefix = "f_d_"
-
-        fun packKey(key: String): String {
-            return KeyPrefix + key
-        }
-
-        fun unpackKey(key: String): String {
-            return key.removePrefix(KeyPrefix)
-        }
     }
 }
