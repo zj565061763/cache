@@ -22,7 +22,7 @@ public class GlobalEncryptConverter implements Cache.EncryptConverter {
     @NonNull
     @Override
     public byte[] decrypt(@NonNull byte[] bytes) throws Exception {
-        Log.i(MainActivity.TAG, "encrypt ----- ");
+        Log.i(MainActivity.TAG, "decrypt ----- ");
         return bytes;
     }
 }
