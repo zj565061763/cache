@@ -28,10 +28,10 @@ public class App extends Application {
 //                .setObjectConverter(new GsonObjectConverter())
 
                 // 设置加解密转换器
-                .setEncryptConverter(new GlobalEncryptConverter())
+//                .setEncryptConverter(new GlobalEncryptConverter())
 
                 // 设置异常监听
-                .setExceptionHandler(new GlobalExceptionHandler())
+//                .setExceptionHandler(new GlobalExceptionHandler())
 
                 // 创建对象
                 .build(this);
