@@ -3,7 +3,6 @@ package com.sd.www.cache;
 import android.app.Application;
 
 import com.sd.lib.cache.CacheConfig;
-import com.sd.lib.cache.FCache;
 import com.sd.www.cache.converter.GlobalEncryptConverter;
 import com.sd.www.cache.converter.GlobalExceptionHandler;
 import com.sd.www.cache.converter.GsonObjectConverter;
@@ -22,9 +21,10 @@ public class App extends Application {
                 .setEncryptConverter(new GlobalEncryptConverter())
                 // 设置异常监听
                 .setExceptionHandler(new GlobalExceptionHandler())
+                // 创建对象
                 .build(this);
 
         // 初始化
-        FCache.init(cacheConfig);
+        CacheConfig.init(cacheConfig);
     }
 }

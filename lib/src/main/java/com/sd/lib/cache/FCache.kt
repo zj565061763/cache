@@ -100,50 +100,26 @@ abstract class FCache : Cache, CacheInfo {
         get() = _isMemorySupport
 
     override val objectConverter: ObjectConverter
-        get() = _objectConverter ?: getConfig().objectConverter
+        get() = _objectConverter ?: CacheConfig.get().objectConverter
 
     override val encryptConverter: EncryptConverter
-        get() = _encryptConverter ?: getConfig().encryptConverter
+        get() = _encryptConverter ?: CacheConfig.get().encryptConverter
 
     override val exceptionHandler: ExceptionHandler
-        get() = _exceptionHandler ?: getConfig().exceptionHandler
+        get() = _exceptionHandler ?: CacheConfig.get().exceptionHandler
 
     //---------- CacheInfo end ----------
 
     companion object {
-        @JvmStatic
-        private var config: CacheConfig? = null
-
         /**
-         * 初始化
-         */
-        @JvmStatic
-        @Synchronized
-        fun init(config: CacheConfig) {
-            if (this.config == null) {
-                this.config = config
-            }
-        }
-
-        /**
-         * 使用本地磁盘缓存，
+         * 创建并返回一个本地磁盘缓存对象，
          * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置[CacheConfig.Builder.setCacheStore]
          */
         @JvmStatic
         fun disk(): Cache {
             return object : FCache() {
                 override val cacheStore: CacheStore
-                    get() = getConfig().cacheStore
-            }
-        }
-
-        /**
-         * 返回配置
-         */
-        @JvmStatic
-        private fun getConfig(): CacheConfig {
-            return requireNotNull(config) {
-                "CacheConfig has not been init"
+                    get() = CacheConfig.get().cacheStore
             }
         }
     }
