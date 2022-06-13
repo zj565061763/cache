@@ -6,6 +6,7 @@ import com.sd.lib.cache.store.SimpleDiskCacheStore
 import java.io.File
 
 class CacheConfig private constructor(builder: Builder) {
+    @JvmField
     val context: Context
 
     @JvmField
