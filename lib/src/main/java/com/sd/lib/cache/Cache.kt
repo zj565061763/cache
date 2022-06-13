@@ -1,65 +1,42 @@
-package com.sd.lib.cache;
+package com.sd.lib.cache
 
-public interface Cache {
+interface Cache {
     /**
-     * 设置保存缓存的时候是否加密
-     *
-     * @param encrypt
-     * @return
+     * 是否加密
      */
-    Cache setEncrypt(boolean encrypt);
+    fun setEncrypt(encrypt: Boolean): Cache
 
     /**
-     * 设置是否支持内存存储
-     *
-     * @param support
-     * @return
+     * 是否缓存到内存
      */
-    Cache setMemorySupport(boolean support);
+    fun setMemorySupport(support: Boolean): Cache
 
     /**
      * 设置对象转换器
-     *
-     * @param converter
-     * @return
      */
-    Cache setObjectConverter(ObjectConverter converter);
+    fun setObjectConverter(converter: ObjectConverter?): Cache
 
     /**
      * 设置加解密转换器
-     *
-     * @param converter
-     * @return
      */
-    Cache setEncryptConverter(EncryptConverter converter);
+    fun setEncryptConverter(converter: EncryptConverter?): Cache
 
     /**
-     * 设置异常处理对象
-     *
-     * @param handler
-     * @return
+     * 设置异常处理器
      */
-    Cache setExceptionHandler(ExceptionHandler handler);
+    fun setExceptionHandler(handler: ExceptionHandler?): Cache
 
     //---------- cache start ----------
 
-    CommonCache<Integer> cacheInteger();
-
-    CommonCache<Long> cacheLong();
-
-    CommonCache<Float> cacheFloat();
-
-    CommonCache<Double> cacheDouble();
-
-    CommonCache<Boolean> cacheBoolean();
-
-    CommonCache<String> cacheString();
-
-    CommonCache<byte[]> cacheBytes();
-
-    ObjectCache cacheObject();
-
-    <T> MultiObjectCache<T> cacheMultiObject(Class<T> clazz);
+    fun cacheInteger(): CommonCache<Int?>
+    fun cacheLong(): CommonCache<Long?>
+    fun cacheFloat(): CommonCache<Float?>
+    fun cacheDouble(): CommonCache<Double?>
+    fun cacheBoolean(): CommonCache<Boolean?>
+    fun cacheString(): CommonCache<String?>
+    fun cacheBytes(): CommonCache<ByteArray?>
+    fun cacheObject(): ObjectCache
+    fun <T> cacheMultiObject(clazz: Class<T>): MultiObjectCache<T>
 
     //---------- cache end ----------
 
@@ -69,150 +46,99 @@ public interface Cache {
     interface CommonCache<T> {
         /**
          * 放入缓存对象
-         *
-         * @param key
-         * @param value
-         * @return
+         * @return true-成功；false-失败
          */
-        boolean put(String key, T value);
+        fun put(key: String, value: T): Boolean
 
         /**
-         * 返回key对应的缓存
-         *
-         * @param key
-         * @param defaultValue 如果获取的缓存为null或者不存在，则返回这个值
-         * @return
+         * 获取[key]对应的缓存
+         * @param defaultValue 如果获取的缓存不存在，则返回这个值
          */
-        T get(String key, T defaultValue);
+        fun get(key: String, defaultValue: T): T
 
         /**
-         * 移除key对应的缓存
-         *
-         * @param key
-         * @return
+         * 移除[key]对应的缓存
          */
-        boolean remove(String key);
+        fun remove(key: String): Boolean
 
         /**
-         * 是否包含key对应的缓存
-         *
-         * @param key
-         * @return
+         * [key]对应的缓存是否存在
          */
-        boolean contains(String key);
+        fun contains(key: String): Boolean
     }
 
     /**
      * 对象缓存接口
      */
     interface ObjectCache {
-        boolean put(Object value);
-
-        <T> T get(Class<T> clazz);
-
-        boolean remove(Class<?> clazz);
-
-        boolean contains(Class<?> clazz);
+        fun put(value: Any?): Boolean
+        fun <T> get(clazz: Class<T>): T?
+        fun remove(clazz: Class<*>): Boolean
+        fun contains(clazz: Class<*>): Boolean
     }
 
     interface MultiObjectCache<T> {
-        boolean put(String key, T value);
-
-        T get(String key);
-
-        boolean remove(String key);
-
-        boolean contains(String key);
+        fun put(key: String, value: T): Boolean
+        fun get(key: String): T?
+        fun remove(key: String): Boolean
+        fun contains(key: String): Boolean
     }
 
     interface CacheStore {
         /**
          * 保存缓存
-         *
-         * @param key
-         * @param value
-         * @param info
          * @return true-保存成功，false-保存失败
          */
-        boolean putCache(String key, byte[] value, CacheInfo info);
+        fun putCache(key: String, value: ByteArray, info: CacheInfo): Boolean
 
         /**
-         * 获得缓存
-         *
-         * @param key
-         * @param clazz
-         * @param info
-         * @return
+         * 获取缓存
          */
-        byte[] getCache(String key, Class<?> clazz, CacheInfo info);
+        fun getCache(key: String, info: CacheInfo): ByteArray?
 
         /**
          * 删除缓存
-         *
-         * @param key
-         * @param info
-         * @return true-此次方法调用后删除了缓存，false-删除失败或者缓存不存在
+         * @return true-缓存被删除，false-删除失败或者缓存不存在
          */
-        boolean removeCache(String key, CacheInfo info);
+        fun removeCache(key: String, info: CacheInfo): Boolean
 
         /**
-         * 是否有key对应的缓存
-         *
-         * @param key
-         * @param info
-         * @return
+         * 是否有[key]对应的缓存
          */
-        boolean containsCache(String key, CacheInfo info);
+        fun containsCache(key: String, info: CacheInfo): Boolean
     }
-
     /**
      * 对象转换器
      */
     interface ObjectConverter {
         /**
          * 对象转byte
-         *
-         * @param object
-         * @return
          */
-        byte[] objectToByte(Object object);
+        fun objectToByte(value: Any): ByteArray
 
         /**
          * byte转对象
-         *
-         * @param bytes
-         * @param clazz
-         * @param <T>
-         * @return
          */
-        <T> T byteToObject(byte[] bytes, Class<T> clazz);
+        fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T
     }
-
     /**
      * 加解密转换器
      */
     interface EncryptConverter {
         /**
          * 加密数据
-         *
-         * @param bytes
-         * @return
          */
-        byte[] encrypt(byte[] bytes);
+        fun encrypt(bytes: ByteArray): ByteArray
 
         /**
          * 解密数据
-         *
-         * @param bytes
-         * @return
          */
-        byte[] decrypt(byte[] bytes);
+        fun decrypt(bytes: ByteArray): ByteArray
     }
-
     /**
      * 异常处理类
      */
-    interface ExceptionHandler {
-        void onException(Exception e);
+    fun interface ExceptionHandler {
+        fun onException(e: Exception?)
     }
 }

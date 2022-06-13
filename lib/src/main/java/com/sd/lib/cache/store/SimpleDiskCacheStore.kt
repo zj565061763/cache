@@ -14,7 +14,7 @@ open class SimpleDiskCacheStore(directory: File) : BaseDiskCacheStore(directory)
         }
     }
 
-    override fun getCacheImpl(key: String, clazz: Class<*>?, file: File): ByteArray {
+    override fun getCacheImpl(key: String, file: File): ByteArray {
         return file.inputStream().buffered().use {
             it.readBytes()
         }

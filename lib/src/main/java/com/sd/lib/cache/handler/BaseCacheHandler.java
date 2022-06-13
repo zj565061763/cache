@@ -78,7 +78,7 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
 
             byte[] data = getMemory(key);
             if (data == null) {
-                data = getCacheStore().getCache(key, clazz, getCacheInfo());
+                data = getCacheStore().getCache(key, getCacheInfo());
             }
 
             if (data == null) {

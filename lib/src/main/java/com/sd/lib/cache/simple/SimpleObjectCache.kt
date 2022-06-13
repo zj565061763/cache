@@ -14,7 +14,8 @@ class SimpleObjectCache(info: CacheInfo) : ObjectCache {
         }
     }
 
-    override fun put(value: Any): Boolean {
+    override fun put(value: Any?): Boolean {
+        if (value == null) return false
         val key = value.javaClass.name
         return _handler.putCache(key, value)
     }
