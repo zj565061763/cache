@@ -49,31 +49,31 @@ abstract class FCache : Cache, CacheInfo {
 
     //---------- Cache start ----------
 
-    override fun cacheInteger(): CommonCache<Int?> {
+    override fun cacheInteger(): CommonCache<Int> {
         return _integerHandler
     }
 
-    override fun cacheLong(): CommonCache<Long?> {
+    override fun cacheLong(): CommonCache<Long> {
         return _longHandler
     }
 
-    override fun cacheFloat(): CommonCache<Float?> {
+    override fun cacheFloat(): CommonCache<Float> {
         return _floatHandler
     }
 
-    override fun cacheDouble(): CommonCache<Double?> {
+    override fun cacheDouble(): CommonCache<Double> {
         return _doubleHandler
     }
 
-    override fun cacheBoolean(): CommonCache<Boolean?> {
+    override fun cacheBoolean(): CommonCache<Boolean> {
         return _booleanHandler
     }
 
-    override fun cacheString(): CommonCache<String?> {
+    override fun cacheString(): CommonCache<String> {
         return _stringHandler
     }
 
-    override fun cacheBytes(): CommonCache<ByteArray?> {
+    override fun cacheBytes(): CommonCache<ByteArray> {
         return _bytesHandler
     }
 
@@ -102,7 +102,7 @@ abstract class FCache : Cache, CacheInfo {
     override val objectConverter: ObjectConverter
         get() = _objectConverter ?: CacheConfig.get().objectConverter
 
-    override val encryptConverter: EncryptConverter
+    override val encryptConverter: EncryptConverter?
         get() = _encryptConverter ?: CacheConfig.get().encryptConverter
 
     override val exceptionHandler: ExceptionHandler

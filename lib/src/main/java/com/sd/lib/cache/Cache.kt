@@ -28,13 +28,14 @@ interface Cache {
 
     //---------- cache start ----------
 
-    fun cacheInteger(): CommonCache<Int?>
-    fun cacheLong(): CommonCache<Long?>
-    fun cacheFloat(): CommonCache<Float?>
-    fun cacheDouble(): CommonCache<Double?>
-    fun cacheBoolean(): CommonCache<Boolean?>
-    fun cacheString(): CommonCache<String?>
-    fun cacheBytes(): CommonCache<ByteArray?>
+    fun cacheInteger(): CommonCache<Int>
+    fun cacheLong(): CommonCache<Long>
+    fun cacheFloat(): CommonCache<Float>
+    fun cacheDouble(): CommonCache<Double>
+    fun cacheBoolean(): CommonCache<Boolean>
+    fun cacheString(): CommonCache<String>
+    fun cacheBytes(): CommonCache<ByteArray>
+
     fun cacheObject(): ObjectCache
     fun <T> cacheMultiObject(clazz: Class<T>): MultiObjectCache<T>
 
@@ -111,6 +112,7 @@ interface Cache {
         @Throws(Exception::class)
         fun containsCache(key: String, info: CacheInfo): Boolean
     }
+
     /**
      * 对象转换器
      */
@@ -125,6 +127,7 @@ interface Cache {
          */
         fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T?
     }
+
     /**
      * 加解密转换器
      */
@@ -132,13 +135,16 @@ interface Cache {
         /**
          * 加密数据
          */
+        @Throws(Exception::class)
         fun encrypt(bytes: ByteArray): ByteArray
 
         /**
          * 解密数据
          */
+        @Throws(Exception::class)
         fun decrypt(bytes: ByteArray): ByteArray
     }
+
     /**
      * 异常处理类
      */

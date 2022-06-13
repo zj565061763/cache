@@ -9,15 +9,15 @@ import com.sd.lib.cache.Cache;
  */
 
 public class GlobalEncryptConverter implements Cache.EncryptConverter {
+    @NonNull
     @Override
-    public byte[] encrypt(@NonNull byte[] bytes) {
-        // 加密
+    public byte[] encrypt(@NonNull byte[] bytes) throws Exception {
         return bytes;
     }
 
+    @NonNull
     @Override
-    public byte[] decrypt(@NonNull byte[] bytes) {
-        // 解密
+    public byte[] decrypt(@NonNull byte[] bytes) throws Exception {
         return bytes;
     }
 }

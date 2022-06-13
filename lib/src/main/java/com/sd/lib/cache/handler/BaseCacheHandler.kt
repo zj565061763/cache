@@ -1,259 +1,197 @@
-package com.sd.lib.cache.handler;
+package com.sd.lib.cache.handler
 
-import android.text.TextUtils;
-
-import com.sd.lib.cache.Cache;
-import com.sd.lib.cache.CacheInfo;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import android.text.TextUtils
+import com.sd.lib.cache.Cache
+import com.sd.lib.cache.Cache.CacheStore
+import com.sd.lib.cache.Cache.CommonCache
+import com.sd.lib.cache.CacheInfo
 
 /**
  * 缓存处理基类
  */
-abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache<T> {
-    private final CacheInfo mCacheInfo;
-    private static final Map<String, byte[]> MAP_MEMORY = new HashMap<>();
+internal abstract class BaseCacheHandler<T>(
+    val cacheInfo: CacheInfo,
+) : CacheHandler<T>, CommonCache<T> {
 
-    public BaseCacheHandler(CacheInfo cacheInfo) {
-        if (cacheInfo == null) {
-            throw new IllegalArgumentException("cacheInfo is null when create: " + getClass().getName());
-        }
-        mCacheInfo = cacheInfo;
+    /** key前缀 */
+    protected abstract val keyPrefix: String
+
+    private fun transformKey(key: String): String {
+        require(!TextUtils.isEmpty(key)) { "key is null or empty" }
+        val prefix = keyPrefix
+        check(!TextUtils.isEmpty(prefix)) { "key prefix is null or empty" }
+        return prefix + key
     }
 
-    protected final CacheInfo getCacheInfo() {
-        return mCacheInfo;
-    }
-
-    protected abstract String getKeyPrefix();
-
-    private String transformKey(final String key) {
-        if (TextUtils.isEmpty(key)) {
-            throw new IllegalArgumentException("key is null or empty");
-        }
-
-        final String prefix = getKeyPrefix();
-        if (TextUtils.isEmpty(prefix)) {
-            throw new IllegalArgumentException("key prefix is null or empty");
-        }
-
-        return prefix + key;
-    }
-
-    private Cache.CacheStore getCacheStore() {
-        return getCacheInfo().getCacheStore();
-    }
+    private val cacheStore: CacheStore
+        get() = cacheInfo.cacheStore
 
     //---------- CacheHandler start ----------
 
-    @Override
-    public final boolean putCache(String key, T value) {
-        synchronized (Cache.class) {
-            if (value == null) {
-                return removeCache(key);
-            }
-
-            key = transformKey(key);
-
-            final byte[] data = transformValueToByte(key, value);
-            if (data == null) {
-                throw new NullPointerException("transformValueToByte return null when putCache: " + key);
-            }
-
-            boolean result;
-            try {
-                result = getCacheStore().putCache(key, data, getCacheInfo());
-            } catch (Exception e) {
-                getCacheInfo().getExceptionHandler().onException(e);
-                return false;
-            }
-
-            if (result) {
-                putMemory(key, data);
-            }
-
-            return result;
-        }
-    }
-
-    @Override
-    public final T getCache(String key, Class<?> clazz) {
-        synchronized (Cache.class) {
-            key = transformKey(key);
-
-            byte[] data = getMemory(key);
-            if (data == null) {
-                try {
-                    data = getCacheStore().getCache(key, getCacheInfo());
-                } catch (Exception e) {
-                    getCacheInfo().getExceptionHandler().onException(e);
-                    return null;
+    override fun putCache(key: String, value: T?): Boolean {
+        if (value == null) return false
+        synchronized(Cache::class.java) {
+            val key = transformKey(key)
+            val data = transformValueToByte(key, value) ?: return false
+            return try {
+                cacheStore.putCache(key, data, cacheInfo)
+            } catch (e: Exception) {
+                cacheInfo.exceptionHandler.onException(e)
+                return false
+            }.also {
+                if (it) {
+                    putMemory(key, data)
                 }
             }
+        }
+    }
 
+    override fun getCache(key: String, clazz: Class<*>?): T? {
+        synchronized(Cache::class.java) {
+            val key = transformKey(key)
+            var data = getMemory(key)
             if (data == null) {
-                return null;
+                data = try {
+                    cacheStore.getCache(key, cacheInfo)
+                } catch (e: Exception) {
+                    cacheInfo.exceptionHandler.onException(e)
+                    return null
+                }
             }
-
-            return transformByteToValue(key, data, clazz);
+            if (data == null) return null
+            return transformByteToValue(key, data, clazz)
         }
     }
 
-    @Override
-    public final boolean removeCache(String key) {
-        synchronized (Cache.class) {
-            key = transformKey(key);
-
-            removeMemory(key);
-            try {
-                return getCacheStore().removeCache(key, getCacheInfo());
-            } catch (Exception e) {
-                getCacheInfo().getExceptionHandler().onException(e);
-                return false;
+    override fun removeCache(key: String): Boolean {
+        synchronized(Cache::class.java) {
+            val key = transformKey(key)
+            removeMemory(key)
+            return try {
+                cacheStore.removeCache(key, cacheInfo)
+            } catch (e: Exception) {
+                cacheInfo.exceptionHandler.onException(e)
+                false
             }
         }
     }
 
-    @Override
-    public final boolean containsCache(String key) {
-        synchronized (Cache.class) {
-            key = transformKey(key);
-
-            if (getMemory(key) != null) {
-                return true;
-            }
-
-            try {
-                return getCacheStore().containsCache(key, getCacheInfo());
-            } catch (Exception e) {
-                getCacheInfo().getExceptionHandler().onException(e);
-                return false;
+    override fun containsCache(key: String): Boolean {
+        synchronized(Cache::class.java) {
+            val key = transformKey(key)
+            return if (getMemory(key) != null) {
+                true
+            } else {
+                try {
+                    cacheStore.containsCache(key, cacheInfo)
+                } catch (e: Exception) {
+                    cacheInfo.exceptionHandler.onException(e)
+                    false
+                }
             }
         }
     }
 
     //---------- CacheHandler end ----------
 
-    //---------- memory start ----------
+    //---------- Memory start ----------
 
-    private void putMemory(String key, byte[] value) {
-        if (getCacheInfo().isMemorySupport()) {
-            MAP_MEMORY.put(key, value);
+    private fun putMemory(key: String, value: ByteArray) {
+        if (cacheInfo.isMemorySupport) {
+            MAP_MEMORY[key] = value
         }
     }
 
-    private byte[] getMemory(String key) {
-        return getCacheInfo().isMemorySupport() ? MAP_MEMORY.get(key) : null;
+    private fun getMemory(key: String): ByteArray? {
+        return if (cacheInfo.isMemorySupport) MAP_MEMORY[key] else null
     }
 
-    private void removeMemory(String key) {
-        if (!MAP_MEMORY.isEmpty()) {
-            MAP_MEMORY.remove(key);
-        }
+    private fun removeMemory(key: String) {
+        MAP_MEMORY.remove(key)
     }
 
-    //---------- memory end ----------
-
+    //---------- Memory end ----------
 
     //---------- CommonCache start ----------
 
-    @Override
-    public final boolean put(String key, T value) {
-        return putCache(key, value);
+    override fun put(key: String, value: T): Boolean {
+        return putCache(key, value)
     }
 
-    @Override
-    public final T get(String key, T defaultValue) {
-        final T cache = getCache(key, null);
-        return cache == null ? defaultValue : cache;
+    override operator fun get(key: String, defaultValue: T): T {
+        return getCache(key, null) ?: defaultValue
     }
 
-    @Override
-    public final boolean remove(String key) {
-        return removeCache(key);
+    override fun remove(key: String): Boolean {
+        return removeCache(key)
     }
 
-    @Override
-    public final boolean contains(String key) {
-        return containsCache(key);
+    override operator fun contains(key: String): Boolean {
+        return containsCache(key)
     }
 
     //---------- CommonCache end ----------
 
-    private byte[] transformValueToByte(String key, T value) {
-        if (value == null) {
-            throw new IllegalArgumentException("value is null when invoke transformValueToByte()");
+    private fun transformValueToByte(key: String, value: T): ByteArray? {
+        var data = try {
+            valueToByte(value)
+        } catch (e: Exception) {
+            cacheInfo.exceptionHandler.onException(e)
+            return null
         }
 
-        final boolean encrypt = getCacheInfo().isEncrypt();
-        final Cache.EncryptConverter converter = getCacheInfo().getEncryptConverter();
-        if (encrypt && converter == null) {
-            throw new RuntimeException("Encrypt is required but EncryptConverter is null. key:" + key);
-        }
-
-        byte[] data = valueToByte(value);
-        if (data == null) {
-            throw new RuntimeException("valueToByte(T) method return null. key:" + key);
-        }
-
-        if (encrypt) {
-            data = converter.encrypt(data);
-            if (data == null) {
-                throw new RuntimeException("EncryptConverter.encrypt return null. key:" + key);
+        val isEncrypt = cacheInfo.isEncrypt
+        if (isEncrypt) {
+            val converter = checkNotNull(cacheInfo.encryptConverter) { "EncryptConverter is null. key:$key" }
+            data = try {
+                converter.encrypt(data)
+            } catch (e: Exception) {
+                cacheInfo.exceptionHandler.onException(e)
+                return null
             }
         }
 
-        final byte[] dataWithTag = Arrays.copyOf(data, data.length + 1);
-        dataWithTag[dataWithTag.length - 1] = (byte) (encrypt ? 1 : 0);
-
-        return dataWithTag;
+        val dataWithTag = data.copyOf(data.size + 1)
+        dataWithTag[dataWithTag.size - 1] = (if (isEncrypt) 1 else 0).toByte()
+        return dataWithTag
     }
 
-    private T transformByteToValue(String key, byte[] data, Class<?> clazz) {
-        if (data == null) {
-            throw new IllegalArgumentException("data is null when invoke transformByteToValue()");
+    private fun transformByteToValue(key: String, data: ByteArray, clazz: Class<*>?): T? {
+        if (data.isEmpty()) {
+            cacheInfo.exceptionHandler.onException(RuntimeException("Data is empty. key:$key"))
+            return null
         }
 
-        if (data.length <= 0) {
-            return null;
+        val isEncrypted = data.last().toInt() == 1
+        val data = data.copyOf(data.size - 1)
+
+        val decryptData = if (isEncrypted) {
+            val converter = checkNotNull(cacheInfo.encryptConverter)
+            converter.decrypt(data)
+        } else {
+            data
         }
 
-        final boolean isEncrypted = data[data.length - 1] == 1;
-        final Cache.EncryptConverter converter = getCacheInfo().getEncryptConverter();
-        if (isEncrypted && converter == null) {
-            getCacheInfo().getExceptionHandler().onException(new RuntimeException("Data is encrypted but EncryptConverter not found while try decrypt. key:" + key));
-            return null;
+        return try {
+            byteToValue(decryptData, clazz)
+        } catch (e: Exception) {
+            cacheInfo.exceptionHandler.onException(e)
+            return null
         }
-
-        data = Arrays.copyOf(data, data.length - 1);
-
-        if (isEncrypted) {
-            data = converter.decrypt(data);
-            if (data == null) {
-                getCacheInfo().getExceptionHandler().onException(new RuntimeException("EncryptConverter.decrypt return null. key:" + key));
-                return null;
-            }
-        }
-
-        return byteToValue(data, clazz);
     }
-
     /**
      * 缓存转byte
-     *
-     * @param value
-     * @return
      */
-    protected abstract byte[] valueToByte(T value);
+    @Throws(Exception::class)
+    protected abstract fun valueToByte(value: T): ByteArray
 
     /**
      * byte转缓存
-     *
-     * @param bytes
-     * @param clazz
-     * @return
      */
-    protected abstract T byteToValue(byte[] bytes, Class<?> clazz);
+    @Throws(Exception::class)
+    protected abstract fun byteToValue(bytes: ByteArray?, clazz: Class<*>?): T
+
+    companion object {
+        private val MAP_MEMORY = mutableMapOf<String, ByteArray>()
+    }
 }

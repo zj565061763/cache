@@ -8,9 +8,8 @@ internal class SimpleObjectCache(info: CacheInfo) : ObjectCache {
 
     private val _handler: ObjectHandler by lazy {
         object : ObjectHandler(info) {
-            override fun getKeyPrefix(): String {
-                return "object_"
-            }
+            override val keyPrefix: String
+                get() = "object_"
         }
     }
 

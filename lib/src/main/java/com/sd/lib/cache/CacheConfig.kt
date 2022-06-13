@@ -13,7 +13,7 @@ class CacheConfig private constructor(builder: Builder) {
     val objectConverter: Cache.ObjectConverter
 
     @JvmField
-    val encryptConverter: Cache.EncryptConverter
+    val encryptConverter: Cache.EncryptConverter?
 
     @JvmField
     val exceptionHandler: Cache.ExceptionHandler
@@ -22,17 +22,9 @@ class CacheConfig private constructor(builder: Builder) {
     val cacheStore: Cache.CacheStore
 
     init {
-        context = requireNotNull(builder._context) { "context is null" }
+        context = checkNotNull(builder._context) { "context is null" }
         objectConverter = builder._objectConverter ?: GsonObjectConverter()
-        encryptConverter = builder._encryptConverter ?: object : Cache.EncryptConverter {
-            override fun encrypt(bytes: ByteArray): ByteArray {
-                return bytes
-            }
-
-            override fun decrypt(bytes: ByteArray): ByteArray {
-                return bytes
-            }
-        }
+        encryptConverter = builder._encryptConverter
         exceptionHandler = builder._exceptionHandler ?: Cache.ExceptionHandler { }
         cacheStore = builder._cacheStore ?: SimpleDiskCacheStore(File(context.filesDir, "disk_file"))
     }
@@ -102,7 +94,7 @@ class CacheConfig private constructor(builder: Builder) {
          */
         @JvmStatic
         fun get(): CacheConfig {
-            return requireNotNull(config) {
+            return checkNotNull(config) {
                 "CacheConfig has not been init"
             }
         }

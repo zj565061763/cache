@@ -1,14 +1,14 @@
-package com.sd.lib.cache.handler;
+package com.sd.lib.cache.handler
 
 /**
  * 缓存处理接口
  */
-interface CacheHandler<T> {
-    boolean putCache(String key, T value);
+internal interface CacheHandler<T> {
+    fun putCache(key: String, value: T?): Boolean
 
-    T getCache(String key, Class<?> clazz);
+    fun getCache(key: String, clazz: Class<*>?): T?
 
-    boolean removeCache(String key);
+    fun removeCache(key: String): Boolean
 
-    boolean containsCache(String key);
+    fun containsCache(key: String): Boolean
 }

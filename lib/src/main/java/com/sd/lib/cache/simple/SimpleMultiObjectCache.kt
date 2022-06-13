@@ -12,15 +12,13 @@ internal class SimpleMultiObjectCache<T>(
 
     private val _objectHandler: ObjectHandler by lazy {
         object : ObjectHandler(info) {
-            override fun getKeyPrefix(): String {
-                return "multi_object_"
-            }
+            override val keyPrefix: String
+                get() = "multi_object_"
         }
     }
 
     override fun put(key: String, value: T?): Boolean {
         if (key.isEmpty()) return false
-        if (value == null) return false
         val finalKey = "${objectClass.name}_$key"
         return _objectHandler.putCache(finalKey, value)
     }
