@@ -12,7 +12,7 @@ import java.io.OutputStream;
 /**
  * 文件缓存实现类
  */
-public class SimpleDiskCacheStore extends DiskCacheStore {
+public class SimpleDiskCacheStore extends BaseDiskCacheStore {
     public SimpleDiskCacheStore(File directory) {
         super(directory);
     }

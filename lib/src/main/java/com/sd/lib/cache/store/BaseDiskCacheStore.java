@@ -13,10 +13,10 @@ import java.security.NoSuchAlgorithmException;
 /**
  * 文件缓存
  */
-public abstract class DiskCacheStore implements Cache.CacheStore {
+public abstract class BaseDiskCacheStore implements Cache.CacheStore {
     private final File mDirectory;
 
-    public DiskCacheStore(File directory) {
+    public BaseDiskCacheStore(File directory) {
         if (directory == null) {
             throw new IllegalArgumentException("directory is null when create: " + getClass().getName());
         }
