@@ -10,7 +10,7 @@ internal class SimpleMultiObjectCache<T>(
     info: CacheInfo,
 ) : MultiObjectCache<T> {
 
-    private val _objectHandler: ObjectHandler by lazy {
+    private val _objectHandler by lazy {
         object : ObjectHandler(info) {
             override val keyPrefix: String
                 get() = "multi_object_"

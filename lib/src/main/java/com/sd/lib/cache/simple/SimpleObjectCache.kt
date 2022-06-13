@@ -6,7 +6,7 @@ import com.sd.lib.cache.handler.impl.ObjectHandler
 
 internal class SimpleObjectCache(info: CacheInfo) : ObjectCache {
 
-    private val _handler: ObjectHandler by lazy {
+    private val _handler by lazy {
         object : ObjectHandler(info) {
             override val keyPrefix: String
                 get() = "object_"
