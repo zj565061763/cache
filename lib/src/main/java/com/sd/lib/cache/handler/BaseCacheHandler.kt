@@ -13,6 +13,26 @@ internal abstract class BaseCacheHandler<T>(
     val cacheInfo: CacheInfo,
 ) : CacheHandler<T>, CommonCache<T> {
 
+    //---------- CommonCache start ----------
+
+    override fun put(key: String, value: T): Boolean {
+        return putCache(key, value)
+    }
+
+    override operator fun get(key: String, defaultValue: T): T {
+        return getCache(key, null) ?: defaultValue
+    }
+
+    override fun remove(key: String): Boolean {
+        return removeCache(key)
+    }
+
+    override operator fun contains(key: String): Boolean {
+        return containsCache(key)
+    }
+
+    //---------- CommonCache end ----------
+
     /** key前缀 */
     protected abstract val keyPrefix: String
 
@@ -111,26 +131,6 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     //---------- Memory end ----------
-
-    //---------- CommonCache start ----------
-
-    override fun put(key: String, value: T): Boolean {
-        return putCache(key, value)
-    }
-
-    override operator fun get(key: String, defaultValue: T): T {
-        return getCache(key, null) ?: defaultValue
-    }
-
-    override fun remove(key: String): Boolean {
-        return removeCache(key)
-    }
-
-    override operator fun contains(key: String): Boolean {
-        return containsCache(key)
-    }
-
-    //---------- CommonCache end ----------
 
     private fun transformValueToByte(key: String, value: T): ByteArray? {
         var data = try {
