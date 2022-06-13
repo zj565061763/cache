@@ -11,13 +11,15 @@ import com.sd.lib.cache.Cache;
 public class GsonObjectConverter implements Cache.ObjectConverter {
     private final Gson gson = new Gson();
 
+    @NonNull
     @Override
-    public byte[] objectToByte(@NonNull Object object) {
-        return gson.toJson(object).getBytes();
+    public byte[] objectToByte(@NonNull Object value) throws Exception {
+        return gson.toJson(value).getBytes();
     }
 
+    @NonNull
     @Override
-    public <T> T byteToObject(@NonNull byte[] bytes, @NonNull Class<T> clazz) {
+    public <T> T byteToObject(@NonNull byte[] bytes, @NonNull Class<T> clazz) throws Exception {
         return gson.fromJson(new String(bytes), clazz);
     }
 }

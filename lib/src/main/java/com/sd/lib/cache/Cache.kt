@@ -120,12 +120,14 @@ interface Cache {
         /**
          * 对象转byte
          */
-        fun objectToByte(value: Any): ByteArray?
+        @Throws(Exception::class)
+        fun objectToByte(value: Any): ByteArray
 
         /**
          * byte转对象
          */
-        fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T?
+        @Throws(Exception::class)
+        fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T
     }
 
     /**
@@ -149,6 +151,6 @@ interface Cache {
      * 异常处理类
      */
     fun interface ExceptionHandler {
-        fun onException(e: Exception?)
+        fun onException(e: Exception)
     }
 }
