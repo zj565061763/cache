@@ -11,6 +11,7 @@ import java.io.File
  */
 abstract class LimitDiskCacheStore(maxSize: Int, directory: File) : SimpleDiskCacheStore(directory) {
     private val _tag = javaClass.simpleName
+    private var _hasCheckLimit = false
 
     private val _lruCache = object : LruCache<String, File>(maxSize) {
         override fun sizeOf(key: String?, value: File?): Int {
@@ -53,6 +54,8 @@ abstract class LimitDiskCacheStore(maxSize: Int, directory: File) : SimpleDiskCa
 
     fun checkLimit() {
         synchronized(Cache::class.java) {
+            if (_hasCheckLimit) return
+            _hasCheckLimit = true
             getCacheFiles().forEach { file ->
                 _lruCache.put(file.name, file)
             }
@@ -60,8 +63,4 @@ abstract class LimitDiskCacheStore(maxSize: Int, directory: File) : SimpleDiskCa
     }
 
     protected abstract fun sizeOfCache(file: File): Int
-
-    init {
-        checkLimit()
-    }
 }
