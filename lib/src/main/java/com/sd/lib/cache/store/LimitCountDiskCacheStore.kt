@@ -15,7 +15,7 @@ class LimitCountDiskCacheStore(count: Int, directory: File) : SimpleDiskCacheSto
         override fun entryRemoved(evicted: Boolean, key: String?, oldValue: String?, newValue: String?) {
             super.entryRemoved(evicted, key, oldValue, newValue)
             if (evicted) {
-                Log.i(_tag, "evicted cache count:${size()}")
+                Log.i(_tag, "evicted count:${size()}")
                 synchronized(Cache::class.java) {
                     removeCache(key!!)
                 }
@@ -27,7 +27,7 @@ class LimitCountDiskCacheStore(count: Int, directory: File) : SimpleDiskCacheSto
         return super.putCacheImpl(key, value, file).also {
             if (it) {
                 _lruCache.put(key, "")
-                Log.i(_tag, "put cache count:${_lruCache.size()}")
+                Log.i(_tag, "put count:${_lruCache.size()}")
             }
         }
     }
@@ -36,7 +36,7 @@ class LimitCountDiskCacheStore(count: Int, directory: File) : SimpleDiskCacheSto
         return super.removeCacheImpl(key, file).also {
             if (it) {
                 _lruCache.remove(key)
-                Log.i(_tag, "remove cache count:${_lruCache.size()}")
+                Log.i(_tag, "remove count:${_lruCache.size()}")
             }
         }
     }
