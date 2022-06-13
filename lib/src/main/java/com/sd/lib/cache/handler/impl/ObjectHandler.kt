@@ -7,12 +7,10 @@ import com.sd.lib.cache.handler.BaseCacheHandler
  * Object处理类
  */
 internal abstract class ObjectHandler(info: CacheInfo) : BaseCacheHandler<Any>(info) {
-    @Throws(Exception::class)
     override fun valueToByte(value: Any): ByteArray {
         return cacheInfo.objectConverter.objectToByte(value)
     }
 
-    @Throws(Exception::class)
     override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Any {
         requireNotNull(clazz) { "class is null" }
         return cacheInfo.objectConverter.byteToObject(bytes, clazz)
