@@ -10,10 +10,27 @@ import java.security.MessageDigest
 abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     private val _directory: File
 
-    protected fun getDirectory(): File? {
+    private fun getDirectory(): File? {
         return if (_directory.exists() || _directory.mkdirs()) {
             _directory
         } else null
+    }
+
+    /**
+     * 返回所有缓存的key
+     */
+    protected fun getKeys(): List<String> {
+        try {
+            val list = getDirectory()?.list()
+            if (list != null) {
+                return list.filter {
+                    it.startsWith(KeyPrefix)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return listOf()
     }
 
     final override fun putCache(key: String, value: ByteArray): Boolean {
@@ -56,13 +73,13 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     private fun getCacheFile(key: String): File? {
         if (key.isEmpty()) return null
 
-        val fileKey = transformKey(key)
-        if (fileKey.isEmpty()) {
+        val transformKey = transformKey(key)
+        if (transformKey.isEmpty()) {
             throw RuntimeException("transformKey() return empty")
         }
 
         val dir = getDirectory() ?: throw RuntimeException("directory is not available:" + _directory.absolutePath)
-        return File(dir, fileKey)
+        return File(dir, KeyPrefix + transformKey)
     }
 
     @Throws(Exception::class)
@@ -73,5 +90,9 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
 
     init {
         _directory = directory
+    }
+
+    companion object {
+        private const val KeyPrefix = "f_d_"
     }
 }
