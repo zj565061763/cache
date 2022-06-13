@@ -1,28 +1,20 @@
-package com.sd.lib.cache.handler.impl;
+package com.sd.lib.cache.handler.impl
 
-import com.sd.lib.cache.CacheInfo;
-import com.sd.lib.cache.handler.BaseCacheHandler;
+import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.handler.BaseCacheHandler
 
 /**
  * Float处理类
  */
-public class FloatHandler extends BaseCacheHandler<Float> {
-    public FloatHandler(CacheInfo info) {
-        super(info);
+internal class FloatHandler(info: CacheInfo) : BaseCacheHandler<Float>(info) {
+    override fun valueToByte(value: Float): ByteArray {
+        return value.toString().toByteArray()
     }
 
-    @Override
-    protected byte[] valueToByte(Float value) {
-        return value.toString().getBytes();
+    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Float {
+        return String(bytes).toFloat()
     }
 
-    @Override
-    protected Float byteToValue(byte[] bytes, Class<?> clazz) {
-        return Float.valueOf(new String(bytes));
-    }
-
-    @Override
-    protected String getKeyPrefix() {
-        return "float_";
-    }
+    override val keyPrefix: String
+        get() = "float_"
 }
