@@ -42,7 +42,7 @@ abstract class FCache : Cache, CacheInfo {
         return this
     }
 
-    override fun setExceptionHandler(handler: Cache.ExceptionHandler?): Cache {
+    override fun setExceptionHandler(handler: ExceptionHandler?): Cache {
         _exceptionHandler = handler
         return this
     }
