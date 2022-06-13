@@ -5,6 +5,7 @@ import android.util.LruCache
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.store.SimpleDiskCacheStore
 import java.io.File
+import kotlin.concurrent.thread
 
 /**
  * 限制的磁盘缓存
@@ -54,12 +55,17 @@ abstract class LimitDiskCacheStore(maxSize: Int, directory: File) : SimpleDiskCa
     }
 
     private fun checkLimit() {
-        synchronized(Cache::class.java) {
+        if (_hasCheckLimit) return
+        synchronized(this@LimitDiskCacheStore) {
             if (_hasCheckLimit) return
             _hasCheckLimit = true
+        }
+
+        thread {
             getCacheFiles().forEach { file ->
                 _lruCache.put(file.name, file)
             }
+            Log.i(_tag, "checkLimit count:${_lruCache.size()}")
         }
     }
 
