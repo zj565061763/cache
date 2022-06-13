@@ -21,7 +21,8 @@ internal class SimpleObjectCache(info: CacheInfo) : ObjectCache {
 
     override fun <T> get(clazz: Class<T>): T? {
         val key = clazz.name
-        return _handler.getCache(key, clazz) as T
+        val cache = _handler.getCache(key, clazz) ?: return null
+        return cache as T
     }
 
     override fun remove(clazz: Class<*>): Boolean {
