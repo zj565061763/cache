@@ -38,6 +38,7 @@ abstract class LimitDiskCacheStore(maxSize: Int, directory: File) : SimpleDiskCa
         return super.putCacheImpl(key, value, file).also {
             if (it) {
                 _lruCache.put(file.name, file)
+                checkLimit()
                 Log.i(_tag, "put count:${_lruCache.size()}")
             }
         }
@@ -52,7 +53,7 @@ abstract class LimitDiskCacheStore(maxSize: Int, directory: File) : SimpleDiskCa
         }
     }
 
-    fun checkLimit() {
+    private fun checkLimit() {
         synchronized(Cache::class.java) {
             if (_hasCheckLimit) return
             _hasCheckLimit = true

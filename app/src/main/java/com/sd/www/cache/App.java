@@ -3,11 +3,6 @@ package com.sd.www.cache;
 import android.app.Application;
 
 import com.sd.lib.cache.CacheConfig;
-import com.sd.lib.cache.store.limit.LimitSizeDiskCacheStore;
-import com.sd.www.cache.converter.GlobalEncryptConverter;
-import com.sd.www.cache.converter.GlobalExceptionHandler;
-
-import java.io.File;
 
 public class App extends Application {
     @Override
