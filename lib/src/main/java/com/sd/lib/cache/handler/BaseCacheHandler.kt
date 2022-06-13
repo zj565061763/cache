@@ -192,7 +192,7 @@ internal abstract class BaseCacheHandler<T>(
      * byte转缓存
      */
     @Throws(Exception::class)
-    protected abstract fun byteToValue(bytes: ByteArray?, clazz: Class<*>?): T
+    protected abstract fun byteToValue(bytes: ByteArray, clazz: Class<*>?): T
 
     companion object {
         private val MAP_MEMORY = mutableMapOf<String, ByteArray>()
