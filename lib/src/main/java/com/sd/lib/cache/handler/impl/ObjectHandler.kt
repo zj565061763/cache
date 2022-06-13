@@ -1,23 +1,20 @@
-package com.sd.lib.cache.handler.impl;
+package com.sd.lib.cache.handler.impl
 
-import com.sd.lib.cache.CacheInfo;
-import com.sd.lib.cache.handler.BaseCacheHandler;
+import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.handler.BaseCacheHandler
 
 /**
  * Object处理类
  */
-public abstract class ObjectHandler extends BaseCacheHandler<Object> {
-    public ObjectHandler(CacheInfo info) {
-        super(info);
+internal abstract class ObjectHandler(info: CacheInfo) : BaseCacheHandler<Any>(info) {
+    @Throws(Exception::class)
+    override fun valueToByte(value: Any): ByteArray {
+        return cacheInfo.objectConverter.objectToByte(value)
     }
 
-    @Override
-    protected byte[] valueToByte(Object value) throws Exception {
-        return getCacheInfo().getObjectConverter().objectToByte(value);
-    }
-
-    @Override
-    protected Object byteToValue(byte[] bytes, Class<?> clazz) throws Exception {
-        return getCacheInfo().getObjectConverter().byteToObject(bytes, clazz);
+    @Throws(Exception::class)
+    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Any {
+        requireNotNull(clazz) { "class is null" }
+        return cacheInfo.objectConverter.byteToObject(bytes, clazz)
     }
 }
