@@ -1,28 +1,20 @@
-package com.sd.lib.cache.handler.impl;
+package com.sd.lib.cache.handler.impl
 
-import com.sd.lib.cache.CacheInfo;
-import com.sd.lib.cache.handler.BaseCacheHandler;
+import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.handler.BaseCacheHandler
 
 /**
  * Boolean处理类
  */
-public class BooleanHandler extends BaseCacheHandler<Boolean> {
-    public BooleanHandler(CacheInfo info) {
-        super(info);
+internal class BooleanHandler(info: CacheInfo) : BaseCacheHandler<Boolean>(info) {
+    override fun valueToByte(value: Boolean): ByteArray {
+        return value.toString().toByteArray()
     }
 
-    @Override
-    protected byte[] valueToByte(Boolean value) {
-        return value.toString().getBytes();
+    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Boolean {
+        return String(bytes).toBooleanStrict()
     }
 
-    @Override
-    protected Boolean byteToValue(byte[] bytes, Class<?> clazz) {
-        return Boolean.valueOf(new String(bytes));
-    }
-
-    @Override
-    protected String getKeyPrefix() {
-        return "boolean_";
-    }
+    override val keyPrefix: String
+        get() = "boolean_"
 }
