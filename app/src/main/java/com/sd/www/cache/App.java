@@ -3,7 +3,7 @@ package com.sd.www.cache;
 import android.app.Application;
 
 import com.sd.lib.cache.CacheConfig;
-import com.sd.lib.cache.store.limit.LimitCountDiskCacheStore;
+import com.sd.lib.cache.store.limit.LimitSizeDiskCacheStore;
 import com.sd.www.cache.converter.GlobalEncryptConverter;
 import com.sd.www.cache.converter.GlobalExceptionHandler;
 
@@ -20,6 +20,9 @@ public class App extends Application {
 
                 // 设置限制文件数量的CacheStore
 //                .setCacheStore(new LimitCountDiskCacheStore(5, new File(getExternalCacheDir(), "app_disk_cache")))
+
+                // 设置限制文件大小的CacheStore
+//                .setCacheStore(new LimitSizeDiskCacheStore(10 * 1024 * 1024, new File(getExternalCacheDir(), "app_disk_cache")))
 
                 // 设置对象转换器，如果不设置，使用内部默认的Gson对象转换器
 //                .setObjectConverter(new GsonObjectConverter())
