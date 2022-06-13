@@ -1,114 +1,106 @@
-package com.sd.lib.cache;
+package com.sd.lib.cache
 
-import android.content.Context;
+import android.content.Context
+import com.sd.lib.cache.store.InternalDiskCacheStore
 
-import com.sd.lib.cache.store.InternalDiskCacheStore;
+class CacheConfig private constructor(builder: Builder) {
+    val context: Context
 
-public class CacheConfig {
-    private static CacheConfig sConfig;
+    @JvmField
+    val objectConverter: Cache.ObjectConverter?
 
-    public final Context mContext;
-    public final Cache.ObjectConverter mObjectConverter;
-    public final Cache.EncryptConverter mEncryptConverter;
-    public final Cache.ExceptionHandler mExceptionHandler;
+    @JvmField
+    val encryptConverter: Cache.EncryptConverter
 
-    public final Cache.CacheStore mDiskCacheStore;
+    @JvmField
+    val exceptionHandler: Cache.ExceptionHandler
 
-    private CacheConfig(Builder builder) {
-        mContext = builder.mContext;
-        mObjectConverter = builder.mObjectConverter;
-        mEncryptConverter = builder.mEncryptConverter;
-        mExceptionHandler = builder.mExceptionHandler != null ? builder.mExceptionHandler : new Cache.ExceptionHandler() {
-            @Override
-            public void onException(Exception e) {
-            }
-        };
+    @JvmField
+    val cacheStore: Cache.CacheStore
 
-        mDiskCacheStore = builder.mDiskCacheStore != null ? builder.mDiskCacheStore : new InternalDiskCacheStore(mContext);
-    }
-
-    /**
-     * 初始化
-     *
-     * @param config
-     */
-    public static synchronized void init(CacheConfig config) {
-        if (config == null) {
-            throw new IllegalArgumentException("config is null");
-        }
-
-        if (sConfig == null) {
-            sConfig = config;
-        }
-    }
-
-    /**
-     * 返回配置
-     *
-     * @return
-     */
-    public static CacheConfig get() {
-        if (sConfig == null) {
-            throw new RuntimeException(CacheConfig.class.getSimpleName() + "has not been init");
-        }
-        return sConfig;
-    }
-
-    public static final class Builder {
-        private Context mContext;
-        private Cache.ObjectConverter mObjectConverter;
-        private Cache.EncryptConverter mEncryptConverter;
-        private Cache.ExceptionHandler mExceptionHandler;
-
-        private Cache.CacheStore mDiskCacheStore;
+    class Builder {
+        internal var _context: Context? = null
+        internal var _objectConverter: Cache.ObjectConverter? = null
+        internal var _encryptConverter: Cache.EncryptConverter? = null
+        internal var _exceptionHandler: Cache.ExceptionHandler? = null
+        internal var _cacheStore: Cache.CacheStore? = null
 
         /**
          * 设置对象转换器
-         *
-         * @param converter
-         * @return
          */
-        public Builder setObjectConverter(Cache.ObjectConverter converter) {
-            mObjectConverter = converter;
-            return this;
+        fun setObjectConverter(converter: Cache.ObjectConverter?): Builder {
+            _objectConverter = converter
+            return this
         }
 
         /**
          * 设置加解密转换器
-         *
-         * @param converter
-         * @return
          */
-        public Builder setEncryptConverter(Cache.EncryptConverter converter) {
-            mEncryptConverter = converter;
-            return this;
+        fun setEncryptConverter(converter: Cache.EncryptConverter?): Builder {
+            _encryptConverter = converter
+            return this
         }
 
         /**
          * 设置异常处理对象
-         *
-         * @param handler
-         * @return
          */
-        public Builder setExceptionHandler(Cache.ExceptionHandler handler) {
-            mExceptionHandler = handler;
-            return this;
+        fun setExceptionHandler(handler: Cache.ExceptionHandler?): Builder {
+            _exceptionHandler = handler
+            return this
         }
 
         /**
-         * 设置本地磁盘缓存
-         *
-         * @param store
-         * @return
+         * 设置缓存
          */
-        public Builder setDiskCacheStore(Cache.CacheStore store) {
-            mDiskCacheStore = store;
-            return this;
+        fun setCacheStore(store: Cache.CacheStore?): Builder {
+            _cacheStore = store
+            return this
         }
 
-        public CacheConfig build(Context context) {
-            mContext = context.getApplicationContext();
-            return new CacheConfig(this);
+        fun build(context: Context): CacheConfig {
+            _context = context.applicationContext
+            return CacheConfig(this)
         }
+    }
+
+    companion object {
+        private var sConfig: CacheConfig? = null
+
+        /**
+         * 初始化
+         */
+        @JvmStatic
+        @Synchronized
+        fun init(config: CacheConfig) {
+            if (sConfig == null) {
+                sConfig = config
+            }
+        }
+
+        /**
+         * 返回配置
+         */
+        @JvmStatic
+        fun get(): CacheConfig {
+            return requireNotNull(sConfig) {
+                "CacheConfig has not been init"
+            }
+        }
+    }
+
+    init {
+        context = requireNotNull(builder._context) { "context is null" }
+        objectConverter = builder._objectConverter
+        encryptConverter = builder._encryptConverter ?: object : Cache.EncryptConverter {
+            override fun encrypt(bytes: ByteArray): ByteArray {
+                return bytes
+            }
+
+            override fun decrypt(bytes: ByteArray): ByteArray {
+                return bytes
+            }
+        }
+        exceptionHandler = builder._exceptionHandler ?: Cache.ExceptionHandler { }
+        cacheStore = builder._cacheStore ?: InternalDiskCacheStore(context)
     }
 }

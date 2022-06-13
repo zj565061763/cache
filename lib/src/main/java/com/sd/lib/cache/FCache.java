@@ -31,7 +31,7 @@ public abstract class FCache implements Cache, CacheInfo {
     /**
      * 使用本地磁盘缓存
      * <p>
-     * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置{@link CacheConfig.Builder#setDiskCacheStore(CacheStore)}
+     * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置{@link CacheConfig.Builder#setCacheStore(CacheStore)}
      *
      * @return
      */
@@ -39,7 +39,7 @@ public abstract class FCache implements Cache, CacheInfo {
         final Cache cache = new FCache() {
             @Override
             public CacheStore getCacheStore() {
-                return CacheConfig.get().mDiskCacheStore;
+                return CacheConfig.get().cacheStore;
             }
         };
         return cache;
@@ -165,17 +165,17 @@ public abstract class FCache implements Cache, CacheInfo {
 
     @Override
     public final ObjectConverter getObjectConverter() {
-        return mObjectConverter != null ? mObjectConverter : CacheConfig.get().mObjectConverter;
+        return mObjectConverter != null ? mObjectConverter : CacheConfig.get().objectConverter;
     }
 
     @Override
     public final EncryptConverter getEncryptConverter() {
-        return mEncryptConverter != null ? mEncryptConverter : CacheConfig.get().mEncryptConverter;
+        return mEncryptConverter != null ? mEncryptConverter : CacheConfig.get().encryptConverter;
     }
 
     @Override
     public final ExceptionHandler getExceptionHandler() {
-        return mExceptionHandler != null ? mExceptionHandler : CacheConfig.get().mExceptionHandler;
+        return mExceptionHandler != null ? mExceptionHandler : CacheConfig.get().exceptionHandler;
     }
 
     //---------- CacheInfo end ----------
