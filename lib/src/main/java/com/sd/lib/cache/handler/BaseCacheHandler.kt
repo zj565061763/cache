@@ -166,9 +166,9 @@ internal abstract class BaseCacheHandler<T>(
         var data = data.copyOf(data.size - 1)
 
         if (isEncrypted) {
-            val converter = checkNotNull(cacheInfo.encryptConverter)
-            try {
-                data = converter.decrypt(data)
+            val converter = checkNotNull(cacheInfo.encryptConverter) { "EncryptConverter is null. key:$key" }
+            data = try {
+                converter.decrypt(data)
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
                 return null
