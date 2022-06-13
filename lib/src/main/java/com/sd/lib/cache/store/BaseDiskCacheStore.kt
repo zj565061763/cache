@@ -23,9 +23,7 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         try {
             val list = getDirectory()?.list()
             if (list != null) {
-                return list.filter {
-                    it.startsWith(KeyPrefix)
-                }
+                return list.filter { it.startsWith(KeyPrefix) }
             }
         } catch (e: Exception) {
             e.printStackTrace()
