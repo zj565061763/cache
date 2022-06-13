@@ -20,8 +20,9 @@ class SimpleMultiObjectCache<T>(
         }
     }
 
-    override fun put(key: String, value: T): Boolean {
+    override fun put(key: String, value: T?): Boolean {
         if (key.isEmpty()) return false
+        if (value == null) return false
         val finalKey = "${objectClass.name}_$key"
         return _objectHandler.putCache(finalKey, value)
     }

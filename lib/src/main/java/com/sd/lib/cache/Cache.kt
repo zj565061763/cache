@@ -78,7 +78,7 @@ interface Cache {
     }
 
     interface MultiObjectCache<T> {
-        fun put(key: String, value: T): Boolean
+        fun put(key: String, value: T?): Boolean
         fun get(key: String): T?
         fun remove(key: String): Boolean
         fun contains(key: String): Boolean
@@ -89,22 +89,26 @@ interface Cache {
          * 保存缓存
          * @return true-保存成功，false-保存失败
          */
+        @Throws(Exception::class)
         fun putCache(key: String, value: ByteArray, info: CacheInfo): Boolean
 
         /**
          * 获取缓存
          */
+        @Throws(Exception::class)
         fun getCache(key: String, info: CacheInfo): ByteArray?
 
         /**
          * 删除缓存
          * @return true-缓存被删除，false-删除失败或者缓存不存在
          */
+        @Throws(Exception::class)
         fun removeCache(key: String, info: CacheInfo): Boolean
 
         /**
          * 是否有[key]对应的缓存
          */
+        @Throws(Exception::class)
         fun containsCache(key: String, info: CacheInfo): Boolean
     }
     /**

@@ -62,7 +62,14 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
                 throw new NullPointerException("transformValueToByte return null when putCache: " + key);
             }
 
-            final boolean result = getCacheStore().putCache(key, data, getCacheInfo());
+            boolean result;
+            try {
+                result = getCacheStore().putCache(key, data, getCacheInfo());
+            } catch (Exception e) {
+                getCacheInfo().getExceptionHandler().onException(e);
+                return false;
+            }
+
             if (result) {
                 putMemory(key, data);
             }
@@ -78,7 +85,12 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
 
             byte[] data = getMemory(key);
             if (data == null) {
-                data = getCacheStore().getCache(key, getCacheInfo());
+                try {
+                    data = getCacheStore().getCache(key, getCacheInfo());
+                } catch (Exception e) {
+                    getCacheInfo().getExceptionHandler().onException(e);
+                    return null;
+                }
             }
 
             if (data == null) {
@@ -95,7 +107,12 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
             key = transformKey(key);
 
             removeMemory(key);
-            return getCacheStore().removeCache(key, getCacheInfo());
+            try {
+                return getCacheStore().removeCache(key, getCacheInfo());
+            } catch (Exception e) {
+                getCacheInfo().getExceptionHandler().onException(e);
+                return false;
+            }
         }
     }
 
@@ -108,7 +125,12 @@ abstract class BaseCacheHandler<T> implements CacheHandler<T>, Cache.CommonCache
                 return true;
             }
 
-            return getCacheStore().containsCache(key, getCacheInfo());
+            try {
+                return getCacheStore().containsCache(key, getCacheInfo());
+            } catch (Exception e) {
+                getCacheInfo().getExceptionHandler().onException(e);
+                return false;
+            }
         }
     }
 
