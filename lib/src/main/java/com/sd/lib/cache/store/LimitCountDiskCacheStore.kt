@@ -15,7 +15,7 @@ class LimitCountDiskCacheStore(count: Int, directory: File) : SimpleDiskCacheSto
             super.entryRemoved(evicted, key, oldValue, newValue)
             if (evicted) {
                 Log.i(_tag, "evicted count:${size()}")
-                removeKey(key!!)
+                removeFileKey(key!!)
             }
         }
     }
@@ -23,7 +23,7 @@ class LimitCountDiskCacheStore(count: Int, directory: File) : SimpleDiskCacheSto
     override fun putCacheImpl(key: String, value: ByteArray, file: File): Boolean {
         return super.putCacheImpl(key, value, file).also {
             if (it) {
-                _lruCache.put(key, "")
+                _lruCache.put(file.name, "")
                 Log.i(_tag, "put count:${_lruCache.size()}")
             }
         }
@@ -32,14 +32,14 @@ class LimitCountDiskCacheStore(count: Int, directory: File) : SimpleDiskCacheSto
     override fun removeCacheImpl(key: String, file: File): Boolean {
         return super.removeCacheImpl(key, file).also {
             if (it) {
-                _lruCache.remove(key)
+                _lruCache.remove(file.name)
                 Log.i(_tag, "remove count:${_lruCache.size()}")
             }
         }
     }
 
     fun checkLimit() {
-        getKeys().forEach { key ->
+        getFileKeys().forEach { key ->
             _lruCache.put(key, "")
         }
     }

@@ -73,9 +73,9 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     }
 
     /**
-     * 返回所有缓存的key
+     * 返回所有缓存的文件key
      */
-    protected fun getKeys(): List<String> {
+    protected fun getFileKeys(): List<String> {
         synchronized(Cache::class.java) {
             try {
                 val list = getDirectory()?.list()
@@ -90,9 +90,9 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     }
 
     /**
-     * 直接根据key移除缓存
+     * 根据文件key移除缓存
      */
-    protected fun removeKey(key: String) {
+    protected fun removeFileKey(key: String) {
         if (!key.startsWith(KeyPrefix)) return
         synchronized(Cache::class.java) {
             try {
