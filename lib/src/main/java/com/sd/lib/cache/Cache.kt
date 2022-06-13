@@ -91,26 +91,26 @@ interface Cache {
          * @return true-保存成功，false-保存失败
          */
         @Throws(Exception::class)
-        fun putCache(key: String, value: ByteArray, info: CacheInfo): Boolean
+        fun putCache(key: String, value: ByteArray): Boolean
 
         /**
          * 获取缓存
          */
         @Throws(Exception::class)
-        fun getCache(key: String, info: CacheInfo): ByteArray?
+        fun getCache(key: String): ByteArray?
 
         /**
          * 删除缓存
          * @return true-缓存被删除，false-删除失败或者缓存不存在
          */
         @Throws(Exception::class)
-        fun removeCache(key: String, info: CacheInfo): Boolean
+        fun removeCache(key: String): Boolean
 
         /**
          * 是否有[key]对应的缓存
          */
         @Throws(Exception::class)
-        fun containsCache(key: String, info: CacheInfo): Boolean
+        fun containsCache(key: String): Boolean
     }
 
     /**

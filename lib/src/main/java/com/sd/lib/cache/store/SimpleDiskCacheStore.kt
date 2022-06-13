@@ -5,7 +5,7 @@ import java.io.File
 /**
  * 文件缓存实现类
  */
-class SimpleDiskCacheStore(directory: File) : BaseDiskCacheStore(directory) {
+open class SimpleDiskCacheStore(directory: File) : BaseDiskCacheStore(directory) {
 
     override fun putCacheImpl(key: String, value: ByteArray, file: File): Boolean {
         return file.outputStream().buffered().use {

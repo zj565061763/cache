@@ -5,7 +5,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.sd.lib.cache.Cache;
-import com.sd.lib.cache.CacheInfo;
 import com.tencent.mmkv.MMKV;
 
 /**
@@ -20,23 +19,23 @@ public class MMKVCacheStore implements Cache.CacheStore {
     }
 
     @Override
-    public boolean putCache(@NonNull String key, @NonNull byte[] value, @NonNull CacheInfo info) {
+    public boolean putCache(@NonNull String key, @NonNull byte[] value) {
         return _mmkv.encode(key, value);
     }
 
     @Override
-    public byte[] getCache(@NonNull String key, @NonNull CacheInfo info) {
+    public byte[] getCache(@NonNull String key) {
         return _mmkv.decodeBytes(key);
     }
 
     @Override
-    public boolean removeCache(@NonNull String key, @NonNull CacheInfo info) {
+    public boolean removeCache(@NonNull String key) {
         _mmkv.remove(key);
         return true;
     }
 
     @Override
-    public boolean containsCache(@NonNull String key, @NonNull CacheInfo info) {
+    public boolean containsCache(@NonNull String key) {
         return _mmkv.contains(key);
     }
 }

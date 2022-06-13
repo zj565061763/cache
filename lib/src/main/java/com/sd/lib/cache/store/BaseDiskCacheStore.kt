@@ -1,7 +1,6 @@
 package com.sd.lib.cache.store
 
 import com.sd.lib.cache.Cache.CacheStore
-import com.sd.lib.cache.CacheInfo
 import java.io.File
 import java.security.MessageDigest
 
@@ -16,23 +15,23 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
             _directory
         } else null
 
-    final override fun putCache(key: String, value: ByteArray, info: CacheInfo): Boolean {
-        val file = getCacheFile(key, info) ?: return false
+    final override fun putCache(key: String, value: ByteArray): Boolean {
+        val file = getCacheFile(key) ?: return false
         return putCacheImpl(key, value, file)
     }
 
-    final override fun getCache(key: String, info: CacheInfo): ByteArray? {
-        val file = getCacheFile(key, info) ?: return null
+    final override fun getCache(key: String): ByteArray? {
+        val file = getCacheFile(key) ?: return null
         return getCacheImpl(key, file)
     }
 
-    final override fun removeCache(key: String, info: CacheInfo): Boolean {
-        val file = getCacheFile(key, info) ?: return false
+    final override fun removeCache(key: String): Boolean {
+        val file = getCacheFile(key) ?: return false
         return removeCacheImpl(key, file)
     }
 
-    final override fun containsCache(key: String, info: CacheInfo): Boolean {
-        val file = getCacheFile(key, info) ?: return false
+    final override fun containsCache(key: String): Boolean {
+        val file = getCacheFile(key) ?: return false
         return containsCacheImpl(key, file)
     }
 
@@ -52,26 +51,16 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         return file.exists()
     }
 
-    private fun getCacheFile(key: String, info: CacheInfo): File? {
+    @Throws(Exception::class)
+    private fun getCacheFile(key: String): File? {
         if (key.isEmpty()) return null
 
-        val fileKey = try {
-            transformKey(key)
-        } catch (e: Exception) {
-            info.exceptionHandler.onException(e)
-            return null
-        }
-
+        val fileKey = transformKey(key)
         if (fileKey.isEmpty()) {
-            info.exceptionHandler.onException(RuntimeException("transformKey() return empty"))
-            return null
+            throw RuntimeException("transformKey() return empty")
         }
 
-        val dir = directory
-        if (dir == null) {
-            info.exceptionHandler.onException(RuntimeException("directory is not available:" + _directory.absolutePath))
-            return null
-        }
+        val dir = directory ?: throw RuntimeException("directory is not available:" + _directory.absolutePath)
         return File(dir, fileKey)
     }
 

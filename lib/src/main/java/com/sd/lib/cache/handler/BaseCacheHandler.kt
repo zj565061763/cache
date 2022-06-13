@@ -54,7 +54,7 @@ internal abstract class BaseCacheHandler<T>(
             val key = transformKey(key)
             val data = transformValueToByte(key, value) ?: return false
             return try {
-                cacheStore.putCache(key, data, cacheInfo)
+                cacheStore.putCache(key, data)
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
                 return false
@@ -72,7 +72,7 @@ internal abstract class BaseCacheHandler<T>(
             var data = getMemory(key)
             if (data == null) {
                 data = try {
-                    cacheStore.getCache(key, cacheInfo)
+                    cacheStore.getCache(key)
                 } catch (e: Exception) {
                     cacheInfo.exceptionHandler.onException(e)
                     return null
@@ -88,7 +88,7 @@ internal abstract class BaseCacheHandler<T>(
             val key = transformKey(key)
             removeMemory(key)
             return try {
-                cacheStore.removeCache(key, cacheInfo)
+                cacheStore.removeCache(key)
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
                 false
@@ -103,7 +103,7 @@ internal abstract class BaseCacheHandler<T>(
                 true
             } else {
                 try {
-                    cacheStore.containsCache(key, cacheInfo)
+                    cacheStore.containsCache(key)
                 } catch (e: Exception) {
                     cacheInfo.exceptionHandler.onException(e)
                     false
