@@ -6,19 +6,10 @@ import com.sd.lib.cache.store.SimpleDiskCacheStore
 import java.io.File
 
 class CacheConfig private constructor(builder: Builder) {
-    @JvmField
     val context: Context
-
-    @JvmField
     val objectConverter: Cache.ObjectConverter
-
-    @JvmField
     val encryptConverter: Cache.EncryptConverter?
-
-    @JvmField
     val exceptionHandler: Cache.ExceptionHandler
-
-    @JvmField
     val cacheStore: Cache.CacheStore
 
     init {
