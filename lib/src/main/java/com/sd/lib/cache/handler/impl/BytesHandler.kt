@@ -1,28 +1,20 @@
-package com.sd.lib.cache.handler.impl;
+package com.sd.lib.cache.handler.impl
 
-import com.sd.lib.cache.CacheInfo;
-import com.sd.lib.cache.handler.BaseCacheHandler;
+import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.handler.BaseCacheHandler
 
 /**
- * byte数组处理类
+ * 字节数组处理类
  */
-public class BytesHandler extends BaseCacheHandler<byte[]> {
-    public BytesHandler(CacheInfo info) {
-        super(info);
+internal class BytesHandler(info: CacheInfo) : BaseCacheHandler<ByteArray>(info) {
+    override fun valueToByte(value: ByteArray): ByteArray {
+        return value
     }
 
-    @Override
-    protected byte[] valueToByte(byte[] value) {
-        return value;
+    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): ByteArray {
+        return bytes
     }
 
-    @Override
-    protected byte[] byteToValue(byte[] bytes, Class<?> clazz) {
-        return bytes;
-    }
-
-    @Override
-    protected String getKeyPrefix() {
-        return "bytes_";
-    }
+    override val keyPrefix: String
+        get() = "bytes_"
 }
