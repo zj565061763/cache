@@ -163,22 +163,20 @@ internal abstract class BaseCacheHandler<T>(
         }
 
         val isEncrypted = data.last().toInt() == 1
-        val data = data.copyOf(data.size - 1)
+        var data = data.copyOf(data.size - 1)
 
-        val decryptData = if (isEncrypted) {
+        if (isEncrypted) {
             val converter = checkNotNull(cacheInfo.encryptConverter)
             try {
-                converter.decrypt(data)
+                data = converter.decrypt(data)
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
                 return null
             }
-        } else {
-            data
         }
 
         return try {
-            byteToValue(decryptData, clazz)
+            byteToValue(data, clazz)
         } catch (e: Exception) {
             cacheInfo.exceptionHandler.onException(e)
             return null
