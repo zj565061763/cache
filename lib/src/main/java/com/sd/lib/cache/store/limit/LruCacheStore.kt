@@ -11,14 +11,14 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
 
     private val _lruCache = object : LruCache<String, String>(maxSize) {
         override fun sizeOf(key: String?, value: String?): Int {
-            return onLruCacheSizeOfCache(key!!)
+            return onLruCacheSizeOfEntry(key!!)
         }
 
         override fun entryRemoved(evicted: Boolean, key: String?, oldValue: String?, newValue: String?) {
             super.entryRemoved(evicted, key, oldValue, newValue)
             if (evicted) {
                 Log.i(_tag, "evicted count:${size()}")
-                onLruCacheCacheEvicted(key!!)
+                onLruCacheEntryEvicted(key!!)
             }
         }
     }
@@ -79,12 +79,12 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     protected abstract fun onLruCacheInitKeys(): List<String>
 
     /**
-     * 返回[key]对应的LruCache缓存大小
+     * 返回[key]对应的缓存大小
      */
-    protected abstract fun onLruCacheSizeOfCache(key: String): Int
+    protected abstract fun onLruCacheSizeOfEntry(key: String): Int
 
     /**
      * LruCache缓存被驱逐，子类需要移除[key]对应的缓存
      */
-    protected abstract fun onLruCacheCacheEvicted(key: String)
+    protected abstract fun onLruCacheEntryEvicted(key: String)
 }
