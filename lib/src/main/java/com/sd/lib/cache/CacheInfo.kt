@@ -1,6 +1,5 @@
 package com.sd.lib.cache
 
-import com.sd.lib.cache.Cache.*
 
 interface CacheInfo {
     /** 是否需要加解密 */
@@ -10,14 +9,14 @@ interface CacheInfo {
     val isMemorySupport: Boolean
 
     /** 存取对象 */
-    val cacheStore: CacheStore
+    val cacheStore: Cache.CacheStore
 
     /** 对象转换器 */
-    val objectConverter: ObjectConverter?
+    val objectConverter: Cache.ObjectConverter?
 
     /** 加解密转换器 */
-    val encryptConverter: EncryptConverter?
+    val encryptConverter: Cache.EncryptConverter
 
     /** 异常处理对象 */
-    val exceptionHandler: Cache.ExceptionHandler?
+    val exceptionHandler: Cache.ExceptionHandler
 }

@@ -26,7 +26,7 @@ public class SimpleDiskCacheStore extends BaseDiskCacheStore {
             out.flush();
             return true;
         } finally {
-            closeQuietly(out);
+            // TODO 关闭out
         }
     }
 
@@ -49,8 +49,7 @@ public class SimpleDiskCacheStore extends BaseDiskCacheStore {
             }
             return baos.toByteArray();
         } finally {
-            closeQuietly(baos);
-            closeQuietly(in);
+            // TODO 关闭 baos in
         }
     }
 }
