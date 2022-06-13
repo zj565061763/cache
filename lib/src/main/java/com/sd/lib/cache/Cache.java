@@ -108,8 +108,6 @@ public interface Cache {
     interface ObjectCache {
         boolean put(Object value);
 
-        boolean put(Object value, Class<?> clazz);
-
         <T> T get(Class<T> clazz);
 
         boolean remove(Class<?> clazz);

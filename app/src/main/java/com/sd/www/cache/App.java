@@ -17,7 +17,7 @@ public class App extends Application {
                 /**
                  * 使用腾讯MMKV自定义的CacheStore，如果不设置，默认使用内部存储目录"/data/包名/files/disk_file"
                  */
-                .setCacheStore(new MMKVCacheStore(this))
+//                .setCacheStore(new MMKVCacheStore(this))
                 /**
                  * 设置对象转换器
                  */
