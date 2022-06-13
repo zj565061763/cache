@@ -5,9 +5,6 @@ interface CacheInfo {
     /** 是否需要加解密 */
     val isEncrypt: Boolean
 
-    /** 是否支持内存存储 */
-    val isMemorySupport: Boolean
-
     /** 存取对象 */
     val cacheStore: Cache.CacheStore
 

@@ -7,11 +7,6 @@ interface Cache {
     fun setEncrypt(encrypt: Boolean): Cache
 
     /**
-     * 是否缓存到内存
-     */
-    fun setMemorySupport(support: Boolean): Cache
-
-    /**
      * 设置对象转换器
      */
     fun setObjectConverter(converter: ObjectConverter?): Cache

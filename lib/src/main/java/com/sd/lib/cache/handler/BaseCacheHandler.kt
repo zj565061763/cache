@@ -58,10 +58,6 @@ internal abstract class BaseCacheHandler<T>(
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
                 return false
-            }.also {
-                if (it) {
-                    putMemory(key, data)
-                }
             }
         }
     }
@@ -69,16 +65,12 @@ internal abstract class BaseCacheHandler<T>(
     override fun getCache(key: String, clazz: Class<*>?): T? {
         synchronized(Cache::class.java) {
             val key = transformKey(key)
-            var data = getMemory(key)
-            if (data == null) {
-                data = try {
-                    cacheStore.getCache(key)
-                } catch (e: Exception) {
-                    cacheInfo.exceptionHandler.onException(e)
-                    return null
-                }
-            }
-            if (data == null) return null
+            val data = try {
+                cacheStore.getCache(key)
+            } catch (e: Exception) {
+                cacheInfo.exceptionHandler.onException(e)
+                return null
+            } ?: return null
             return transformByteToValue(key, data, clazz)
         }
     }
@@ -86,7 +78,6 @@ internal abstract class BaseCacheHandler<T>(
     override fun removeCache(key: String): Boolean {
         synchronized(Cache::class.java) {
             val key = transformKey(key)
-            removeMemory(key)
             return try {
                 cacheStore.removeCache(key)
             } catch (e: Exception) {
@@ -99,38 +90,16 @@ internal abstract class BaseCacheHandler<T>(
     override fun containsCache(key: String): Boolean {
         synchronized(Cache::class.java) {
             val key = transformKey(key)
-            return if (getMemory(key) != null) {
-                true
-            } else {
-                try {
-                    cacheStore.containsCache(key)
-                } catch (e: Exception) {
-                    cacheInfo.exceptionHandler.onException(e)
-                    false
-                }
+            return try {
+                cacheStore.containsCache(key)
+            } catch (e: Exception) {
+                cacheInfo.exceptionHandler.onException(e)
+                false
             }
         }
     }
 
     //---------- CacheHandler end ----------
-
-    //---------- Memory start ----------
-
-    private fun putMemory(key: String, value: ByteArray) {
-        if (cacheInfo.isMemorySupport) {
-            MAP_MEMORY[key] = value
-        }
-    }
-
-    private fun getMemory(key: String): ByteArray? {
-        return if (cacheInfo.isMemorySupport) MAP_MEMORY[key] else null
-    }
-
-    private fun removeMemory(key: String) {
-        MAP_MEMORY.remove(key)
-    }
-
-    //---------- Memory end ----------
 
     private fun transformValueToByte(key: String, value: T): ByteArray? {
         var data = try {
@@ -193,8 +162,4 @@ internal abstract class BaseCacheHandler<T>(
      */
     @Throws(Exception::class)
     protected abstract fun byteToValue(bytes: ByteArray, clazz: Class<*>?): T
-
-    companion object {
-        private val MAP_MEMORY = mutableMapOf<String, ByteArray>()
-    }
 }

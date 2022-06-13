@@ -7,7 +7,6 @@ import com.sd.lib.cache.simple.SimpleObjectCache
 
 abstract class FCache : Cache, CacheInfo {
     private var _isEncrypt = false
-    private var _isMemorySupport = false
     private var _objectConverter: ObjectConverter? = null
     private var _encryptConverter: EncryptConverter? = null
     private var _exceptionHandler: ExceptionHandler? = null
@@ -24,11 +23,6 @@ abstract class FCache : Cache, CacheInfo {
 
     override fun setEncrypt(encrypt: Boolean): Cache {
         _isEncrypt = encrypt
-        return this
-    }
-
-    override fun setMemorySupport(support: Boolean): Cache {
-        _isMemorySupport = support
         return this
     }
 
@@ -95,9 +89,6 @@ abstract class FCache : Cache, CacheInfo {
 
     override val isEncrypt
         get() = _isEncrypt
-
-    override val isMemorySupport
-        get() = _isMemorySupport
 
     override val objectConverter: ObjectConverter
         get() = _objectConverter ?: CacheConfig.get().objectConverter

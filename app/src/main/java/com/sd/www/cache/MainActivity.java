@@ -33,9 +33,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
              */
             mCache = FCache.disk();
 
-            // 设置是否支持内存存储，默认false
-            mCache.setMemorySupport(false);
-
             // 设置保存缓存的时候是否加密，默认false
             mCache.setEncrypt(false);
         }
