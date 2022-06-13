@@ -1,6 +1,7 @@
 package com.sd.lib.cache
 
 import android.content.Context
+import com.sd.lib.cache.simple.GsonObjectConverter
 import com.sd.lib.cache.store.SimpleDiskCacheStore
 import java.io.File
 
@@ -8,7 +9,7 @@ class CacheConfig private constructor(builder: Builder) {
     val context: Context
 
     @JvmField
-    val objectConverter: Cache.ObjectConverter?
+    val objectConverter: Cache.ObjectConverter
 
     @JvmField
     val encryptConverter: Cache.EncryptConverter
@@ -18,6 +19,22 @@ class CacheConfig private constructor(builder: Builder) {
 
     @JvmField
     val cacheStore: Cache.CacheStore
+
+    init {
+        context = requireNotNull(builder._context) { "context is null" }
+        objectConverter = builder._objectConverter ?: GsonObjectConverter()
+        encryptConverter = builder._encryptConverter ?: object : Cache.EncryptConverter {
+            override fun encrypt(bytes: ByteArray): ByteArray {
+                return bytes
+            }
+
+            override fun decrypt(bytes: ByteArray): ByteArray {
+                return bytes
+            }
+        }
+        exceptionHandler = builder._exceptionHandler ?: Cache.ExceptionHandler { }
+        cacheStore = builder._cacheStore ?: SimpleDiskCacheStore(File(context.filesDir, "disk_file"))
+    }
 
     class Builder {
         internal var _context: Context? = null
@@ -62,47 +79,5 @@ class CacheConfig private constructor(builder: Builder) {
             _context = context.applicationContext
             return CacheConfig(this)
         }
-    }
-
-    companion object {
-        @JvmStatic
-        private var config: CacheConfig? = null
-
-        /**
-         * 初始化
-         */
-        @JvmStatic
-        @Synchronized
-        fun init(config: CacheConfig) {
-            if (this.config == null) {
-                this.config = config
-            }
-        }
-
-        /**
-         * 返回配置
-         */
-        @JvmStatic
-        fun get(): CacheConfig {
-            return requireNotNull(config) {
-                "CacheConfig has not been init"
-            }
-        }
-    }
-
-    init {
-        context = requireNotNull(builder._context) { "context is null" }
-        objectConverter = builder._objectConverter
-        encryptConverter = builder._encryptConverter ?: object : Cache.EncryptConverter {
-            override fun encrypt(bytes: ByteArray): ByteArray {
-                return bytes
-            }
-
-            override fun decrypt(bytes: ByteArray): ByteArray {
-                return bytes
-            }
-        }
-        exceptionHandler = builder._exceptionHandler ?: Cache.ExceptionHandler { }
-        cacheStore = builder._cacheStore ?: SimpleDiskCacheStore(File(context.filesDir, "disk_file"))
     }
 }

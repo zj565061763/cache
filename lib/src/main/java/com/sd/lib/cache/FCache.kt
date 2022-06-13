@@ -1,182 +1,150 @@
-package com.sd.lib.cache;
+package com.sd.lib.cache
 
-import com.sd.lib.cache.handler.BooleanHandler;
-import com.sd.lib.cache.handler.BytesHandler;
-import com.sd.lib.cache.handler.DoubleHandler;
-import com.sd.lib.cache.handler.FloatHandler;
-import com.sd.lib.cache.handler.IntegerHandler;
-import com.sd.lib.cache.handler.LongHandler;
-import com.sd.lib.cache.handler.StringHandler;
-import com.sd.lib.cache.simple.SimpleMultiObjectCache;
-import com.sd.lib.cache.simple.SimpleObjectCache;
+import com.sd.lib.cache.Cache.*
+import com.sd.lib.cache.handler.*
+import com.sd.lib.cache.simple.SimpleMultiObjectCache
+import com.sd.lib.cache.simple.SimpleObjectCache
 
-public abstract class FCache implements Cache, CacheInfo {
-    private boolean mEncrypt;
-    private boolean mMemorySupport;
-    private ObjectConverter mObjectConverter;
-    private EncryptConverter mEncryptConverter;
-    private ExceptionHandler mExceptionHandler;
+abstract class FCache : Cache, CacheInfo {
+    private var _isEncrypt = false
+    private var _isMemorySupport = false
+    private var _objectConverter: ObjectConverter? = null
+    private var _encryptConverter: EncryptConverter? = null
+    private var _exceptionHandler: ExceptionHandler? = null
 
-    private IntegerHandler mIntegerHandler;
-    private LongHandler mLongHandler;
-    private FloatHandler mFloatHandler;
-    private DoubleHandler mDoubleHandler;
-    private BooleanHandler mBooleanHandler;
-    private StringHandler mStringHandler;
-    private BytesHandler mBytesHandler;
+    private val _integerHandler by lazy { IntegerHandler(this) }
+    private val _longHandler by lazy { LongHandler(this) }
+    private val _floatHandler by lazy { FloatHandler(this) }
+    private val _doubleHandler by lazy { DoubleHandler(this) }
+    private val _booleanHandler by lazy { BooleanHandler(this) }
+    private val _stringHandler by lazy { StringHandler(this) }
+    private val _bytesHandler by lazy { BytesHandler(this) }
+    private val _objectCache by lazy { SimpleObjectCache(this) }
+    private var _multiObjectCache: SimpleMultiObjectCache<*>? = null
 
-    private SimpleObjectCache mObjectCache;
-    private SimpleMultiObjectCache mMultiObjectCache;
+    override fun setEncrypt(encrypt: Boolean): Cache {
+        _isEncrypt = encrypt
+        return this
+    }
 
-    /**
-     * 使用本地磁盘缓存
-     * <p>
-     * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置{@link CacheConfig.Builder#setCacheStore(CacheStore)}
-     *
-     * @return
-     */
-    public static Cache disk() {
-        final Cache cache = new FCache() {
-            @Override
-            public CacheStore getCacheStore() {
-                return CacheConfig.get().cacheStore;
-            }
-        };
-        return cache;
+    override fun setMemorySupport(support: Boolean): Cache {
+        _isMemorySupport = support
+        return this
+    }
+
+    override fun setObjectConverter(converter: ObjectConverter?): Cache {
+        _objectConverter = converter
+        return this
+    }
+
+    override fun setEncryptConverter(converter: EncryptConverter?): Cache {
+        _encryptConverter = converter
+        return this
+    }
+
+    override fun setExceptionHandler(handler: Cache.ExceptionHandler?): Cache {
+        _exceptionHandler = handler
+        return this
     }
 
     //---------- Cache start ----------
 
-    @Override
-    public final Cache setEncrypt(boolean encrypt) {
-        mEncrypt = encrypt;
-        return this;
+    override fun cacheInteger(): CommonCache<Int?> {
+        return _integerHandler
     }
 
-    @Override
-    public final Cache setMemorySupport(boolean support) {
-        mMemorySupport = support;
-        return this;
+    override fun cacheLong(): CommonCache<Long?> {
+        return _longHandler
     }
 
-    @Override
-    public final Cache setObjectConverter(ObjectConverter converter) {
-        mObjectConverter = converter;
-        return this;
+    override fun cacheFloat(): CommonCache<Float?> {
+        return _floatHandler
     }
 
-    @Override
-    public final Cache setEncryptConverter(EncryptConverter converter) {
-        mEncryptConverter = converter;
-        return this;
+    override fun cacheDouble(): CommonCache<Double?> {
+        return _doubleHandler
     }
 
-    @Override
-    public final Cache setExceptionHandler(ExceptionHandler handler) {
-        mExceptionHandler = handler;
-        return this;
+    override fun cacheBoolean(): CommonCache<Boolean?> {
+        return _booleanHandler
     }
 
-    @Override
-    public final CommonCache<Integer> cacheInteger() {
-        if (mIntegerHandler == null) {
-            mIntegerHandler = new IntegerHandler(this);
+    override fun cacheString(): CommonCache<String?> {
+        return _stringHandler
+    }
+
+    override fun cacheBytes(): CommonCache<ByteArray?> {
+        return _bytesHandler
+    }
+
+    override fun cacheObject(): ObjectCache {
+        return _objectCache
+    }
+
+    override fun <T> cacheMultiObject(clazz: Class<T>): MultiObjectCache<T> {
+        val cache = _multiObjectCache
+        if (cache != null && cache.objectClass == clazz) return (cache as MultiObjectCache<T>)
+        return SimpleMultiObjectCache(this, clazz).also {
+            _multiObjectCache = it
         }
-        return mIntegerHandler;
-    }
-
-    @Override
-    public final CommonCache<Long> cacheLong() {
-        if (mLongHandler == null) {
-            mLongHandler = new LongHandler(this);
-        }
-        return mLongHandler;
-    }
-
-    @Override
-    public final CommonCache<Float> cacheFloat() {
-        if (mFloatHandler == null) {
-            mFloatHandler = new FloatHandler(this);
-        }
-        return mFloatHandler;
-    }
-
-    @Override
-    public final CommonCache<Double> cacheDouble() {
-        if (mDoubleHandler == null) {
-            mDoubleHandler = new DoubleHandler(this);
-        }
-        return mDoubleHandler;
-    }
-
-    @Override
-    public final CommonCache<Boolean> cacheBoolean() {
-        if (mBooleanHandler == null) {
-            mBooleanHandler = new BooleanHandler(this);
-        }
-        return mBooleanHandler;
-    }
-
-    @Override
-    public final CommonCache<String> cacheString() {
-        if (mStringHandler == null) {
-            mStringHandler = new StringHandler(this);
-        }
-        return mStringHandler;
-    }
-
-    @Override
-    public final CommonCache<byte[]> cacheBytes() {
-        if (mBytesHandler == null) {
-            mBytesHandler = new BytesHandler(this);
-        }
-        return mBytesHandler;
-    }
-
-    @Override
-    public final ObjectCache cacheObject() {
-        if (mObjectCache == null) {
-            mObjectCache = new SimpleObjectCache(this);
-        }
-        return mObjectCache;
-    }
-
-    @Override
-    public <T> MultiObjectCache<T> cacheMultiObject(Class<T> clazz) {
-        if (mMultiObjectCache == null || mMultiObjectCache.objectClass != clazz) {
-            mMultiObjectCache = new SimpleMultiObjectCache(this, clazz);
-        }
-        return mMultiObjectCache;
     }
 
     //---------- Cache end ----------
 
     //---------- CacheInfo start ----------
 
-    @Override
-    public final boolean isEncrypt() {
-        return mEncrypt;
-    }
+    override val isEncrypt
+        get() = _isEncrypt
 
-    @Override
-    public final boolean isMemorySupport() {
-        return mMemorySupport;
-    }
+    override val isMemorySupport
+        get() = _isMemorySupport
 
-    @Override
-    public final ObjectConverter getObjectConverter() {
-        return mObjectConverter != null ? mObjectConverter : CacheConfig.get().objectConverter;
-    }
+    override val objectConverter: ObjectConverter
+        get() = _objectConverter ?: getConfig().objectConverter
 
-    @Override
-    public final EncryptConverter getEncryptConverter() {
-        return mEncryptConverter != null ? mEncryptConverter : CacheConfig.get().encryptConverter;
-    }
+    override val encryptConverter: EncryptConverter
+        get() = _encryptConverter ?: getConfig().encryptConverter
 
-    @Override
-    public final ExceptionHandler getExceptionHandler() {
-        return mExceptionHandler != null ? mExceptionHandler : CacheConfig.get().exceptionHandler;
-    }
+    override val exceptionHandler: ExceptionHandler
+        get() = _exceptionHandler ?: getConfig().exceptionHandler
 
     //---------- CacheInfo end ----------
+
+    companion object {
+        @JvmStatic
+        private var config: CacheConfig? = null
+
+        /**
+         * 初始化
+         */
+        @JvmStatic
+        @Synchronized
+        fun init(config: CacheConfig) {
+            if (this.config == null) {
+                this.config = config
+            }
+        }
+
+        /**
+         * 使用本地磁盘缓存，
+         * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置[CacheConfig.Builder.setCacheStore]
+         */
+        @JvmStatic
+        fun disk(): Cache {
+            return object : FCache() {
+                override val cacheStore: CacheStore
+                    get() = getConfig().cacheStore
+            }
+        }
+
+        /**
+         * 返回配置
+         */
+        @JvmStatic
+        private fun getConfig(): CacheConfig {
+            return requireNotNull(config) {
+                "CacheConfig has not been init"
+            }
+        }
+    }
 }

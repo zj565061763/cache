@@ -118,12 +118,12 @@ interface Cache {
         /**
          * 对象转byte
          */
-        fun objectToByte(value: Any): ByteArray
+        fun objectToByte(value: Any): ByteArray?
 
         /**
          * byte转对象
          */
-        fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T
+        fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T?
     }
     /**
      * 加解密转换器
