@@ -10,7 +10,7 @@ import com.sd.lib.cache.Cache;
 import com.sd.lib.cache.FCache;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String TAG = MainActivity.class.getSimpleName();
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String KEY = "key";
     private static final TestModel TEST_MODEL = new TestModel();
@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         putData();
         getData();
     }
@@ -29,20 +28,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Cache getCache() {
         if (mCache == null) {
             /**
-             * 使用本地磁盘缓存
-             * <p>
+             * 使用本地磁盘缓存，
              * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置{@link CacheConfig.Builder#setDiskCacheStore(CacheStore)}
              */
             mCache = FCache.disk();
 
-            /**
-             * 设置是否支持内存存储
-             */
+            // 设置是否支持内存存储
             mCache.setMemorySupport(false);
 
-            /**
-             * 设置保存缓存的时候是否加密
-             */
+            // 设置保存缓存的时候是否加密
             mCache.setEncrypt(false);
         }
         return mCache;
@@ -72,14 +66,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        SDTimeLogger.test(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 100; i++) {
-                    getCache().cacheString().put(KEY, "hello String");
-                    getCache().cacheString().get(KEY, null);
-                }
-            }
-        });
+
     }
 }
