@@ -2,7 +2,7 @@ package com.sd.lib.cache.simple
 
 import com.sd.lib.cache.Cache.ObjectCache
 import com.sd.lib.cache.CacheInfo
-import com.sd.lib.cache.handler.ObjectHandler
+import com.sd.lib.cache.handler.impl.ObjectHandler
 
 internal class SimpleObjectCache(info: CacheInfo) : ObjectCache {
 

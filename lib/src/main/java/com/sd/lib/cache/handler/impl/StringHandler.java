@@ -1,6 +1,7 @@
-package com.sd.lib.cache.handler;
+package com.sd.lib.cache.handler.impl;
 
 import com.sd.lib.cache.CacheInfo;
+import com.sd.lib.cache.handler.BaseCacheHandler;
 
 /**
  * String处理类

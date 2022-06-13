@@ -1,7 +1,7 @@
 package com.sd.lib.cache
 
 import com.sd.lib.cache.Cache.*
-import com.sd.lib.cache.handler.*
+import com.sd.lib.cache.handler.impl.*
 import com.sd.lib.cache.simple.SimpleMultiObjectCache
 import com.sd.lib.cache.simple.SimpleObjectCache
 
