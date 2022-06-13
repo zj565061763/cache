@@ -1,28 +1,20 @@
-package com.sd.lib.cache.handler.impl;
+package com.sd.lib.cache.handler.impl
 
-import com.sd.lib.cache.CacheInfo;
-import com.sd.lib.cache.handler.BaseCacheHandler;
+import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.handler.BaseCacheHandler
 
 /**
  * Integer处理类
  */
-public class IntegerHandler extends BaseCacheHandler<Integer> {
-    public IntegerHandler(CacheInfo info) {
-        super(info);
+internal class IntegerHandler(info: CacheInfo) : BaseCacheHandler<Int>(info) {
+    override fun valueToByte(value: Int): ByteArray {
+        return value.toString().toByteArray()
     }
 
-    @Override
-    protected byte[] valueToByte(Integer value) {
-        return value.toString().getBytes();
+    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Int {
+        return String(bytes).toInt()
     }
 
-    @Override
-    protected Integer byteToValue(byte[] bytes, Class<?> clazz) {
-        return Integer.valueOf(new String(bytes));
-    }
-
-    @Override
-    protected String getKeyPrefix() {
-        return "integer_";
-    }
+    override val keyPrefix: String
+        get() = "integer_"
 }
