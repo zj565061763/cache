@@ -1,28 +1,20 @@
-package com.sd.lib.cache.handler.impl;
+package com.sd.lib.cache.handler.impl
 
-import com.sd.lib.cache.CacheInfo;
-import com.sd.lib.cache.handler.BaseCacheHandler;
+import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.handler.BaseCacheHandler
 
 /**
  * Long处理类
  */
-public class LongHandler extends BaseCacheHandler<Long> {
-    public LongHandler(CacheInfo info) {
-        super(info);
+internal class LongHandler(info: CacheInfo) : BaseCacheHandler<Long>(info) {
+    override fun valueToByte(value: Long): ByteArray {
+        return value.toString().toByteArray()
     }
 
-    @Override
-    protected byte[] valueToByte(Long value) {
-        return value.toString().getBytes();
+    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Long {
+        return String(bytes).toLong()
     }
 
-    @Override
-    protected Long byteToValue(byte[] bytes, Class<?> clazz) {
-        return Long.valueOf(new String(bytes));
-    }
-
-    @Override
-    protected String getKeyPrefix() {
-        return "long_";
-    }
+    override val keyPrefix: String
+        get() = "long_"
 }
