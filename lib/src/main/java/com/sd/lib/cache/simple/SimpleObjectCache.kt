@@ -19,7 +19,7 @@ class SimpleObjectCache(info: CacheInfo) : ObjectCache {
         return _handler.putCache(key, value)
     }
 
-    override fun <T> get(clazz: Class<T>): T {
+    override fun <T> get(clazz: Class<T>): T? {
         val key = clazz.name
         return _handler.getCache(key, clazz) as T
     }

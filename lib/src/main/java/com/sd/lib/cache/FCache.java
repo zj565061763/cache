@@ -143,7 +143,7 @@ public abstract class FCache implements Cache, CacheInfo {
 
     @Override
     public <T> MultiObjectCache<T> cacheMultiObject(Class<T> clazz) {
-        if (mMultiObjectCache == null || mMultiObjectCache.mObjectClass != clazz) {
+        if (mMultiObjectCache == null || mMultiObjectCache.objectClass != clazz) {
             mMultiObjectCache = new SimpleMultiObjectCache(this, clazz);
         }
         return mMultiObjectCache;
