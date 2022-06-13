@@ -26,6 +26,7 @@ abstract class LimitDiskCacheStore(maxSize: Int, directory: File) : SimpleDiskCa
                         oldValue?.delete()
                     } catch (e: Exception) {
                         e.printStackTrace()
+                        Log.i(_tag, "evicted error $e")
                     }
                 }
             }
