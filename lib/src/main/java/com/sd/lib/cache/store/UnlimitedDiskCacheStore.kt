@@ -3,9 +3,9 @@ package com.sd.lib.cache.store
 import java.io.File
 
 /**
- * 文件缓存实现类
+ * 无限制的文件缓存
  */
-open class SimpleDiskCacheStore(directory: File) : BaseDiskCacheStore(directory) {
+open class UnlimitedDiskCacheStore(directory: File) : BaseDiskCacheStore(directory) {
 
     @Throws(Exception::class)
     override fun putCacheImpl(key: String, value: ByteArray, file: File): Boolean {

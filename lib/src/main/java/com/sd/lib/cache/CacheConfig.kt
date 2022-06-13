@@ -2,7 +2,7 @@ package com.sd.lib.cache
 
 import android.content.Context
 import com.sd.lib.cache.simple.GsonObjectConverter
-import com.sd.lib.cache.store.SimpleDiskCacheStore
+import com.sd.lib.cache.store.UnlimitedDiskCacheStore
 import java.io.File
 
 class CacheConfig private constructor(builder: Builder) {
@@ -17,7 +17,7 @@ class CacheConfig private constructor(builder: Builder) {
         objectConverter = builder._objectConverter ?: GsonObjectConverter()
         encryptConverter = builder._encryptConverter
         exceptionHandler = builder._exceptionHandler ?: Cache.ExceptionHandler { }
-        cacheStore = builder._cacheStore ?: SimpleDiskCacheStore(File(context.filesDir, "disk_file"))
+        cacheStore = builder._cacheStore ?: UnlimitedDiskCacheStore(File(context.filesDir, "disk_file"))
     }
 
     class Builder {

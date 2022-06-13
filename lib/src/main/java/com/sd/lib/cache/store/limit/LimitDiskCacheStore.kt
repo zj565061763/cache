@@ -3,14 +3,14 @@ package com.sd.lib.cache.store.limit
 import android.util.Log
 import android.util.LruCache
 import com.sd.lib.cache.Cache
-import com.sd.lib.cache.store.SimpleDiskCacheStore
+import com.sd.lib.cache.store.UnlimitedDiskCacheStore
 import java.io.File
 import kotlin.concurrent.thread
 
 /**
  * 限制的磁盘缓存
  */
-abstract class LimitDiskCacheStore(maxSize: Int, directory: File) : SimpleDiskCacheStore(directory) {
+abstract class LimitDiskCacheStore(maxSize: Int, directory: File) : UnlimitedDiskCacheStore(directory) {
     private val _tag = javaClass.simpleName
     private var _hasCheckLimit = false
 
