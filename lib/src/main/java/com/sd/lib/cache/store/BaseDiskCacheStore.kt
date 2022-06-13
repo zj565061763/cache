@@ -1,5 +1,6 @@
 package com.sd.lib.cache.store
 
+import com.sd.lib.cache.Cache
 import com.sd.lib.cache.Cache.CacheStore
 import java.io.File
 import java.security.MessageDigest
@@ -14,21 +15,6 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         return if (_directory.exists() || _directory.mkdirs()) {
             _directory
         } else null
-    }
-
-    /**
-     * 返回所有缓存的key
-     */
-    protected fun getKeys(): List<String> {
-        try {
-            val list = getDirectory()?.list()
-            if (list != null) {
-                return list.filter { it.startsWith(KeyPrefix) }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return listOf()
     }
 
     final override fun putCache(key: String, value: ByteArray): Boolean {
@@ -84,6 +70,38 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     protected open fun transformKey(key: String): String {
         val bytes = MessageDigest.getInstance("MD5").digest(key.toByteArray())
         return bytes.joinToString("") { "%02X".format(it) }
+    }
+
+    /**
+     * 返回所有缓存的key
+     */
+    protected fun getKeys(): List<String> {
+        synchronized(Cache::class.java) {
+            try {
+                val list = getDirectory()?.list()
+                if (list != null) {
+                    return list.filter { it.startsWith(KeyPrefix) }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return listOf()
+        }
+    }
+
+    /**
+     * 直接根据key移除缓存
+     */
+    protected fun removeKey(key: String) {
+        if (!key.startsWith(KeyPrefix)) return
+        synchronized(Cache::class.java) {
+            try {
+                val dir = getDirectory() ?: return
+                File(dir, key).delete()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     init {

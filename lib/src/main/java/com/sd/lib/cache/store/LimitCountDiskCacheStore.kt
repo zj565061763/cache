@@ -2,7 +2,6 @@ package com.sd.lib.cache.store
 
 import android.util.Log
 import android.util.LruCache
-import com.sd.lib.cache.Cache
 import java.io.File
 
 /**
@@ -16,9 +15,7 @@ class LimitCountDiskCacheStore(count: Int, directory: File) : SimpleDiskCacheSto
             super.entryRemoved(evicted, key, oldValue, newValue)
             if (evicted) {
                 Log.i(_tag, "evicted count:${size()}")
-                synchronized(Cache::class.java) {
-                    removeCache(key!!)
-                }
+                removeKey(key!!)
             }
         }
     }
@@ -41,9 +38,13 @@ class LimitCountDiskCacheStore(count: Int, directory: File) : SimpleDiskCacheSto
         }
     }
 
-    init {
+    fun checkLimit() {
         getKeys().forEach { key ->
             _lruCache.put(key, "")
         }
+    }
+
+    init {
+        checkLimit()
     }
 }
