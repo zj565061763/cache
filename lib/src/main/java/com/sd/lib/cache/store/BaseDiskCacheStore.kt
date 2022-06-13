@@ -3,39 +3,38 @@ package com.sd.lib.cache.store
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.Cache.CacheStore
 import java.io.File
-import java.security.MessageDigest
 
 /**
  * 文件缓存
  */
 abstract class BaseDiskCacheStore(directory: File) : CacheStore {
-    private val _directory: File
+    private val _directory = directory
 
-    private fun getDirectory(): File? {
-        return if (_directory.exists() || _directory.mkdirs()) {
-            _directory
-        } else null
-    }
+    //---------- CacheStore start ----------
 
+    @Throws(Exception::class)
     final override fun putCache(key: String, value: ByteArray): Boolean {
-        val file = getCacheFile(key) ?: return false
-        return putCacheImpl(key, value, file)
+        return putCacheImpl(key, value, getCacheFile(key))
     }
 
-    final override fun getCache(key: String): ByteArray? {
-        val file = getCacheFile(key) ?: return null
-        return getCacheImpl(key, file)
+    @Throws(Exception::class)
+    final override fun getCache(key: String): ByteArray {
+        return getCacheImpl(key, getCacheFile(key))
     }
 
+    @Throws(Exception::class)
     final override fun removeCache(key: String): Boolean {
-        val file = getCacheFile(key) ?: return false
-        return removeCacheImpl(key, file)
+        return removeCacheImpl(key, getCacheFile(key))
     }
 
+    @Throws(Exception::class)
     final override fun containsCache(key: String): Boolean {
-        val file = getCacheFile(key) ?: return false
-        return containsCacheImpl(key, file)
+        return containsCacheImpl(key, getCacheFile(key))
     }
+
+    //---------- CacheStore end ----------
+
+    //---------- Impl start ----------
 
     @Throws(Exception::class)
     protected abstract fun putCacheImpl(key: String, value: ByteArray, file: File): Boolean
@@ -45,7 +44,7 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
 
     @Throws(Exception::class)
     protected open fun removeCacheImpl(key: String, file: File): Boolean {
-        return if (file.exists()) file.delete() else false
+        return file.delete()
     }
 
     @Throws(Exception::class)
@@ -53,32 +52,44 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         return file.exists()
     }
 
+    //---------- Impl End ----------
+
     @Throws(Exception::class)
-    private fun getCacheFile(key: String): File? {
-        if (key.isEmpty()) return null
-
-        val transformKey = transformKey(key)
-        if (transformKey.isEmpty()) {
-            throw RuntimeException("transformKey() return empty")
+    private fun getDirectory(): File {
+        return if (_directory.exists() || _directory.mkdirs()) {
+            _directory
+        } else {
+            throw RuntimeException("directory is not available:" + _directory.absolutePath)
         }
-
-        val dir = getDirectory() ?: throw RuntimeException("directory is not available:" + _directory.absolutePath)
-        return File(dir, KeyPrefix + transformKey)
     }
 
     @Throws(Exception::class)
-    protected open fun transformKey(key: String): String {
-        val bytes = MessageDigest.getInstance("MD5").digest(key.toByteArray())
-        return bytes.joinToString("") { "%02X".format(it) }
+    private fun getCacheFile(key: String): File {
+        return File(getDirectory(), transformKey(key))
+    }
+
+    /**
+     * 返回[key]对应的缓存
+     */
+    fun getCacheFileOrNull(key: String): File? {
+        synchronized(Cache::class.java) {
+            return try {
+                val file = File(getDirectory(), transformKey(key))
+                if (file.exists()) file else null
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
     }
 
     /**
      * 返回所有缓存的文件
      */
-    protected fun getCacheFiles(): List<File> {
+    fun getCacheFiles(): List<File> {
         synchronized(Cache::class.java) {
             try {
-                val list = getDirectory()?.listFiles()
+                val list = getDirectory().listFiles()
                 if (list != null) {
                     return list.filter {
                         it.name.startsWith(KeyPrefix) && it.isFile
@@ -91,11 +102,11 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         }
     }
 
-    init {
-        _directory = directory
-    }
-
     companion object {
         private const val KeyPrefix = "f_d_"
+
+        fun transformKey(key: String): String {
+            return KeyPrefix + key
+        }
     }
 }
