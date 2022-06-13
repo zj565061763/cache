@@ -1,5 +1,7 @@
 package com.sd.www.cache.converter;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.sd.lib.cache.Cache;
 
@@ -7,17 +9,15 @@ import com.sd.lib.cache.Cache;
  * Created by Administrator on 2017/8/29.
  */
 public class GsonObjectConverter implements Cache.ObjectConverter {
-    private static final Gson GSON = new Gson();
+    private final Gson gson = new Gson();
 
     @Override
-    public byte[] objectToByte(Object object) {
-        // 对象转byte
-        return GSON.toJson(object).getBytes();
+    public byte[] objectToByte(@NonNull Object object) {
+        return gson.toJson(object).getBytes();
     }
 
     @Override
-    public <T> T byteToObject(byte[] bytes, Class<T> clazz) {
-        // byte转对象
-        return GSON.fromJson(new String(bytes), clazz);
+    public <T> T byteToObject(@NonNull byte[] bytes, @NonNull Class<T> clazz) {
+        return gson.fromJson(new String(bytes), clazz);
     }
 }

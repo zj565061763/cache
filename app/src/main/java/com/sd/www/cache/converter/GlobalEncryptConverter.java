@@ -1,5 +1,7 @@
 package com.sd.www.cache.converter;
 
+import androidx.annotation.NonNull;
+
 import com.sd.lib.cache.Cache;
 
 /**
@@ -8,13 +10,13 @@ import com.sd.lib.cache.Cache;
 
 public class GlobalEncryptConverter implements Cache.EncryptConverter {
     @Override
-    public byte[] encrypt(byte[] bytes) {
+    public byte[] encrypt(@NonNull byte[] bytes) {
         // 加密
         return bytes;
     }
 
     @Override
-    public byte[] decrypt(byte[] bytes) {
+    public byte[] decrypt(@NonNull byte[] bytes) {
         // 解密
         return bytes;
     }

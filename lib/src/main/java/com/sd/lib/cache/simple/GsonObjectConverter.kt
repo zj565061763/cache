@@ -10,7 +10,7 @@ internal class GsonObjectConverter : ObjectConverter {
         return _gson.toJson(value).toByteArray()
     }
 
-    override fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T? {
+    override fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T {
         return _gson.fromJson(String(bytes), clazz)
     }
 }
