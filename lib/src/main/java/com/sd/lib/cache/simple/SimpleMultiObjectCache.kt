@@ -17,27 +17,27 @@ internal class SimpleMultiObjectCache<T>(
         }
     }
 
+    private fun transformKey(key: String): String {
+        return "${objectClass.name}_$key"
+    }
+
     override fun put(key: String, value: T?): Boolean {
         if (key.isEmpty()) return false
-        val finalKey = "${objectClass.name}_$key"
-        return _objectHandler.putCache(finalKey, value)
+        return _objectHandler.putCache(transformKey(key), value)
     }
 
     override fun get(key: String): T? {
         if (key.isEmpty()) return null
-        val finalKey = "${objectClass.name}_$key"
-        return _objectHandler.getCache(finalKey, objectClass) as T
+        return _objectHandler.getCache(transformKey(key), objectClass) as T
     }
 
     override fun remove(key: String): Boolean {
         if (key.isEmpty()) return false
-        val finalKey = "${objectClass.name}_$key"
-        return _objectHandler.removeCache(finalKey)
+        return _objectHandler.removeCache(transformKey(key))
     }
 
     override fun contains(key: String): Boolean {
         if (key.isEmpty()) return false
-        val finalKey = "${objectClass.name}_$key"
-        return _objectHandler.containsCache(finalKey)
+        return _objectHandler.containsCache(transformKey(key))
     }
 }
