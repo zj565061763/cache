@@ -1,6 +1,5 @@
 package com.sd.lib.cache.handler;
 
-import com.sd.lib.cache.Cache;
 import com.sd.lib.cache.CacheInfo;
 
 /**
@@ -12,20 +11,12 @@ public abstract class ObjectHandler extends BaseCacheHandler<Object> {
     }
 
     @Override
-    protected byte[] valueToByte(Object value) {
-        return getObjectConverter().objectToByte(value);
+    protected byte[] valueToByte(Object value) throws Exception {
+        return getCacheInfo().getObjectConverter().objectToByte(value);
     }
 
     @Override
-    protected Object byteToValue(byte[] bytes, Class<?> clazz) {
-        return getObjectConverter().byteToObject(bytes, clazz);
-    }
-
-    private Cache.ObjectConverter getObjectConverter() {
-        final Cache.ObjectConverter converter = getCacheInfo().getObjectConverter();
-        if (converter == null) {
-            throw new NullPointerException("you must provide an ObjectConverter instance before this");
-        }
-        return converter;
+    protected Object byteToValue(byte[] bytes, Class<?> clazz) throws Exception {
+        return getCacheInfo().getObjectConverter().byteToObject(bytes, clazz);
     }
 }
