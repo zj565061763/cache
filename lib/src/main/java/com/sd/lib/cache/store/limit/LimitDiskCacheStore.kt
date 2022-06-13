@@ -51,8 +51,10 @@ abstract class LimitDiskCacheStore(maxSize: Int, directory: File) : SimpleDiskCa
     }
 
     fun checkLimit() {
-        getCacheFiles().forEach { file ->
-            _lruCache.put(file.name, file)
+        synchronized(Cache::class.java) {
+            getCacheFiles().forEach { file ->
+                _lruCache.put(file.name, file)
+            }
         }
     }
 
