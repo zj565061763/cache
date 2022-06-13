@@ -2,7 +2,6 @@
 封装了一层存储的api
 * 支持加解密
 * 支持对象存储
-* 支持内存存储
 * 支持自定义底层的存储方案，比如直接用java原生的api把缓存保存到文件，或者用腾讯的[MMKV](https://github.com/Tencent/MMKV)实现
 
 # Gradle
@@ -72,11 +71,6 @@ public class MainActivity extends AppCompatActivity
              * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置{@link CacheConfig.Builder#setDiskCacheStore(CacheStore)}
              */
             mCache = FCache.disk();
-
-            /**
-             * 设置是否支持内存存储
-             */
-            mCache.setMemorySupport(false);
 
             /**
              * 设置保存缓存的时候是否加密
