@@ -1,4 +1,4 @@
-package com.sd.lib.cache.store.limit
+package com.sd.lib.cache.store.lru
 
 import android.util.Log
 import android.util.LruCache

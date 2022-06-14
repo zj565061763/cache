@@ -1,4 +1,4 @@
-package com.sd.lib.cache.store.limit
+package com.sd.lib.cache.store.lru
 
 import com.sd.lib.cache.store.UnlimitedDiskCacheStore
 import java.io.File
