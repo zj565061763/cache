@@ -6,7 +6,7 @@ import com.sd.lib.cache.handler.BaseCacheHandler
 /**
  * Long处理类
  */
-internal class LongHandler(info: CacheInfo) : BaseCacheHandler<Long>(info) {
+internal class LongHandler(info: CacheInfo) : BaseCacheHandler<Long>(info, "long") {
     override fun valueToByte(value: Long): ByteArray {
         return value.toString().toByteArray()
     }
@@ -14,7 +14,4 @@ internal class LongHandler(info: CacheInfo) : BaseCacheHandler<Long>(info) {
     override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Long {
         return String(bytes).toLong()
     }
-
-    override val keyPrefix: String
-        get() = "long_"
 }

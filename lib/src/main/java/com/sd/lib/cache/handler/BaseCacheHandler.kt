@@ -10,7 +10,12 @@ import com.sd.lib.cache.CacheInfo
  */
 internal abstract class BaseCacheHandler<T>(
     val cacheInfo: CacheInfo,
+    val keyPrefix: String,
 ) : CacheHandler<T>, CommonCache<T> {
+
+    init {
+        require(keyPrefix.isNotEmpty()) { "keyPrefix is empty" }
+    }
 
     //---------- CommonCache start ----------
 
@@ -32,14 +37,9 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CommonCache end ----------
 
-    /** key前缀 */
-    protected abstract val keyPrefix: String
-
     private fun transformKey(key: String): String {
         require(key.isNotEmpty()) { "key is empty" }
-        val prefix = keyPrefix
-        check(prefix.isNotEmpty()) { "key prefix is empty" }
-        return prefix + key
+        return keyPrefix + "_" + key
     }
 
     private val cacheStore: CacheStore

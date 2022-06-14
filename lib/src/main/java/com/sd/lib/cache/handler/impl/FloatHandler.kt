@@ -6,7 +6,7 @@ import com.sd.lib.cache.handler.BaseCacheHandler
 /**
  * Float处理类
  */
-internal class FloatHandler(info: CacheInfo) : BaseCacheHandler<Float>(info) {
+internal class FloatHandler(info: CacheInfo) : BaseCacheHandler<Float>(info, "float") {
     override fun valueToByte(value: Float): ByteArray {
         return value.toString().toByteArray()
     }
@@ -14,7 +14,4 @@ internal class FloatHandler(info: CacheInfo) : BaseCacheHandler<Float>(info) {
     override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Float {
         return String(bytes).toFloat()
     }
-
-    override val keyPrefix: String
-        get() = "float_"
 }

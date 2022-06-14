@@ -6,12 +6,7 @@ import com.sd.lib.cache.handler.impl.ObjectHandler
 
 internal class SimpleObjectCache(info: CacheInfo) : ObjectCache {
 
-    private val _handler by lazy {
-        object : ObjectHandler(info) {
-            override val keyPrefix: String
-                get() = "object_"
-        }
-    }
+    private val _handler by lazy { ObjectHandler(info, "object") }
 
     override fun put(value: Any?): Boolean {
         if (value == null) return false

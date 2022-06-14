@@ -6,7 +6,7 @@ import com.sd.lib.cache.handler.BaseCacheHandler
 /**
  * Integer处理类
  */
-internal class IntegerHandler(info: CacheInfo) : BaseCacheHandler<Int>(info) {
+internal class IntegerHandler(info: CacheInfo) : BaseCacheHandler<Int>(info, "integer") {
     override fun valueToByte(value: Int): ByteArray {
         return value.toString().toByteArray()
     }
@@ -14,7 +14,4 @@ internal class IntegerHandler(info: CacheInfo) : BaseCacheHandler<Int>(info) {
     override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Int {
         return String(bytes).toInt()
     }
-
-    override val keyPrefix: String
-        get() = "integer_"
 }

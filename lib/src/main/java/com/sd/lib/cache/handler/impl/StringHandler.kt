@@ -6,7 +6,7 @@ import com.sd.lib.cache.handler.BaseCacheHandler
 /**
  * String处理类
  */
-internal class StringHandler(info: CacheInfo) : BaseCacheHandler<String>(info) {
+internal class StringHandler(info: CacheInfo) : BaseCacheHandler<String>(info, "string") {
     override fun valueToByte(value: String): ByteArray {
         return value.toByteArray()
     }
@@ -14,7 +14,4 @@ internal class StringHandler(info: CacheInfo) : BaseCacheHandler<String>(info) {
     override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): String {
         return String(bytes)
     }
-
-    override val keyPrefix: String
-        get() = "string_"
 }

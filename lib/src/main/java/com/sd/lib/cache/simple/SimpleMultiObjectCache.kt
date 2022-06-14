@@ -9,12 +9,7 @@ internal class SimpleMultiObjectCache<T>(
     info: CacheInfo,
 ) : MultiObjectCache<T> {
 
-    private val _objectHandler by lazy {
-        object : ObjectHandler(info) {
-            override val keyPrefix: String
-                get() = "multi_object_"
-        }
-    }
+    private val _objectHandler by lazy { ObjectHandler(info, "multi_object") }
 
     private fun transformKey(key: String): String {
         return "${objectClass.name}_$key"

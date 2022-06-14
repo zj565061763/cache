@@ -6,7 +6,7 @@ import com.sd.lib.cache.handler.BaseCacheHandler
 /**
  * Double处理类
  */
-internal class DoubleHandler(info: CacheInfo) : BaseCacheHandler<Double>(info) {
+internal class DoubleHandler(info: CacheInfo) : BaseCacheHandler<Double>(info, "double") {
     override fun valueToByte(value: Double): ByteArray {
         return value.toString().toByteArray()
     }
@@ -14,7 +14,4 @@ internal class DoubleHandler(info: CacheInfo) : BaseCacheHandler<Double>(info) {
     override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Double {
         return String(bytes).toDouble()
     }
-
-    override val keyPrefix: String
-        get() = "double_"
 }

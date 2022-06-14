@@ -6,7 +6,7 @@ import com.sd.lib.cache.handler.BaseCacheHandler
 /**
  * Boolean处理类
  */
-internal class BooleanHandler(info: CacheInfo) : BaseCacheHandler<Boolean>(info) {
+internal class BooleanHandler(info: CacheInfo) : BaseCacheHandler<Boolean>(info, "boolean") {
     override fun valueToByte(value: Boolean): ByteArray {
         return value.toString().toByteArray()
     }
@@ -14,7 +14,4 @@ internal class BooleanHandler(info: CacheInfo) : BaseCacheHandler<Boolean>(info)
     override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Boolean {
         return String(bytes).toBooleanStrict()
     }
-
-    override val keyPrefix: String
-        get() = "boolean_"
 }

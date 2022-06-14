@@ -6,7 +6,7 @@ import com.sd.lib.cache.handler.BaseCacheHandler
 /**
  * 字节数组处理类
  */
-internal class BytesHandler(info: CacheInfo) : BaseCacheHandler<ByteArray>(info) {
+internal class BytesHandler(info: CacheInfo) : BaseCacheHandler<ByteArray>(info, "bytes") {
     override fun valueToByte(value: ByteArray): ByteArray {
         return value
     }
@@ -14,7 +14,4 @@ internal class BytesHandler(info: CacheInfo) : BaseCacheHandler<ByteArray>(info)
     override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): ByteArray {
         return bytes
     }
-
-    override val keyPrefix: String
-        get() = "bytes_"
 }
