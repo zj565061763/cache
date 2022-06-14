@@ -36,7 +36,9 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
         thread {
             Log.i(_tag, "checkLimit start count:${_lruCache.size()}")
             onLruCacheInitKeys().forEach { key ->
-                _lruCache.put(key, "")
+                synchronized(Cache::class.java) {
+                    _lruCache.put(key, "")
+                }
             }
             Log.i(_tag, "checkLimit end count:${_lruCache.size()}")
         }
@@ -45,10 +47,9 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     final override fun putCache(key: String, value: ByteArray): Boolean {
         return putCacheImpl(key, value).also {
             if (it) {
-                Log.i(_tag, "put start $key count:${_lruCache.size()}")
                 _lruCache.put(key, "")
                 checkLimit()
-                Log.i(_tag, "put end $key count:${_lruCache.size()}")
+                Log.i(_tag, "put end count:${_lruCache.size()}")
             }
         }
     }
@@ -60,9 +61,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     final override fun removeCache(key: String): Boolean {
         return removeCacheImpl(key).also {
             if (it) {
-                Log.i(_tag, "remove start $key count:${_lruCache.size()}")
                 _lruCache.remove(key)
-                Log.i(_tag, "remove end $key count:${_lruCache.size()}")
             }
         }
     }

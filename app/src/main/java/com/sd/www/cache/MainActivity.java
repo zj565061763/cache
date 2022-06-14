@@ -47,20 +47,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getCache().cacheBoolean().put(KEY, true);
         getCache().cacheString().put(KEY, "hello String");
         getCache().cacheObject().put(TEST_MODEL);
-        getCache().cacheMultiObject(TestModel.class).put(KEY, TEST_MODEL);
-        getCache().cacheMultiObject(TestModel.class).put(KEY + KEY, TEST_MODEL);
+//        getCache().cacheMultiObject(TestModel.class).put(KEY, TEST_MODEL);
+//        getCache().cacheMultiObject(TestModel.class).put(KEY + KEY, TEST_MODEL);
     }
 
     private void getData() {
-        Log.i(TAG, "cacheInteger:" + getCache().cacheInteger().get(KEY, 0));
-        Log.i(TAG, "cacheLong:" + getCache().cacheLong().get(KEY, 0L));
-        Log.i(TAG, "cacheFloat:" + getCache().cacheFloat().get(KEY, 0F));
-        Log.i(TAG, "cacheDouble:" + getCache().cacheDouble().get(KEY, 0D));
-        Log.i(TAG, "cacheBoolean:" + getCache().cacheBoolean().get(KEY, false));
-        Log.i(TAG, "cacheString:" + getCache().cacheString().get(KEY, null));
-        Log.i(TAG, "cacheObject:" + getCache().cacheObject().get(TestModel.class));
-        Log.i(TAG, "cacheMultiObject:" + getCache().cacheMultiObject(TestModel.class).get(KEY));
-        Log.i(TAG, "cacheMultiObject:" + getCache().cacheMultiObject(TestModel.class).get(KEY + KEY));
+//        Log.i(TAG, "cacheInteger:" + getCache().cacheInteger().get(KEY, 0));
+//        Log.i(TAG, "cacheLong:" + getCache().cacheLong().get(KEY, 0L));
+//        Log.i(TAG, "cacheFloat:" + getCache().cacheFloat().get(KEY, 0F));
+//        Log.i(TAG, "cacheDouble:" + getCache().cacheDouble().get(KEY, 0D));
+//        Log.i(TAG, "cacheBoolean:" + getCache().cacheBoolean().get(KEY, false));
+//        Log.i(TAG, "cacheString:" + getCache().cacheString().get(KEY, null));
+//        Log.i(TAG, "cacheObject:" + getCache().cacheObject().get(TestModel.class));
+//        Log.i(TAG, "cacheMultiObject:" + getCache().cacheMultiObject(TestModel.class).get(KEY));
+//        Log.i(TAG, "cacheMultiObject:" + getCache().cacheMultiObject(TestModel.class).get(KEY + KEY));
     }
 
     @Override
