@@ -39,7 +39,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
 
         thread {
             Log.i(_tag, "checkInit start count:${_lruCache.size()}")
-            onLruCacheInitKeys()?.forEach { key ->
+            getLruCacheInitKeys()?.forEach { key ->
                 synchronized(Cache::class.java) {
                     if (!_mapActiveKey!!.containsKey(key)) {
                         Log.i(_tag, "checkInit put $key")
@@ -95,7 +95,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     /**
      * 返回所有缓存的key，用来初始化LruCache，如果子类有对key进行转换，此处应该返回转换后的key
      */
-    protected abstract fun onLruCacheInitKeys(): List<String>?
+    protected abstract fun getLruCacheInitKeys(): List<String>?
 
     /**
      * 返回[key]对应的缓存大小

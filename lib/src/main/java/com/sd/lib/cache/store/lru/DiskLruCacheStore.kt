@@ -29,7 +29,7 @@ abstract class DiskLruCacheStore(
         return _store.containsCache(key)
     }
 
-    final override fun onLruCacheInitKeys(): List<String>? {
+    final override fun getLruCacheInitKeys(): List<String>? {
         return _store.getCacheFiles()?.map { it.name }
     }
 
