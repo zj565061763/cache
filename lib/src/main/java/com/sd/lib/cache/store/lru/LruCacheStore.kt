@@ -37,7 +37,10 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
             Log.i(_tag, "checkLimit start count:${_lruCache.size()}")
             onLruCacheInitKeys().forEach { key ->
                 synchronized(Cache::class.java) {
-                    _lruCache.put(key, "")
+                    if (_lruCache.get(key) == null) {
+                        Log.i(_tag, "checkLimit put $key")
+                        _lruCache.put(key, "")
+                    }
                 }
             }
             Log.i(_tag, "checkLimit end count:${_lruCache.size()}")
@@ -47,9 +50,9 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     final override fun putCache(key: String, value: ByteArray): Boolean {
         return putCacheImpl(key, value).also {
             if (it) {
+                Log.i(_tag, "put count:${_lruCache.size()}")
                 _lruCache.put(key, "")
                 checkLimit()
-                Log.i(_tag, "put end count:${_lruCache.size()}")
             }
         }
     }
