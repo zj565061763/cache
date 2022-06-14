@@ -11,7 +11,7 @@ abstract class DiskLruCacheStore(
     directory: File,
 ) : LruCacheStore(maxSize) {
 
-    val _store = UnlimitedDiskCacheStore(directory)
+    private val _store = UnlimitedDiskCacheStore(directory)
 
     final override fun putCacheImpl(key: String, value: ByteArray): Boolean {
         return _store.putCache(key, value)
