@@ -42,7 +42,7 @@ internal abstract class BaseCacheHandler<T>(
         return keyPrefix + "_" + key
     }
 
-    private val cacheStore: CacheStore
+    private val _cacheStore: CacheStore
         get() = cacheInfo.cacheStore
 
     //---------- CacheHandler start ----------
@@ -53,7 +53,7 @@ internal abstract class BaseCacheHandler<T>(
             val key = transformKey(key)
             val data = transformValueToByte(key, value) ?: return false
             return try {
-                cacheStore.putCache(key, data)
+                _cacheStore.putCache(key, data)
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
                 return false
@@ -65,7 +65,7 @@ internal abstract class BaseCacheHandler<T>(
         synchronized(Cache::class.java) {
             val key = transformKey(key)
             val data = try {
-                cacheStore.getCache(key)
+                _cacheStore.getCache(key)
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
                 return null
@@ -78,7 +78,7 @@ internal abstract class BaseCacheHandler<T>(
         synchronized(Cache::class.java) {
             val key = transformKey(key)
             return try {
-                cacheStore.removeCache(key)
+                _cacheStore.removeCache(key)
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
                 false
@@ -90,7 +90,7 @@ internal abstract class BaseCacheHandler<T>(
         synchronized(Cache::class.java) {
             val key = transformKey(key)
             return try {
-                cacheStore.containsCache(key)
+                _cacheStore.containsCache(key)
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
                 false
