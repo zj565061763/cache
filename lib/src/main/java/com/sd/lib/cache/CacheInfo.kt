@@ -2,11 +2,11 @@ package com.sd.lib.cache
 
 
 interface CacheInfo {
-    /** 是否需要加解密 */
-    val isEncrypt: Boolean
-
     /** 存取对象 */
     val cacheStore: Cache.CacheStore
+
+    /** 是否需要加解密 */
+    val isEncrypt: Boolean
 
     /** 对象转换器 */
     val objectConverter: Cache.ObjectConverter

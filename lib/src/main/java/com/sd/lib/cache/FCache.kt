@@ -5,7 +5,8 @@ import com.sd.lib.cache.handler.impl.*
 import com.sd.lib.cache.simple.SimpleMultiObjectCache
 import com.sd.lib.cache.simple.SimpleObjectCache
 
-abstract class FCache : Cache, CacheInfo {
+open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
+    private val _cacheStore = cacheStore
     private var _isEncrypt = false
     private var _objectConverter: ObjectConverter? = null
     private var _encryptConverter: EncryptConverter? = null
@@ -87,6 +88,9 @@ abstract class FCache : Cache, CacheInfo {
 
     //---------- CacheInfo start ----------
 
+    override val cacheStore: CacheStore
+        get() = _cacheStore
+
     override val isEncrypt
         get() = _isEncrypt
 
@@ -108,10 +112,7 @@ abstract class FCache : Cache, CacheInfo {
          */
         @JvmStatic
         fun disk(): Cache {
-            return object : FCache() {
-                override val cacheStore: CacheStore
-                    get() = CacheConfig.get().cacheStore
-            }
+            return FCache(CacheConfig.get().cacheStore)
         }
     }
 }
