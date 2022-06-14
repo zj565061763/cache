@@ -3,6 +3,7 @@ package com.sd.lib.cache.store.lru
 import android.util.Log
 import android.util.LruCache
 import com.sd.lib.cache.Cache
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.thread
 
 /**
@@ -11,6 +12,7 @@ import kotlin.concurrent.thread
 abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     private val _tag = javaClass.simpleName
     private var _hasCheckLimit = false
+    private var _mapActiveKey: MutableMap<String, String>? = ConcurrentHashMap()
 
     private val _lruCache = object : LruCache<String, String>(maxSize) {
         override fun sizeOf(key: String?, value: String?): Int {
@@ -37,12 +39,13 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
             Log.i(_tag, "checkLimit start count:${_lruCache.size()}")
             onLruCacheInitKeys().forEach { key ->
                 synchronized(Cache::class.java) {
-                    if (_lruCache.get(key) == null) {
+                    if (!_mapActiveKey!!.containsKey(key)) {
                         Log.i(_tag, "checkLimit put $key")
                         _lruCache.put(key, "")
                     }
                 }
             }
+            _mapActiveKey = null
             Log.i(_tag, "checkLimit end count:${_lruCache.size()}")
         }
     }
@@ -50,6 +53,10 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     final override fun putCache(key: String, value: ByteArray): Boolean {
         return putCacheImpl(key, value).also {
             if (it) {
+                _mapActiveKey?.let { map ->
+                    map[key] = ""
+                }
+
                 Log.i(_tag, "put count:${_lruCache.size()}")
                 _lruCache.put(key, "")
                 checkLimit()
