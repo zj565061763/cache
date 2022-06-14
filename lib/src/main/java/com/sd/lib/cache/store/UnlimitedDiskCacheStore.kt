@@ -3,7 +3,7 @@ package com.sd.lib.cache.store
 import java.io.File
 
 /**
- * 无限制的文件缓存
+ * 无限制的磁盘缓存
  */
 open class UnlimitedDiskCacheStore(directory: File) : BaseDiskCacheStore(directory) {
 

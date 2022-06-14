@@ -3,6 +3,9 @@ package com.sd.lib.cache.store.lru
 import com.sd.lib.cache.store.UnlimitedDiskCacheStore
 import java.io.File
 
+/**
+ * Lru算法的磁盘缓存
+ */
 abstract class DiskLruCacheStore(
     maxSize: Int,
     directory: File,

@@ -5,6 +5,9 @@ import android.util.LruCache
 import com.sd.lib.cache.Cache
 import kotlin.concurrent.thread
 
+/**
+ * Lru算法的缓存
+ */
 abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     private val _tag = javaClass.simpleName
     private var _hasCheckLimit = false

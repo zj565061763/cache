@@ -5,7 +5,7 @@ import com.sd.lib.cache.Cache.CacheStore
 import java.io.File
 
 /**
- * 文件缓存
+ * 磁盘缓存
  */
 abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     private val _directory = directory
