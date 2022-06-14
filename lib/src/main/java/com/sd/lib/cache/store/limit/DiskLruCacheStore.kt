@@ -32,12 +32,14 @@ abstract class DiskLruCacheStore(
         }
     }
 
-    override fun onLruCacheSizeOfEntry(key: String): Int {
+    final override fun onLruCacheSizeOfEntry(key: String): Int {
         val file = _store.getCacheFileOrNull(key) ?: return 0
-        return file.length().toInt()
+        return onLruCacheSizeOfEntry(file)
     }
 
     final override fun onLruCacheEntryEvicted(key: String) {
         _store.removeCache(key)
     }
+
+    protected abstract fun onLruCacheSizeOfEntry(file: File): Int
 }
