@@ -11,7 +11,7 @@ import kotlin.concurrent.thread
  */
 abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     private val _tag = javaClass.simpleName
-    private var _hasCheckLimit = false
+    private var _hasCheckInit = false
     private var _mapActiveKey: MutableMap<String, String>? = ConcurrentHashMap()
 
     private val _lruCache = object : LruCache<String, String>(maxSize) {
@@ -30,25 +30,25 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
         }
     }
 
-    private fun checkLimit() {
-        if (_hasCheckLimit) return
+    private fun checkInit() {
+        if (_hasCheckInit) return
         synchronized(this@LruCacheStore) {
-            if (_hasCheckLimit) return
-            _hasCheckLimit = true
+            if (_hasCheckInit) return
+            _hasCheckInit = true
         }
 
         thread {
-            Log.i(_tag, "checkLimit start count:${_lruCache.size()}")
+            Log.i(_tag, "checkInit start count:${_lruCache.size()}")
             onLruCacheInitKeys()?.forEach { key ->
                 synchronized(Cache::class.java) {
                     if (!_mapActiveKey!!.containsKey(key)) {
-                        Log.i(_tag, "checkLimit put $key")
+                        Log.i(_tag, "checkInit put $key")
                         _lruCache.put(key, "")
                     }
                 }
             }
             _mapActiveKey = null
-            Log.i(_tag, "checkLimit end count:${_lruCache.size()}")
+            Log.i(_tag, "checkInit end count:${_lruCache.size()}")
         }
     }
 
@@ -62,7 +62,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
 
                 Log.i(_tag, "put count:${_lruCache.size()}")
                 _lruCache.put(key, "")
-                checkLimit()
+                checkInit()
             }
         }
     }
