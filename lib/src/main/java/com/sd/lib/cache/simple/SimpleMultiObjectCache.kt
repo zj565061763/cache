@@ -5,11 +5,11 @@ import com.sd.lib.cache.CacheInfo
 import com.sd.lib.cache.handler.impl.ObjectHandler
 
 internal class SimpleMultiObjectCache<T>(
+    cacheInfo: CacheInfo,
     val objectClass: Class<T>,
-    info: CacheInfo,
 ) : MultiObjectCache<T> {
 
-    private val _objectHandler by lazy { ObjectHandler(info, "multi_object") }
+    private val _objectHandler by lazy { ObjectHandler(cacheInfo, "multi_object") }
 
     private fun transformKey(key: String): String {
         return "${objectClass.name}_$key"
