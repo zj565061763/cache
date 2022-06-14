@@ -3,6 +3,7 @@ package com.sd.lib.cache.store
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.Cache.CacheStore
 import java.io.File
+import java.security.MessageDigest
 
 /**
  * 磁盘缓存
@@ -102,11 +103,17 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         }
     }
 
+    @Throws(Exception::class)
     fun transformKey(key: String): String {
-        return KeyPrefix + key
+        return KeyPrefix + md5(key)
     }
 
     companion object {
         private const val KeyPrefix = "f_d_"
+
+        private fun md5(key: String): String {
+            val bytes = MessageDigest.getInstance("MD5").digest(key.toByteArray())
+            return bytes.joinToString("") { "%02X".format(it) }
+        }
     }
 }
