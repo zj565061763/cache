@@ -10,6 +10,11 @@ class SizeDiskLruCacheStore(
     directory: File,
 ) : DiskLruCacheStore(maxSize, directory) {
     override fun onLruCacheSizeOfEntry(file: File): Int {
-        return file.length().toInt()
+        return try {
+            file.length().toInt()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0
+        }
     }
 }

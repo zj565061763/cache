@@ -23,7 +23,9 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
             super.entryRemoved(evicted, key, oldValue, newValue)
             if (evicted) {
                 Log.i(_tag, "evicted count:${size()}")
-                onLruCacheEntryEvicted(key!!)
+                synchronized(Cache::class.java) {
+                    onLruCacheEntryEvicted(key!!)
+                }
             }
         }
     }
@@ -53,6 +55,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     final override fun putCache(key: String, value: ByteArray): Boolean {
         return putCacheImpl(key, value).also {
             if (it) {
+                val key = onLruCacheTransformKey(key)
                 _mapActiveKey?.let { map ->
                     map[key] = ""
                 }
@@ -71,6 +74,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     final override fun removeCache(key: String): Boolean {
         return removeCacheImpl(key).also {
             if (it) {
+                val key = onLruCacheTransformKey(key)
                 _lruCache.remove(key)
             }
         }
@@ -89,7 +93,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     protected abstract fun containsCacheImpl(key: String): Boolean
 
     /**
-     * 返回所有LruCache缓存的key
+     * 返回所有缓存的key，用来初始化LruCache，如果子类有对key进行转换，此处应该返回转换后的key
      */
     protected abstract fun onLruCacheInitKeys(): List<String>
 
@@ -102,4 +106,11 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
      * LruCache缓存被驱逐，子类需要移除[key]对应的缓存
      */
     protected abstract fun onLruCacheEntryEvicted(key: String)
+
+    /**
+     * 如果子类在保存缓存的时候对key进行了转换，需要重写此方法转换LruCache中的key
+     */
+    protected open fun onLruCacheTransformKey(key: String): String {
+        return key
+    }
 }

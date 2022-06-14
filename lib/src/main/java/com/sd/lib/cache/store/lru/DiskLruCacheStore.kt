@@ -30,18 +30,25 @@ abstract class DiskLruCacheStore(
     }
 
     final override fun onLruCacheInitKeys(): List<String> {
-        return _store.getCacheFiles().map {
-            _store.unpackKey(it.name)
-        }
+        return _store.getCacheFiles().map { it.name }
     }
 
     final override fun onLruCacheSizeOfEntry(key: String): Int {
-        val file = _store.getCacheFileOrNull(key) ?: return 0
+        val file = _store.getCacheFileByName(key) ?: return 0
         return onLruCacheSizeOfEntry(file)
     }
 
     final override fun onLruCacheEntryEvicted(key: String) {
-        _store.removeCache(key)
+        val file = _store.getCacheFileByName(key) ?: return
+        try {
+            file.delete()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    final override fun onLruCacheTransformKey(key: String): String {
+        return _store.transformKey(key)
     }
 
     protected abstract fun onLruCacheSizeOfEntry(file: File): Int
