@@ -55,7 +55,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     final override fun putCache(key: String, value: ByteArray): Boolean {
         return putCacheImpl(key, value).also {
             if (it) {
-                val key = onLruCacheTransformKey(key)
+                val key = transformKeyForLruCache(key)
                 _mapActiveKey?.let { map ->
                     map[key] = ""
                 }
@@ -74,7 +74,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     final override fun removeCache(key: String): Boolean {
         return removeCacheImpl(key).also {
             if (it) {
-                val key = onLruCacheTransformKey(key)
+                val key = transformKeyForLruCache(key)
                 _lruCache.remove(key)
             }
         }
@@ -110,7 +110,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     /**
      * 如果子类在保存缓存的时候对key进行了转换，需要重写此方法转换LruCache中的key
      */
-    protected open fun onLruCacheTransformKey(key: String): String {
+    protected open fun transformKeyForLruCache(key: String): String {
         return key
     }
 }

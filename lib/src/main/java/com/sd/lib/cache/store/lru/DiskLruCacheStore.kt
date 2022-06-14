@@ -47,7 +47,7 @@ abstract class DiskLruCacheStore(
         }
     }
 
-    final override fun onLruCacheTransformKey(key: String): String {
+    final override fun transformKeyForLruCache(key: String): String {
         return _store.transformKey(key)
     }
 
