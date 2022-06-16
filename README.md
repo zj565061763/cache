@@ -108,40 +108,36 @@ public class MainActivity extends AppCompatActivity
 
 # 对象转换器
 ```java
-public class GsonObjectConverter implements Cache.ObjectConverter
-{
-    private static final Gson GSON = new Gson();
+public class GsonObjectConverter implements Cache.ObjectConverter {
+    private final Gson gson = new Gson();
 
+    @NonNull
     @Override
-    public byte[] objectToByte(Object object)
-    {
-        // 对象转byte
-        return GSON.toJson(object).getBytes();
+    public byte[] objectToByte(@NonNull Object value) throws Exception {
+        return gson.toJson(value).getBytes();
     }
 
+    @NonNull
     @Override
-    public <T> T byteToObject(byte[] bytes, Class<T> clazz)
-    {
-        // byte转对象
-        return GSON.fromJson(new String(bytes), clazz);
+    public <T> T byteToObject(@NonNull byte[] bytes, @NonNull Class<T> clazz) throws Exception {
+        return gson.fromJson(new String(bytes), clazz);
     }
 }
 ```
 
 # 加解密转换器
 ```java
-public class GlobalEncryptConverter implements Cache.EncryptConverter
-{
+public class GlobalEncryptConverter implements Cache.EncryptConverter {
+    @NonNull
     @Override
-    public byte[] encrypt(byte[] bytes)
-    {
+    public byte[] encrypt(@NonNull byte[] bytes) throws Exception {
         // 加密
         return bytes;
     }
 
+    @NonNull
     @Override
-    public byte[] decrypt(byte[] bytes)
-    {
+    public byte[] decrypt(@NonNull byte[] bytes) throws Exception {
         // 解密
         return bytes;
     }
@@ -154,33 +150,33 @@ public class GlobalEncryptConverter implements Cache.EncryptConverter
 /**
  * 自定义CacheStore
  */
-public class MMKVCacheStore implements Cache.CacheStore
-{
-    private final MMKV mMMKV;
+public class MMKVCacheStore implements Cache.CacheStore {
+    private final MMKV _mmkv;
 
-    public MMKVCacheStore(Context context)
-    {
+    public MMKVCacheStore(Context context) {
         MMKV.initialize(context);
-        mMMKV = MMKV.defaultMMKV();
+        _mmkv = MMKV.defaultMMKV();
     }
 
     @Override
-    public boolean putCache(String key, byte[] value, CacheInfo info)
-    {
-        return mMMKV.encode(key, value);
+    public boolean putCache(@NonNull String key, @NonNull byte[] value) {
+        return _mmkv.encode(key, value);
     }
 
     @Override
-    public byte[] getCache(String key, Class<?> clazz, CacheInfo info)
-    {
-        return mMMKV.decodeBytes(key);
+    public byte[] getCache(@NonNull String key) {
+        return _mmkv.decodeBytes(key);
     }
 
     @Override
-    public boolean removeCache(String key, CacheInfo info)
-    {
-        mMMKV.remove(key);
+    public boolean removeCache(@NonNull String key) {
+        _mmkv.remove(key);
         return true;
+    }
+
+    @Override
+    public boolean containsCache(@NonNull String key) {
+        return _mmkv.contains(key);
     }
 }
 ```
