@@ -110,6 +110,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     /**
      * 如果子类在保存缓存的时候对key进行了转换，需要重写此方法转换LruCache中的key
      */
+    @Throws(Exception::class)
     protected open fun transformKeyForLruCache(key: String): String {
         return key
     }
