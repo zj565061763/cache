@@ -5,8 +5,7 @@ import com.sd.lib.cache.CacheInfo
 import com.sd.lib.cache.handler.impl.ObjectHandler
 
 internal class SimpleObjectCache(info: CacheInfo) : ObjectCache {
-
-    private val _handler by lazy { ObjectHandler(info, "object") }
+    private val _handler = ObjectHandler(info, "object")
 
     override fun put(value: Any?): Boolean {
         if (value == null) return false

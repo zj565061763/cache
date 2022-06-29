@@ -8,8 +8,7 @@ internal class SimpleMultiObjectCache<T>(
     cacheInfo: CacheInfo,
     val objectClass: Class<T>,
 ) : MultiObjectCache<T> {
-
-    private val _objectHandler by lazy { ObjectHandler(cacheInfo, "multi_object") }
+    private val _objectHandler = ObjectHandler(cacheInfo, "multi_object")
 
     private fun transformKey(key: String): String {
         return "${objectClass.name}_$key"
