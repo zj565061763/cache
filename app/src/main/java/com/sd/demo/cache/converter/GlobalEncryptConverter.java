@@ -1,11 +1,11 @@
-package com.sd.www.cache.converter;
+package com.sd.demo.cache.converter;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.sd.lib.cache.Cache;
-import com.sd.www.cache.MainActivity;
+import com.sd.demo.cache.MainActivity;
 
 /**
  * Created by Administrator on 2017/8/29.
