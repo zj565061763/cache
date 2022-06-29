@@ -76,11 +76,11 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     /**
      * 返回所有缓存的文件
      */
-    fun getCacheFiles(): List<File>? {
+    fun getCacheFiles(): Array<File>? {
         synchronized(Cache::class.java) {
             return try {
-                getDirectory().listFiles()?.filter {
-                    it.name.startsWith(KeyPrefix) && it.isFile
+                getDirectory().listFiles { file ->
+                    file.name.startsWith(KeyPrefix) && file.isFile
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
