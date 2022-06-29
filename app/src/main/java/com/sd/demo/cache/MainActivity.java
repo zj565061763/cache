@@ -21,8 +21,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        putData();
-        getData();
     }
 
     private Cache getCache() {
@@ -63,8 +61,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i(TAG, "cacheMultiObject:" + getCache().cacheMultiObject(TestModel.class).get(KEY + KEY));
     }
 
+    private void removeData() {
+        getCache().cacheInteger().remove(KEY);
+        getCache().cacheLong().remove(KEY);
+        getCache().cacheFloat().remove(KEY);
+        getCache().cacheDouble().remove(KEY);
+        getCache().cacheBoolean().remove(KEY);
+        getCache().cacheString().remove(KEY);
+        getCache().cacheObject().remove(TestModel.class);
+        getCache().cacheMultiObject(TestModel.class).remove(KEY);
+        getCache().cacheMultiObject(TestModel.class).remove(KEY + KEY);
+    }
+
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()) {
+            case R.id.btn_put:
+                putData();
+                break;
+            case R.id.btn_get:
+                getData();
+                break;
+            case R.id.btn_remove:
+                removeData();
+                break;
+            default:
+                break;
+        }
     }
 }
