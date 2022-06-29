@@ -38,13 +38,9 @@ abstract class DiskLruCacheStore(
         return onLruCacheSizeOfEntry(file)
     }
 
+    @Throws(Exception::class)
     final override fun onLruCacheEntryEvicted(key: String) {
-        val file = _store.getCacheFileByName(key) ?: return
-        try {
-            file.delete()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        _store.getCacheFileByName(key)?.delete()
     }
 
     @Throws(Exception::class)

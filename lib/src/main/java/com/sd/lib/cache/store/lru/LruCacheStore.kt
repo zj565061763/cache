@@ -24,7 +24,12 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
             if (evicted) {
                 Log.i(_tag, "evicted count:${size()}")
                 synchronized(Cache::class.java) {
-                    onLruCacheEntryEvicted(key!!)
+                    try {
+                        onLruCacheEntryEvicted(key!!)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Log.e(_tag, "evicted error:$e")
+                    }
                 }
             }
         }
@@ -105,6 +110,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     /**
      * LruCache缓存被驱逐，子类需要移除[key]对应的缓存
      */
+    @Throws(Exception::class)
     protected abstract fun onLruCacheEntryEvicted(key: String)
 
     /**
