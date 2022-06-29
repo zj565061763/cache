@@ -48,8 +48,9 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
             keys?.forEach { key ->
                 synchronized(Cache::class.java) {
                     if (!_mapActiveKey!!.containsKey(key)) {
-                        Log.i(_tag, "checkInit put $key")
+                        val size = _lruCache.size()
                         _lruCache.put(key, "")
+                        Log.i(_tag, "checkInit put $key count ($size -> ${_lruCache.size()})")
                     }
                 }
             }
