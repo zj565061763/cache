@@ -66,6 +66,7 @@ class CacheConfig private constructor(builder: Builder) {
     }
 
     companion object {
+        @Volatile
         @JvmStatic
         private var config: CacheConfig? = null
 
@@ -73,11 +74,8 @@ class CacheConfig private constructor(builder: Builder) {
          * 初始化
          */
         @JvmStatic
-        @Synchronized
         fun init(config: CacheConfig) {
-            if (this.config == null) {
-                this.config = config
-            }
+            this.config = config
         }
 
         /**
