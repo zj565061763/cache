@@ -49,8 +49,8 @@ internal abstract class BaseCacheHandler<T>(
 
     override fun putCache(key: String, value: T?): Boolean {
         if (value == null) return false
+        val key = transformKey(key)
         synchronized(Cache::class.java) {
-            val key = transformKey(key)
             val data = transformValueToByte(key, value) ?: return false
             return try {
                 _cacheStore.putCache(key, data)
@@ -62,8 +62,8 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     override fun getCache(key: String, clazz: Class<*>?): T? {
+        val key = transformKey(key)
         synchronized(Cache::class.java) {
-            val key = transformKey(key)
             val data = try {
                 _cacheStore.getCache(key)
             } catch (e: Exception) {
@@ -75,8 +75,8 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     override fun removeCache(key: String): Boolean {
+        val key = transformKey(key)
         synchronized(Cache::class.java) {
-            val key = transformKey(key)
             return try {
                 _cacheStore.removeCache(key)
             } catch (e: Exception) {
@@ -87,8 +87,8 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     override fun containsCache(key: String): Boolean {
+        val key = transformKey(key)
         synchronized(Cache::class.java) {
-            val key = transformKey(key)
             return try {
                 _cacheStore.containsCache(key)
             } catch (e: Exception) {
