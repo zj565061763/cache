@@ -66,8 +66,9 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
                     map[key] = ""
                 }
 
-                Log.i(_tag, "put count:${_lruCache.size()}")
+                val size = _lruCache.size()
                 _lruCache.put(key, "")
+                Log.i(_tag, "put count ($size -> ${_lruCache.size()})")
                 checkInit()
             }
         }
