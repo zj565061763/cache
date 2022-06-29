@@ -56,7 +56,7 @@ internal abstract class BaseCacheHandler<T>(
                 _cacheStore.putCache(key, data)
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
-                return false
+                false
             }
         }
     }
@@ -68,7 +68,7 @@ internal abstract class BaseCacheHandler<T>(
                 _cacheStore.getCache(key)
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
-                return null
+                null
             } ?: return null
             return transformByteToValue(key, data, clazz)
         }
