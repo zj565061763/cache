@@ -43,8 +43,9 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
         }
 
         thread {
-            Log.i(_tag, "checkInit start count:${_lruCache.size()}")
-            getLruCacheInitKeys()?.forEach { key ->
+            val keys = getLruCacheInitKeys()
+            Log.i(_tag, "checkInit start count:${_lruCache.size()} keys:\r\n${keys?.joinToString("\r\n")}")
+            keys?.forEach { key ->
                 synchronized(Cache::class.java) {
                     if (!_mapActiveKey!!.containsKey(key)) {
                         Log.i(_tag, "checkInit put $key")
