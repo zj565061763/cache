@@ -120,7 +120,7 @@ internal abstract class BaseCacheHandler<T>(
         }
 
         val dataWithTag = data.copyOf(data.size + 1)
-        dataWithTag[dataWithTag.size - 1] = (if (isEncrypt) 1 else 0).toByte()
+        dataWithTag[dataWithTag.lastIndex] = (if (isEncrypt) 1 else 0).toByte()
         return dataWithTag
     }
 
