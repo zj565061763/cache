@@ -22,7 +22,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
         override fun entryRemoved(evicted: Boolean, key: String?, oldValue: String?, newValue: String?) {
             super.entryRemoved(evicted, key, oldValue, newValue)
             if (evicted) {
-                Log.i(_tag, "evicted count:${size()}")
+                Log.i(_tag, "evicted $key count:${size()}")
                 synchronized(Cache::class.java) {
                     try {
                         onLruCacheEntryEvicted(key!!)
@@ -43,14 +43,14 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
         }
 
         thread {
-            val keys = getLruCacheInitKeys()
-            Log.i(_tag, "checkInit start count:${_lruCache.size()} keys:\r\n${keys?.joinToString("\r\n")}")
-            keys?.forEach { key ->
+            val keys = getLruCacheInitKeys() ?: listOf()
+            Log.i(_tag, "checkInit start count:${_lruCache.size()} keys:${keys.size} \r\n${keys.joinToString("\r\n")}")
+            keys.forEach { key ->
                 synchronized(Cache::class.java) {
                     if (!_mapActiveKey!!.containsKey(key)) {
                         val size = _lruCache.size()
                         _lruCache.put(key, "")
-                        Log.i(_tag, "checkInit put $key count ($size -> ${_lruCache.size()})")
+                        Log.i(_tag, "checkInit put $key ($size -> ${_lruCache.size()})")
                     }
                 }
             }
@@ -69,7 +69,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
 
                 val size = _lruCache.size()
                 _lruCache.put(key, "")
-                Log.i(_tag, "put count ($size -> ${_lruCache.size()})")
+                Log.i(_tag, "put $key ($size -> ${_lruCache.size()})")
                 checkInit()
             }
         }
