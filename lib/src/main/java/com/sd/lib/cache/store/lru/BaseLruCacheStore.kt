@@ -3,16 +3,13 @@ package com.sd.lib.cache.store.lru
 import android.util.Log
 import android.util.LruCache
 import com.sd.lib.cache.Cache
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Lru算法的缓存
  */
 abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
     @Volatile
-    private var _activeKeyHolder: MutableMap<String, String>? = ConcurrentHashMap()
-    @Volatile
-    private var _isInit = false
+    private var _hasInit = false
 
     private val _lruCache = object : LruCache<String, Int>(limit) {
         override fun sizeOf(key: String, value: Int): Int {
@@ -32,25 +29,16 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
     }
 
     private fun checkInit() {
-        if (_activeKeyHolder == null) {
-            // 已经初始化过了
-            return
-        }
-        if (_isInit) {
-            // 正在初始化
+        if (_hasInit) {
+            // 已经初始化了
             return
         }
 
         synchronized(this@BaseLruCacheStore) {
-            if (_isInit) return
-            _isInit = true
+            if (_hasInit) return
+            _hasInit = true
         }
 
-        initLruCache()
-    }
-
-    private fun initLruCache() {
-        val activeKeyHolder = _activeKeyHolder ?: return
         val map = try {
             getLruCacheSizeMap() ?: mapOf()
         } catch (e: Exception) {
@@ -60,32 +48,23 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
         }
 
         logMsg("initLruCache start count:${_lruCache.size()} cacheSize:${map.size}")
-
         for ((key, value) in map) {
-            if (activeKeyHolder.containsKey(key)) continue
-
             logMsg("initLruCache +++ start $key ${_lruCache.size()}")
             _lruCache.put(key, value)
             logMsg("initLruCache +++++++++++++++ end $key ${_lruCache.size()}")
         }
-
-        // 初始化结束，重置
-        _activeKeyHolder = null
-        _isInit = false
         logMsg("initLruCache end count:${_lruCache.size()}")
     }
 
     final override fun putCache(key: String, value: ByteArray): Boolean {
         return putCacheImpl(key, value).also {
             if (it) {
-                val key = transformKeyForLruCache(key)
-                _activeKeyHolder?.put(key, "")
+                checkInit()
 
+                val key = transformKeyForLruCache(key)
                 logMsg("+++ start $key ${_lruCache.size()}")
                 _lruCache.put(key, value.size)
                 logMsg("+++++++++++++++ end $key ${_lruCache.size()}")
-
-                checkInit()
             }
         }
     }
