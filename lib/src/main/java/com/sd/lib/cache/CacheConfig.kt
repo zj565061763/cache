@@ -30,33 +30,29 @@ class CacheConfig private constructor(builder: Builder) {
         /**
          * 设置对象转换器
          */
-        fun setObjectConverter(converter: Cache.ObjectConverter?): Builder {
+        fun setObjectConverter(converter: Cache.ObjectConverter?) = apply {
             _objectConverter = converter
-            return this
         }
 
         /**
          * 设置加解密转换器
          */
-        fun setEncryptConverter(converter: Cache.EncryptConverter?): Builder {
+        fun setEncryptConverter(converter: Cache.EncryptConverter?) = apply {
             _encryptConverter = converter
-            return this
         }
 
         /**
          * 设置异常处理对象
          */
-        fun setExceptionHandler(handler: Cache.ExceptionHandler?): Builder {
+        fun setExceptionHandler(handler: Cache.ExceptionHandler?) = apply {
             _exceptionHandler = handler
-            return this
         }
 
         /**
          * 设置缓存
          */
-        fun setCacheStore(store: Cache.CacheStore?): Builder {
+        fun setCacheStore(store: Cache.CacheStore?) = apply {
             _cacheStore = store
-            return this
         }
 
         fun build(context: Context): CacheConfig {
