@@ -48,29 +48,40 @@ abstract class LruCacheStore(limit: Int) : Cache.CacheStore {
             try {
                 _mutator.mutate {
                     withContext(Dispatchers.IO) {
-                        val activeKeyHolder = _activeKeyHolder ?: return@withContext
-                        val map = getLruCacheSizeMap() ?: mapOf()
-                        logMsg("checkInit start count:${_lruCache.size()} cacheSize:${map.size}")
-
-                        for ((key, value) in map) {
-                            if (activeKeyHolder.containsKey(key)) continue
-
-                            val size = _lruCache.size()
-                            _lruCache.put(key, value)
-                            logMsg("checkInit +++++ $key ($size -> ${_lruCache.size()})")
-
-                            yield()
-                        }
-
-                        _activeKeyHolder = null
-                        logMsg("checkInit end count:${_lruCache.size()}")
+                        initLruCache()
                     }
                 }
             } catch (e: Exception) {
-                Log.i(_tag, "checkInit error:${e}")
+                Log.i(_tag, "initLruCache error:${e}")
                 throw e
             }
         }
+    }
+
+    private suspend fun initLruCache() {
+        val activeKeyHolder = _activeKeyHolder ?: return
+        val map = try {
+            getLruCacheSizeMap() ?: mapOf()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            logMsg("initLruCache getLruCacheSizeMap error:$e")
+            return
+        }
+
+        logMsg("initLruCache start count:${_lruCache.size()} cacheSize:${map.size}")
+
+        for ((key, value) in map) {
+            if (activeKeyHolder.containsKey(key)) continue
+
+            val size = _lruCache.size()
+            _lruCache.put(key, value)
+            logMsg("initLruCache +++++ $key ($size -> ${_lruCache.size()})")
+
+            yield()
+        }
+
+        _activeKeyHolder = null
+        logMsg("initLruCache end count:${_lruCache.size()}")
     }
 
     final override fun putCache(key: String, value: ByteArray): Boolean {
