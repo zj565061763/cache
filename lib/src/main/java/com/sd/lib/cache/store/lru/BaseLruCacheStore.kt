@@ -135,7 +135,7 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
     /**
      * 缓存被驱逐回调，子类需要移除[key]对应的缓存，
      * 如果子类重写了[transformKeyForLruCache]对key进行转换，则参数[key]是转换后的key，
-     * 此方法已经同步锁住[Cache]
+     * 此方法有可能在子线程执行，已经同步锁住[Cache]
      */
     @Throws(Exception::class)
     protected abstract fun onLruCacheEntryEvicted(key: String)
