@@ -18,7 +18,7 @@ public class App extends Application
         // 初始化
         CacheConfig.init(new CacheConfig.Builder()
                 /**
-                 * 使用腾讯MMKV自定义的CacheStore，如果不设置，默认使用内部存储目录"/data/包名/files/disk_file"
+                 * 使用腾讯MMKV自定义的CacheStore，如果不设置，默认使用内部存储目录"/data/包名/files/f_disk_file"
                  */
                 .setDiskCacheStore(new MMKVCacheStore(this))
                 /**
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity
             /**
              * 使用本地磁盘缓存
              * <p>
-             * 默认使用内部存储目录"/data/包名/files/disk_file"，可以在初始化的时候设置{@link CacheConfig.Builder#setDiskCacheStore(CacheStore)}
+             * 默认使用内部存储目录"/data/包名/files/f_disk_file"，可以在初始化的时候设置{@link CacheConfig.Builder#setDiskCacheStore(CacheStore)}
              */
             mCache = FCache.disk();
 
