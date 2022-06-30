@@ -40,8 +40,8 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
     }
 
     private fun checkInit() {
-        if (_initThread != null) return
         if (_activeKeyHolder == null) return
+        if (_initThread != null) return
 
         synchronized(this@BaseLruCacheStore) {
             if (_initThread != null) return
@@ -72,6 +72,7 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
         }
 
         _activeKeyHolder = null
+        _initThread = null
         logMsg("initLruCache end count:${_lruCache.size()}")
     }
 
