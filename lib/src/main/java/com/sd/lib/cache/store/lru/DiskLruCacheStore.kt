@@ -13,6 +13,8 @@ abstract class DiskLruCacheStore internal constructor(
 
     private val _store = UnlimitedDiskCacheStore(directory)
 
+    // -------------------- Basic start --------------------
+
     override fun putCacheImpl(key: String, value: ByteArray): Boolean {
         return _store.putCache(key, value)
     }
@@ -28,6 +30,8 @@ abstract class DiskLruCacheStore internal constructor(
     override fun containsCacheImpl(key: String): Boolean {
         return _store.containsCache(key)
     }
+
+    // -------------------- Basic end --------------------
 
     override fun getLruCacheMap(): Map<String, Int>? {
         return _store.getCacheFiles()?.associateBy(
