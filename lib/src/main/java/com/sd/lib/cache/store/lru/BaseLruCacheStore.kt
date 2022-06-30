@@ -3,10 +3,7 @@ package com.sd.lib.cache.store.lru
 import android.util.Log
 import android.util.LruCache
 import com.sd.lib.cache.Cache
-import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Lru算法的缓存
@@ -16,8 +13,6 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
     private var _activeKeyHolder: MutableMap<String, String>? = ConcurrentHashMap()
     @Volatile
     private var _isInit = false
-
-    private val _coroutineScope = MainScope()
 
     private val _lruCache = object : LruCache<String, Int>(limit) {
         override fun sizeOf(key: String, value: Int): Int {
@@ -51,9 +46,7 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
             _isInit = true
         }
 
-        launch(Dispatchers.IO) {
-            initLruCache()
-        }
+        initLruCache()
     }
 
     private fun initLruCache() {
@@ -128,13 +121,15 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
 
     /**
      * 返回所有key和每个key对应的字节数量，
-     * 如果子类重写了[transformKeyForLruCache]对key进行转换，此处要返回转换后的key
+     * 如果子类重写了[transformKeyForLruCache]对key进行转换，此处要返回转换后的key，
+     * 此方法有可能在子线程执行
      */
     @Throws(Exception::class)
     protected abstract fun getLruCacheSizeMap(): Map<String, Int>?
 
     /**
-     * 返回缓存项的大小，[byteCount]为该缓存项的字节数量(单位B)
+     * 返回缓存项的大小，[byteCount]为该缓存项的字节数量(单位B)，
+     * 此方法有可能在子线程执行
      */
     protected abstract fun sizeOfLruCacheEntry(key: String, byteCount: Int): Int
 
@@ -147,6 +142,7 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
 
     /**
      * 如果子类在保存缓存的时候对key进行了转换，需要重写此方法转换LruCache的key，
+     * 此方法有可能在子线程执行
      */
     protected open fun transformKeyForLruCache(key: String): String {
         return key
@@ -154,20 +150,5 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
 
     protected open fun logMsg(msg: String) {
         Log.i(javaClass.simpleName, msg)
-    }
-
-    /**
-     * 启动协程
-     */
-    protected fun launch(
-        context: CoroutineContext = EmptyCoroutineContext,
-        start: CoroutineStart = CoroutineStart.DEFAULT,
-        block: suspend CoroutineScope.() -> Unit,
-    ): Job {
-        return _coroutineScope.launch(
-            context = context,
-            start = start,
-            block = block
-        )
     }
 }

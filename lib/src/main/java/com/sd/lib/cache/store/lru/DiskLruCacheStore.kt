@@ -1,7 +1,6 @@
 package com.sd.lib.cache.store.lru
 
 import com.sd.lib.cache.store.UnlimitedDiskCacheStore
-import kotlinx.coroutines.Dispatchers
 import java.io.File
 
 /**
@@ -40,11 +39,7 @@ abstract class DiskLruCacheStore internal constructor(
     }
 
     override fun onLruCacheEntryEvicted(key: String) {
-        launch(Dispatchers.IO) {
-            runCatching {
-                _store.removeCacheByFilename(key)
-            }
-        }
+        _store.removeCacheByFilename(key)
     }
 
     override fun transformKeyForLruCache(key: String): String {
