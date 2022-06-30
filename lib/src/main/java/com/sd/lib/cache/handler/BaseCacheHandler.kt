@@ -123,31 +123,19 @@ internal abstract class BaseCacheHandler<T>(
         return dataWithTag
     }
 
+    @Throws(Exception::class)
     private fun decodeFromByte(key: String, data: ByteArray, clazz: Class<*>?): T? {
-        if (data.isEmpty()) {
-            cacheInfo.exceptionHandler.onException(RuntimeException("Data is empty. key:$key"))
-            return null
-        }
+        check(data.isNotEmpty()) { "Data is empty. key:$key" }
 
         val isEncrypted = data.last().toInt() == 1
         var data = data.copyOf(data.size - 1)
 
         if (isEncrypted) {
             val converter = checkNotNull(cacheInfo.encryptConverter) { "EncryptConverter is null. key:$key" }
-            data = try {
-                converter.decrypt(data)
-            } catch (e: Exception) {
-                cacheInfo.exceptionHandler.onException(e)
-                return null
-            }
+            data = converter.decrypt(data)
         }
 
-        return try {
-            byteToValue(data, clazz)
-        } catch (e: Exception) {
-            cacheInfo.exceptionHandler.onException(e)
-            return null
-        }
+        return byteToValue(data, clazz)
     }
     /**
      * 缓存转byte
