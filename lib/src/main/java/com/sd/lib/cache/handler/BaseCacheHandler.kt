@@ -51,9 +51,10 @@ internal abstract class BaseCacheHandler<T>(
         if (value == null) return false
         val key = transformKey(key)
         synchronized(Cache::class.java) {
-            val data = encodeToByte(key, value)
             return try {
-                _cacheStore.putCache(key, data)
+                encodeToByte(key, value).let { data ->
+                    _cacheStore.putCache(key, data)
+                }
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
                 false
@@ -64,13 +65,14 @@ internal abstract class BaseCacheHandler<T>(
     override fun getCache(key: String, clazz: Class<*>?): T? {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
-            val data = try {
-                _cacheStore.getCache(key)
+            return try {
+                _cacheStore.getCache(key)?.let { data ->
+                    decodeFromByte(key, data, clazz)
+                }
             } catch (e: Exception) {
                 cacheInfo.exceptionHandler.onException(e)
                 null
-            } ?: return null
-            return decodeFromByte(key, data, clazz)
+            }
         }
     }
 
