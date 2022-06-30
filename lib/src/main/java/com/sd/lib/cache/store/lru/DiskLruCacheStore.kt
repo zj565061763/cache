@@ -1,7 +1,9 @@
 package com.sd.lib.cache.store.lru
 
+import android.os.Looper
 import com.sd.lib.cache.store.UnlimitedDiskCacheStore
 import java.io.File
+import kotlin.concurrent.thread
 
 /**
  * Lru算法的磁盘缓存
@@ -40,7 +42,16 @@ abstract class DiskLruCacheStore internal constructor(
 
     @Throws(Exception::class)
     override fun onLruCacheEntryEvicted(key: String) {
-        _store.removeCacheByFilename(key)
+        val isMain = Looper.myLooper() == Looper.getMainLooper()
+        if (isMain) {
+            thread {
+                runCatching {
+                    _store.removeCacheByFilename(key)
+                }
+            }
+        } else {
+            _store.removeCacheByFilename(key)
+        }
     }
 
     @Throws(Exception::class)
