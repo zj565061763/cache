@@ -23,7 +23,12 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
             super.entryRemoved(evicted, key, oldValue, newValue)
             if (evicted) {
                 logMsg("--- $key count:${size()} ${Thread.currentThread().name}")
-                onLruCacheEntryEvicted(key)
+                try {
+                    onLruCacheEntryEvicted(key)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    logMsg("evicted error:$e")
+                }
             }
         }
     }
@@ -117,6 +122,7 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
      * 如果子类重写了[transformKeyForLruCache]对key进行转换，则参数[key]是转换后的key，
      * 此方法有可能在子线程执行
      */
+    @Throws(Exception::class)
     protected abstract fun onLruCacheEntryEvicted(key: String)
 
     /**

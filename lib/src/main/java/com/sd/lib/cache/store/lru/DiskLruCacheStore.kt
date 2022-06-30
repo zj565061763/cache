@@ -38,6 +38,7 @@ abstract class DiskLruCacheStore internal constructor(
         return _store.getCacheSizeMap()
     }
 
+    @Throws(Exception::class)
     override fun onLruCacheEntryEvicted(key: String) {
         _store.removeCacheByFilename(key)
     }
