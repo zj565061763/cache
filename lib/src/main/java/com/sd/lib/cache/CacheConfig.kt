@@ -85,7 +85,7 @@ class CacheConfig private constructor(builder: Builder) {
          * 返回配置
          */
         @JvmStatic
-        fun get(): CacheConfig {
+        internal fun get(): CacheConfig {
             return checkNotNull(config) { "CacheConfig has not been init" }
         }
     }
