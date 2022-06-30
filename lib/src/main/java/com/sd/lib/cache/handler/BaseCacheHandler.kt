@@ -14,6 +14,9 @@ internal abstract class BaseCacheHandler<T>(
     val keyPrefix: String,
 ) : CacheHandler<T>, CommonCache<T> {
 
+    private val _cacheStore: CacheStore
+        get() = cacheInfo.cacheStore
+
     init {
         require(keyPrefix.isNotEmpty()) { "keyPrefix is empty" }
     }
@@ -42,9 +45,6 @@ internal abstract class BaseCacheHandler<T>(
         require(key.isNotEmpty()) { "key is empty" }
         return keyPrefix + "_" + key
     }
-
-    private val _cacheStore: CacheStore
-        get() = cacheInfo.cacheStore
 
     private fun notifyException(e: Exception) {
         if (e is CacheException) throw e
