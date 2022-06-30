@@ -124,7 +124,7 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     @Throws(Exception::class)
-    private fun decodeFromByte(key: String, data: ByteArray, clazz: Class<*>?): T? {
+    private fun decodeFromByte(key: String, data: ByteArray, clazz: Class<*>?): T {
         check(data.isNotEmpty()) { "Data is empty. key:$key" }
 
         val isEncrypted = data.last().toInt() == 1
