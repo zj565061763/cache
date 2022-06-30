@@ -51,7 +51,7 @@ internal abstract class BaseCacheHandler<T>(
         if (value == null) return false
         val key = transformKey(key)
         synchronized(Cache::class.java) {
-            val data = transformValueToByte(key, value) ?: return false
+            val data = encodeToByte(key, value)
             return try {
                 _cacheStore.putCache(key, data)
             } catch (e: Exception) {
@@ -70,7 +70,7 @@ internal abstract class BaseCacheHandler<T>(
                 cacheInfo.exceptionHandler.onException(e)
                 null
             } ?: return null
-            return transformByteToValue(key, data, clazz)
+            return decodeFromByte(key, data, clazz)
         }
     }
 
@@ -100,23 +100,14 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CacheHandler end ----------
 
-    private fun transformValueToByte(key: String, value: T): ByteArray? {
-        var data = try {
-            valueToByte(value)
-        } catch (e: Exception) {
-            cacheInfo.exceptionHandler.onException(e)
-            return null
-        }
+    @Throws(Exception::class)
+    private fun encodeToByte(key: String, value: T): ByteArray {
+        var data = valueToByte(value)
 
         val isEncrypt = cacheInfo.isEncrypt
         if (isEncrypt) {
             val converter = checkNotNull(cacheInfo.encryptConverter) { "EncryptConverter is null. key:$key" }
-            data = try {
-                converter.encrypt(data)
-            } catch (e: Exception) {
-                cacheInfo.exceptionHandler.onException(e)
-                return null
-            }
+            data = converter.encrypt(data)
         }
 
         val dataWithTag = data.copyOf(data.size + 1)
@@ -124,7 +115,7 @@ internal abstract class BaseCacheHandler<T>(
         return dataWithTag
     }
 
-    private fun transformByteToValue(key: String, data: ByteArray, clazz: Class<*>?): T? {
+    private fun decodeFromByte(key: String, data: ByteArray, clazz: Class<*>?): T? {
         if (data.isEmpty()) {
             cacheInfo.exceptionHandler.onException(RuntimeException("Data is empty. key:$key"))
             return null
