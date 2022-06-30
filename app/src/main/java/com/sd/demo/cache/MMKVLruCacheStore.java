@@ -60,7 +60,7 @@ public class MMKVLruCacheStore extends BaseLruCacheStore {
     }
 
     @Override
-    protected void onLruCacheEntryEvicted(@NonNull String key) throws Exception {
+    protected void onLruCacheEntryEvicted(@NonNull String key) {
         _mmkv.removeValueForKey(key);
     }
 }

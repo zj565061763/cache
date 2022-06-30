@@ -2,6 +2,7 @@ package com.sd.lib.cache.store.lru
 
 import android.os.Looper
 import com.sd.lib.cache.store.UnlimitedDiskCacheStore
+import kotlinx.coroutines.Dispatchers
 import java.io.File
 import kotlin.concurrent.thread
 
@@ -40,21 +41,25 @@ abstract class DiskLruCacheStore internal constructor(
         return _store.getCacheSizeMap()
     }
 
-    @Throws(Exception::class)
     override fun onLruCacheEntryEvicted(key: String) {
+        launch(Dispatchers.IO) {
+
+        }
+
         val isMain = Looper.myLooper() == Looper.getMainLooper()
         if (isMain) {
             thread {
                 runCatching {
                     _store.removeCacheByFilename(key)
+                    logMsg("removeCacheByFilename thread new ${Thread.currentThread().name}")
                 }
             }
         } else {
             _store.removeCacheByFilename(key)
+            logMsg("removeCacheByFilename thread ${Thread.currentThread().name}")
         }
     }
 
-    @Throws(Exception::class)
     override fun transformKeyForLruCache(key: String): String {
         return _store.transformKey(key)
     }

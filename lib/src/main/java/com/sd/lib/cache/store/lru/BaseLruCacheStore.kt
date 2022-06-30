@@ -3,8 +3,10 @@ package com.sd.lib.cache.store.lru
 import android.util.Log
 import android.util.LruCache
 import com.sd.lib.cache.Cache
+import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.concurrent.thread
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Lru算法的缓存
@@ -13,7 +15,9 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
     @Volatile
     private var _activeKeyHolder: MutableMap<String, String>? = ConcurrentHashMap()
     @Volatile
-    private var _initThread: Thread? = null
+    private var _isInit = false
+
+    private val _coroutineScope = MainScope()
 
     private val _lruCache = object : LruCache<String, Int>(limit) {
         override fun sizeOf(key: String, value: Int): Int {
@@ -27,14 +31,7 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
             super.entryRemoved(evicted, key, oldValue, newValue)
             if (evicted) {
                 logMsg("--- $key count:${size()} ${Thread.currentThread().name}")
-                synchronized(Cache::class.java) {
-                    try {
-                        onLruCacheEntryEvicted(key)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        logMsg("evicted error:$e")
-                    }
-                }
+                onLruCacheEntryEvicted(key)
             }
         }
     }
@@ -44,17 +41,18 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
             // 已经初始化过了
             return
         }
-        if (_initThread != null) {
+        if (_isInit) {
             // 正在初始化
             return
         }
 
-        /** 这里仅同步[_initThread]，不同步[initLruCache] */
         synchronized(this@BaseLruCacheStore) {
-            if (_initThread != null) return
-            _initThread = thread {
-                initLruCache()
-            }
+            if (_isInit) return
+            _isInit = true
+        }
+
+        launch(Dispatchers.IO) {
+            initLruCache()
         }
     }
 
@@ -80,7 +78,7 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
 
         // 初始化结束，重置
         _activeKeyHolder = null
-        _initThread = null
+        _isInit = false
         logMsg("initLruCache end count:${_lruCache.size()}")
     }
 
@@ -143,20 +141,33 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
     /**
      * 缓存被驱逐回调，子类需要移除[key]对应的缓存，
      * 如果子类重写了[transformKeyForLruCache]对key进行转换，则参数[key]是转换后的key，
-     * 此方法有可能在子线程执行，已经同步锁住[Cache]
+     * 此方法有可能在子线程执行
      */
-    @Throws(Exception::class)
     protected abstract fun onLruCacheEntryEvicted(key: String)
 
     /**
      * 如果子类在保存缓存的时候对key进行了转换，需要重写此方法转换LruCache的key，
      */
-    @Throws(Exception::class)
     protected open fun transformKeyForLruCache(key: String): String {
         return key
     }
 
     protected open fun logMsg(msg: String) {
         Log.i(javaClass.simpleName, msg)
+    }
+
+    /**
+     * 启动协程
+     */
+    protected fun launch(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit,
+    ): Job {
+        return _coroutineScope.launch(
+            context = context,
+            start = start,
+            block = block
+        )
     }
 }
