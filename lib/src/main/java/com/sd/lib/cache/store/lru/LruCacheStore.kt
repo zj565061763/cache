@@ -26,7 +26,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
             return sizeOfLruCacheEntry(key, value)
         }
 
-        override fun entryRemoved(evicted: Boolean, key: String, oldValue: Int, newValue: Int) {
+        override fun entryRemoved(evicted: Boolean, key: String, oldValue: Int?, newValue: Int?) {
             super.entryRemoved(evicted, key, oldValue, newValue)
             if (evicted) {
                 Log.i(_tag, "evicted $key count:${size()}")
@@ -43,11 +43,12 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     }
 
     private fun checkInit() {
-        val activeKeyHolder = _activeKeyHolder ?: return
+        if (_activeKeyHolder == null) return
         _scope.launch {
             try {
                 _mutator.mutate {
                     withContext(Dispatchers.IO) {
+                        val activeKeyHolder = _activeKeyHolder ?: return@withContext
                         val map = getLruCacheMap() ?: mapOf()
                         Log.i(_tag, "checkInit start count:${_lruCache.size()} cacheSize:${map.size}")
                         for ((key, value) in map) {
@@ -77,7 +78,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
                 val size = _lruCache.size()
                 _lruCache.put(key, value.size)
                 Log.i(_tag, "put $key ($size -> ${_lruCache.size()})")
-                checkInit()
+//                checkInit()
             }
         }
     }
