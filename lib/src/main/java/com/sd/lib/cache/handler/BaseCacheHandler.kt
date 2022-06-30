@@ -4,6 +4,7 @@ import com.sd.lib.cache.Cache
 import com.sd.lib.cache.Cache.CacheStore
 import com.sd.lib.cache.Cache.CommonCache
 import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.exception.CacheException
 
 /**
  * 缓存处理基类
@@ -45,6 +46,11 @@ internal abstract class BaseCacheHandler<T>(
     private val _cacheStore: CacheStore
         get() = cacheInfo.cacheStore
 
+    private fun notifyException(e: Exception) {
+        if (e is CacheException) throw e
+        cacheInfo.exceptionHandler.onException(e)
+    }
+
     //---------- CacheHandler start ----------
 
     final override fun putCache(key: String, value: T?): Boolean {
@@ -56,7 +62,7 @@ internal abstract class BaseCacheHandler<T>(
                     _cacheStore.putCache(key, data)
                 }
             } catch (e: Exception) {
-                cacheInfo.exceptionHandler.onException(e)
+                notifyException(e)
                 false
             }
         }
@@ -108,7 +114,7 @@ internal abstract class BaseCacheHandler<T>(
 
         val isEncrypt = cacheInfo.isEncrypt
         if (isEncrypt) {
-            val converter = checkNotNull(cacheInfo.encryptConverter) { "EncryptConverter is null. key:$key" }
+            val converter = cacheInfo.encryptConverter ?: throw CacheException("EncryptConverter is null. key:$key")
             data = converter.encrypt(data)
         }
 
