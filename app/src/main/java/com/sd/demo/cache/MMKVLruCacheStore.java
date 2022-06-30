@@ -8,8 +8,8 @@ import androidx.annotation.Nullable;
 import com.sd.lib.cache.store.lru.LruCacheStore;
 import com.tencent.mmkv.MMKV;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MMKVLruCacheStore extends LruCacheStore {
     private final MMKV _mmkv;
@@ -44,14 +44,18 @@ public class MMKVLruCacheStore extends LruCacheStore {
 
     @Nullable
     @Override
-    protected List<String> getLruCacheInitKeys() {
+    protected Map<String, Integer> getLruCacheMap() {
         final String[] keys = _mmkv.allKeys();
         if (keys == null) return null;
-        return Arrays.asList(keys);
+        final Map<String, Integer> map = new HashMap<>();
+        for (String key : keys) {
+            map.put(key, 1);
+        }
+        return map;
     }
 
     @Override
-    protected int sizeOfLruCacheEntry(@NonNull String key) {
+    protected int sizeOfLruCacheEntry(@NonNull String key, int byteCount) {
         return 1;
     }
 

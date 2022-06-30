@@ -34,6 +34,7 @@ android {
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.github.zj565061763:mutator:1.0.0-beta01'
 }
 
 task generateSourcesJar(type: Jar) {

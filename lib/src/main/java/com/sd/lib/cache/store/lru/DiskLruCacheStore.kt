@@ -6,47 +6,52 @@ import java.io.File
 /**
  * Lru算法的磁盘缓存
  */
-abstract class DiskLruCacheStore(
+class DiskLruCacheStore @JvmOverloads constructor(
+    /** 最大数量或者大小 */
     maxSize: Int,
+    /** 保存目录 */
     directory: File,
+    /** true-限制数量，false-限制大小 */
+    limitCount: Boolean = true,
 ) : LruCacheStore(maxSize) {
 
     private val _store = UnlimitedDiskCacheStore(directory)
+    private val _limitCount = limitCount
 
-    final override fun putCacheImpl(key: String, value: ByteArray): Boolean {
+    override fun putCacheImpl(key: String, value: ByteArray): Boolean {
         return _store.putCache(key, value)
     }
 
-    final override fun getCacheImpl(key: String): ByteArray? {
+    override fun getCacheImpl(key: String): ByteArray? {
         return _store.getCache(key)
     }
 
-    final override fun removeCacheImpl(key: String): Boolean {
+    override fun removeCacheImpl(key: String): Boolean {
         return _store.removeCache(key)
     }
 
-    final override fun containsCacheImpl(key: String): Boolean {
+    override fun containsCacheImpl(key: String): Boolean {
         return _store.containsCache(key)
     }
 
-    final override fun getLruCacheInitKeys(): List<String>? {
-        return _store.getCacheFiles()?.map { it.name }
+    override fun getLruCacheMap(): Map<String, Int>? {
+        return _store.getCacheFiles()?.associateBy(
+            keySelector = { it.name },
+            valueTransform = { it.length().toInt() },
+        )
     }
 
-    final override fun sizeOfLruCacheEntry(key: String): Int {
-        val file = _store.getCacheFileByName(key) ?: return 0
-        return onLruCacheSizeOfEntry(file)
+    override fun sizeOfLruCacheEntry(key: String, byteCount: Int): Int {
+        return if (_limitCount) 1 else byteCount
     }
 
     @Throws(Exception::class)
-    final override fun onLruCacheEntryEvicted(key: String) {
+    override fun onLruCacheEntryEvicted(key: String) {
         _store.getCacheFileByName(key)?.delete()
     }
 
     @Throws(Exception::class)
-    final override fun transformKeyForLruCache(key: String): String {
+    override fun transformKeyForLruCache(key: String): String {
         return _store.transformKey(key)
     }
-
-    protected abstract fun onLruCacheSizeOfEntry(file: File): Int
 }

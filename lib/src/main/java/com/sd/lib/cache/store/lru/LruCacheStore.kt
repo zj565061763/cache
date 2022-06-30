@@ -3,29 +3,36 @@ package com.sd.lib.cache.store.lru
 import android.util.Log
 import android.util.LruCache
 import com.sd.lib.cache.Cache
+import com.sd.lib.mutator.FMutator
+import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.concurrent.thread
 
 /**
  * Lru算法的缓存
  */
 abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     private val _tag = javaClass.simpleName
-    private var _hasCheckInit = false
-    private var _mapActiveKey: MutableMap<String, String>? = ConcurrentHashMap()
+    @Volatile
+    private var _activeKeyHolder: MutableMap<String, String>? = ConcurrentHashMap()
 
-    private val _lruCache = object : LruCache<String, String>(maxSize) {
-        override fun sizeOf(key: String?, value: String?): Int {
-            return sizeOfLruCacheEntry(key!!)
+    private val _scope = MainScope()
+    private val _mutator = FMutator()
+
+    private val _lruCache = object : LruCache<String, Int>(maxSize) {
+        override fun sizeOf(key: String, value: Int): Int {
+            /**
+             * 注意，[sizeOf]方法调用时已经被[_lruCache]锁住，所以不要再去锁[Cache]了，可能会造成死锁
+             */
+            return sizeOfLruCacheEntry(key, value)
         }
 
-        override fun entryRemoved(evicted: Boolean, key: String?, oldValue: String?, newValue: String?) {
+        override fun entryRemoved(evicted: Boolean, key: String, oldValue: Int, newValue: Int) {
             super.entryRemoved(evicted, key, oldValue, newValue)
             if (evicted) {
                 Log.i(_tag, "evicted $key count:${size()}")
                 synchronized(Cache::class.java) {
                     try {
-                        onLruCacheEntryEvicted(key!!)
+                        onLruCacheEntryEvicted(key)
                     } catch (e: Exception) {
                         e.printStackTrace()
                         Log.e(_tag, "evicted error:$e")
@@ -36,26 +43,28 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     }
 
     private fun checkInit() {
-        if (_hasCheckInit) return
-        synchronized(this@LruCacheStore) {
-            if (_hasCheckInit) return
-            _hasCheckInit = true
-        }
-
-        thread {
-            val keys = getLruCacheInitKeys() ?: listOf()
-            Log.i(_tag, "checkInit start count:${_lruCache.size()} keys:${keys.size} \r\n${keys.joinToString("\r\n")}")
-            keys.forEach { key ->
-                synchronized(Cache::class.java) {
-                    if (!_mapActiveKey!!.containsKey(key)) {
-                        val size = _lruCache.size()
-                        _lruCache.put(key, "")
-                        Log.i(_tag, "checkInit put $key ($size -> ${_lruCache.size()})")
+        val activeKeyHolder = _activeKeyHolder ?: return
+        _scope.launch {
+            try {
+                _mutator.mutate {
+                    withContext(Dispatchers.IO) {
+                        val map = getLruCacheMap() ?: mapOf()
+                        Log.i(_tag, "checkInit start count:${_lruCache.size()} cacheSize:${map.size}")
+                        for ((key, value) in map) {
+                            if (activeKeyHolder.containsKey(key)) continue
+                            val size = _lruCache.size()
+                            _lruCache.put(key, value)
+                            Log.i(_tag, "checkInit put $key ($size -> ${_lruCache.size()})")
+                            yield()
+                        }
+                        _activeKeyHolder = null
+                        Log.i(_tag, "checkInit end count:${_lruCache.size()}")
                     }
                 }
+            } catch (e: Exception) {
+                Log.i(_tag, "checkInit error:${e}")
+                throw e
             }
-            _mapActiveKey = null
-            Log.i(_tag, "checkInit end count:${_lruCache.size()}")
         }
     }
 
@@ -63,12 +72,10 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
         return putCacheImpl(key, value).also {
             if (it) {
                 val key = transformKeyForLruCache(key)
-                _mapActiveKey?.let { map ->
-                    map[key] = ""
-                }
+                _activeKeyHolder?.put(key, "")
 
                 val size = _lruCache.size()
-                _lruCache.put(key, "")
+                _lruCache.put(key, value.size)
                 Log.i(_tag, "put $key ($size -> ${_lruCache.size()})")
                 checkInit()
             }
@@ -101,14 +108,14 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     protected abstract fun containsCacheImpl(key: String): Boolean
 
     /**
-     * 返回所有缓存的key，用来初始化LruCache，如果子类有对key进行转换，此处应该返回转换后的key
+     * 返回所有缓存的key和每个key对应的字节数量，用来初始化LruCache，如果子类有对key进行转换，此处应该返回转换后的key
      */
-    protected abstract fun getLruCacheInitKeys(): List<String>?
+    protected abstract fun getLruCacheMap(): Map<String, Int>?
 
     /**
-     * 返回[key]对应的缓存大小
+     * 返回缓存的大小，[byteCount]为缓存的字节数量(单位B)
      */
-    protected abstract fun sizeOfLruCacheEntry(key: String): Int
+    protected abstract fun sizeOfLruCacheEntry(key: String, byteCount: Int): Int
 
     /**
      * LruCache缓存被驱逐，子类需要移除[key]对应的缓存
