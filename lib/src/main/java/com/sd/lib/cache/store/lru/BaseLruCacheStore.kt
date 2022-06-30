@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * Lru算法的缓存
  */
-abstract class LruCacheStore(limit: Int) : Cache.CacheStore {
+abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
     private val _tag = javaClass.simpleName
     @Volatile
     private var _activeKeyHolder: MutableMap<String, String>? = ConcurrentHashMap()

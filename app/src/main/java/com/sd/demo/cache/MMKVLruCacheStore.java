@@ -5,13 +5,13 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.sd.lib.cache.store.lru.LruCacheStore;
+import com.sd.lib.cache.store.lru.BaseLruCacheStore;
 import com.tencent.mmkv.MMKV;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MMKVLruCacheStore extends LruCacheStore {
+public class MMKVLruCacheStore extends BaseLruCacheStore {
     private final MMKV _mmkv;
 
     public MMKVLruCacheStore(Context context, int maxSize) {

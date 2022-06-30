@@ -9,7 +9,7 @@ import java.io.File
 abstract class DiskLruCacheStore internal constructor(
     limit: Int,
     directory: File,
-) : LruCacheStore(limit) {
+) : BaseLruCacheStore(limit) {
 
     private val _store = UnlimitedDiskCacheStore(directory)
 
