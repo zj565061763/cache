@@ -14,6 +14,17 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class TestCache {
     @Test
+    fun testPutMulti() {
+        val key = "TestKey"
+        Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 1))
+        Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 2))
+        Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 3))
+        Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 4))
+        Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 5))
+        Assert.assertEquals(5, FCache.disk().cacheInteger().get(key, Int.MIN_VALUE))
+    }
+
+    @Test
     fun testCacheInt() {
         val key = "TestKey"
 
