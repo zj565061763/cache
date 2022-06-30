@@ -44,7 +44,7 @@ public class MMKVLruCacheStore extends LruCacheStore {
 
     @Nullable
     @Override
-    protected Map<String, Integer> getLruCacheSizeMap() {
+    protected Map<String, Integer> getLruCacheSizeMap() throws Exception {
         final String[] keys = _mmkv.allKeys();
         if (keys == null) return null;
         final Map<String, Integer> map = new HashMap<>();

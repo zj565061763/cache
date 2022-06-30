@@ -121,6 +121,7 @@ abstract class LruCacheStore(limit: Int) : Cache.CacheStore {
      * 返回所有key和每个key对应的字节数量，
      * 如果子类重写了[transformKeyForLruCache]对key进行转换，此处要返回转换后的key
      */
+    @Throws(Exception::class)
     protected abstract fun getLruCacheSizeMap(): Map<String, Int>?
 
     /**
