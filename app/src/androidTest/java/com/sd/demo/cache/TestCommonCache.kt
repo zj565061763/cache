@@ -39,11 +39,28 @@ class TestCommonCache {
         Assert.assertEquals(Long.MIN_VALUE, FCache.disk().cacheLong().get(key, Long.MIN_VALUE))
 
         // test put and get
-        Assert.assertEquals(true, FCache.disk().cacheLong().put(key, 1))
-        Assert.assertEquals(1, FCache.disk().cacheLong().get(key, Long.MIN_VALUE))
+        Assert.assertEquals(true, FCache.disk().cacheLong().put(key, 1L))
+        Assert.assertEquals(1L, FCache.disk().cacheLong().get(key, Long.MIN_VALUE))
 
         // test remove and get
         Assert.assertEquals(true, FCache.disk().cacheLong().remove(key))
         Assert.assertEquals(Long.MIN_VALUE, FCache.disk().cacheLong().get(key, Long.MIN_VALUE))
+    }
+
+    @Test
+    fun testCacheFloat() {
+        val key = "TestKey"
+
+        // test get defaultValue
+        FCache.disk().cacheFloat().remove(key)
+        Assert.assertEquals(Float.MIN_VALUE, FCache.disk().cacheFloat().get(key, Float.MIN_VALUE))
+
+        // test put and get
+        Assert.assertEquals(true, FCache.disk().cacheFloat().put(key, 1f))
+        Assert.assertEquals(1f, FCache.disk().cacheFloat().get(key, Float.MIN_VALUE))
+
+        // test remove and get
+        Assert.assertEquals(true, FCache.disk().cacheFloat().remove(key))
+        Assert.assertEquals(Float.MIN_VALUE, FCache.disk().cacheFloat().get(key, Float.MIN_VALUE))
     }
 }
