@@ -26,7 +26,7 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
         override fun entryRemoved(evicted: Boolean, key: String, oldValue: Int?, newValue: Int?) {
             super.entryRemoved(evicted, key, oldValue, newValue)
             if (evicted) {
-                logMsg("--- $key count:${size()}")
+                logMsg("--- $key count:${size()} ${Thread.currentThread().name}")
                 synchronized(Cache::class.java) {
                     try {
                         onLruCacheEntryEvicted(key)
