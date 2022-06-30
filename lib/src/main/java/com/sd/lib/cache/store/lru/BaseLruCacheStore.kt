@@ -3,20 +3,17 @@ package com.sd.lib.cache.store.lru
 import android.util.Log
 import android.util.LruCache
 import com.sd.lib.cache.Cache
-import com.sd.lib.mutator.FMutator
-import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.concurrent.thread
 
 /**
  * Lru算法的缓存
  */
 abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
-    private val _tag = javaClass.simpleName
     @Volatile
     private var _activeKeyHolder: MutableMap<String, String>? = ConcurrentHashMap()
-
-    private val _scope = MainScope()
-    private val _mutator = FMutator()
+    @Volatile
+    private var _initThread: Thread? = null
 
     private val _lruCache = object : LruCache<String, Int>(limit) {
         override fun sizeOf(key: String, value: Int): Int {
@@ -43,22 +40,18 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
     }
 
     private fun checkInit() {
+        if (_initThread != null) return
         if (_activeKeyHolder == null) return
-        _scope.launch {
-            try {
-                _mutator.mutate {
-                    withContext(Dispatchers.IO) {
-                        initLruCache()
-                    }
-                }
-            } catch (e: Exception) {
-                logMsg("initLruCache error:${e}")
-                throw e
+
+        synchronized(this@BaseLruCacheStore) {
+            if (_initThread != null) return
+            _initThread = thread {
+                initLruCache()
             }
         }
     }
 
-    private suspend fun initLruCache() {
+    private fun initLruCache() {
         val activeKeyHolder = _activeKeyHolder ?: return
         val map = try {
             getLruCacheSizeMap() ?: mapOf()
@@ -76,8 +69,6 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
             logMsg("initLruCache +++ start $key ${_lruCache.size()}")
             _lruCache.put(key, value)
             logMsg("initLruCache +++++++++++++++ end $key ${_lruCache.size()}")
-
-            yield()
         }
 
         _activeKeyHolder = null
@@ -157,6 +148,6 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
     }
 
     protected open fun logMsg(msg: String) {
-        Log.i(_tag, msg)
+        Log.i(javaClass.simpleName, msg)
     }
 }
