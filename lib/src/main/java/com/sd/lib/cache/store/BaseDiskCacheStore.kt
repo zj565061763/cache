@@ -92,16 +92,15 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     }
 
     /**
-     * 返回文件名称对应的缓存
+     * 移除文件名对应的缓存
      */
-    fun getCacheFileByName(filename: String): File? {
+    fun removeCacheByFilename(filename: String) {
         synchronized(Cache::class.java) {
-            return try {
+            try {
                 val file = File(getDirectory(), filename)
-                if (file.exists()) file else null
+                if (file.exists()) file.delete()
             } catch (e: Exception) {
                 e.printStackTrace()
-                null
             }
         }
     }

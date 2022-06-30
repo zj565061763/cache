@@ -42,7 +42,7 @@ abstract class DiskLruCacheStore internal constructor(
 
     @Throws(Exception::class)
     override fun onLruCacheEntryEvicted(key: String) {
-        _store.getCacheFileByName(key)?.delete()
+        _store.removeCacheByFilename(key)
     }
 
     @Throws(Exception::class)
