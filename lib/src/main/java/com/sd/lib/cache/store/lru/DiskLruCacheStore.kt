@@ -58,11 +58,12 @@ abstract class DiskLruCacheStore internal constructor(
         }
 
         /**
-         * 限制大小为[count]的缓存，单位B
+         * 限制大小为[size]的缓存，单位MB
          */
         @JvmStatic
-        fun limitSize(count: Int, directory: File): DiskLruCacheStore {
-            return SizeDiskLruCacheStore(count, directory)
+        fun limitSize(size: Int, directory: File): DiskLruCacheStore {
+            val byteSize = size * 1024 * 1024
+            return SizeDiskLruCacheStore(byteSize, directory)
         }
     }
 }

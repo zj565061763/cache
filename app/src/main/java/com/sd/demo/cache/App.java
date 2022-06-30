@@ -22,10 +22,10 @@ public class App extends Application {
 //                .setCacheStore(new MMKVLruCacheStore(this, 1))
 
                 // 设置限制数量的CacheStore
-//                .setCacheStore(DiskLruCacheStore.limitCount(15, directory))
+//                .setCacheStore(DiskLruCacheStore.limitCount(5, directory))
 
                 // 设置限制大小的CacheStore
-//                .setCacheStore(DiskLruCacheStore.limitSize(10 * 1024 * 1024, directory))
+//                .setCacheStore(DiskLruCacheStore.limitSize(10, directory))
 
                 // 设置对象转换器，如果不设置，使用内部默认的Gson对象转换器
 //                .setObjectConverter(new GsonObjectConverter())
