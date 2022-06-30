@@ -30,13 +30,13 @@ public class TestModel implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("\r\n");
-        sb.append("valueInt:").append(valueInt).append("\r\n");
-        sb.append("valueLong:").append(valueLong).append("\r\n");
-        sb.append("valueFloat:").append(valueFloat).append("\r\n");
-        sb.append("valueDouble:").append(valueDouble).append("\r\n");
-        sb.append("valueBoolean:").append(valueBoolean).append("\r\n");
-        sb.append("valueString:").append(valueString).append("\r\n");
+        StringBuilder sb = new StringBuilder(" | ");
+        sb.append("valueInt:").append(valueInt).append(" | ");
+        sb.append("valueLong:").append(valueLong).append(" | ");
+        sb.append("valueFloat:").append(valueFloat).append(" | ");
+        sb.append("valueDouble:").append(valueDouble).append(" | ");
+        sb.append("valueBoolean:").append(valueBoolean).append(" | ");
+        sb.append("valueString:").append(valueString).append(" | ");
         return sb.toString();
     }
 }
