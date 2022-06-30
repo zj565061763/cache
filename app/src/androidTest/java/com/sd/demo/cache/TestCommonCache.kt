@@ -114,4 +114,22 @@ class TestCommonCache {
         Assert.assertEquals(true, FCache.disk().cacheString().remove(key))
         Assert.assertEquals("", FCache.disk().cacheString().get(key, ""))
     }
+
+    @Test
+    fun testCacheBytes() {
+        val key = "TestKey"
+        val emptyBytes = "".toByteArray()
+
+        // test get defaultValue
+        FCache.disk().cacheBytes().remove(key)
+        Assert.assertEquals(emptyBytes, FCache.disk().cacheBytes().get(key, emptyBytes))
+
+        // test put and get
+        Assert.assertEquals(true, FCache.disk().cacheBytes().put(key, "hello".toByteArray()))
+        Assert.assertEquals("hello", FCache.disk().cacheBytes().get(key, "".toByteArray()).let { String(it) })
+
+        // test remove and get
+        Assert.assertEquals(true, FCache.disk().cacheBytes().remove(key))
+        Assert.assertEquals(emptyBytes, FCache.disk().cacheBytes().get(key, emptyBytes))
+    }
 }
