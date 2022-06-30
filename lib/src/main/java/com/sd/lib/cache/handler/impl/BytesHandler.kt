@@ -11,7 +11,7 @@ internal class BytesHandler(info: CacheInfo) : BaseCacheHandler<ByteArray>(info,
         return value
     }
 
-    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): ByteArray {
+    override fun decodeFromByteImpl(bytes: ByteArray, clazz: Class<*>?): ByteArray {
         return bytes
     }
 }

@@ -135,7 +135,7 @@ internal abstract class BaseCacheHandler<T>(
             data = converter.decrypt(data)
         }
 
-        return byteToValue(data, clazz)
+        return decodeFromByteImpl(data, clazz)
     }
     /**
      * 缓存转byte
@@ -147,5 +147,5 @@ internal abstract class BaseCacheHandler<T>(
      * byte转缓存
      */
     @Throws(Exception::class)
-    protected abstract fun byteToValue(bytes: ByteArray, clazz: Class<*>?): T
+    protected abstract fun decodeFromByteImpl(bytes: ByteArray, clazz: Class<*>?): T
 }

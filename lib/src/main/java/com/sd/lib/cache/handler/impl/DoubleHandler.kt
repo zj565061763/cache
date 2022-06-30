@@ -11,7 +11,7 @@ internal class DoubleHandler(info: CacheInfo) : BaseCacheHandler<Double>(info, "
         return value.toString().toByteArray()
     }
 
-    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Double {
+    override fun decodeFromByteImpl(bytes: ByteArray, clazz: Class<*>?): Double {
         return String(bytes).toDouble()
     }
 }

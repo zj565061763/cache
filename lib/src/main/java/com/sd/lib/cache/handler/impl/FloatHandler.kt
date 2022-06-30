@@ -11,7 +11,7 @@ internal class FloatHandler(info: CacheInfo) : BaseCacheHandler<Float>(info, "fl
         return value.toString().toByteArray()
     }
 
-    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Float {
+    override fun decodeFromByteImpl(bytes: ByteArray, clazz: Class<*>?): Float {
         return String(bytes).toFloat()
     }
 }

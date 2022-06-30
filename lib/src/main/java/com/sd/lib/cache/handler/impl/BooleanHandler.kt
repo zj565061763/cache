@@ -11,7 +11,7 @@ internal class BooleanHandler(info: CacheInfo) : BaseCacheHandler<Boolean>(info,
         return value.toString().toByteArray()
     }
 
-    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Boolean {
+    override fun decodeFromByteImpl(bytes: ByteArray, clazz: Class<*>?): Boolean {
         return String(bytes).toBooleanStrict()
     }
 }

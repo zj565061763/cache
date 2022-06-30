@@ -11,7 +11,7 @@ internal class LongHandler(info: CacheInfo) : BaseCacheHandler<Long>(info, "long
         return value.toString().toByteArray()
     }
 
-    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Long {
+    override fun decodeFromByteImpl(bytes: ByteArray, clazz: Class<*>?): Long {
         return String(bytes).toLong()
     }
 }

@@ -11,7 +11,7 @@ internal class StringHandler(info: CacheInfo) : BaseCacheHandler<String>(info, "
         return value.toByteArray()
     }
 
-    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): String {
+    override fun decodeFromByteImpl(bytes: ByteArray, clazz: Class<*>?): String {
         return String(bytes)
     }
 }

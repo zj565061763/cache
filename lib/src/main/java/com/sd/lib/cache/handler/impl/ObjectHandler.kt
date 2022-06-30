@@ -11,7 +11,7 @@ internal class ObjectHandler(info: CacheInfo, keyPrefix: String) : BaseCacheHand
         return cacheInfo.objectConverter.objectToByte(value)
     }
 
-    override fun byteToValue(bytes: ByteArray, clazz: Class<*>?): Any {
+    override fun decodeFromByteImpl(bytes: ByteArray, clazz: Class<*>?): Any {
         requireNotNull(clazz) { "class is null" }
         return cacheInfo.objectConverter.byteToObject(bytes, clazz)
     }
