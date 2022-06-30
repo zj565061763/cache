@@ -21,10 +21,19 @@ class CacheConfig private constructor(builder: Builder) {
 
     class Builder {
         internal var _context: Context? = null
+            private set
+
         internal var _objectConverter: Cache.ObjectConverter? = null
+            private set
+
         internal var _encryptConverter: Cache.EncryptConverter? = null
+            private set
+
         internal var _exceptionHandler: Cache.ExceptionHandler? = null
+            private set
+
         internal var _cacheStore: Cache.CacheStore? = null
+            private set
 
         /**
          * 设置对象转换器
@@ -62,7 +71,6 @@ class CacheConfig private constructor(builder: Builder) {
 
     companion object {
         @Volatile
-        @JvmStatic
         private var config: CacheConfig? = null
 
         /**
