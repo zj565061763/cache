@@ -3,6 +3,7 @@ package com.sd.demo.cache;
 import android.app.Application;
 
 import com.sd.lib.cache.CacheConfig;
+import com.sd.lib.cache.store.lru.DiskLruCacheStore;
 
 import java.io.File;
 
@@ -20,11 +21,11 @@ public class App extends Application {
                 // Lru算法MMKV自定义的CacheStore
 //                .setCacheStore(new MMKVLruCacheStore(this, 1))
 
-                // 设置限制文件数量的CacheStore
-//                .setCacheStore(new DiskLruCacheStore(15, directory, true))
+                // 设置限制数量的CacheStore
+//                .setCacheStore(DiskLruCacheStore.limitCount(15, directory))
 
-                // 设置限制文件大小的CacheStore
-//                .setCacheStore(new DiskLruCacheStore(10 * 1024 * 1024, directory, false))
+                // 设置限制大小的CacheStore
+//                .setCacheStore(DiskLruCacheStore.limitSize(10 * 1024 * 1024, directory))
 
                 // 设置对象转换器，如果不设置，使用内部默认的Gson对象转换器
 //                .setObjectConverter(new GsonObjectConverter())
