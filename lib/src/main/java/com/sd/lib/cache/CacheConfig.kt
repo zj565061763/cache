@@ -17,7 +17,7 @@ class CacheConfig private constructor(builder: Builder) {
         objectConverter = builder._objectConverter ?: GsonObjectConverter()
         encryptConverter = builder._encryptConverter
         exceptionHandler = builder._exceptionHandler ?: Cache.ExceptionHandler { }
-        cacheStore = builder._cacheStore ?: UnlimitedDiskCacheStore(File(context.filesDir, "f_disk_file"))
+        cacheStore = builder._cacheStore ?: UnlimitedDiskCacheStore(File(context.filesDir, "f_disk_cache"))
     }
 
     class Builder {
