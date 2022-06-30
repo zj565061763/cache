@@ -46,24 +46,6 @@ abstract class DiskLruCacheStore internal constructor(
         return _store.transformKey(key)
     }
 
-    private class CountDiskLruCacheStore(
-        limit: Int,
-        directory: File,
-    ) : DiskLruCacheStore(limit, directory) {
-        override fun sizeOfLruCacheEntry(key: String, byteCount: Int): Int {
-            return 1
-        }
-    }
-
-    private class SizeDiskLruCacheStore(
-        limit: Int,
-        directory: File,
-    ) : DiskLruCacheStore(limit, directory) {
-        override fun sizeOfLruCacheEntry(key: String, byteCount: Int): Int {
-            return byteCount
-        }
-    }
-
     companion object {
         /**
          * 限制数量为[count]的缓存
@@ -80,5 +62,23 @@ abstract class DiskLruCacheStore internal constructor(
         fun limitSize(count: Int, directory: File): DiskLruCacheStore {
             return SizeDiskLruCacheStore(count, directory)
         }
+    }
+}
+
+private class CountDiskLruCacheStore(
+    limit: Int,
+    directory: File,
+) : DiskLruCacheStore(limit, directory) {
+    override fun sizeOfLruCacheEntry(key: String, byteCount: Int): Int {
+        return 1
+    }
+}
+
+private class SizeDiskLruCacheStore(
+    limit: Int,
+    directory: File,
+) : DiskLruCacheStore(limit, directory) {
+    override fun sizeOfLruCacheEntry(key: String, byteCount: Int): Int {
+        return byteCount
     }
 }
