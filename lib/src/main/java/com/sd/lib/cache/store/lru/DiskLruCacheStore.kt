@@ -6,17 +6,12 @@ import java.io.File
 /**
  * Lru算法的磁盘缓存
  */
-class DiskLruCacheStore @JvmOverloads constructor(
-    /** 最大数量或者大小 */
-    maxSize: Int,
-    /** 保存目录 */
+abstract class DiskLruCacheStore internal constructor(
+    limit: Int,
     directory: File,
-    /** true-限制数量，false-限制大小 */
-    limitCount: Boolean = true,
-) : LruCacheStore(maxSize) {
+) : LruCacheStore(limit) {
 
     private val _store = UnlimitedDiskCacheStore(directory)
-    private val _limitCount = limitCount
 
     override fun putCacheImpl(key: String, value: ByteArray): Boolean {
         return _store.putCache(key, value)
@@ -41,10 +36,6 @@ class DiskLruCacheStore @JvmOverloads constructor(
         )
     }
 
-    override fun sizeOfLruCacheEntry(key: String, byteCount: Int): Int {
-        return if (_limitCount) 1 else byteCount
-    }
-
     @Throws(Exception::class)
     override fun onLruCacheEntryEvicted(key: String) {
         _store.getCacheFileByName(key)?.delete()
@@ -53,5 +44,41 @@ class DiskLruCacheStore @JvmOverloads constructor(
     @Throws(Exception::class)
     override fun transformKeyForLruCache(key: String): String {
         return _store.transformKey(key)
+    }
+
+    private class CountDiskLruCacheStore(
+        limit: Int,
+        directory: File,
+    ) : DiskLruCacheStore(limit, directory) {
+        override fun sizeOfLruCacheEntry(key: String, byteCount: Int): Int {
+            return 1
+        }
+    }
+
+    private class SizeDiskLruCacheStore(
+        limit: Int,
+        directory: File,
+    ) : DiskLruCacheStore(limit, directory) {
+        override fun sizeOfLruCacheEntry(key: String, byteCount: Int): Int {
+            return byteCount
+        }
+    }
+
+    companion object {
+        /**
+         * 限制数量为[count]的缓存
+         */
+        @JvmStatic
+        fun limitCount(count: Int, directory: File): DiskLruCacheStore {
+            return CountDiskLruCacheStore(count, directory)
+        }
+
+        /**
+         * 限制大小为[count]的缓存，单位B
+         */
+        @JvmStatic
+        fun limitSize(count: Int, directory: File): DiskLruCacheStore {
+            return SizeDiskLruCacheStore(count, directory)
+        }
     }
 }

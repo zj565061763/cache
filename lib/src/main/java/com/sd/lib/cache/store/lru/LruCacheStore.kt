@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * Lru算法的缓存
  */
-abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
+abstract class LruCacheStore(limit: Int) : Cache.CacheStore {
     private val _tag = javaClass.simpleName
     @Volatile
     private var _activeKeyHolder: MutableMap<String, String>? = ConcurrentHashMap()
@@ -18,7 +18,7 @@ abstract class LruCacheStore(maxSize: Int) : Cache.CacheStore {
     private val _scope = MainScope()
     private val _mutator = FMutator()
 
-    private val _lruCache = object : LruCache<String, Int>(maxSize) {
+    private val _lruCache = object : LruCache<String, Int>(limit) {
         override fun sizeOf(key: String, value: Int): Int {
             /**
              * 注意，[sizeOf]方法调用时已经被[_lruCache]锁住，所以不要再去锁[Cache]了，可能会造成死锁
