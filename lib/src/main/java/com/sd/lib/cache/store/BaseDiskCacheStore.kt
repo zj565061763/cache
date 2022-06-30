@@ -107,7 +107,7 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     }
 
     companion object {
-        private const val KeyPrefix = "f_d_"
+        private const val KeyPrefix = "fdc_"
 
         private fun md5(key: String): String {
             val bytes = MessageDigest.getInstance("MD5").digest(key.toByteArray())
