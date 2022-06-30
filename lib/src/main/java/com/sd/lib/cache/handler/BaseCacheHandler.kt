@@ -110,7 +110,7 @@ internal abstract class BaseCacheHandler<T>(
 
     @Throws(Exception::class)
     private fun encodeToByte(key: String, value: T): ByteArray {
-        var data = valueToByte(value)
+        var data = encodeToByteImpl(value)
 
         val isEncrypt = cacheInfo.isEncrypt
         if (isEncrypt) {
@@ -141,7 +141,7 @@ internal abstract class BaseCacheHandler<T>(
      * 缓存转byte
      */
     @Throws(Exception::class)
-    protected abstract fun valueToByte(value: T): ByteArray
+    protected abstract fun encodeToByteImpl(value: T): ByteArray
 
     /**
      * byte转缓存

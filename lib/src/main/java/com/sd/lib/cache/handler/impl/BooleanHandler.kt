@@ -7,7 +7,7 @@ import com.sd.lib.cache.handler.BaseCacheHandler
  * Boolean处理类
  */
 internal class BooleanHandler(info: CacheInfo) : BaseCacheHandler<Boolean>(info, "boolean") {
-    override fun valueToByte(value: Boolean): ByteArray {
+    override fun encodeToByteImpl(value: Boolean): ByteArray {
         return value.toString().toByteArray()
     }
 
