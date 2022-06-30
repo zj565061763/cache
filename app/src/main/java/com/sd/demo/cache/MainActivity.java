@@ -7,6 +7,7 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.sd.lib.cache.Cache;
+import com.sd.lib.cache.CacheConfig;
 import com.sd.lib.cache.FCache;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mCache == null) {
             /**
              * 使用本地磁盘缓存，
-             * 默认使用内部存储目录"/data/包名/files/f_disk_cache"，可以在初始化的时候设置{@link CacheConfig.Builder#setDiskCacheStore(CacheStore)}
+             * 默认使用内部存储目录"/data/包名/files/f_disk_cache"，可以在初始化的时候设置{@link CacheConfig.Builder#setCacheStore(Cache.CacheStore)}
              */
             mCache = FCache.disk();
 
