@@ -6,14 +6,13 @@ import com.sd.lib.cache.store.UnlimitedDiskCacheStore
 import java.io.File
 
 class CacheConfig private constructor(builder: Builder) {
-    val context: Context
-    val objectConverter: Cache.ObjectConverter
-    val encryptConverter: Cache.EncryptConverter?
-    val exceptionHandler: Cache.ExceptionHandler
-    val cacheStore: Cache.CacheStore
+    internal val objectConverter: Cache.ObjectConverter
+    internal val encryptConverter: Cache.EncryptConverter?
+    internal val exceptionHandler: Cache.ExceptionHandler
+    internal val cacheStore: Cache.CacheStore
 
     init {
-        context = checkNotNull(builder._context) { "context is null" }
+        val context = checkNotNull(builder._context) { "context is null" }
         objectConverter = builder._objectConverter ?: GsonObjectConverter()
         encryptConverter = builder._encryptConverter
         exceptionHandler = builder._exceptionHandler ?: Cache.ExceptionHandler { }
