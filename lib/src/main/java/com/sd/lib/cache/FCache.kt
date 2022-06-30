@@ -7,6 +7,7 @@ import com.sd.lib.cache.simple.SimpleObjectCache
 
 open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
     private val _cacheStore = cacheStore
+
     private var _isEncrypt = false
     private var _objectConverter: ObjectConverter? = null
     private var _encryptConverter: EncryptConverter? = null
@@ -91,7 +92,7 @@ open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
     override val cacheStore: CacheStore
         get() = _cacheStore
 
-    override val isEncrypt
+    override val isEncrypt: Boolean
         get() = _isEncrypt
 
     override val objectConverter: ObjectConverter
