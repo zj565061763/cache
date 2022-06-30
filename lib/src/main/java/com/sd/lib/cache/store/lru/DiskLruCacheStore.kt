@@ -33,11 +33,8 @@ abstract class DiskLruCacheStore internal constructor(
 
     // -------------------- Basic end --------------------
 
-    override fun getLruCacheMap(): Map<String, Int>? {
-        return _store.getCacheFiles()?.associateBy(
-            keySelector = { it.name },
-            valueTransform = { it.length().toInt() },
-        )
+    override fun getLruCacheSizeMap(): Map<String, Int>? {
+        return _store.getCacheSizeMap()
     }
 
     @Throws(Exception::class)

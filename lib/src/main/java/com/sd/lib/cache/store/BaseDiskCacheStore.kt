@@ -76,32 +76,28 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     }
 
     /**
-     * 返回所有缓存的文件
+     * 返回缓存文件名和大小的映射
      */
-    fun getCacheFiles(): Array<File>? {
+    @Throws(Exception::class)
+    fun getCacheSizeMap(): Map<String, Int>? {
         synchronized(Cache::class.java) {
-            return try {
-                getDirectory().listFiles { file ->
-                    file.name.startsWith(KeyPrefix) && file.isFile
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
-            }
+            return getDirectory().listFiles { file ->
+                file.name.startsWith(KeyPrefix) && file.isFile
+            }?.associateBy(
+                keySelector = { it.name },
+                valueTransform = { it.length().toInt() },
+            )
         }
     }
 
     /**
      * 移除文件名对应的缓存
      */
+    @Throws(Exception::class)
     fun removeCacheByFilename(filename: String) {
         synchronized(Cache::class.java) {
-            try {
-                val file = File(getDirectory(), filename)
-                if (file.exists()) file.delete()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            val file = File(getDirectory(), filename)
+            if (file.exists()) file.delete()
         }
     }
 

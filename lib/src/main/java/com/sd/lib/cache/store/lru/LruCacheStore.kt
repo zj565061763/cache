@@ -49,7 +49,7 @@ abstract class LruCacheStore(limit: Int) : Cache.CacheStore {
                 _mutator.mutate {
                     withContext(Dispatchers.IO) {
                         val activeKeyHolder = _activeKeyHolder ?: return@withContext
-                        val map = getLruCacheMap() ?: mapOf()
+                        val map = getLruCacheSizeMap() ?: mapOf()
                         logMsg("checkInit start count:${_lruCache.size()} cacheSize:${map.size}")
 
                         for ((key, value) in map) {
@@ -121,7 +121,7 @@ abstract class LruCacheStore(limit: Int) : Cache.CacheStore {
      * 返回所有key和每个key对应的字节数量，
      * 如果子类重写了[transformKeyForLruCache]对key进行转换，此处要返回转换后的key
      */
-    protected abstract fun getLruCacheMap(): Map<String, Int>?
+    protected abstract fun getLruCacheSizeMap(): Map<String, Int>?
 
     /**
      * 返回缓存项的大小，[byteCount]为该缓存项的字节数量(单位B)
