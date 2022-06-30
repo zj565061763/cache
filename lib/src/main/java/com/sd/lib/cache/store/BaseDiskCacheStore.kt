@@ -15,7 +15,8 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
 
     @Throws(Exception::class)
     final override fun putCache(key: String, value: ByteArray): Boolean {
-        return putCacheImpl(key, value, getCacheFile(key))
+        val file = getCacheFile(key)
+        return putCacheImpl(key, value, file)
     }
 
     @Throws(Exception::class)
@@ -34,7 +35,8 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
 
     @Throws(Exception::class)
     final override fun containsCache(key: String): Boolean {
-        return containsCacheImpl(key, getCacheFile(key))
+        val file = getCacheFile(key)
+        return containsCacheImpl(key, file)
     }
 
     //---------- CacheStore end ----------
