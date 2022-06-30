@@ -19,19 +19,19 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CommonCache start ----------
 
-    override fun put(key: String, value: T?): Boolean {
+    final override fun put(key: String, value: T?): Boolean {
         return putCache(key, value)
     }
 
-    override operator fun get(key: String, defaultValue: T): T {
+    final override operator fun get(key: String, defaultValue: T): T {
         return getCache(key, null) ?: defaultValue
     }
 
-    override fun remove(key: String): Boolean {
+    final override fun remove(key: String): Boolean {
         return removeCache(key)
     }
 
-    override operator fun contains(key: String): Boolean {
+    final override operator fun contains(key: String): Boolean {
         return containsCache(key)
     }
 
@@ -47,7 +47,7 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CacheHandler start ----------
 
-    override fun putCache(key: String, value: T?): Boolean {
+    final override fun putCache(key: String, value: T?): Boolean {
         if (value == null) return false
         val key = transformKey(key)
         synchronized(Cache::class.java) {
@@ -62,7 +62,7 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    override fun getCache(key: String, clazz: Class<*>?): T? {
+    final override fun getCache(key: String, clazz: Class<*>?): T? {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
             return try {
@@ -76,7 +76,7 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    override fun removeCache(key: String): Boolean {
+    final override fun removeCache(key: String): Boolean {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
             return try {
@@ -88,7 +88,7 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    override fun containsCache(key: String): Boolean {
+    final override fun containsCache(key: String): Boolean {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
             return try {
