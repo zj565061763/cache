@@ -76,7 +76,7 @@ internal abstract class BaseCacheHandler<T>(
                     decodeFromByte(key, data, clazz)
                 }
             } catch (e: Exception) {
-                cacheInfo.exceptionHandler.onException(e)
+                notifyException(e)
                 null
             }
         }
@@ -88,7 +88,7 @@ internal abstract class BaseCacheHandler<T>(
             return try {
                 _cacheStore.removeCache(key)
             } catch (e: Exception) {
-                cacheInfo.exceptionHandler.onException(e)
+                notifyException(e)
                 false
             }
         }
@@ -100,7 +100,7 @@ internal abstract class BaseCacheHandler<T>(
             return try {
                 _cacheStore.containsCache(key)
             } catch (e: Exception) {
-                cacheInfo.exceptionHandler.onException(e)
+                notifyException(e)
                 false
             }
         }
