@@ -52,7 +52,7 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
                     }
                 }
             } catch (e: Exception) {
-                Log.i(_tag, "initLruCache error:${e}")
+                logMsg("initLruCache error:${e}")
                 throw e
             }
         }
