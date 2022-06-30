@@ -49,6 +49,7 @@ abstract class BaseLruCacheStore(limit: Int) : Cache.CacheStore {
             return
         }
 
+        /** 这里仅仅同步[_initThread]属性的创建，不同步[initLruCache] */
         synchronized(this@BaseLruCacheStore) {
             if (_initThread != null) return
             _initThread = thread {
