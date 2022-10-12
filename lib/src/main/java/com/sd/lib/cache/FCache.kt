@@ -8,9 +8,7 @@ import com.sd.lib.cache.simple.SimpleObjectCache
 open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
     private val _cacheStore = cacheStore
 
-    private var _isEncrypt = false
     private var _objectConverter: ObjectConverter? = null
-    private var _encryptConverter: EncryptConverter? = null
     private var _exceptionHandler: ExceptionHandler? = null
 
     private val _integerHandler by lazy { IntegerHandler(this) }
@@ -23,18 +21,8 @@ open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
     private val _objectCache by lazy { SimpleObjectCache(this) }
     private var _multiObjectCache: SimpleMultiObjectCache<*>? = null
 
-    override fun setEncrypt(encrypt: Boolean): Cache {
-        _isEncrypt = encrypt
-        return this
-    }
-
     override fun setObjectConverter(converter: ObjectConverter?): Cache {
         _objectConverter = converter
-        return this
-    }
-
-    override fun setEncryptConverter(converter: EncryptConverter?): Cache {
-        _encryptConverter = converter
         return this
     }
 
@@ -92,14 +80,8 @@ open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
     override val cacheStore: CacheStore
         get() = _cacheStore
 
-    override val isEncrypt: Boolean
-        get() = _isEncrypt
-
     override val objectConverter: ObjectConverter
         get() = _objectConverter ?: CacheConfig.get().objectConverter
-
-    override val encryptConverter: EncryptConverter?
-        get() = _encryptConverter ?: CacheConfig.get().encryptConverter
 
     override val exceptionHandler: ExceptionHandler
         get() = _exceptionHandler ?: CacheConfig.get().exceptionHandler

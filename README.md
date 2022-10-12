@@ -1,19 +1,20 @@
 # About
+
 封装了一层存储的api
-* 支持加解密
+
 * 支持对象存储
 * 支持自定义底层的存储方案，比如直接用java原生的api把缓存保存到文件，或者用腾讯的[MMKV](https://github.com/Tencent/MMKV)实现
 
 # Gradle
+
 [![](https://jitpack.io/v/zj565061763/cache.svg)](https://jitpack.io/#zj565061763/cache)
 
 # 初始化
+
 ```java
-public class App extends Application
-{
+public class App extends Application {
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         super.onCreate();
         // 初始化
         CacheConfig.init(new CacheConfig.Builder()
@@ -25,10 +26,6 @@ public class App extends Application
                  * 设置对象转换器
                  */
                 .setObjectConverter(new GsonObjectConverter())
-                /**
-                 * 设置加解密转换器
-                 */
-                .setEncryptConverter(new GlobalEncryptConverter())
                 /**
                  * 设置异常监听
                  */
@@ -42,8 +39,7 @@ public class App extends Application
 # 简单demo
 
 ```java
-public class MainActivity extends AppCompatActivity
-{
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String KEY = "key";
@@ -52,8 +48,7 @@ public class MainActivity extends AppCompatActivity
     private Cache mCache;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -61,27 +56,19 @@ public class MainActivity extends AppCompatActivity
         getData();
     }
 
-    private Cache getCache()
-    {
-        if (mCache == null)
-        {
+    private Cache getCache() {
+        if (mCache == null) {
             /**
              * 使用本地磁盘缓存
              * <p>
              * 默认使用内部存储目录"/data/包名/files/f_disk_cache"，可以在初始化的时候设置{@link CacheConfig.Builder#setCacheStore(Cache.CacheStore)}
              */
             mCache = FCache.disk();
-
-            /**
-             * 设置保存缓存的时候是否加密
-             */
-            mCache.setEncrypt(false);
         }
         return mCache;
     }
 
-    private void putData()
-    {
+    private void putData() {
         getCache().cacheInteger().put(KEY, 1);
         getCache().cacheLong().put(KEY, 22L);
         getCache().cacheFloat().put(KEY, 333.333F);
@@ -92,8 +79,7 @@ public class MainActivity extends AppCompatActivity
         getCache().cacheMultiObject(TestModel.class).put(KEY, TEST_MODEL);
     }
 
-    private void getData()
-    {
+    private void getData() {
         Log.i(TAG, "cacheInteger:" + getCache().cacheInteger().get(KEY, 0));
         Log.i(TAG, "cacheLong:" + getCache().cacheLong().get(KEY, 0L));
         Log.i(TAG, "cacheFloat:" + getCache().cacheFloat().get(KEY, 0F));
@@ -107,6 +93,7 @@ public class MainActivity extends AppCompatActivity
 ```
 
 # 对象转换器
+
 ```java
 public class GsonObjectConverter implements Cache.ObjectConverter {
     private final Gson gson = new Gson();
@@ -121,25 +108,6 @@ public class GsonObjectConverter implements Cache.ObjectConverter {
     @Override
     public <T> T byteToObject(@NonNull byte[] bytes, @NonNull Class<T> clazz) throws Exception {
         return gson.fromJson(new String(bytes), clazz);
-    }
-}
-```
-
-# 加解密转换器
-```java
-public class GlobalEncryptConverter implements Cache.EncryptConverter {
-    @NonNull
-    @Override
-    public byte[] encrypt(@NonNull byte[] bytes) throws Exception {
-        // 加密
-        return bytes;
-    }
-
-    @NonNull
-    @Override
-    public byte[] decrypt(@NonNull byte[] bytes) throws Exception {
-        // 解密
-        return bytes;
     }
 }
 ```

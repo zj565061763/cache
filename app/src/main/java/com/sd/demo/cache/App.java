@@ -30,9 +30,6 @@ public class App extends Application {
                 // 设置对象转换器，如果不设置，使用内部默认的Gson对象转换器
 //                .setObjectConverter(new GsonObjectConverter())
 
-                // 设置加解密转换器
-//                .setEncryptConverter(new GlobalEncryptConverter())
-
                 // 设置异常监听
 //                .setExceptionHandler(new GlobalExceptionHandler())
 

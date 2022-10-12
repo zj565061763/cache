@@ -2,19 +2,9 @@ package com.sd.lib.cache
 
 interface Cache {
     /**
-     * 是否加密，默认否false
-     */
-    fun setEncrypt(encrypt: Boolean): Cache
-
-    /**
      * 设置对象转换器
      */
     fun setObjectConverter(converter: ObjectConverter?): Cache
-
-    /**
-     * 设置加解密转换器
-     */
-    fun setEncryptConverter(converter: EncryptConverter?): Cache
 
     /**
      * 设置异常处理器
@@ -123,23 +113,6 @@ interface Cache {
          */
         @Throws(Exception::class)
         fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T
-    }
-
-    /**
-     * 加解密转换器
-     */
-    interface EncryptConverter {
-        /**
-         * 加密数据
-         */
-        @Throws(Exception::class)
-        fun encrypt(bytes: ByteArray): ByteArray
-
-        /**
-         * 解密数据
-         */
-        @Throws(Exception::class)
-        fun decrypt(bytes: ByteArray): ByteArray
     }
 
     /**

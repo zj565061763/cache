@@ -31,9 +31,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
              * 默认使用内部存储目录"/data/包名/files/f_disk_cache"，可以在初始化的时候设置{@link CacheConfig.Builder#setCacheStore(Cache.CacheStore)}
              */
             mCache = FCache.disk();
-
-            // 设置保存缓存的时候是否加密，默认false
-            mCache.setEncrypt(false);
         }
         return mCache;
     }

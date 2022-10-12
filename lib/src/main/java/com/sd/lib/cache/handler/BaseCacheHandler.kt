@@ -110,31 +110,12 @@ internal abstract class BaseCacheHandler<T>(
 
     @Throws(Exception::class)
     private fun encodeToByte(key: String, value: T): ByteArray {
-        var data = encodeToByteImpl(value)
-
-        val isEncrypt = cacheInfo.isEncrypt
-        if (isEncrypt) {
-            val converter = cacheInfo.encryptConverter ?: throw CacheException("EncryptConverter is null. key:$key")
-            data = converter.encrypt(data)
-        }
-
-        val dataWithTag = data.copyOf(data.size + 1)
-        dataWithTag[dataWithTag.lastIndex] = (if (isEncrypt) 1 else 0).toByte()
-        return dataWithTag
+        return encodeToByteImpl(value)
     }
 
     @Throws(Exception::class)
     private fun decodeFromByte(key: String, data: ByteArray, clazz: Class<*>?): T {
         check(data.isNotEmpty()) { "Data is empty. key:$key" }
-
-        val isEncrypted = data.last().toInt() == 1
-        var data = data.copyOf(data.size - 1)
-
-        if (isEncrypted) {
-            val converter = checkNotNull(cacheInfo.encryptConverter) { "EncryptConverter is null. key:$key" }
-            data = converter.decrypt(data)
-        }
-
         return decodeFromByteImpl(data, clazz)
     }
     /**
