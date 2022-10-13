@@ -74,9 +74,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_put_one:
-                getCache().cacheInteger().put(KEY, 1);
-                break;
             case R.id.btn_put:
                 putData();
                 break;
