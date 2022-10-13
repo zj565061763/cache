@@ -1,11 +1,12 @@
 package com.sd.demo.cache;
 
 import android.app.Application;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.sd.lib.cache.Cache;
 import com.sd.lib.cache.CacheConfig;
-import com.sd.lib.cache.store.LimitedSizeDiskLruCacheStore;
-
-import java.io.File;
 
 public class App extends Application {
     @Override
@@ -19,6 +20,13 @@ public class App extends Application {
 
                 // 设置限制大小的CacheStore
 //                .setCacheStore(new LimitedSizeDiskLruCacheStore(new File(getExternalCacheDir(), "app_disk_cache"), 10))
+
+                .setExceptionHandler(new Cache.ExceptionHandler() {
+                    @Override
+                    public void onException(@NonNull Exception e) {
+                        Log.e(MainActivity.TAG, String.valueOf(e));
+                    }
+                })
 
                 // 创建对象
                 .build(this);
