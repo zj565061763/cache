@@ -11,18 +11,14 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // 自定义保存目录
-        final File directory = new File(getExternalCacheDir(), "app_disk_cache");
 
         final CacheConfig cacheConfig = new CacheConfig.Builder()
+
                 // 使用腾讯MMKV自定义的CacheStore，如果不设置，默认使用内部存储目录"/data/包名/files/f_disk_cache"
 //                .setCacheStore(new MMKVCacheStore(this))
 
-                // Lru算法MMKV自定义的CacheStore
-//                .setCacheStore(new MMKVLruCacheStore(this, 1))
-
                 // 设置限制大小的CacheStore
-//                .setCacheStore(new LimitedSizeDiskLruCacheStore(directory, 10))
+//                .setCacheStore(new LimitedSizeDiskLruCacheStore(new File(getExternalCacheDir(), "app_disk_cache"), 10))
 
                 // 创建对象
                 .build(this);
