@@ -66,7 +66,7 @@ class CacheConfig private constructor(builder: Builder) {
          */
         @JvmStatic
         fun init(config: CacheConfig) {
-            synchronized(this@Companion) {
+            synchronized(Cache::class.java) {
                 if (this.config == null) {
                     this.config = config
                 }
