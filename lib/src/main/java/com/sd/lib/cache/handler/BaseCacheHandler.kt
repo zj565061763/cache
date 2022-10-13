@@ -27,7 +27,7 @@ internal abstract class BaseCacheHandler<T>(
         return putCache(key, value)
     }
 
-    final override operator fun get(key: String, defaultValue: T): T {
+    final override fun get(key: String, defaultValue: T): T {
         return getCache(key, null) ?: defaultValue
     }
 
@@ -35,7 +35,7 @@ internal abstract class BaseCacheHandler<T>(
         return removeCache(key)
     }
 
-    final override operator fun contains(key: String): Boolean {
+    final override fun contains(key: String): Boolean {
         return containsCache(key)
     }
 
