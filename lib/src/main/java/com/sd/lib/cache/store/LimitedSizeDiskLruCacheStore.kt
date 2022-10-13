@@ -1,7 +1,7 @@
 package com.sd.lib.cache.store
 
 import com.sd.lib.cache.Cache
-import com.sd.lib.lrucache.FDiskLruCache
+import com.sd.lib.dlcache.FDiskLruCache
 import java.io.File
 
 /**
@@ -13,8 +13,8 @@ class LimitedSizeDiskLruCacheStore(
 ) : Cache.CacheStore {
 
     private val _cache by lazy {
-        val mb = limitMB * 1024 * 1024L
-        FDiskLruCache.dir(directory, mb)
+        val bytes = limitMB * 1024 * 1024L
+        FDiskLruCache(directory).apply { setMaxSize(bytes) }
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
@@ -38,7 +38,6 @@ class LimitedSizeDiskLruCacheStore(
     }
 
     override fun containsCache(key: String): Boolean {
-        val file = _cache.get(key) ?: return false
-        return file.exists()
+        return _cache.get(key) != null
     }
 }

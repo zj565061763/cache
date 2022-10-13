@@ -34,7 +34,7 @@ android {
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.9.1'
-    implementation 'com.github.zj565061763:lrucache:1.0.0-alpha08'
+    implementation 'com.github.zj565061763:disk-lru-cache:1.1.0'
 }
 
 task generateSourcesJar(type: Jar) {
