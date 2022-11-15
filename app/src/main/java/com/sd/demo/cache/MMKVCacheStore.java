@@ -8,7 +8,9 @@ import com.sd.lib.cache.Cache;
 import com.tencent.mmkv.MMKV;
 
 /**
- * 自定义CacheStore
+ * 自定义CacheStore。
+ * <p>
+ * MMKV有个bug，如果存的是空byte[]数组，取的时候会返回null，正常返回应该也是个空的byte[]数组。
  */
 public class MMKVCacheStore implements Cache.CacheStore {
     private final MMKV _mmkv;
