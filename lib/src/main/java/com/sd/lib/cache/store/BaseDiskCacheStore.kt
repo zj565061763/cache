@@ -1,6 +1,5 @@
 package com.sd.lib.cache.store
 
-import com.sd.lib.cache.Cache
 import com.sd.lib.cache.Cache.CacheStore
 import java.io.File
 import java.security.MessageDigest
@@ -59,7 +58,12 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         return file.exists()
     }
 
-    //---------- Impl End ----------
+    //---------- Impl end ----------
+
+    @Throws(Exception::class)
+    private fun getCacheFile(key: String): File {
+        return File(getDirectory(), transformKey(key))
+    }
 
     @Throws(Exception::class)
     private fun getDirectory(): File {
@@ -67,37 +71,6 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
             _directory
         } else {
             throw RuntimeException("directory is not available:" + _directory.absolutePath)
-        }
-    }
-
-    @Throws(Exception::class)
-    private fun getCacheFile(key: String): File {
-        return File(getDirectory(), transformKey(key))
-    }
-
-    /**
-     * 返回缓存文件名和大小的映射
-     */
-    @Throws(Exception::class)
-    fun getCacheSizeMap(): Map<String, Int>? {
-        synchronized(Cache::class.java) {
-            return getDirectory().listFiles { file ->
-                file.name.startsWith(KeyPrefix) && file.isFile
-            }?.associateBy(
-                keySelector = { it.name },
-                valueTransform = { it.length().toInt() },
-            )
-        }
-    }
-
-    /**
-     * 移除文件名对应的缓存
-     */
-    @Throws(Exception::class)
-    fun removeCacheByFilename(filename: String) {
-        synchronized(Cache::class.java) {
-            val file = File(getDirectory(), filename)
-            if (file.exists()) file.delete()
         }
     }
 
