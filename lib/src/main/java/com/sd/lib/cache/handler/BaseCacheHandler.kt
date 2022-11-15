@@ -72,7 +72,7 @@ internal abstract class BaseCacheHandler<T>(
         synchronized(Cache::class.java) {
             return try {
                 _cacheStore.getCache(key)?.let { data ->
-                    decodeFromByte(key, data, clazz)
+                    decodeFromByteImpl(data, clazz)
                 }
             } catch (e: Exception) {
                 notifyException(e)
@@ -106,12 +106,6 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     //---------- CacheHandler end ----------
-
-    @Throws(Exception::class)
-    private fun decodeFromByte(key: String, data: ByteArray, clazz: Class<*>?): T {
-        check(data.isNotEmpty()) { "Data is empty. key:$key" }
-        return decodeFromByteImpl(data, clazz)
-    }
 
     /**
      * 缓存转byte
