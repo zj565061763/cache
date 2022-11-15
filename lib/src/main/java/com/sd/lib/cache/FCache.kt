@@ -96,7 +96,8 @@ open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
          */
         @JvmStatic
         fun disk(): Cache {
-            return FCache(CacheConfig.get().cacheStore)
+            val cacheStore = CacheConfig.get().cacheStore
+            return FCache(cacheStore)
         }
     }
 }
