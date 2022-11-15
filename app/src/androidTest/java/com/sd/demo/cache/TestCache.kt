@@ -140,6 +140,10 @@ class TestCache {
         Assert.assertEquals("hello", FCache.disk().cacheString().get(key, ""))
         Assert.assertEquals(true, FCache.disk().cacheString().contains(key))
 
+        Assert.assertEquals(true, FCache.disk().cacheString().put(key, ""))
+        Assert.assertEquals("", FCache.disk().cacheString().get(key, "default"))
+        Assert.assertEquals(true, FCache.disk().cacheString().contains(key))
+
         // test remove and get
         Assert.assertEquals(true, FCache.disk().cacheString().remove(key))
         Assert.assertEquals("", FCache.disk().cacheString().get(key, ""))
