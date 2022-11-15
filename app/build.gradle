@@ -36,5 +36,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation project(':lib')
-    implementation 'com.tencent:mmkv:1.2.13'
+    implementation 'com.tencent:mmkv:1.2.14'
 }
