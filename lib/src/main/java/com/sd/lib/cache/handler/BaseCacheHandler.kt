@@ -58,7 +58,7 @@ internal abstract class BaseCacheHandler<T>(
         val key = transformKey(key)
         synchronized(Cache::class.java) {
             return try {
-                encodeToByte(key, value).let { data ->
+                encodeToByteImpl(value).let { data ->
                     _cacheStore.putCache(key, data)
                 }
             } catch (e: Exception) {
@@ -109,15 +109,11 @@ internal abstract class BaseCacheHandler<T>(
     //---------- CacheHandler end ----------
 
     @Throws(Exception::class)
-    private fun encodeToByte(key: String, value: T): ByteArray {
-        return encodeToByteImpl(value)
-    }
-
-    @Throws(Exception::class)
     private fun decodeFromByte(key: String, data: ByteArray, clazz: Class<*>?): T {
         check(data.isNotEmpty()) { "Data is empty. key:$key" }
         return decodeFromByteImpl(data, clazz)
     }
+
     /**
      * 缓存转byte
      */
