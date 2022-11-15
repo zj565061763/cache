@@ -16,7 +16,7 @@ class UnlimitedDiskCacheStore(directory: File) : BaseDiskCacheStore(directory) {
     }
 
     @Throws(Exception::class)
-    override fun getCacheImpl(key: String, file: File): ByteArray? {
+    override fun getCacheImpl(key: String, file: File): ByteArray {
         return file.inputStream().buffered().use {
             it.readBytes()
         }
