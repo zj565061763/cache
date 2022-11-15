@@ -206,17 +206,23 @@ class TestCache {
         }
         Assert.assertEquals(null, FCache.disk().cacheMultiObject(TestModel::class.java).get(key1))
         Assert.assertEquals(null, FCache.disk().cacheMultiObject(TestModel::class.java).get(key2))
+        Assert.assertEquals(false, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key1))
+        Assert.assertEquals(false, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key2))
 
         // test put and get
         Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).put(key1, model1))
         Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).put(key2, model2))
         Assert.assertEquals(model1, FCache.disk().cacheMultiObject(TestModel::class.java).get(key1))
         Assert.assertEquals(model2, FCache.disk().cacheMultiObject(TestModel::class.java).get(key2))
+        Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key1))
+        Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key2))
 
         // test remove and get
         Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).remove(key1))
         Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).remove(key2))
         Assert.assertEquals(null, FCache.disk().cacheMultiObject(TestModel::class.java).get(key1))
         Assert.assertEquals(null, FCache.disk().cacheMultiObject(TestModel::class.java).get(key2))
+        Assert.assertEquals(false, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key1))
+        Assert.assertEquals(false, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key2))
     }
 }
