@@ -6,7 +6,7 @@ plugins {
 
 def libGroupId = "com.sd.lib.android"
 def libArtifactId = "cache"
-def libVersionName = "1.3.0-rc01"
+def libVersionName = "1.3.0"
 
 android {
     namespace 'com.sd.lib.cache'
