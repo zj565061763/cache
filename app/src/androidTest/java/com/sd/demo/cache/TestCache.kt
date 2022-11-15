@@ -21,6 +21,8 @@ class TestCache {
         Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 3))
         Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 4))
         Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 5))
+
+        Assert.assertEquals(true, FCache.disk().cacheInteger().contains(key))
         Assert.assertEquals(5, FCache.disk().cacheInteger().get(key, Int.MIN_VALUE))
     }
 
