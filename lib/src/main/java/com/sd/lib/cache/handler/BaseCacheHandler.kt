@@ -58,9 +58,8 @@ internal abstract class BaseCacheHandler<T>(
         val key = transformKey(key)
         synchronized(Cache::class.java) {
             return try {
-                encodeToByteImpl(value).let { data ->
-                    _cacheStore.putCache(key, data)
-                }
+                val data = encodeToByteImpl(value)
+                _cacheStore.putCache(key, data)
             } catch (e: Exception) {
                 notifyException(e)
                 false
