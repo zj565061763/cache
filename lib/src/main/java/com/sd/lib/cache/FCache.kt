@@ -18,6 +18,7 @@ open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
     private val _booleanHandler by lazy { BooleanHandler(this) }
     private val _stringHandler by lazy { StringHandler(this) }
     private val _bytesHandler by lazy { BytesHandler(this) }
+
     private val _objectCache by lazy { SimpleObjectCache(this) }
     private var _multiObjectCache: SimpleMultiObjectCache<*>? = null
 
