@@ -2,8 +2,8 @@
 
 封装了一层存储的api
 
-* 支持对象存储
-* 支持自定义底层的存储方案，比如直接用java原生的api把缓存保存到文件，或者用腾讯的[MMKV](https://github.com/Tencent/MMKV)实现
+* 支持基本数据类型和对象存储
+* 支持自定义底层的存储方案，例如用腾讯的[MMKV](https://github.com/Tencent/MMKV)实现
 
 # Gradle
 
