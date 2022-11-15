@@ -74,13 +74,12 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         }
     }
 
-    @Throws(Exception::class)
-    fun transformKey(key: String): String {
-        return KeyPrefix + md5(key)
-    }
-
     companion object {
         private const val KeyPrefix = "fdc_"
+
+        private fun transformKey(key: String): String {
+            return KeyPrefix + md5(key)
+        }
 
         private fun md5(key: String): String {
             val bytes = MessageDigest.getInstance("MD5").digest(key.toByteArray())
