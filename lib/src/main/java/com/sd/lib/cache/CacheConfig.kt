@@ -59,7 +59,7 @@ class CacheConfig private constructor(builder: Builder) {
 
     companion object {
         @Volatile
-        private var config: CacheConfig? = null
+        private var sConfig: CacheConfig? = null
 
         /**
          * 初始化
@@ -67,8 +67,8 @@ class CacheConfig private constructor(builder: Builder) {
         @JvmStatic
         fun init(config: CacheConfig) {
             synchronized(Cache::class.java) {
-                if (this.config == null) {
-                    this.config = config
+                if (sConfig == null) {
+                    sConfig = config
                 }
             }
         }
@@ -78,7 +78,7 @@ class CacheConfig private constructor(builder: Builder) {
          */
         @JvmStatic
         internal fun get(): CacheConfig {
-            return checkNotNull(config) { "CacheConfig has not been init" }
+            return checkNotNull(sConfig) { "CacheConfig has not been init" }
         }
     }
 }
