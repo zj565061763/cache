@@ -73,14 +73,17 @@ class TestCache {
         // test get defaultValue
         FCache.disk().cacheFloat().remove(key)
         Assert.assertEquals(Float.MIN_VALUE, FCache.disk().cacheFloat().get(key, Float.MIN_VALUE))
+        Assert.assertEquals(false, FCache.disk().cacheFloat().contains(key))
 
         // test put and get
         Assert.assertEquals(true, FCache.disk().cacheFloat().put(key, 1.0f))
         Assert.assertEquals(1.0f, FCache.disk().cacheFloat().get(key, Float.MIN_VALUE))
+        Assert.assertEquals(true, FCache.disk().cacheFloat().contains(key))
 
         // test remove and get
         Assert.assertEquals(true, FCache.disk().cacheFloat().remove(key))
         Assert.assertEquals(Float.MIN_VALUE, FCache.disk().cacheFloat().get(key, Float.MIN_VALUE))
+        Assert.assertEquals(false, FCache.disk().cacheFloat().contains(key))
     }
 
     @Test
