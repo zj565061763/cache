@@ -4,11 +4,12 @@ plugins {
 }
 
 android {
+    namespace 'com.sd.demo.cache'
     compileSdk 33
     defaultConfig {
-        applicationId "com.sd.demo.cache"
         minSdk 21
         targetSdk 33
+        applicationId "com.sd.demo.cache"
         versionCode 1
         versionName "1.0"
 

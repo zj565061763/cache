@@ -9,6 +9,7 @@ def libArtifactId = "cache"
 def libVersionName = "1.3.0-rc01"
 
 android {
+    namespace 'com.sd.lib.cache'
     compileSdk 33
     defaultConfig {
         minSdk 19
@@ -21,7 +22,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -34,7 +34,6 @@ android {
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.9.1'
-    implementation 'com.github.zj565061763:disk-lru-cache:1.1.0'
 }
 
 task generateSourcesJar(type: Jar) {
