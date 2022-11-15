@@ -154,14 +154,17 @@ class TestCache {
         // test get defaultValue
         FCache.disk().cacheBytes().remove(key)
         Assert.assertEquals(emptyBytes, FCache.disk().cacheBytes().get(key, emptyBytes))
+        Assert.assertEquals(false, FCache.disk().cacheBytes().contains(key))
 
         // test put and get
         Assert.assertEquals(true, FCache.disk().cacheBytes().put(key, "hello".toByteArray()))
         Assert.assertEquals("hello", FCache.disk().cacheBytes().get(key, "".toByteArray()).let { String(it) })
+        Assert.assertEquals(true, FCache.disk().cacheBytes().contains(key))
 
         // test remove and get
         Assert.assertEquals(true, FCache.disk().cacheBytes().remove(key))
         Assert.assertEquals(emptyBytes, FCache.disk().cacheBytes().get(key, emptyBytes))
+        Assert.assertEquals(false, FCache.disk().cacheBytes().contains(key))
     }
 
     @Test
