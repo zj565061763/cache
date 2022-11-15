@@ -78,13 +78,13 @@ open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
 
     //---------- CacheInfo start ----------
 
-    override val cacheStore: CacheStore
+    final override val cacheStore: CacheStore
         get() = _cacheStore
 
-    override val objectConverter: ObjectConverter
+    final override val objectConverter: ObjectConverter
         get() = _objectConverter ?: CacheConfig.get().objectConverter
 
-    override val exceptionHandler: ExceptionHandler
+    final override val exceptionHandler: ExceptionHandler
         get() = _exceptionHandler ?: CacheConfig.get().exceptionHandler
 
     //---------- CacheInfo end ----------
