@@ -6,19 +6,22 @@ import com.sd.lib.cache.store.UnlimitedDiskCacheStore
 import java.io.File
 
 class CacheConfig private constructor(builder: Builder) {
+    internal val cacheStore: Cache.CacheStore
     internal val objectConverter: Cache.ObjectConverter
     internal val exceptionHandler: Cache.ExceptionHandler
-    internal val cacheStore: Cache.CacheStore
 
     init {
         val context = checkNotNull(builder._context) { "context is null" }
+        cacheStore = builder._cacheStore ?: UnlimitedDiskCacheStore(File(context.filesDir, "f_disk_cache"))
         objectConverter = builder._objectConverter ?: GsonObjectConverter()
         exceptionHandler = builder._exceptionHandler ?: Cache.ExceptionHandler { }
-        cacheStore = builder._cacheStore ?: UnlimitedDiskCacheStore(File(context.filesDir, "f_disk_cache"))
     }
 
     class Builder {
         internal var _context: Context? = null
+            private set
+
+        internal var _cacheStore: Cache.CacheStore? = null
             private set
 
         internal var _objectConverter: Cache.ObjectConverter? = null
@@ -27,8 +30,12 @@ class CacheConfig private constructor(builder: Builder) {
         internal var _exceptionHandler: Cache.ExceptionHandler? = null
             private set
 
-        internal var _cacheStore: Cache.CacheStore? = null
-            private set
+        /**
+         * 设置缓存
+         */
+        fun setCacheStore(store: Cache.CacheStore?) = apply {
+            _cacheStore = store
+        }
 
         /**
          * 设置对象转换器
@@ -42,13 +49,6 @@ class CacheConfig private constructor(builder: Builder) {
          */
         fun setExceptionHandler(handler: Cache.ExceptionHandler?) = apply {
             _exceptionHandler = handler
-        }
-
-        /**
-         * 设置缓存
-         */
-        fun setCacheStore(store: Cache.CacheStore?) = apply {
-            _cacheStore = store
         }
 
         fun build(context: Context): CacheConfig {
