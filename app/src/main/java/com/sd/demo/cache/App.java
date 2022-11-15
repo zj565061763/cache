@@ -15,9 +15,7 @@ public class App extends Application {
 
         final CacheConfig cacheConfig = new CacheConfig.Builder()
 
-                // 使用腾讯MMKV自定义的CacheStore，如果不设置，默认使用内部存储目录"/data/包名/files/f_disk_cache"
-//                .setCacheStore(new MMKVCacheStore(this))
-
+                // 设置异常监听
                 .setExceptionHandler(new Cache.ExceptionHandler() {
                     @Override
                     public void onException(@NonNull Exception e) {
