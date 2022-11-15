@@ -178,14 +178,17 @@ class TestCache {
         // test get defaultValue
         FCache.disk().cacheObject().remove(TestModel::class.java)
         Assert.assertEquals(null, FCache.disk().cacheObject().get(TestModel::class.java))
+        Assert.assertEquals(false, FCache.disk().cacheObject().contains(TestModel::class.java))
 
         // test put and get
         Assert.assertEquals(true, FCache.disk().cacheObject().put(model))
         Assert.assertEquals(model, FCache.disk().cacheObject().get(TestModel::class.java))
+        Assert.assertEquals(true, FCache.disk().cacheObject().contains(TestModel::class.java))
 
         // test remove and get
         Assert.assertEquals(true, FCache.disk().cacheObject().remove(TestModel::class.java))
         Assert.assertEquals(null, FCache.disk().cacheObject().get(TestModel::class.java))
+        Assert.assertEquals(false, FCache.disk().cacheObject().contains(TestModel::class.java))
     }
 
     @Test
