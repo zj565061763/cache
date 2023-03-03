@@ -31,8 +31,8 @@ interface Cache {
      */
     interface CommonCache<T> {
         /**
-         * 放入缓存对象
-         * @return true-成功；false-失败
+         * 保存缓存
+         * @return true-保存成功，false-保存失败
          */
         fun put(key: String, value: T?): Boolean
 
@@ -44,6 +44,7 @@ interface Cache {
 
         /**
          * 移除[key]对应的缓存
+         * @return true-删除成功，false-删除失败或者缓存不存在
          */
         fun remove(key: String): Boolean
 
@@ -89,7 +90,7 @@ interface Cache {
 
         /**
          * 删除缓存
-         * @return true-缓存被删除，false-删除失败或者缓存不存在
+         * @return true-删除成功，false-删除失败或者缓存不存在
          */
         @Throws(Exception::class)
         fun removeCache(key: String): Boolean
