@@ -63,6 +63,9 @@ interface Cache {
         fun contains(clazz: Class<*>): Boolean
     }
 
+    /**
+     * 多对象缓存接口
+     */
     interface MultiObjectCache<T> {
         fun put(key: String, value: T?): Boolean
         fun get(key: String): T?
