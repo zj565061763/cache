@@ -12,27 +12,23 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
 
     //---------- CacheStore start ----------
 
-    @Throws(Exception::class)
     final override fun putCache(key: String, value: ByteArray): Boolean {
         val file = getCacheFile(key)
         return putCacheImpl(key, value, file)
     }
 
-    @Throws(Exception::class)
     final override fun getCache(key: String): ByteArray? {
         val file = getCacheFile(key)
         if (!file.exists()) return null
         return getCacheImpl(key, file)
     }
 
-    @Throws(Exception::class)
     final override fun removeCache(key: String): Boolean {
         val file = getCacheFile(key)
         if (!file.exists()) return false
         return removeCacheImpl(key, file)
     }
 
-    @Throws(Exception::class)
     final override fun containsCache(key: String): Boolean {
         val file = getCacheFile(key)
         return containsCacheImpl(key, file)
@@ -60,12 +56,10 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
 
     //---------- Impl end ----------
 
-    @Throws(Exception::class)
     private fun getCacheFile(key: String): File {
         return File(getDirectory(), transformKey(key))
     }
 
-    @Throws(Exception::class)
     private fun getDirectory(): File {
         return if (_directory.exists() || _directory.mkdirs()) {
             _directory
