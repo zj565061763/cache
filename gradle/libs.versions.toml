@@ -1,0 +1,25 @@
+[versions]
+
+androidCompileSdk = "33"
+androidMinSdk = "21"
+androidTargetSdk = "33"
+
+androidGradlePlugin = "7.4.2"
+kotlin = "1.8.10"
+
+[libraries]
+
+androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
+
+junit = "junit:junit:4.13.2"
+androidx-test-ext-junit = "androidx.test.ext:junit:1.1.5"
+androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
+
+google-gson = "com.google.code.gson:gson:2.9.1"
+tencent-mmkv = "com.tencent:mmkv:1.2.15"
+
+[plugins]
+
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
