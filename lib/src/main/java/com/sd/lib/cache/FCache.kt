@@ -84,7 +84,6 @@ open class FCache(cacheStore: CacheStore) : Cache {
 
     companion object {
         /**
-         * 创建并返回一个本地磁盘缓存对象，
          * 默认使用内部存储目录"/data/包名/files/f_disk_cache"，可以在初始化的时候设置[CacheConfig.Builder.setCacheStore]
          */
         @JvmStatic
