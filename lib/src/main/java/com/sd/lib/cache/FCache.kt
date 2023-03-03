@@ -66,6 +66,7 @@ open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
         return _objectCache
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T> cacheMultiObject(clazz: Class<T>): MultiObjectCache<T> {
         val cache = _multiObjectCache
         if (cache != null && cache.objectClass == clazz) return (cache as MultiObjectCache<T>)
