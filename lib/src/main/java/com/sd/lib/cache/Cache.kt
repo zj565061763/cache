@@ -2,12 +2,12 @@ package com.sd.lib.cache
 
 interface Cache {
     /**
-     * 设置对象转换器
+     * 对象转换
      */
     fun setObjectConverter(converter: ObjectConverter?): Cache
 
     /**
-     * 设置异常处理器
+     * 异常处理
      */
     fun setExceptionHandler(handler: ExceptionHandler?): Cache
 
@@ -31,19 +31,19 @@ interface Cache {
      */
     interface CommonCache<T> {
         /**
-         * 放入缓存对象
-         * @return true-成功；false-失败
+         * 保存缓存
+         * @return true-保存成功，false-保存失败
          */
         fun put(key: String, value: T?): Boolean
 
         /**
          * 获取[key]对应的缓存
-         * @param defaultValue 如果获取的缓存为null，则返回这个值
          */
-        fun get(key: String, defaultValue: T): T
+        fun get(key: String): T?
 
         /**
          * 移除[key]对应的缓存
+         * @return true-删除成功，false-删除失败或者缓存不存在
          */
         fun remove(key: String): Boolean
 
@@ -63,6 +63,9 @@ interface Cache {
         fun contains(clazz: Class<*>): Boolean
     }
 
+    /**
+     * 多对象缓存接口
+     */
     interface MultiObjectCache<T> {
         fun put(key: String, value: T?): Boolean
         fun get(key: String): T?
@@ -86,7 +89,7 @@ interface Cache {
 
         /**
          * 删除缓存
-         * @return true-缓存被删除，false-删除失败或者缓存不存在
+         * @return true-删除成功，false-删除失败或者缓存不存在
          */
         @Throws(Exception::class)
         fun removeCache(key: String): Boolean
@@ -121,4 +124,15 @@ interface Cache {
     fun interface ExceptionHandler {
         fun onException(e: Exception)
     }
+}
+
+internal interface CacheInfo {
+    /** 存取库 */
+    val cacheStore: Cache.CacheStore
+
+    /** 对象转换 */
+    val objectConverter: Cache.ObjectConverter
+
+    /** 异常处理 */
+    val exceptionHandler: Cache.ExceptionHandler
 }
