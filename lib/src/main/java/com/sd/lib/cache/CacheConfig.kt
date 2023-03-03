@@ -31,21 +31,21 @@ class CacheConfig private constructor(builder: Builder) {
             private set
 
         /**
-         * 设置缓存
+         * 缓存库
          */
         fun setCacheStore(store: Cache.CacheStore?) = apply {
             _cacheStore = store
         }
 
         /**
-         * 设置对象转换器
+         * 对象转换
          */
         fun setObjectConverter(converter: Cache.ObjectConverter?) = apply {
             _objectConverter = converter
         }
 
         /**
-         * 设置异常处理对象
+         * 异常处理
          */
         fun setExceptionHandler(handler: Cache.ExceptionHandler?) = apply {
             _exceptionHandler = handler
@@ -73,9 +73,6 @@ class CacheConfig private constructor(builder: Builder) {
             }
         }
 
-        /**
-         * 返回配置
-         */
         internal fun get(): CacheConfig {
             return checkNotNull(sConfig) { "CacheConfig has not been init" }
         }
