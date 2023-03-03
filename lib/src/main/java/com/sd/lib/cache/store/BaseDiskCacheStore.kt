@@ -64,7 +64,7 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         return if (_directory.exists() || _directory.mkdirs()) {
             _directory
         } else {
-            throw RuntimeException("directory is not available:" + _directory.absolutePath)
+            error("directory is not available:" + _directory.absolutePath)
         }
     }
 
