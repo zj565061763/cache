@@ -2,12 +2,12 @@ package com.sd.lib.cache
 
 interface Cache {
     /**
-     * 设置对象转换器
+     * 对象转换
      */
     fun setObjectConverter(converter: ObjectConverter?): Cache
 
     /**
-     * 设置异常处理器
+     * 异常处理
      */
     fun setExceptionHandler(handler: ExceptionHandler?): Cache
 
