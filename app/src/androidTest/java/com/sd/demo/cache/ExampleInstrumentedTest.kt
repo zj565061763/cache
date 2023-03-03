@@ -164,6 +164,10 @@ class ExampleInstrumentedTest {
         Assert.assertEquals("hello", FCache.disk().cacheBytes().get(key)?.let { String(it) })
         Assert.assertEquals(true, FCache.disk().cacheBytes().contains(key))
 
+        Assert.assertEquals(true, FCache.disk().cacheBytes().put(key, "".toByteArray()))
+        Assert.assertEquals(0, FCache.disk().cacheBytes().get(key)?.size)
+        Assert.assertEquals(true, FCache.disk().cacheBytes().contains(key))
+
         // test remove and get
         Assert.assertEquals(true, FCache.disk().cacheBytes().remove(key))
         Assert.assertEquals(null, FCache.disk().cacheBytes().get(key))
