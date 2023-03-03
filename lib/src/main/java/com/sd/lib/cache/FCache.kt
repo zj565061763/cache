@@ -5,21 +5,27 @@ import com.sd.lib.cache.handler.impl.*
 import com.sd.lib.cache.simple.SimpleMultiObjectCache
 import com.sd.lib.cache.simple.SimpleObjectCache
 
-open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
+open class FCache(cacheStore: CacheStore) : Cache {
     private val _cacheStore = cacheStore
 
     private var _objectConverter: ObjectConverter? = null
     private var _exceptionHandler: ExceptionHandler? = null
 
-    private val _integerHandler by lazy { IntegerHandler(this) }
-    private val _longHandler by lazy { LongHandler(this) }
-    private val _floatHandler by lazy { FloatHandler(this) }
-    private val _doubleHandler by lazy { DoubleHandler(this) }
-    private val _booleanHandler by lazy { BooleanHandler(this) }
-    private val _stringHandler by lazy { StringHandler(this) }
-    private val _bytesHandler by lazy { BytesHandler(this) }
+    private val _cacheInfo = object : CacheInfo {
+        override val cacheStore: CacheStore get() = _cacheStore
+        override val objectConverter: ObjectConverter get() = _objectConverter ?: CacheConfig.get().objectConverter
+        override val exceptionHandler: ExceptionHandler get() = _exceptionHandler ?: CacheConfig.get().exceptionHandler
+    }
 
-    private val _objectCache by lazy { SimpleObjectCache(this) }
+    private val _integerHandler by lazy { IntegerHandler(_cacheInfo) }
+    private val _longHandler by lazy { LongHandler(_cacheInfo) }
+    private val _floatHandler by lazy { FloatHandler(_cacheInfo) }
+    private val _doubleHandler by lazy { DoubleHandler(_cacheInfo) }
+    private val _booleanHandler by lazy { BooleanHandler(_cacheInfo) }
+    private val _stringHandler by lazy { StringHandler(_cacheInfo) }
+    private val _bytesHandler by lazy { BytesHandler(_cacheInfo) }
+
+    private val _objectCache by lazy { SimpleObjectCache(_cacheInfo) }
     private var _multiObjectCache: SimpleMultiObjectCache<*>? = null
 
     override fun setObjectConverter(converter: ObjectConverter?): Cache {
@@ -70,25 +76,12 @@ open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
     override fun <T> cacheMultiObject(clazz: Class<T>): MultiObjectCache<T> {
         val cache = _multiObjectCache
         if (cache != null && cache.objectClass == clazz) return (cache as MultiObjectCache<T>)
-        return SimpleMultiObjectCache(this, clazz).also {
+        return SimpleMultiObjectCache(_cacheInfo, clazz).also {
             _multiObjectCache = it
         }
     }
 
     //---------- Cache end ----------
-
-    //---------- CacheInfo start ----------
-
-    final override val cacheStore: CacheStore
-        get() = _cacheStore
-
-    final override val objectConverter: ObjectConverter
-        get() = _objectConverter ?: CacheConfig.get().objectConverter
-
-    final override val exceptionHandler: ExceptionHandler
-        get() = _exceptionHandler ?: CacheConfig.get().exceptionHandler
-
-    //---------- CacheInfo end ----------
 
     companion object {
         /**

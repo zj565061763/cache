@@ -122,3 +122,14 @@ interface Cache {
         fun onException(e: Exception)
     }
 }
+
+internal interface CacheInfo {
+    /** 存取库 */
+    val cacheStore: Cache.CacheStore
+
+    /** 对象转换 */
+    val objectConverter: Cache.ObjectConverter
+
+    /** 异常处理 */
+    val exceptionHandler: Cache.ExceptionHandler
+}
