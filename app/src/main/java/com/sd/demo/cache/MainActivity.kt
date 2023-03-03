@@ -37,12 +37,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun getData() {
-        logMsg { "cacheInteger:" + cache.cacheInteger().get(key, 0) }
-        logMsg { "cacheLong:" + cache.cacheLong().get(key, 0L) }
-        logMsg { "cacheFloat:" + cache.cacheFloat().get(key, 0f) }
-        logMsg { "cacheDouble:" + cache.cacheDouble().get(key, 0.0) }
-        logMsg { "cacheBoolean:" + cache.cacheBoolean().get(key, false) }
-        logMsg { "cacheString:" + cache.cacheString().get(key, "") }
+        logMsg { "cacheInteger:" + cache.cacheInteger().get(key) }
+        logMsg { "cacheLong:" + cache.cacheLong().get(key) }
+        logMsg { "cacheFloat:" + cache.cacheFloat().get(key) }
+        logMsg { "cacheDouble:" + cache.cacheDouble().get(key) }
+        logMsg { "cacheBoolean:" + cache.cacheBoolean().get(key) }
+        logMsg { "cacheString:" + cache.cacheString().get(key) }
         logMsg { "cacheObject:" + cache.cacheObject().get(TestModel::class.java) }
         logMsg { "cacheMultiObject:" + cache.cacheMultiObject(TestModel::class.java).get(key) }
         logMsg { "cacheMultiObject:" + cache.cacheMultiObject(TestModel::class.java).get(key + key) }

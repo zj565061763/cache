@@ -38,9 +38,8 @@ interface Cache {
 
         /**
          * 获取[key]对应的缓存
-         * @param defaultValue 如果获取的缓存为null，则返回这个值
          */
-        fun get(key: String, defaultValue: T): T
+        fun get(key: String): T?
 
         /**
          * 移除[key]对应的缓存
