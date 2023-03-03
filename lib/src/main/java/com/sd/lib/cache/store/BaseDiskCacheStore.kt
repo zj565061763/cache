@@ -57,15 +57,12 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
     //---------- Impl end ----------
 
     private fun getCacheFile(key: String): File {
-        return File(getDirectory(), transformKey(key))
-    }
-
-    private fun getDirectory(): File {
-        return if (_directory.exists() || _directory.mkdirs()) {
+        val dir = if (_directory.exists() || _directory.mkdirs()) {
             _directory
         } else {
             error("directory is not available:" + _directory.absolutePath)
         }
+        return File(dir, transformKey(key))
     }
 
     companion object {
