@@ -56,12 +56,16 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
 
     //---------- Impl end ----------
 
-    private fun getCacheFile(key: String): File {
-        val dir = if (_directory.exists() || _directory.mkdirs()) {
-            _directory
+    private fun getDirectory(): File {
+        if (checkDir(_directory)) {
+            return _directory
         } else {
-            error("directory is not available:" + _directory.absolutePath)
+            error("directory is not available:${_directory.absolutePath}")
         }
+    }
+
+    private fun getCacheFile(key: String): File {
+        val dir = getDirectory()
         return File(dir, transformKey(key))
     }
 
@@ -75,6 +79,13 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         private fun md5(key: String): String {
             val bytes = MessageDigest.getInstance("MD5").digest(key.toByteArray())
             return bytes.joinToString("") { "%02X".format(it) }
+        }
+
+        private fun checkDir(file: File): Boolean {
+            if (!file.exists()) return file.mkdirs()
+            if (file.isDirectory) return true
+            file.delete()
+            return file.mkdirs()
         }
     }
 }
