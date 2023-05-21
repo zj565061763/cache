@@ -3,8 +3,8 @@ package com.sd.lib.cache.handler
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.Cache.CacheStore
 import com.sd.lib.cache.Cache.CommonCache
+import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.CacheInfo
-import com.sd.lib.cache.exception.CacheException
 
 /**
  * 缓存处理基类
