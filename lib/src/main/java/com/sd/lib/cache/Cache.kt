@@ -136,3 +136,8 @@ internal interface CacheInfo {
     /** 异常处理 */
     val exceptionHandler: Cache.ExceptionHandler
 }
+
+class CacheException(
+    message: String = "",
+    cause: Throwable? = null,
+) : Exception(message, cause)

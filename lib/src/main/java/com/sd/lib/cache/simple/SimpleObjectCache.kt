@@ -13,6 +13,7 @@ internal class SimpleObjectCache(info: CacheInfo) : ObjectCache {
         return _handler.putCache(key, value)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T> get(clazz: Class<T>): T? {
         val key = clazz.name
         val cache = _handler.getCache(key, clazz) ?: return null

@@ -17,26 +17,23 @@ internal class SimpleMultiObjectCache<T>(
 
     override fun put(key: String, value: T?): Boolean {
         if (key.isEmpty()) return false
-        val key = transformKey(key)
-        return _objectHandler.putCache(key, value)
+        return _objectHandler.putCache(transformKey(key), value)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun get(key: String): T? {
         if (key.isEmpty()) return null
-        val key = transformKey(key)
-        val cache = _objectHandler.getCache(key, objectClass) ?: return null
+        val cache = _objectHandler.getCache(transformKey(key), objectClass) ?: return null
         return cache as T
     }
 
     override fun remove(key: String): Boolean {
         if (key.isEmpty()) return false
-        val key = transformKey(key)
-        return _objectHandler.removeCache(key)
+        return _objectHandler.removeCache(transformKey(key))
     }
 
     override fun contains(key: String): Boolean {
         if (key.isEmpty()) return false
-        val key = transformKey(key)
-        return _objectHandler.containsCache(key)
+        return _objectHandler.containsCache(transformKey(key))
     }
 }

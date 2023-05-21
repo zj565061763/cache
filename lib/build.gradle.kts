@@ -6,7 +6,7 @@ plugins {
 
 val libGroupId = "com.sd.lib.android"
 val libArtifactId = "cache"
-val libVersionName = "1.3.5"
+val libVersionName = "1.3.6"
 
 android {
     namespace ="com.sd.lib.cache"
@@ -16,12 +16,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-        kotlinOptions.freeCompilerArgs += "-module-name=$libGroupId.$libArtifactId"
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
+        freeCompilerArgs += "-module-name=$libGroupId.$libArtifactId"
     }
 
     publishing {
