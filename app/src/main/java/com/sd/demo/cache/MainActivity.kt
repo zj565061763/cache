@@ -2,25 +2,16 @@ package com.sd.demo.cache
 
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.sd.demo.cache.ui.theme.AppTheme
+import androidx.appcompat.app.AppCompatActivity
+import com.sd.demo.cache.databinding.ActivityMainBinding
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.CacheConfig
 import com.sd.lib.cache.FCache
 
 private const val Key = "key"
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    private val _binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     private val cache: Cache by lazy {
         /**
@@ -31,20 +22,18 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                Content(
-                    onClickPut = {
-                        putData()
-                    },
-                    onClickGet = {
-                        getData()
-                    },
-                    onClickRemove = {
-                        removeData()
-                    },
-                )
-            }
+        setContentView(_binding.root)
+
+        _binding.btnPut.setOnClickListener {
+            putData()
+        }
+
+        _binding.btnGet.setOnClickListener {
+            getData()
+        }
+
+        _binding.btnRemove.setOnClickListener {
+            removeData()
         }
     }
 
@@ -85,37 +74,6 @@ class MainActivity : ComponentActivity() {
         cache.cacheObject().remove(TestModel::class.java)
         cache.cacheMultiObject(TestModel::class.java).remove(Key)
         cache.cacheMultiObject(TestModel::class.java).remove(Key + Key)
-    }
-}
-
-@Composable
-private fun Content(
-    onClickPut: () -> Unit,
-    onClickGet: () -> Unit,
-    onClickRemove: () -> Unit,
-) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(5.dp)
-    ) {
-        Button(
-            onClick = onClickPut
-        ) {
-            Text(text = "put")
-        }
-
-        Button(
-            onClick = onClickGet
-        ) {
-            Text(text = "get")
-        }
-
-        Button(
-            onClick = onClickRemove
-        ) {
-            Text(text = "remove")
-        }
     }
 }
 
