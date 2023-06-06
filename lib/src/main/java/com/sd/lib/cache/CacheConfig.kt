@@ -11,48 +11,48 @@ class CacheConfig private constructor(builder: Builder) {
     internal val exceptionHandler: Cache.ExceptionHandler
 
     init {
-        val context = checkNotNull(builder._context) { "context is null" }
-        cacheStore = builder._cacheStore ?: UnlimitedDiskCacheStore(File(context.filesDir, "f_disk_cache"))
-        objectConverter = builder._objectConverter ?: GsonObjectConverter()
-        exceptionHandler = builder._exceptionHandler ?: Cache.ExceptionHandler { }
+        val context = builder.context
+        cacheStore = builder.cacheStore ?: UnlimitedDiskCacheStore(File(context.filesDir, "f_disk_cache"))
+        objectConverter = builder.objectConverter ?: GsonObjectConverter()
+        exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }
     }
 
     class Builder {
-        internal var _context: Context? = null
+        internal lateinit var context: Context
             private set
 
-        internal var _cacheStore: Cache.CacheStore? = null
+        internal var cacheStore: Cache.CacheStore? = null
             private set
 
-        internal var _objectConverter: Cache.ObjectConverter? = null
+        internal var objectConverter: Cache.ObjectConverter? = null
             private set
 
-        internal var _exceptionHandler: Cache.ExceptionHandler? = null
+        internal var exceptionHandler: Cache.ExceptionHandler? = null
             private set
 
         /**
          * 缓存库
          */
         fun setCacheStore(store: Cache.CacheStore?) = apply {
-            _cacheStore = store
+            this.cacheStore = store
         }
 
         /**
          * 对象转换
          */
         fun setObjectConverter(converter: Cache.ObjectConverter?) = apply {
-            _objectConverter = converter
+            this.objectConverter = converter
         }
 
         /**
          * 异常处理
          */
         fun setExceptionHandler(handler: Cache.ExceptionHandler?) = apply {
-            _exceptionHandler = handler
+            this.exceptionHandler = handler
         }
 
         fun build(context: Context): CacheConfig {
-            _context = context.applicationContext
+            this.context = context.applicationContext
             return CacheConfig(this)
         }
     }
