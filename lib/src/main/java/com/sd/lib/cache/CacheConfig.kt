@@ -73,8 +73,7 @@ class CacheConfig private constructor(builder: Builder) {
         }
 
         internal fun get(): CacheConfig {
-            val config = sConfig
-            if (config != null) return config
+            sConfig?.let { return it }
             synchronized(Cache::class.java) {
                 return sConfig ?: error("CacheConfig has not been init")
             }
