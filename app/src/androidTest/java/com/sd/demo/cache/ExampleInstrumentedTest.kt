@@ -92,21 +92,26 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheDouble() {
         val key = "TestKey"
+        val cache = fCache.cacheDouble()
 
         // test get defaultValue
-        fCache.cacheDouble().remove(key)
-        assertEquals(0.0, fCache.cacheDouble().get(key) ?: 0.0, 0.01)
-        assertEquals(false, fCache.cacheDouble().contains(key))
+        cache.remove(key)
+        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        assertEquals(true, fCache.cacheDouble().put(key, 1.0))
-        assertEquals(1.0, fCache.cacheDouble().get(key) ?: 0.0, 0.01)
-        assertEquals(true, fCache.cacheDouble().contains(key))
+        assertEquals(true, cache.put(key, 1.0))
+        assertEquals(1.0, cache.get(key) ?: 0.0, 0.01)
+        assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, fCache.cacheDouble().remove(key))
-        assertEquals(0.0, fCache.cacheDouble().get(key) ?: 0.0, 0.01)
-        assertEquals(false, fCache.cacheDouble().contains(key))
+        assertEquals(true, cache.remove(key))
+        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
+        assertEquals(false, cache.contains(key))
+
+        assertEquals(false, cache.remove(key))
+        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
