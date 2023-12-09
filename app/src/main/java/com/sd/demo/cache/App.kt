@@ -11,7 +11,7 @@ class App : Application() {
                 .setExceptionHandler {
                     logMsg { "error:$it" }
                 }
-                .build(filesDir.resolve("app_cache"))
+                .build(this)
         )
     }
 }

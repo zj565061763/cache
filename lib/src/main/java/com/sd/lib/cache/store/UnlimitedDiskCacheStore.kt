@@ -5,7 +5,7 @@ import java.io.File
 /**
  * 无限制的磁盘缓存
  */
-class UnlimitedDiskCacheStore(directory: File) : BaseDiskCacheStore(directory) {
+class UnlimitedDiskCacheStore : BaseDiskCacheStore() {
     override fun putCacheImpl(key: String, value: ByteArray, file: File): Boolean {
         return file.outputStream().buffered().use {
             it.write(value)

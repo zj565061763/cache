@@ -32,6 +32,7 @@ kotlin {
 
 dependencies {
     implementation(libs.google.gson)
+    implementation(libs.tencent.mmkv)
 }
 
 publishing {

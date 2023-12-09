@@ -1,5 +1,8 @@
 package com.sd.lib.cache
 
+import android.content.Context
+import java.io.File
+
 interface Cache {
     /**
      * 对象转换
@@ -73,6 +76,11 @@ interface Cache {
     }
 
     interface CacheStore {
+        /**
+         * 初始化
+         */
+        fun init(context: Context, directory: File)
+
         /**
          * 保存缓存
          * @return true-保存成功，false-保存失败

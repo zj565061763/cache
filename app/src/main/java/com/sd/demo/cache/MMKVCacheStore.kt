@@ -3,14 +3,15 @@ package com.sd.demo.cache
 import android.content.Context
 import com.sd.lib.cache.Cache.CacheStore
 import com.tencent.mmkv.MMKV
+import java.io.File
 
 /**
  * 自定义CacheStore
  */
-class MMKVCacheStore(context: Context) : CacheStore {
-    private val _mmkv: MMKV
+class MMKVCacheStore : CacheStore {
+    private lateinit var _mmkv: MMKV
 
-    init {
+    override fun init(context: Context, directory: File) {
         MMKV.initialize(context)
         _mmkv = MMKV.defaultMMKV()
     }

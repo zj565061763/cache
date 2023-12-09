@@ -1,24 +1,28 @@
 package com.sd.lib.cache
 
+import android.content.Context
 import com.sd.lib.cache.simple.ObjectConverterImpl
 import com.sd.lib.cache.store.UnlimitedDiskCacheStore
 import java.io.File
 
-class CacheConfig private constructor(builder: Builder) {
+class CacheConfig private constructor(builder: Builder, context: Context) {
     internal val directory: File
     internal val cacheStore: Cache.CacheStore
     internal val objectConverter: Cache.ObjectConverter
     internal val exceptionHandler: Cache.ExceptionHandler
 
     init {
-        directory = builder.directory
-        cacheStore = builder.cacheStore ?: UnlimitedDiskCacheStore(builder.directory)
+        directory = builder.directory ?: context.filesDir.resolve("f_cache")
+        cacheStore = builder.cacheStore ?: UnlimitedDiskCacheStore()
         objectConverter = builder.objectConverter ?: ObjectConverterImpl()
         exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }
+
+        // 初始化仓库
+        cacheStore.init(context, directory)
     }
 
     class Builder {
-        internal lateinit var directory: File
+        internal var directory: File? = null
             private set
 
         internal var cacheStore: Cache.CacheStore? = null
@@ -31,7 +35,14 @@ class CacheConfig private constructor(builder: Builder) {
             private set
 
         /**
-         * 缓存库
+         * 保存目录
+         */
+        fun setDirectory(directory: File) = apply {
+            this.directory = directory
+        }
+
+        /**
+         * 仓库ø
          */
         fun setCacheStore(store: Cache.CacheStore?) = apply {
             this.cacheStore = store
@@ -53,13 +64,9 @@ class CacheConfig private constructor(builder: Builder) {
 
         /**
          * 构建配置
-         * @param directory 保存目录
          */
-        fun build(directory: File): CacheConfig {
-            this.directory = directory.also {
-                if (it.isFile) error("directory is file.")
-            }
-            return CacheConfig(this)
+        fun build(context: Context): CacheConfig {
+            return CacheConfig(this, context.applicationContext)
         }
     }
 

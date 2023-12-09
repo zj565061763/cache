@@ -1,5 +1,6 @@
 package com.sd.lib.cache.store
 
+import android.content.Context
 import com.sd.lib.cache.Cache.CacheStore
 import java.io.File
 import java.security.MessageDigest
@@ -7,8 +8,13 @@ import java.security.MessageDigest
 /**
  * 磁盘缓存
  */
-abstract class BaseDiskCacheStore(directory: File) : CacheStore {
-    private val _directory = directory
+abstract class BaseDiskCacheStore : CacheStore {
+    private lateinit var _directory: File
+
+    override fun init(context: Context, directory: File) {
+        if (::_directory.isInitialized) error("CacheStore is initialized")
+        _directory = directory
+    }
 
     //---------- CacheStore start ----------
 
