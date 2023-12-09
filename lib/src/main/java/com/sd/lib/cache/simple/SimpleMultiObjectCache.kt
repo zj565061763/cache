@@ -17,6 +17,7 @@ internal class SimpleMultiObjectCache<T>(
 
     override fun put(key: String, value: T?): Boolean {
         if (key.isEmpty()) return false
+        if (value == null) return false
         return _objectHandler.putCache(transformKey(key), value)
     }
 

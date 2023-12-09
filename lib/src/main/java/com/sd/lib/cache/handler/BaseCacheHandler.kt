@@ -24,6 +24,7 @@ internal abstract class BaseCacheHandler<T>(
     //---------- CommonCache start ----------
 
     final override fun put(key: String, value: T?): Boolean {
+        if (value == null) return false
         return putCache(key, value)
     }
 
@@ -53,8 +54,7 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CacheHandler start ----------
 
-    final override fun putCache(key: String, value: T?): Boolean {
-        if (value == null) return false
+    final override fun putCache(key: String, value: T): Boolean {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
             return try {
