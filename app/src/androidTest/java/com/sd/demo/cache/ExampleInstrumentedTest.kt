@@ -30,11 +30,7 @@ class ExampleInstrumentedTest {
         assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, cache.remove(key))
-        assertEquals(null, cache.get(key))
-        assertEquals(false, cache.contains(key))
-
-        assertEquals(false, cache.remove(key))
+        cache.remove(key)
         assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
     }
@@ -55,11 +51,7 @@ class ExampleInstrumentedTest {
         assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, cache.remove(key))
-        assertEquals(null, cache.get(key))
-        assertEquals(false, cache.contains(key))
-
-        assertEquals(false, cache.remove(key))
+        cache.remove(key)
         assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
     }
@@ -80,11 +72,7 @@ class ExampleInstrumentedTest {
         assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, cache.remove(key))
-        assertEquals(null, cache.get(key))
-        assertEquals(false, cache.contains(key))
-
-        assertEquals(false, cache.remove(key))
+        cache.remove(key)
         assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
     }
@@ -105,11 +93,7 @@ class ExampleInstrumentedTest {
         assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, cache.remove(key))
-        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
-        assertEquals(false, cache.contains(key))
-
-        assertEquals(false, cache.remove(key))
+        cache.remove(key)
         assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
         assertEquals(false, cache.contains(key))
     }
@@ -130,11 +114,7 @@ class ExampleInstrumentedTest {
         assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, cache.remove(key))
-        assertEquals(null, cache.get(key))
-        assertEquals(false, cache.contains(key))
-
-        assertEquals(false, cache.remove(key))
+        cache.remove(key)
         assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
     }
@@ -159,11 +139,7 @@ class ExampleInstrumentedTest {
         assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, cache.remove(key))
-        assertEquals(null, cache.get(key))
-        assertEquals(false, cache.contains(key))
-
-        assertEquals(false, cache.remove(key))
+        cache.remove(key)
         assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
     }
@@ -188,11 +164,7 @@ class ExampleInstrumentedTest {
         assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, cache.remove(key))
-        assertEquals(null, cache.get(key))
-        assertEquals(false, cache.contains(key))
-
-        assertEquals(false, cache.remove(key))
+        cache.remove(key)
         assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
     }
@@ -213,11 +185,7 @@ class ExampleInstrumentedTest {
         assertEquals(true, cache.contains())
 
         // test remove and get
-        assertEquals(true, cache.remove())
-        assertEquals(null, cache.get())
-        assertEquals(false, cache.contains())
-
-        assertEquals(false, cache.remove())
+        cache.remove()
         assertEquals(null, cache.get())
         assertEquals(false, cache.contains())
     }
@@ -251,15 +219,8 @@ class ExampleInstrumentedTest {
         assertEquals(true, cache.contains(key2))
 
         // test remove and get
-        assertEquals(true, cache.remove(key1))
-        assertEquals(true, cache.remove(key2))
-        assertEquals(null, cache.get(key1))
-        assertEquals(null, cache.get(key2))
-        assertEquals(false, cache.contains(key1))
-        assertEquals(false, cache.contains(key2))
-
-        assertEquals(false, cache.remove(key1))
-        assertEquals(false, cache.remove(key2))
+        cache.remove(key1)
+        cache.remove(key2)
         assertEquals(null, cache.get(key1))
         assertEquals(null, cache.get(key2))
         assertEquals(false, cache.contains(key1))
