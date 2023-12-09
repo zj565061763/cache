@@ -23,8 +23,8 @@ interface Cache {
 
     fun cacheObject(): ObjectCache
 
-    fun <T> cacheSingleObject(clazz: Class<T>): SingleObjectCache<T>
-    fun <T> cacheMultiObject(clazz: Class<T>): MultiObjectCache<T>
+    fun <T> objectSingle(clazz: Class<T>): SingleObjectCache<T>
+    fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T>
 
     //---------- cache end ----------
 

@@ -103,7 +103,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
         }
     }
 
-    override fun <T> cacheSingleObject(clazz: Class<T>): SingleObjectCache<T> {
+    override fun <T> objectSingle(clazz: Class<T>): SingleObjectCache<T> {
         val cache = _singleObjectCache
         if (cache?.objectClass == clazz) return (cache as SingleObjectCache<T>)
         return SingleObjectCacheImpl(_cacheInfo, clazz).also {
@@ -111,7 +111,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
         }
     }
 
-    override fun <T> cacheMultiObject(clazz: Class<T>): MultiObjectCache<T> {
+    override fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T> {
         val cache = _multiObjectCache
         if (cache?.objectClass == clazz) return (cache as MultiObjectCache<T>)
         return SimpleMultiObjectCache(_cacheInfo, clazz).also {

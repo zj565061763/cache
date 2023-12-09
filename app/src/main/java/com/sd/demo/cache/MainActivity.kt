@@ -48,8 +48,8 @@ class MainActivity : AppCompatActivity() {
 
         val model = TestModel()
         cache.cacheObject().put(model)
-        cache.cacheMultiObject(TestModel::class.java).put(Key, model)
-        cache.cacheMultiObject(TestModel::class.java).put(Key + Key, model)
+        cache.objectMulti(TestModel::class.java).put(Key, model)
+        cache.objectMulti(TestModel::class.java).put(Key + Key, model)
     }
 
     private fun getData() {
@@ -60,8 +60,8 @@ class MainActivity : AppCompatActivity() {
         logMsg { "cacheBoolean:" + cache.cacheBoolean().get(Key) }
         logMsg { "cacheString:" + cache.cacheString().get(Key) }
         logMsg { "cacheObject:" + cache.cacheObject().get(TestModel::class.java) }
-        logMsg { "cacheMultiObject:" + cache.cacheMultiObject(TestModel::class.java).get(Key) }
-        logMsg { "cacheMultiObject:" + cache.cacheMultiObject(TestModel::class.java).get(Key + Key) }
+        logMsg { "cacheMultiObject:" + cache.objectMulti(TestModel::class.java).get(Key) }
+        logMsg { "cacheMultiObject:" + cache.objectMulti(TestModel::class.java).get(Key + Key) }
     }
 
     private fun removeData() {
@@ -72,8 +72,8 @@ class MainActivity : AppCompatActivity() {
         cache.cacheBoolean().remove(Key)
         cache.cacheString().remove(Key)
         cache.cacheObject().remove(TestModel::class.java)
-        cache.cacheMultiObject(TestModel::class.java).remove(Key)
-        cache.cacheMultiObject(TestModel::class.java).remove(Key + Key)
+        cache.objectMulti(TestModel::class.java).remove(Key)
+        cache.objectMulti(TestModel::class.java).remove(Key + Key)
     }
 }
 
