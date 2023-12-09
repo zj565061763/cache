@@ -43,9 +43,8 @@ interface Cache {
 
         /**
          * 移除[key]对应的缓存
-         * @return true-删除成功，false-删除失败或者缓存不存在
          */
-        fun remove(key: String): Boolean
+        fun remove(key: String)
 
         /**
          * [key]对应的缓存是否存在
@@ -59,7 +58,7 @@ interface Cache {
     interface SingleObjectCache<T> {
         fun put(value: T?): Boolean
         fun get(): T?
-        fun remove(): Boolean
+        fun remove()
         fun contains(): Boolean
     }
 
@@ -69,7 +68,7 @@ interface Cache {
     interface MultiObjectCache<T> {
         fun put(key: String, value: T?): Boolean
         fun get(key: String): T?
-        fun remove(key: String): Boolean
+        fun remove(key: String)
         fun contains(key: String): Boolean
     }
 
@@ -89,10 +88,9 @@ interface Cache {
 
         /**
          * 删除缓存
-         * @return true-删除成功，false-删除失败或者缓存不存在
          */
         @Throws(Exception::class)
-        fun removeCache(key: String): Boolean
+        fun removeCache(key: String)
 
         /**
          * 是否有[key]对应的缓存

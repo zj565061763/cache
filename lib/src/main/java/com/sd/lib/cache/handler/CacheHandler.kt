@@ -8,7 +8,7 @@ internal interface CacheHandler<T> {
 
     fun getCache(key: String, clazz: Class<*>?): T?
 
-    fun removeCache(key: String): Boolean
+    fun removeCache(key: String)
 
     fun containsCache(key: String): Boolean
 }

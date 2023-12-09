@@ -28,9 +28,9 @@ internal class MultiObjectCacheImpl<T>(
         return cache as T
     }
 
-    override fun remove(key: String): Boolean {
-        if (key.isEmpty()) return false
-        return _objectHandler.removeCache(transformKey(key))
+    override fun remove(key: String) {
+        if (key.isEmpty()) return
+        _objectHandler.removeCache(transformKey(key))
     }
 
     override fun contains(key: String): Boolean {

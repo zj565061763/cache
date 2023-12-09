@@ -25,9 +25,8 @@ class MMKVCacheStore(context: Context) : CacheStore {
         return _mmkv.decodeBytes(key)
     }
 
-    override fun removeCache(key: String): Boolean {
+    override fun removeCache(key: String) {
         _mmkv.remove(key)
-        return true
     }
 
     override fun containsCache(key: String): Boolean {

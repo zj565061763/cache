@@ -33,8 +33,8 @@ internal abstract class BaseCacheHandler<T>(
         return getCache(key, null)
     }
 
-    final override fun remove(key: String): Boolean {
-        return removeCache(key)
+    final override fun remove(key: String) {
+        removeCache(key)
     }
 
     final override fun contains(key: String): Boolean {
@@ -83,14 +83,13 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    final override fun removeCache(key: String): Boolean {
+    final override fun removeCache(key: String) {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
-            return try {
+            try {
                 _cacheStore.removeCache(key)
             } catch (e: Exception) {
                 notifyException(e)
-                false
             }
         }
     }

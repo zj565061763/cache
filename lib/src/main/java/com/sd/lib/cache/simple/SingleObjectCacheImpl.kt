@@ -23,8 +23,8 @@ internal class SingleObjectCacheImpl<T>(
         return cache as T
     }
 
-    override fun remove(): Boolean {
-        return _handler.remove(_key)
+    override fun remove() {
+        _handler.remove(_key)
     }
 
     override fun contains(): Boolean {

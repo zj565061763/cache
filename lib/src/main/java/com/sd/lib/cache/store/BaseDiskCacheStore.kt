@@ -23,10 +23,10 @@ abstract class BaseDiskCacheStore(directory: File) : CacheStore {
         return getCacheImpl(key, file)
     }
 
-    final override fun removeCache(key: String): Boolean {
+    final override fun removeCache(key: String) {
         val file = getCacheFile(key)
-        if (!file.exists()) return false
-        return removeCacheImpl(key, file)
+        if (!file.exists()) return
+        removeCacheImpl(key, file)
     }
 
     final override fun containsCache(key: String): Boolean {
