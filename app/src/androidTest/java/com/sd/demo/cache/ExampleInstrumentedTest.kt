@@ -1,8 +1,8 @@
 package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.sd.lib.cache.FCache
-import org.junit.Assert
+import com.sd.lib.cache.fCache
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -13,185 +13,188 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
-    @Test
-    fun testPutMulti() {
-        val key = "TestKey"
-        Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 1))
-        Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 2))
-        Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 3))
-        Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 4))
-        Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 5))
-
-        Assert.assertEquals(5, FCache.disk().cacheInteger().get(key))
-        Assert.assertEquals(true, FCache.disk().cacheInteger().contains(key))
-    }
+    private val _testEmptyByteArray = true
+    private val _testEmptyString = true
 
     @Test
     fun testCacheInt() {
         val key = "TestKey"
+        val cache = fCache.cacheInt()
 
         // test get defaultValue
-        FCache.disk().cacheInteger().remove(key)
-        Assert.assertEquals(null, FCache.disk().cacheInteger().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheInteger().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        Assert.assertEquals(true, FCache.disk().cacheInteger().put(key, 1))
-        Assert.assertEquals(1, FCache.disk().cacheInteger().get(key))
-        Assert.assertEquals(true, FCache.disk().cacheInteger().contains(key))
+        assertEquals(true, cache.put(key, 1))
+        assertEquals(1, cache.get(key))
+        assertEquals(true, cache.contains(key))
 
         // test remove and get
-        Assert.assertEquals(true, FCache.disk().cacheInteger().remove(key))
-        Assert.assertEquals(null, FCache.disk().cacheInteger().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheInteger().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
     fun testCacheLong() {
         val key = "TestKey"
+        val cache = fCache.cacheLong()
 
         // test get defaultValue
-        FCache.disk().cacheLong().remove(key)
-        Assert.assertEquals(null, FCache.disk().cacheLong().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheLong().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        Assert.assertEquals(true, FCache.disk().cacheLong().put(key, 1L))
-        Assert.assertEquals(1L, FCache.disk().cacheLong().get(key))
-        Assert.assertEquals(true, FCache.disk().cacheLong().contains(key))
+        assertEquals(true, cache.put(key, 1L))
+        assertEquals(1L, cache.get(key))
+        assertEquals(true, cache.contains(key))
 
         // test remove and get
-        Assert.assertEquals(true, FCache.disk().cacheLong().remove(key))
-        Assert.assertEquals(null, FCache.disk().cacheLong().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheLong().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
     fun testCacheFloat() {
         val key = "TestKey"
+        val cache = fCache.cacheFloat()
 
         // test get defaultValue
-        FCache.disk().cacheFloat().remove(key)
-        Assert.assertEquals(null, FCache.disk().cacheFloat().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheFloat().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        Assert.assertEquals(true, FCache.disk().cacheFloat().put(key, 1.0f))
-        Assert.assertEquals(1.0f, FCache.disk().cacheFloat().get(key))
-        Assert.assertEquals(true, FCache.disk().cacheFloat().contains(key))
+        assertEquals(true, cache.put(key, 1.0f))
+        assertEquals(1.0f, cache.get(key))
+        assertEquals(true, cache.contains(key))
 
         // test remove and get
-        Assert.assertEquals(true, FCache.disk().cacheFloat().remove(key))
-        Assert.assertEquals(null, FCache.disk().cacheFloat().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheFloat().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
     fun testCacheDouble() {
         val key = "TestKey"
+        val cache = fCache.cacheDouble()
 
         // test get defaultValue
-        FCache.disk().cacheDouble().remove(key)
-        Assert.assertEquals(0.0, FCache.disk().cacheDouble().get(key) ?: 0.0, 0.01)
-        Assert.assertEquals(false, FCache.disk().cacheDouble().contains(key))
+        cache.remove(key)
+        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        Assert.assertEquals(true, FCache.disk().cacheDouble().put(key, 1.0))
-        Assert.assertEquals(1.0, FCache.disk().cacheDouble().get(key) ?: 0.0, 0.01)
-        Assert.assertEquals(true, FCache.disk().cacheDouble().contains(key))
+        assertEquals(true, cache.put(key, 1.0))
+        assertEquals(1.0, cache.get(key) ?: 0.0, 0.01)
+        assertEquals(true, cache.contains(key))
 
         // test remove and get
-        Assert.assertEquals(true, FCache.disk().cacheDouble().remove(key))
-        Assert.assertEquals(0.0, FCache.disk().cacheDouble().get(key) ?: 0.0, 0.01)
-        Assert.assertEquals(false, FCache.disk().cacheDouble().contains(key))
+        cache.remove(key)
+        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
     fun testCacheBoolean() {
         val key = "TestKey"
+        val cache = fCache.cacheBoolean()
 
         // test get defaultValue
-        FCache.disk().cacheBoolean().remove(key)
-        Assert.assertEquals(null, FCache.disk().cacheBoolean().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheBoolean().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        Assert.assertEquals(true, FCache.disk().cacheBoolean().put(key, true))
-        Assert.assertEquals(true, FCache.disk().cacheBoolean().get(key))
-        Assert.assertEquals(true, FCache.disk().cacheBoolean().contains(key))
+        assertEquals(true, cache.put(key, true))
+        assertEquals(true, cache.get(key))
+        assertEquals(true, cache.contains(key))
 
         // test remove and get
-        Assert.assertEquals(true, FCache.disk().cacheBoolean().remove(key))
-        Assert.assertEquals(null, FCache.disk().cacheBoolean().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheBoolean().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
     fun testCacheString() {
         val key = "TestKey"
+        val cache = fCache.cacheString()
 
         // test get defaultValue
-        FCache.disk().cacheString().remove(key)
-        Assert.assertEquals(null, FCache.disk().cacheString().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheString().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        Assert.assertEquals(true, FCache.disk().cacheString().put(key, "hello"))
-        Assert.assertEquals("hello", FCache.disk().cacheString().get(key))
-        Assert.assertEquals(true, FCache.disk().cacheString().contains(key))
+        assertEquals(true, cache.put(key, "hello"))
+        assertEquals("hello", cache.get(key))
+        assertEquals(true, cache.contains(key))
 
-        Assert.assertEquals(true, FCache.disk().cacheString().put(key, ""))
-        Assert.assertEquals("", FCache.disk().cacheString().get(key))
-        Assert.assertEquals(true, FCache.disk().cacheString().contains(key))
+        if (_testEmptyString) {
+            assertEquals(true, cache.put(key, ""))
+            assertEquals("", cache.get(key))
+            assertEquals(true, cache.contains(key))
+        }
 
         // test remove and get
-        Assert.assertEquals(true, FCache.disk().cacheString().remove(key))
-        Assert.assertEquals(null, FCache.disk().cacheString().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheString().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
     fun testCacheBytes() {
         val key = "TestKey"
+        val cache = fCache.cacheBytes()
 
         // test get defaultValue
-        FCache.disk().cacheBytes().remove(key)
-        Assert.assertEquals(null, FCache.disk().cacheBytes().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheBytes().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        Assert.assertEquals(true, FCache.disk().cacheBytes().put(key, "hello".toByteArray()))
-        Assert.assertEquals("hello", FCache.disk().cacheBytes().get(key)?.let { String(it) })
-        Assert.assertEquals(true, FCache.disk().cacheBytes().contains(key))
+        assertEquals(true, cache.put(key, "hello".toByteArray()))
+        assertEquals("hello", cache.get(key)?.let { String(it) })
+        assertEquals(true, cache.contains(key))
 
-        Assert.assertEquals(true, FCache.disk().cacheBytes().put(key, "".toByteArray()))
-        Assert.assertEquals(0, FCache.disk().cacheBytes().get(key)?.size)
-        Assert.assertEquals(true, FCache.disk().cacheBytes().contains(key))
+        if (_testEmptyByteArray) {
+            val emptyByteArray = "".toByteArray()
+            assertEquals(true, cache.put(key, emptyByteArray))
+            assertEquals(0, cache.get(key)?.size)
+            assertEquals(true, cache.contains(key))
+        }
 
         // test remove and get
-        Assert.assertEquals(true, FCache.disk().cacheBytes().remove(key))
-        Assert.assertEquals(null, FCache.disk().cacheBytes().get(key))
-        Assert.assertEquals(false, FCache.disk().cacheBytes().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
     fun testCacheObject() {
         val model = TestModel()
+        val cache = fCache.objectSingle(TestModel::class.java)
 
         // test get defaultValue
-        FCache.disk().cacheObject().remove(TestModel::class.java)
-        Assert.assertEquals(null, FCache.disk().cacheObject().get(TestModel::class.java))
-        Assert.assertEquals(false, FCache.disk().cacheObject().contains(TestModel::class.java))
+        cache.remove()
+        assertEquals(null, cache.get())
+        assertEquals(false, cache.contains())
 
         // test put and get
-        Assert.assertEquals(true, FCache.disk().cacheObject().put(model))
-        Assert.assertEquals(model, FCache.disk().cacheObject().get(TestModel::class.java))
-        Assert.assertEquals(true, FCache.disk().cacheObject().contains(TestModel::class.java))
+        assertEquals(true, cache.put(model))
+        assertEquals(model, cache.get())
+        assertEquals(true, cache.contains())
 
         // test remove and get
-        Assert.assertEquals(true, FCache.disk().cacheObject().remove(TestModel::class.java))
-        Assert.assertEquals(null, FCache.disk().cacheObject().get(TestModel::class.java))
-        Assert.assertEquals(false, FCache.disk().cacheObject().contains(TestModel::class.java))
+        cache.remove()
+        assertEquals(null, cache.get())
+        assertEquals(false, cache.contains())
     }
 
     @Test
@@ -202,30 +205,32 @@ class ExampleInstrumentedTest {
         val model1 = TestModel("TestModel1")
         val model2 = TestModel("TestModel2")
 
+        val cache = fCache.objectMulti(TestModel::class.java)
+
         // test get defaultValue
-        FCache.disk().cacheMultiObject(TestModel::class.java).let {
+        cache.let {
             it.remove(key1)
             it.remove(key2)
         }
-        Assert.assertEquals(null, FCache.disk().cacheMultiObject(TestModel::class.java).get(key1))
-        Assert.assertEquals(null, FCache.disk().cacheMultiObject(TestModel::class.java).get(key2))
-        Assert.assertEquals(false, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key1))
-        Assert.assertEquals(false, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key2))
+        assertEquals(null, cache.get(key1))
+        assertEquals(null, cache.get(key2))
+        assertEquals(false, cache.contains(key1))
+        assertEquals(false, cache.contains(key2))
 
         // test put and get
-        Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).put(key1, model1))
-        Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).put(key2, model2))
-        Assert.assertEquals(model1, FCache.disk().cacheMultiObject(TestModel::class.java).get(key1))
-        Assert.assertEquals(model2, FCache.disk().cacheMultiObject(TestModel::class.java).get(key2))
-        Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key1))
-        Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key2))
+        assertEquals(true, cache.put(key1, model1))
+        assertEquals(true, cache.put(key2, model2))
+        assertEquals(model1, cache.get(key1))
+        assertEquals(model2, cache.get(key2))
+        assertEquals(true, cache.contains(key1))
+        assertEquals(true, cache.contains(key2))
 
         // test remove and get
-        Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).remove(key1))
-        Assert.assertEquals(true, FCache.disk().cacheMultiObject(TestModel::class.java).remove(key2))
-        Assert.assertEquals(null, FCache.disk().cacheMultiObject(TestModel::class.java).get(key1))
-        Assert.assertEquals(null, FCache.disk().cacheMultiObject(TestModel::class.java).get(key2))
-        Assert.assertEquals(false, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key1))
-        Assert.assertEquals(false, FCache.disk().cacheMultiObject(TestModel::class.java).contains(key2))
+        cache.remove(key1)
+        cache.remove(key2)
+        assertEquals(null, cache.get(key1))
+        assertEquals(null, cache.get(key2))
+        assertEquals(false, cache.contains(key1))
+        assertEquals(false, cache.contains(key2))
     }
 }

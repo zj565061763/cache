@@ -6,7 +6,7 @@ plugins {
 
 val libGroupId = "com.sd.lib.android"
 val libArtifactId = "cache"
-val libVersionName = "1.4.0"
+val libVersionName = "2.0.0-alpha01"
 
 android {
     namespace ="com.sd.lib.cache"
@@ -32,16 +32,18 @@ kotlin {
 
 dependencies {
     implementation(libs.google.gson)
+    implementation(libs.tencent.mmkv)
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>("release") {
+publishing {
+    publications {
+        create<MavenPublication>("release") {
+            groupId = libGroupId
+            artifactId = libArtifactId
+            version = libVersionName
+
+            afterEvaluate {
                 from(components["release"])
-                groupId = libGroupId
-                artifactId = libArtifactId
-                version = libVersionName
             }
         }
     }

@@ -1,24 +1,27 @@
 package com.sd.lib.cache
 
 import android.content.Context
-import com.sd.lib.cache.simple.GsonObjectConverter
-import com.sd.lib.cache.store.UnlimitedDiskCacheStore
+import com.sd.lib.cache.impl.MMKVCacheStore
+import com.sd.lib.cache.impl.ObjectConverterImpl
 import java.io.File
 
-class CacheConfig private constructor(builder: Builder) {
+class CacheConfig private constructor(builder: Builder, context: Context) {
     internal val cacheStore: Cache.CacheStore
     internal val objectConverter: Cache.ObjectConverter
     internal val exceptionHandler: Cache.ExceptionHandler
 
     init {
-        val context = builder.context
-        cacheStore = builder.cacheStore ?: UnlimitedDiskCacheStore(File(context.filesDir, "f_disk_cache"))
-        objectConverter = builder.objectConverter ?: GsonObjectConverter()
+        cacheStore = builder.cacheStore ?: MMKVCacheStore()
+        objectConverter = builder.objectConverter ?: ObjectConverterImpl()
         exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }
+
+        // 初始化仓库
+        val directory = builder.directory ?: context.filesDir.resolve("f_cache")
+        cacheStore.init(context, directory)
     }
 
     class Builder {
-        internal lateinit var context: Context
+        internal var directory: File? = null
             private set
 
         internal var cacheStore: Cache.CacheStore? = null
@@ -31,7 +34,14 @@ class CacheConfig private constructor(builder: Builder) {
             private set
 
         /**
-         * 缓存库
+         * 保存目录
+         */
+        fun setDirectory(directory: File) = apply {
+            this.directory = directory
+        }
+
+        /**
+         * 仓库ø
          */
         fun setCacheStore(store: Cache.CacheStore?) = apply {
             this.cacheStore = store
@@ -51,9 +61,11 @@ class CacheConfig private constructor(builder: Builder) {
             this.exceptionHandler = handler
         }
 
+        /**
+         * 构建配置
+         */
         fun build(context: Context): CacheConfig {
-            this.context = context.applicationContext
-            return CacheConfig(this)
+            return CacheConfig(this, context.applicationContext)
         }
     }
 
@@ -74,10 +86,9 @@ class CacheConfig private constructor(builder: Builder) {
         }
 
         internal fun get(): CacheConfig {
-            val config = sConfig
-            if (config != null) return config
+            sConfig?.let { return it }
             synchronized(Cache::class.java) {
-                return sConfig ?: error("CacheConfig has not been init")
+                return sConfig ?: error("You should call init() before this.")
             }
         }
     }

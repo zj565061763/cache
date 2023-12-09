@@ -1,5 +1,8 @@
 package com.sd.lib.cache
 
+import android.content.Context
+import java.io.File
+
 interface Cache {
     /**
      * 对象转换
@@ -13,7 +16,7 @@ interface Cache {
 
     //---------- cache start ----------
 
-    fun cacheInteger(): CommonCache<Int>
+    fun cacheInt(): CommonCache<Int>
     fun cacheLong(): CommonCache<Long>
     fun cacheFloat(): CommonCache<Float>
     fun cacheDouble(): CommonCache<Double>
@@ -21,13 +24,13 @@ interface Cache {
     fun cacheString(): CommonCache<String>
     fun cacheBytes(): CommonCache<ByteArray>
 
-    fun cacheObject(): ObjectCache
-    fun <T> cacheMultiObject(clazz: Class<T>): MultiObjectCache<T>
+    fun <T> objectSingle(clazz: Class<T>): SingleObjectCache<T>
+    fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T>
 
     //---------- cache end ----------
 
     /**
-     * 通用缓存接口
+     * 基本数据类型，通用缓存接口
      */
     interface CommonCache<T> {
         /**
@@ -43,9 +46,8 @@ interface Cache {
 
         /**
          * 移除[key]对应的缓存
-         * @return true-删除成功，false-删除失败或者缓存不存在
          */
-        fun remove(key: String): Boolean
+        fun remove(key: String)
 
         /**
          * [key]对应的缓存是否存在
@@ -54,13 +56,13 @@ interface Cache {
     }
 
     /**
-     * 对象缓存接口
+     * 单对象缓存接口
      */
-    interface ObjectCache {
-        fun put(value: Any?): Boolean
-        fun <T> get(clazz: Class<T>): T?
-        fun remove(clazz: Class<*>): Boolean
-        fun contains(clazz: Class<*>): Boolean
+    interface SingleObjectCache<T> {
+        fun put(value: T?): Boolean
+        fun get(): T?
+        fun remove()
+        fun contains(): Boolean
     }
 
     /**
@@ -69,11 +71,16 @@ interface Cache {
     interface MultiObjectCache<T> {
         fun put(key: String, value: T?): Boolean
         fun get(key: String): T?
-        fun remove(key: String): Boolean
+        fun remove(key: String)
         fun contains(key: String): Boolean
     }
 
     interface CacheStore {
+        /**
+         * 初始化
+         */
+        fun init(context: Context, directory: File)
+
         /**
          * 保存缓存
          * @return true-保存成功，false-保存失败
@@ -89,10 +96,9 @@ interface Cache {
 
         /**
          * 删除缓存
-         * @return true-删除成功，false-删除失败或者缓存不存在
          */
         @Throws(Exception::class)
-        fun removeCache(key: String): Boolean
+        fun removeCache(key: String)
 
         /**
          * 是否有[key]对应的缓存
@@ -109,7 +115,7 @@ interface Cache {
          * 对象转byte
          */
         @Throws(Exception::class)
-        fun objectToByte(value: Any): ByteArray
+        fun objectToByte(value: Any, clazz: Class<*>): ByteArray
 
         /**
          * byte转对象
@@ -127,7 +133,7 @@ interface Cache {
 }
 
 internal interface CacheInfo {
-    /** 存取库 */
+    /** 仓库 */
     val cacheStore: Cache.CacheStore
 
     /** 对象转换 */

@@ -7,7 +7,7 @@ import com.sd.lib.cache.handler.BaseCacheHandler
  * String处理类
  */
 internal class StringHandler(info: CacheInfo) : BaseCacheHandler<String>(info, "string") {
-    override fun encodeToByteImpl(value: String): ByteArray {
+    override fun encodeToByteImpl(value: String, clazz: Class<*>?): ByteArray {
         return value.toByteArray()
     }
 

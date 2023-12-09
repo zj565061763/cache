@@ -5,6 +5,7 @@ import com.sd.lib.cache.Cache.CacheStore
 import com.sd.lib.cache.Cache.CommonCache
 import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.CacheInfo
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * 缓存处理基类
@@ -24,15 +25,16 @@ internal abstract class BaseCacheHandler<T>(
     //---------- CommonCache start ----------
 
     final override fun put(key: String, value: T?): Boolean {
-        return putCache(key, value)
+        if (value == null) return false
+        return putCache(key, value, null)
     }
 
     final override fun get(key: String): T? {
         return getCache(key, null)
     }
 
-    final override fun remove(key: String): Boolean {
-        return removeCache(key)
+    final override fun remove(key: String) {
+        removeCache(key)
     }
 
     final override fun contains(key: String): Boolean {
@@ -48,17 +50,17 @@ internal abstract class BaseCacheHandler<T>(
 
     private fun notifyException(e: Exception) {
         if (e is CacheException) throw e
+        if (e is CancellationException) throw e
         cacheInfo.exceptionHandler.onException(e)
     }
 
     //---------- CacheHandler start ----------
 
-    final override fun putCache(key: String, value: T?): Boolean {
-        if (value == null) return false
+    final override fun putCache(key: String, value: T, clazz: Class<*>?): Boolean {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
             return try {
-                val data = encodeToByteImpl(value)
+                val data = encodeToByteImpl(value, clazz)
                 _cacheStore.putCache(key, data)
             } catch (e: Exception) {
                 notifyException(e)
@@ -81,14 +83,13 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    final override fun removeCache(key: String): Boolean {
+    final override fun removeCache(key: String) {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
-            return try {
+            try {
                 _cacheStore.removeCache(key)
             } catch (e: Exception) {
                 notifyException(e)
-                false
             }
         }
     }
@@ -111,7 +112,7 @@ internal abstract class BaseCacheHandler<T>(
      * 缓存转byte
      */
     @Throws(Exception::class)
-    protected abstract fun encodeToByteImpl(value: T): ByteArray
+    protected abstract fun encodeToByteImpl(value: T, clazz: Class<*>?): ByteArray
 
     /**
      * byte转缓存

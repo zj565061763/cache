@@ -4,10 +4,10 @@ import com.sd.lib.cache.CacheInfo
 import com.sd.lib.cache.handler.BaseCacheHandler
 
 /**
- * Integer处理类
+ * Int处理类
  */
-internal class IntegerHandler(info: CacheInfo) : BaseCacheHandler<Int>(info, "integer") {
-    override fun encodeToByteImpl(value: Int): ByteArray {
+internal class IntHandler(info: CacheInfo) : BaseCacheHandler<Int>(info, "integer") {
+    override fun encodeToByteImpl(value: Int, clazz: Class<*>?): ByteArray {
         return value.toString().toByteArray()
     }
 
