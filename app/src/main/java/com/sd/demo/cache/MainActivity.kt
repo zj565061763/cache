@@ -53,15 +53,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getData() {
-        logMsg { "cacheInteger:" + cache.cacheInt().get(Key) }
+        logMsg { "cacheInt:" + cache.cacheInt().get(Key) }
         logMsg { "cacheLong:" + cache.cacheLong().get(Key) }
         logMsg { "cacheFloat:" + cache.cacheFloat().get(Key) }
         logMsg { "cacheDouble:" + cache.cacheDouble().get(Key) }
         logMsg { "cacheBoolean:" + cache.cacheBoolean().get(Key) }
         logMsg { "cacheString:" + cache.cacheString().get(Key) }
         logMsg { "cacheObject:" + cache.cacheObject().get(TestModel::class.java) }
-        logMsg { "cacheMultiObject:" + cache.objectMulti(TestModel::class.java).get(Key) }
-        logMsg { "cacheMultiObject:" + cache.objectMulti(TestModel::class.java).get(Key + Key) }
+        logMsg { "objectMulti:" + cache.objectMulti(TestModel::class.java).get(Key) }
+        logMsg { "objectMulti:" + cache.objectMulti(TestModel::class.java).get(Key + Key) }
     }
 
     private fun removeData() {
