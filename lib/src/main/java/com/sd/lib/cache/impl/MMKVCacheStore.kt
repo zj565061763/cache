@@ -12,9 +12,7 @@ internal class MMKVCacheStore : CacheStore {
     override fun init(context: Context, directory: File) {
         if (::_mmkv.isInitialized) error("CacheStore is initialized.")
         MMKV.initialize(context, directory.absolutePath, MMKVLogLevel.LevelNone)
-        _mmkv = MMKV.defaultMMKV().apply {
-            enableAutoKeyExpire(MMKV.ExpireNever)
-        }
+        _mmkv = MMKV.defaultMMKV()
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
