@@ -7,8 +7,10 @@ interface Cache {
 
     fun cacheInt(): CommonCache<Int>
     fun cacheLong(): CommonCache<Long>
+
     fun cacheFloat(): CommonCache<Float>
     fun cacheDouble(): CommonCache<Double>
+
     fun cacheBoolean(): CommonCache<Boolean>
     fun cacheString(): CommonCache<String>
     fun cacheBytes(): CommonCache<ByteArray>
