@@ -159,7 +159,8 @@ class ExampleInstrumentedTest {
         assertEquals("hello", cache.get(key)?.let { String(it) })
         assertEquals(true, cache.contains(key))
 
-        assertEquals(true, cache.put(key, "".toByteArray()))
+        val emptyByteArray = "".toByteArray()
+        assertEquals(true, cache.put(key, emptyByteArray))
         assertEquals(0, cache.get(key)?.size)
         assertEquals(true, cache.contains(key))
 
