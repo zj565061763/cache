@@ -25,7 +25,7 @@ internal abstract class BaseCacheHandler<T>(
 
     final override fun put(key: String, value: T?): Boolean {
         if (value == null) return false
-        return putCache(key, value)
+        return putCache(key, value, null)
     }
 
     final override fun get(key: String): T? {
@@ -54,11 +54,11 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CacheHandler start ----------
 
-    final override fun putCache(key: String, value: T): Boolean {
+    final override fun putCache(key: String, value: T, clazz: Class<*>?): Boolean {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
             return try {
-                val data = encodeToByteImpl(value)
+                val data = encodeToByteImpl(value, clazz)
                 _cacheStore.putCache(key, data)
             } catch (e: Exception) {
                 notifyException(e)
@@ -111,7 +111,7 @@ internal abstract class BaseCacheHandler<T>(
      * 缓存转byte
      */
     @Throws(Exception::class)
-    protected abstract fun encodeToByteImpl(value: T): ByteArray
+    protected abstract fun encodeToByteImpl(value: T, clazz: Class<*>?): ByteArray
 
     /**
      * byte转缓存

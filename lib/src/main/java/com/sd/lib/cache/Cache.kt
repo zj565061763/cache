@@ -109,7 +109,7 @@ interface Cache {
          * 对象转byte
          */
         @Throws(Exception::class)
-        fun objectToByte(value: Any): ByteArray
+        fun objectToByte(value: Any, clazz: Class<*>): ByteArray
 
         /**
          * byte转对象

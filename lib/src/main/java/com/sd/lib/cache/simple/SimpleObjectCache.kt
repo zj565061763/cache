@@ -10,7 +10,7 @@ internal class SimpleObjectCache(info: CacheInfo) : ObjectCache {
     override fun put(value: Any?): Boolean {
         if (value == null) return false
         val key = value.javaClass.name
-        return _handler.putCache(key, value)
+        return _handler.putCache(key, value, value.javaClass)
     }
 
     @Suppress("UNCHECKED_CAST")

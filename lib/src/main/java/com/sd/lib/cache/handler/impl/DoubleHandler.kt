@@ -7,7 +7,7 @@ import com.sd.lib.cache.handler.BaseCacheHandler
  * Double处理类
  */
 internal class DoubleHandler(info: CacheInfo) : BaseCacheHandler<Double>(info, "double") {
-    override fun encodeToByteImpl(value: Double): ByteArray {
+    override fun encodeToByteImpl(value: Double, clazz: Class<*>?): ByteArray {
         return value.toString().toByteArray()
     }
 
