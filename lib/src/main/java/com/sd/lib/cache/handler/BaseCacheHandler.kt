@@ -5,6 +5,7 @@ import com.sd.lib.cache.Cache.CacheStore
 import com.sd.lib.cache.Cache.CommonCache
 import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.CacheInfo
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * 缓存处理基类
@@ -49,6 +50,7 @@ internal abstract class BaseCacheHandler<T>(
 
     private fun notifyException(e: Exception) {
         if (e is CacheException) throw e
+        if (e is CancellationException) throw e
         cacheInfo.exceptionHandler.onException(e)
     }
 
