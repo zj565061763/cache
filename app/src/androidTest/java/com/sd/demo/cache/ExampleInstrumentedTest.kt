@@ -42,21 +42,26 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheLong() {
         val key = "TestKey"
+        val cache = fCache.cacheLong()
 
         // test get defaultValue
-        fCache.cacheLong().remove(key)
-        assertEquals(null, fCache.cacheLong().get(key))
-        assertEquals(false, fCache.cacheLong().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        assertEquals(true, fCache.cacheLong().put(key, 1L))
-        assertEquals(1L, fCache.cacheLong().get(key))
-        assertEquals(true, fCache.cacheLong().contains(key))
+        assertEquals(true, cache.put(key, 1L))
+        assertEquals(1L, cache.get(key))
+        assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, fCache.cacheLong().remove(key))
-        assertEquals(null, fCache.cacheLong().get(key))
-        assertEquals(false, fCache.cacheLong().contains(key))
+        assertEquals(true, cache.remove(key))
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
+
+        assertEquals(false, cache.remove(key))
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
