@@ -1,7 +1,6 @@
 package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.sd.lib.cache.FCache
 import com.sd.lib.cache.fCache
 import org.junit.Assert
 import org.junit.Test
@@ -180,19 +179,19 @@ class ExampleInstrumentedTest {
         val model = TestModel()
 
         // test get defaultValue
-        fCache.cacheObject().remove(TestModel::class.java)
-        Assert.assertEquals(null, fCache.cacheObject().get(TestModel::class.java))
-        Assert.assertEquals(false, fCache.cacheObject().contains(TestModel::class.java))
+        fCache.objectSingle(TestModel::class.java).remove()
+        Assert.assertEquals(null, fCache.objectSingle(TestModel::class.java).get())
+        Assert.assertEquals(false, fCache.objectSingle(TestModel::class.java).contains())
 
         // test put and get
-        Assert.assertEquals(true, fCache.cacheObject().put(model))
-        Assert.assertEquals(model, fCache.cacheObject().get(TestModel::class.java))
-        Assert.assertEquals(true, fCache.cacheObject().contains(TestModel::class.java))
+        Assert.assertEquals(true, fCache.objectSingle(TestModel::class.java).put(model))
+        Assert.assertEquals(model, fCache.objectSingle(TestModel::class.java).get())
+        Assert.assertEquals(true, fCache.objectSingle(TestModel::class.java).contains())
 
         // test remove and get
-        Assert.assertEquals(true, fCache.cacheObject().remove(TestModel::class.java))
-        Assert.assertEquals(null, fCache.cacheObject().get(TestModel::class.java))
-        Assert.assertEquals(false, fCache.cacheObject().contains(TestModel::class.java))
+        Assert.assertEquals(true, fCache.objectSingle(TestModel::class.java).remove())
+        Assert.assertEquals(null, fCache.objectSingle(TestModel::class.java).get())
+        Assert.assertEquals(false, fCache.objectSingle(TestModel::class.java).contains())
     }
 
     @Test
