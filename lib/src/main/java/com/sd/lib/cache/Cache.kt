@@ -127,7 +127,7 @@ interface Cache {
 }
 
 internal interface CacheInfo {
-    /** 存取库 */
+    /** 仓库 */
     val cacheStore: Cache.CacheStore
 
     /** 对象转换 */
