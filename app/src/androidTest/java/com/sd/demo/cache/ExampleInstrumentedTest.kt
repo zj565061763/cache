@@ -13,8 +13,8 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
-    private val _testEmptyByteArray = false
-    private val _testEmptyString = false
+    private val _testEmptyByteArray = true
+    private val _testEmptyString = true
 
     @Test
     fun testCacheInt() {
