@@ -17,6 +17,8 @@ tencent-mmkv = "com.tencent:mmkv:1.3.2"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.1.5"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 
+squareup-moshi = "com.squareup.moshi:moshi-kotlin:1.14.0"
+
 [plugins]
 
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
