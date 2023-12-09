@@ -200,21 +200,26 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheObject() {
         val model = TestModel()
+        val cache = fCache.objectSingle(TestModel::class.java)
 
         // test get defaultValue
-        fCache.objectSingle(TestModel::class.java).remove()
-        assertEquals(null, fCache.objectSingle(TestModel::class.java).get())
-        assertEquals(false, fCache.objectSingle(TestModel::class.java).contains())
+        cache.remove()
+        assertEquals(null, cache.get())
+        assertEquals(false, cache.contains())
 
         // test put and get
-        assertEquals(true, fCache.objectSingle(TestModel::class.java).put(model))
-        assertEquals(model, fCache.objectSingle(TestModel::class.java).get())
-        assertEquals(true, fCache.objectSingle(TestModel::class.java).contains())
+        assertEquals(true, cache.put(model))
+        assertEquals(model, cache.get())
+        assertEquals(true, cache.contains())
 
         // test remove and get
-        assertEquals(true, fCache.objectSingle(TestModel::class.java).remove())
-        assertEquals(null, fCache.objectSingle(TestModel::class.java).get())
-        assertEquals(false, fCache.objectSingle(TestModel::class.java).contains())
+        assertEquals(true, cache.remove())
+        assertEquals(null, cache.get())
+        assertEquals(false, cache.contains())
+
+        assertEquals(false, cache.remove())
+        assertEquals(null, cache.get())
+        assertEquals(false, cache.contains())
     }
 
     @Test
