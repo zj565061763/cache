@@ -133,30 +133,39 @@ class ExampleInstrumentedTest {
         assertEquals(true, cache.remove(key))
         assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+
+        assertEquals(false, cache.remove(key))
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
     fun testCacheString() {
         val key = "TestKey"
+        val cache = fCache.cacheString()
 
         // test get defaultValue
-        fCache.cacheString().remove(key)
-        assertEquals(null, fCache.cacheString().get(key))
-        assertEquals(false, fCache.cacheString().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        assertEquals(true, fCache.cacheString().put(key, "hello"))
-        assertEquals("hello", fCache.cacheString().get(key))
-        assertEquals(true, fCache.cacheString().contains(key))
+        assertEquals(true, cache.put(key, "hello"))
+        assertEquals("hello", cache.get(key))
+        assertEquals(true, cache.contains(key))
 
-        assertEquals(true, fCache.cacheString().put(key, ""))
-        assertEquals("", fCache.cacheString().get(key))
-        assertEquals(true, fCache.cacheString().contains(key))
+        assertEquals(true, cache.put(key, ""))
+        assertEquals("", cache.get(key))
+        assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, fCache.cacheString().remove(key))
-        assertEquals(null, fCache.cacheString().get(key))
-        assertEquals(false, fCache.cacheString().contains(key))
+        assertEquals(true, cache.remove(key))
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
+
+        assertEquals(false, cache.remove(key))
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
