@@ -19,13 +19,10 @@ import com.sd.lib.cache.impl.SingleObjectCacheImpl
 open class FCache(cacheStore: CacheStore) : Cache {
     private val _cacheStore = cacheStore
 
-    private var _objectConverter: ObjectConverter? = null
-    private var _exceptionHandler: ExceptionHandler? = null
-
     private val _cacheInfo = object : CacheInfo {
         override val cacheStore: CacheStore get() = _cacheStore
-        override val objectConverter: ObjectConverter get() = _objectConverter ?: CacheConfig.get().objectConverter
-        override val exceptionHandler: ExceptionHandler get() = _exceptionHandler ?: CacheConfig.get().exceptionHandler
+        override val objectConverter: ObjectConverter get() = CacheConfig.get().objectConverter
+        override val exceptionHandler: ExceptionHandler get() = CacheConfig.get().exceptionHandler
     }
 
     private var _intHandler: CommonCache<Int>? = null
@@ -38,16 +35,6 @@ open class FCache(cacheStore: CacheStore) : Cache {
 
     private var _objectSingle: SingleObjectCacheImpl<*>? = null
     private var _objectMulti: MultiObjectCacheImpl<*>? = null
-
-    override fun setObjectConverter(converter: ObjectConverter?): Cache {
-        _objectConverter = converter
-        return this
-    }
-
-    override fun setExceptionHandler(handler: ExceptionHandler?): Cache {
-        _exceptionHandler = handler
-        return this
-    }
 
     //---------- Cache start ----------
 

@@ -4,17 +4,6 @@ import android.content.Context
 import java.io.File
 
 interface Cache {
-    /**
-     * 对象转换
-     */
-    fun setObjectConverter(converter: ObjectConverter?): Cache
-
-    /**
-     * 异常处理
-     */
-    fun setExceptionHandler(handler: ExceptionHandler?): Cache
-
-    //---------- cache start ----------
 
     fun cacheInt(): CommonCache<Int>
     fun cacheLong(): CommonCache<Long>
@@ -26,8 +15,6 @@ interface Cache {
 
     fun <T> objectSingle(clazz: Class<T>): SingleObjectCache<T>
     fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T>
-
-    //---------- cache end ----------
 
     /**
      * 基本数据类型，通用缓存接口
