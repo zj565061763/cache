@@ -1,7 +1,7 @@
 package com.sd.lib.cache
 
 import android.content.Context
-import com.sd.lib.cache.simple.GsonObjectConverter
+import com.sd.lib.cache.simple.ObjectConverterImpl
 import com.sd.lib.cache.store.UnlimitedDiskCacheStore
 
 class CacheConfig private constructor(builder: Builder) {
@@ -12,7 +12,7 @@ class CacheConfig private constructor(builder: Builder) {
     init {
         val context = builder.context
         cacheStore = builder.cacheStore ?: UnlimitedDiskCacheStore(context.filesDir.resolve("f_disk_cache"))
-        objectConverter = builder.objectConverter ?: GsonObjectConverter()
+        objectConverter = builder.objectConverter ?: ObjectConverterImpl()
         exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }
     }
 
