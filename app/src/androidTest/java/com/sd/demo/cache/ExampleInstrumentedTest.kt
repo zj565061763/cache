@@ -1,7 +1,15 @@
 package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.sd.lib.cache.fCache
+import com.sd.lib.cache.fCacheBoolean
+import com.sd.lib.cache.fCacheBytes
+import com.sd.lib.cache.fCacheDouble
+import com.sd.lib.cache.fCacheFloat
+import com.sd.lib.cache.fCacheInt
+import com.sd.lib.cache.fCacheLong
+import com.sd.lib.cache.fCacheObject
+import com.sd.lib.cache.fCacheObjectMulti
+import com.sd.lib.cache.fCacheString
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,7 +27,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheInt() {
         val key = "TestKey"
-        val cache = fCache.cacheInt()
+        val cache = fCacheInt
 
         // test get defaultValue
         cache.remove(key)
@@ -40,7 +48,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheLong() {
         val key = "TestKey"
-        val cache = fCache.cacheLong()
+        val cache = fCacheLong
 
         // test get defaultValue
         cache.remove(key)
@@ -61,7 +69,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheFloat() {
         val key = "TestKey"
-        val cache = fCache.cacheFloat()
+        val cache = fCacheFloat
 
         // test get defaultValue
         cache.remove(key)
@@ -82,7 +90,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheDouble() {
         val key = "TestKey"
-        val cache = fCache.cacheDouble()
+        val cache = fCacheDouble
 
         // test get defaultValue
         cache.remove(key)
@@ -103,7 +111,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheBoolean() {
         val key = "TestKey"
-        val cache = fCache.cacheBoolean()
+        val cache = fCacheBoolean
 
         // test get defaultValue
         cache.remove(key)
@@ -124,7 +132,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheString() {
         val key = "TestKey"
-        val cache = fCache.cacheString()
+        val cache = fCacheString
 
         // test get defaultValue
         cache.remove(key)
@@ -151,7 +159,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheBytes() {
         val key = "TestKey"
-        val cache = fCache.cacheBytes()
+        val cache = fCacheBytes
 
         // test get defaultValue
         cache.remove(key)
@@ -179,7 +187,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheObject() {
         val model = TestModel()
-        val cache = fCache.objectSingle(TestModel::class.java)
+        val cache = fCacheObject(TestModel::class.java)
 
         // test get defaultValue
         cache.remove()
@@ -205,7 +213,7 @@ class ExampleInstrumentedTest {
         val model1 = TestModel("TestModel1")
         val model2 = TestModel("TestModel2")
 
-        val cache = fCache.objectMulti(TestModel::class.java)
+        val cache = fCacheObjectMulti(TestModel::class.java)
 
         // test get defaultValue
         cache.let {

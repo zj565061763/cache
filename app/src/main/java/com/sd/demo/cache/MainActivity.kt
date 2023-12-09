@@ -4,15 +4,19 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.cache.databinding.ActivityMainBinding
-import com.sd.lib.cache.Cache
-import com.sd.lib.cache.fCache
+import com.sd.lib.cache.fCacheBoolean
+import com.sd.lib.cache.fCacheDouble
+import com.sd.lib.cache.fCacheFloat
+import com.sd.lib.cache.fCacheInt
+import com.sd.lib.cache.fCacheLong
+import com.sd.lib.cache.fCacheObject
+import com.sd.lib.cache.fCacheObjectMulti
+import com.sd.lib.cache.fCacheString
 
 private const val Key = "key"
 
 class MainActivity : AppCompatActivity() {
     private val _binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-
-    private val _cache: Cache = fCache
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,41 +37,41 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun putData() {
-        _cache.cacheInt().put(Key, 1)
-        _cache.cacheLong().put(Key, 22L)
-        _cache.cacheFloat().put(Key, 333.333f)
-        _cache.cacheDouble().put(Key, 4444.4444)
-        _cache.cacheBoolean().put(Key, true)
-        _cache.cacheString().put(Key, "hello String")
+        fCacheInt.put(Key, 1)
+        fCacheLong.put(Key, 22L)
+        fCacheFloat.put(Key, 333.333f)
+        fCacheDouble.put(Key, 4444.4444)
+        fCacheBoolean.put(Key, true)
+        fCacheString.put(Key, "hello String")
 
         val model = TestModel()
-        _cache.objectSingle(TestModel::class.java).put(model)
-        _cache.objectMulti(TestModel::class.java).put(Key, model)
-        _cache.objectMulti(TestModel::class.java).put(Key + Key, model)
+        fCacheObject(TestModel::class.java).put(model)
+        fCacheObjectMulti(TestModel::class.java).put(Key, model)
+        fCacheObjectMulti(TestModel::class.java).put(Key + Key, model)
     }
 
     private fun getData() {
-        logMsg { "cacheInt:" + _cache.cacheInt().get(Key) }
-        logMsg { "cacheLong:" + _cache.cacheLong().get(Key) }
-        logMsg { "cacheFloat:" + _cache.cacheFloat().get(Key) }
-        logMsg { "cacheDouble:" + _cache.cacheDouble().get(Key) }
-        logMsg { "cacheBoolean:" + _cache.cacheBoolean().get(Key) }
-        logMsg { "cacheString:" + _cache.cacheString().get(Key) }
-        logMsg { "objectSingle:" + _cache.objectSingle(TestModel::class.java).get() }
-        logMsg { "objectMulti:" + _cache.objectMulti(TestModel::class.java).get(Key) }
-        logMsg { "objectMulti:" + _cache.objectMulti(TestModel::class.java).get(Key + Key) }
+        logMsg { "cacheInt:" + fCacheInt.get(Key) }
+        logMsg { "cacheLong:" + fCacheLong.get(Key) }
+        logMsg { "cacheFloat:" + fCacheFloat.get(Key) }
+        logMsg { "cacheDouble:" + fCacheDouble.get(Key) }
+        logMsg { "cacheBoolean:" + fCacheBoolean.get(Key) }
+        logMsg { "cacheString:" + fCacheString.get(Key) }
+        logMsg { "objectSingle:" + fCacheObject(TestModel::class.java).get() }
+        logMsg { "objectMulti:" + fCacheObjectMulti(TestModel::class.java).get(Key) }
+        logMsg { "objectMulti:" + fCacheObjectMulti(TestModel::class.java).get(Key + Key) }
     }
 
     private fun removeData() {
-        _cache.cacheInt().remove(Key)
-        _cache.cacheLong().remove(Key)
-        _cache.cacheFloat().remove(Key)
-        _cache.cacheDouble().remove(Key)
-        _cache.cacheBoolean().remove(Key)
-        _cache.cacheString().remove(Key)
-        _cache.objectSingle(TestModel::class.java).remove()
-        _cache.objectMulti(TestModel::class.java).remove(Key)
-        _cache.objectMulti(TestModel::class.java).remove(Key + Key)
+        fCacheInt.remove(Key)
+        fCacheLong.remove(Key)
+        fCacheFloat.remove(Key)
+        fCacheDouble.remove(Key)
+        fCacheBoolean.remove(Key)
+        fCacheString.remove(Key)
+        fCacheObject(TestModel::class.java).remove()
+        fCacheObjectMulti(TestModel::class.java).remove(Key)
+        fCacheObjectMulti(TestModel::class.java).remove(Key + Key)
     }
 }
 
