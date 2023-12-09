@@ -14,7 +14,7 @@ import com.sd.lib.cache.handler.impl.FloatHandler
 import com.sd.lib.cache.handler.impl.IntHandler
 import com.sd.lib.cache.handler.impl.LongHandler
 import com.sd.lib.cache.handler.impl.StringHandler
-import com.sd.lib.cache.simple.SimpleMultiObjectCache
+import com.sd.lib.cache.simple.MultiObjectCacheImpl
 import com.sd.lib.cache.simple.SimpleObjectCache
 import com.sd.lib.cache.simple.SingleObjectCacheImpl
 
@@ -41,7 +41,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
     private var _objectCache: ObjectCache? = null
 
     private var _singleObjectCache: SingleObjectCacheImpl<*>? = null
-    private var _multiObjectCache: SimpleMultiObjectCache<*>? = null
+    private var _multiObjectCache: MultiObjectCacheImpl<*>? = null
 
     override fun setObjectConverter(converter: ObjectConverter?): Cache {
         _objectConverter = converter
@@ -114,7 +114,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
     override fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T> {
         val cache = _multiObjectCache
         if (cache?.objectClass == clazz) return (cache as MultiObjectCache<T>)
-        return SimpleMultiObjectCache(_cacheInfo, clazz).also {
+        return MultiObjectCacheImpl(_cacheInfo, clazz).also {
             _multiObjectCache = it
         }
     }
