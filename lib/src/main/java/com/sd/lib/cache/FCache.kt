@@ -36,7 +36,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
     private var _stringHandler: CommonCache<String>? = null
     private var _bytesHandler: CommonCache<ByteArray>? = null
 
-    private val _objectCache by lazy { SimpleObjectCache(_cacheInfo) }
+    private var _objectCache: ObjectCache? = null
     private var _multiObjectCache: SimpleMultiObjectCache<*>? = null
 
     override fun setObjectConverter(converter: ObjectConverter?): Cache {
@@ -94,7 +94,9 @@ open class FCache(cacheStore: CacheStore) : Cache {
     }
 
     override fun cacheObject(): ObjectCache {
-        return _objectCache
+        return _objectCache ?: SimpleObjectCache(_cacheInfo).also {
+            _objectCache = it
+        }
     }
 
     override fun <T> cacheMultiObject(clazz: Class<T>): MultiObjectCache<T> {
