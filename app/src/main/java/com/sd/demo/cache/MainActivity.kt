@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         fCacheString.put(Key, "hello String")
 
         val model = TestModel()
-        fCacheObject(TestModel::class.java).put(model)
+        fCacheObject<TestModel>().put(model)
         fCacheObjectMulti(TestModel::class.java).put(Key, model)
         fCacheObjectMulti(TestModel::class.java).put(Key + Key, model)
     }
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         logMsg { "cacheDouble:" + fCacheDouble.get(Key) }
         logMsg { "cacheBoolean:" + fCacheBoolean.get(Key) }
         logMsg { "cacheString:" + fCacheString.get(Key) }
-        logMsg { "objectSingle:" + fCacheObject(TestModel::class.java).get() }
+        logMsg { "objectSingle:" + fCacheObject<TestModel>().get() }
         logMsg { "objectMulti:" + fCacheObjectMulti(TestModel::class.java).get(Key) }
         logMsg { "objectMulti:" + fCacheObjectMulti(TestModel::class.java).get(Key + Key) }
     }
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         fCacheDouble.remove(Key)
         fCacheBoolean.remove(Key)
         fCacheString.remove(Key)
-        fCacheObject(TestModel::class.java).remove()
+        fCacheObject<TestModel>().remove()
         fCacheObjectMulti(TestModel::class.java).remove(Key)
         fCacheObjectMulti(TestModel::class.java).remove(Key + Key)
     }

@@ -187,7 +187,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheObject() {
         val model = TestModel()
-        val cache = fCacheObject(TestModel::class.java)
+        val cache = fCacheObject<TestModel>()
 
         // test get defaultValue
         cache.remove()
