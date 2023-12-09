@@ -6,8 +6,6 @@ import com.tencent.mmkv.MMKV
 
 /**
  * 自定义CacheStore
- *
- * MMKV有个bug，如果存的是空byte[]，取的时候会返回null，正常返回应该也是个空byte[]
  */
 class MMKVCacheStore(context: Context) : CacheStore {
     private val _mmkv: MMKV
