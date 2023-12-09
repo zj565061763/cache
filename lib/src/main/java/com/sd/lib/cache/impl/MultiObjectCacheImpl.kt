@@ -9,7 +9,7 @@ internal class MultiObjectCacheImpl<T>(
     val objectClass: Class<T>,
 ) : MultiObjectCache<T> {
 
-    private val _objectHandler = ObjectHandler(cacheInfo, "multi_object")
+    private val _objectHandler = ObjectHandler<T>(cacheInfo, "multi_object")
 
     private fun transformKey(key: String): String {
         require(key.isNotEmpty()) { "key is empty" }
@@ -24,9 +24,7 @@ internal class MultiObjectCacheImpl<T>(
 
     override fun get(key: String): T? {
         if (key.isEmpty()) return null
-        val cache = _objectHandler.getCache(transformKey(key), objectClass) ?: return null
-        @Suppress("UNCHECKED_CAST")
-        return cache as T
+        return _objectHandler.getCache(transformKey(key), objectClass)
     }
 
     override fun remove(key: String) {
