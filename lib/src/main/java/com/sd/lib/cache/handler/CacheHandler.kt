@@ -23,7 +23,7 @@ internal interface CacheHandler<T> {
  */
 internal abstract class BaseCacheHandler<T>(
     val cacheInfo: CacheInfo,
-    val keyPrefix: String,
+    private val keyPrefix: String,
 ) : CacheHandler<T>, Cache.CommonCache<T> {
 
     private val _cacheStore: Cache.CacheStore
