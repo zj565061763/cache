@@ -3,7 +3,6 @@ package com.sd.lib.cache
 import android.content.Context
 import com.sd.lib.cache.simple.GsonObjectConverter
 import com.sd.lib.cache.store.UnlimitedDiskCacheStore
-import java.io.File
 
 class CacheConfig private constructor(builder: Builder) {
     internal val cacheStore: Cache.CacheStore
@@ -12,7 +11,7 @@ class CacheConfig private constructor(builder: Builder) {
 
     init {
         val context = builder.context
-        cacheStore = builder.cacheStore ?: UnlimitedDiskCacheStore(File(context.filesDir, "f_disk_cache"))
+        cacheStore = builder.cacheStore ?: UnlimitedDiskCacheStore(context.filesDir.resolve("f_disk_cache"))
         objectConverter = builder.objectConverter ?: GsonObjectConverter()
         exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }
     }
