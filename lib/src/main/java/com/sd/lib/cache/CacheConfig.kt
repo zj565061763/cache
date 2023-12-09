@@ -1,23 +1,22 @@
 package com.sd.lib.cache
 
 import android.content.Context
-import com.sd.lib.cache.simple.ObjectConverterImpl
-import com.sd.lib.cache.store.UnlimitedDiskCacheStore
+import com.sd.lib.cache.impl.MMKVCacheStore
+import com.sd.lib.cache.impl.ObjectConverterImpl
 import java.io.File
 
 class CacheConfig private constructor(builder: Builder, context: Context) {
-    internal val directory: File
     internal val cacheStore: Cache.CacheStore
     internal val objectConverter: Cache.ObjectConverter
     internal val exceptionHandler: Cache.ExceptionHandler
 
     init {
-        directory = builder.directory ?: context.filesDir.resolve("f_cache")
-        cacheStore = builder.cacheStore ?: UnlimitedDiskCacheStore()
+        cacheStore = builder.cacheStore ?: MMKVCacheStore()
         objectConverter = builder.objectConverter ?: ObjectConverterImpl()
         exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }
 
         // 初始化仓库
+        val directory = builder.directory ?: context.filesDir.resolve("f_cache")
         cacheStore.init(context, directory)
     }
 

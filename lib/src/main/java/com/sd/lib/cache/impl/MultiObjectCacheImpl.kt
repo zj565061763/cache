@@ -1,4 +1,4 @@
-package com.sd.lib.cache.simple
+package com.sd.lib.cache.impl
 
 import com.sd.lib.cache.Cache.MultiObjectCache
 import com.sd.lib.cache.CacheInfo

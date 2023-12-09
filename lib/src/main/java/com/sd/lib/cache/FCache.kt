@@ -13,8 +13,8 @@ import com.sd.lib.cache.handler.impl.FloatHandler
 import com.sd.lib.cache.handler.impl.IntHandler
 import com.sd.lib.cache.handler.impl.LongHandler
 import com.sd.lib.cache.handler.impl.StringHandler
-import com.sd.lib.cache.simple.MultiObjectCacheImpl
-import com.sd.lib.cache.simple.SingleObjectCacheImpl
+import com.sd.lib.cache.impl.MultiObjectCacheImpl
+import com.sd.lib.cache.impl.SingleObjectCacheImpl
 
 open class FCache(cacheStore: CacheStore) : Cache {
     private val _cacheStore = cacheStore

@@ -1,4 +1,4 @@
-package com.sd.lib.cache.simple
+package com.sd.lib.cache.impl
 
 import com.google.gson.Gson
 import com.sd.lib.cache.Cache.ObjectConverter
