@@ -129,5 +129,5 @@ internal abstract class BaseCacheHandler<T>(
      * 解码
      */
     @Throws(Exception::class)
-    protected abstract fun decode(bytes: ByteArray, clazz: Class<T>?): T
+    protected abstract fun decode(bytes: ByteArray, clazz: Class<T>?): T?
 }
