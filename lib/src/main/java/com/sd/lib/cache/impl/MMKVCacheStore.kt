@@ -19,7 +19,9 @@ internal class MMKVCacheStore : CacheStore {
     }
 
     override fun getCache(key: String): ByteArray? {
-        return _mmkv.decodeBytes(key)
+        return _mmkv.decodeBytes(key) ?: kotlin.run {
+            if (_mmkv.contains(key)) byteArrayOf() else null
+        }
     }
 
     override fun removeCache(key: String) {
