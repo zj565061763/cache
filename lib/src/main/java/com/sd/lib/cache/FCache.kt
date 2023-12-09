@@ -16,14 +16,8 @@ import com.sd.lib.cache.handler.StringHandler
 import com.sd.lib.cache.impl.MultiObjectCacheImpl
 import com.sd.lib.cache.impl.SingleObjectCacheImpl
 
-open class FCache(cacheStore: CacheStore) : Cache {
+open class FCache(cacheStore: CacheStore) : Cache, CacheInfo {
     private val _cacheStore = cacheStore
-
-    private val _cacheInfo = object : CacheInfo {
-        override val cacheStore: CacheStore get() = _cacheStore
-        override val objectConverter: ObjectConverter get() = CacheConfig.get().objectConverter
-        override val exceptionHandler: ExceptionHandler get() = CacheConfig.get().exceptionHandler
-    }
 
     private var _intHandler: CommonCache<Int>? = null
     private var _longHandler: CommonCache<Long>? = null
@@ -36,46 +30,50 @@ open class FCache(cacheStore: CacheStore) : Cache {
     private var _objectSingle: SingleObjectCacheImpl<*>? = null
     private var _objectMulti: MultiObjectCacheImpl<*>? = null
 
+    override val cacheStore: CacheStore get() = _cacheStore
+    override val objectConverter: ObjectConverter get() = CacheConfig.get().objectConverter
+    override val exceptionHandler: ExceptionHandler get() = CacheConfig.get().exceptionHandler
+
     //---------- Cache start ----------
 
     override fun cacheInt(): CommonCache<Int> {
-        return _intHandler ?: IntHandler(_cacheInfo).also {
+        return _intHandler ?: IntHandler(this@FCache).also {
             _intHandler = it
         }
     }
 
     override fun cacheLong(): CommonCache<Long> {
-        return _longHandler ?: LongHandler(_cacheInfo).also {
+        return _longHandler ?: LongHandler(this@FCache).also {
             _longHandler = it
         }
     }
 
     override fun cacheFloat(): CommonCache<Float> {
-        return _floatHandler ?: FloatHandler(_cacheInfo).also {
+        return _floatHandler ?: FloatHandler(this@FCache).also {
             _floatHandler = it
         }
     }
 
     override fun cacheDouble(): CommonCache<Double> {
-        return _doubleHandler ?: DoubleHandler(_cacheInfo).also {
+        return _doubleHandler ?: DoubleHandler(this@FCache).also {
             _doubleHandler = it
         }
     }
 
     override fun cacheBoolean(): CommonCache<Boolean> {
-        return _booleanHandler ?: BooleanHandler(_cacheInfo).also {
+        return _booleanHandler ?: BooleanHandler(this@FCache).also {
             _booleanHandler = it
         }
     }
 
     override fun cacheString(): CommonCache<String> {
-        return _stringHandler ?: StringHandler(_cacheInfo).also {
+        return _stringHandler ?: StringHandler(this@FCache).also {
             _stringHandler = it
         }
     }
 
     override fun cacheBytes(): CommonCache<ByteArray> {
-        return _bytesHandler ?: BytesHandler(_cacheInfo).also {
+        return _bytesHandler ?: BytesHandler(this@FCache).also {
             _bytesHandler = it
         }
     }
@@ -83,7 +81,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
     override fun <T> objectSingle(clazz: Class<T>): SingleObjectCache<T> {
         val cache = _objectSingle
         if (cache?.objectClass == clazz) return (cache as SingleObjectCache<T>)
-        return SingleObjectCacheImpl(_cacheInfo, clazz).also {
+        return SingleObjectCacheImpl(this@FCache, clazz).also {
             _objectSingle = it
         }
     }
@@ -91,7 +89,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
     override fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T> {
         val cache = _objectMulti
         if (cache?.objectClass == clazz) return (cache as MultiObjectCache<T>)
-        return MultiObjectCacheImpl(_cacheInfo, clazz).also {
+        return MultiObjectCacheImpl(this@FCache, clazz).also {
             _objectMulti = it
         }
     }
