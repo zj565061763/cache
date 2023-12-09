@@ -40,8 +40,8 @@ open class FCache(cacheStore: CacheStore) : Cache {
 
     private var _objectCache: ObjectCache? = null
 
-    private var _singleObjectCache: SingleObjectCacheImpl<*>? = null
-    private var _multiObjectCache: MultiObjectCacheImpl<*>? = null
+    private var _objectSingle: SingleObjectCacheImpl<*>? = null
+    private var _objectMulti: MultiObjectCacheImpl<*>? = null
 
     override fun setObjectConverter(converter: ObjectConverter?): Cache {
         _objectConverter = converter
@@ -104,18 +104,18 @@ open class FCache(cacheStore: CacheStore) : Cache {
     }
 
     override fun <T> objectSingle(clazz: Class<T>): SingleObjectCache<T> {
-        val cache = _singleObjectCache
+        val cache = _objectSingle
         if (cache?.objectClass == clazz) return (cache as SingleObjectCache<T>)
         return SingleObjectCacheImpl(_cacheInfo, clazz).also {
-            _singleObjectCache = it
+            _objectSingle = it
         }
     }
 
     override fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T> {
-        val cache = _multiObjectCache
+        val cache = _objectMulti
         if (cache?.objectClass == clazz) return (cache as MultiObjectCache<T>)
         return MultiObjectCacheImpl(_cacheInfo, clazz).also {
-            _multiObjectCache = it
+            _objectMulti = it
         }
     }
 
