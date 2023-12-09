@@ -1,11 +1,11 @@
 [versions]
 
-androidCompileSdk = "33"
+androidCompileSdk = "34"
 androidMinSdk = "21"
-androidTargetSdk = "33"
+androidTargetSdk = "34"
 
-androidGradlePlugin = "8.1.1"
-kotlin = "1.8.22"
+androidGradlePlugin = "8.1.4"
+kotlin = "1.9.21"
 
 [libraries]
 
