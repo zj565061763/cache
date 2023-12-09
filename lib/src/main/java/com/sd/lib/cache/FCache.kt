@@ -17,7 +17,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
         override val exceptionHandler: ExceptionHandler get() = _exceptionHandler ?: CacheConfig.get().exceptionHandler
     }
 
-    private val _integerHandler by lazy { IntegerHandler(_cacheInfo) }
+    private val _intHandler by lazy { IntegerHandler(_cacheInfo) }
     private val _longHandler by lazy { LongHandler(_cacheInfo) }
     private val _floatHandler by lazy { FloatHandler(_cacheInfo) }
     private val _doubleHandler by lazy { DoubleHandler(_cacheInfo) }
@@ -41,7 +41,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
     //---------- Cache start ----------
 
     override fun cacheInt(): CommonCache<Int> {
-        return _integerHandler
+        return _intHandler
     }
 
     override fun cacheLong(): CommonCache<Long> {
