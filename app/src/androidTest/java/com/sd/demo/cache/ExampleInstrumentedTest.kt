@@ -171,25 +171,30 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheBytes() {
         val key = "TestKey"
+        val cache = fCache.cacheBytes()
 
         // test get defaultValue
-        fCache.cacheBytes().remove(key)
-        assertEquals(null, fCache.cacheBytes().get(key))
-        assertEquals(false, fCache.cacheBytes().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        assertEquals(true, fCache.cacheBytes().put(key, "hello".toByteArray()))
-        assertEquals("hello", fCache.cacheBytes().get(key)?.let { String(it) })
-        assertEquals(true, fCache.cacheBytes().contains(key))
+        assertEquals(true, cache.put(key, "hello".toByteArray()))
+        assertEquals("hello", cache.get(key)?.let { String(it) })
+        assertEquals(true, cache.contains(key))
 
-        assertEquals(true, fCache.cacheBytes().put(key, "".toByteArray()))
-        assertEquals(0, fCache.cacheBytes().get(key)?.size)
-        assertEquals(true, fCache.cacheBytes().contains(key))
+        assertEquals(true, cache.put(key, "".toByteArray()))
+        assertEquals(0, cache.get(key)?.size)
+        assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, fCache.cacheBytes().remove(key))
-        assertEquals(null, fCache.cacheBytes().get(key))
-        assertEquals(false, fCache.cacheBytes().contains(key))
+        assertEquals(true, cache.remove(key))
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
+
+        assertEquals(false, cache.remove(key))
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
