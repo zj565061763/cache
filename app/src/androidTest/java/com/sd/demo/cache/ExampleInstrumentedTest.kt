@@ -117,21 +117,22 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheBoolean() {
         val key = "TestKey"
+        val cache = fCache.cacheBoolean()
 
         // test get defaultValue
-        fCache.cacheBoolean().remove(key)
-        assertEquals(null, fCache.cacheBoolean().get(key))
-        assertEquals(false, fCache.cacheBoolean().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        assertEquals(true, fCache.cacheBoolean().put(key, true))
-        assertEquals(true, fCache.cacheBoolean().get(key))
-        assertEquals(true, fCache.cacheBoolean().contains(key))
+        assertEquals(true, cache.put(key, true))
+        assertEquals(true, cache.get(key))
+        assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, fCache.cacheBoolean().remove(key))
-        assertEquals(null, fCache.cacheBoolean().get(key))
-        assertEquals(false, fCache.cacheBoolean().contains(key))
+        assertEquals(true, cache.remove(key))
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
