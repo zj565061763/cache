@@ -213,7 +213,7 @@ class ExampleInstrumentedTest {
         val model1 = TestModel("TestModel1")
         val model2 = TestModel("TestModel2")
 
-        val cache = fCacheObjectMulti(TestModel::class.java)
+        val cache = fCacheObjectMulti<TestModel>()
 
         // test get defaultValue
         cache.let {

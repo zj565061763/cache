@@ -108,7 +108,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
 inline fun <reified T> fCacheObject(): SingleObjectCache<T> = FCache.instance().objectSingle(T::class.java)
 
 /** [MultiObjectCache] */
-fun <T> fCacheObjectMulti(clazz: Class<T>): MultiObjectCache<T> = FCache.instance().objectMulti(clazz)
+inline fun <reified T> fCacheObjectMulti(): MultiObjectCache<T> = FCache.instance().objectMulti(T::class.java)
 
 /** Int */
 val fCacheInt: CommonCache<Int> get() = FCache.instance().cacheInt()
