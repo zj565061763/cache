@@ -1,23 +1,24 @@
 package com.sd.lib.cache
 
-import android.content.Context
 import com.sd.lib.cache.simple.ObjectConverterImpl
 import com.sd.lib.cache.store.UnlimitedDiskCacheStore
+import java.io.File
 
 class CacheConfig private constructor(builder: Builder) {
+    internal val directory: File
     internal val cacheStore: Cache.CacheStore
     internal val objectConverter: Cache.ObjectConverter
     internal val exceptionHandler: Cache.ExceptionHandler
 
     init {
-        val context = builder.context
-        cacheStore = builder.cacheStore ?: UnlimitedDiskCacheStore(context.filesDir.resolve("f_disk_cache"))
+        directory = builder.directory
+        cacheStore = builder.cacheStore ?: UnlimitedDiskCacheStore(builder.directory)
         objectConverter = builder.objectConverter ?: ObjectConverterImpl()
         exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }
     }
 
     class Builder {
-        internal lateinit var context: Context
+        internal lateinit var directory: File
             private set
 
         internal var cacheStore: Cache.CacheStore? = null
@@ -50,8 +51,14 @@ class CacheConfig private constructor(builder: Builder) {
             this.exceptionHandler = handler
         }
 
-        fun build(context: Context): CacheConfig {
-            this.context = context.applicationContext
+        /**
+         * 构建配置
+         * @param directory 保存目录
+         */
+        fun build(directory: File): CacheConfig {
+            this.directory = directory.also {
+                if (it.isFile) error("directory is file.")
+            }
             return CacheConfig(this)
         }
     }
