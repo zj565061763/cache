@@ -2,7 +2,7 @@ package com.sd.lib.cache
 
 import android.content.Context
 import com.sd.lib.cache.impl.MMKVCacheStore
-import com.sd.lib.cache.impl.ObjectConverterImpl
+import com.sd.lib.cache.impl.GsonObjectConverter
 import java.io.File
 
 class CacheConfig private constructor(builder: Builder, context: Context) {
@@ -12,7 +12,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
 
     init {
         cacheStore = builder.cacheStore ?: MMKVCacheStore()
-        objectConverter = builder.objectConverter ?: ObjectConverterImpl()
+        objectConverter = builder.objectConverter ?: GsonObjectConverter()
         exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }
 
         // 初始化仓库
