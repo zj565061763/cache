@@ -27,7 +27,7 @@ interface Cache {
     //---------- cache end ----------
 
     /**
-     * 通用缓存接口
+     * 基本数据类型，通用缓存接口
      */
     interface CommonCache<T> {
         /**
