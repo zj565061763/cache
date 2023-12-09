@@ -132,3 +132,8 @@ open class FCache(cacheStore: CacheStore) : Cache {
         }
     }
 }
+
+/**
+ * [FCache.disk]
+ */
+val fCache: Cache get() = FCache.disk()
