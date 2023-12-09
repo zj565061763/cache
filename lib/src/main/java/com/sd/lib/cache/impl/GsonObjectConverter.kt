@@ -6,7 +6,7 @@ import com.sd.lib.cache.Cache.ObjectConverter
 internal class GsonObjectConverter : ObjectConverter {
     private val _gson = Gson()
 
-    override fun encode(value: Any, clazz: Class<*>): ByteArray {
+    override fun <T> encode(value: T, clazz: Class<T>): ByteArray {
         return _gson.toJson(value).toByteArray()
     }
 

@@ -102,7 +102,7 @@ interface Cache {
          * 编码
          */
         @Throws(Exception::class)
-        fun encode(value: Any, clazz: Class<*>): ByteArray
+        fun <T> encode(value: T, clazz: Class<T>): ByteArray
 
         /**
          * 解码
