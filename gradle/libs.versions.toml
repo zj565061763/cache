@@ -14,7 +14,6 @@ androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
 google-gson = "com.google.code.gson:gson:2.10.1"
 tencent-mmkv = "com.tencent:mmkv:1.3.2"
 
-junit = "junit:junit:4.13.2"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.1.5"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 

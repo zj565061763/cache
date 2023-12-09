@@ -38,10 +38,8 @@ kotlin {
 dependencies {
     implementation(libs.androidx.appcompat)
 
-    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 
     implementation(project(":lib"))
-    implementation(libs.tencent.mmkv)
 }
