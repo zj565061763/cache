@@ -230,30 +230,32 @@ class ExampleInstrumentedTest {
         val model1 = TestModel("TestModel1")
         val model2 = TestModel("TestModel2")
 
+        val cache = fCache.objectMulti(TestModel::class.java)
+
         // test get defaultValue
-        fCache.objectMulti(TestModel::class.java).let {
+        cache.let {
             it.remove(key1)
             it.remove(key2)
         }
-        assertEquals(null, fCache.objectMulti(TestModel::class.java).get(key1))
-        assertEquals(null, fCache.objectMulti(TestModel::class.java).get(key2))
-        assertEquals(false, fCache.objectMulti(TestModel::class.java).contains(key1))
-        assertEquals(false, fCache.objectMulti(TestModel::class.java).contains(key2))
+        assertEquals(null, cache.get(key1))
+        assertEquals(null, cache.get(key2))
+        assertEquals(false, cache.contains(key1))
+        assertEquals(false, cache.contains(key2))
 
         // test put and get
-        assertEquals(true, fCache.objectMulti(TestModel::class.java).put(key1, model1))
-        assertEquals(true, fCache.objectMulti(TestModel::class.java).put(key2, model2))
-        assertEquals(model1, fCache.objectMulti(TestModel::class.java).get(key1))
-        assertEquals(model2, fCache.objectMulti(TestModel::class.java).get(key2))
-        assertEquals(true, fCache.objectMulti(TestModel::class.java).contains(key1))
-        assertEquals(true, fCache.objectMulti(TestModel::class.java).contains(key2))
+        assertEquals(true, cache.put(key1, model1))
+        assertEquals(true, cache.put(key2, model2))
+        assertEquals(model1, cache.get(key1))
+        assertEquals(model2, cache.get(key2))
+        assertEquals(true, cache.contains(key1))
+        assertEquals(true, cache.contains(key2))
 
         // test remove and get
-        assertEquals(true, fCache.objectMulti(TestModel::class.java).remove(key1))
-        assertEquals(true, fCache.objectMulti(TestModel::class.java).remove(key2))
-        assertEquals(null, fCache.objectMulti(TestModel::class.java).get(key1))
-        assertEquals(null, fCache.objectMulti(TestModel::class.java).get(key2))
-        assertEquals(false, fCache.objectMulti(TestModel::class.java).contains(key1))
-        assertEquals(false, fCache.objectMulti(TestModel::class.java).contains(key2))
+        assertEquals(true, cache.remove(key1))
+        assertEquals(true, cache.remove(key2))
+        assertEquals(null, cache.get(key1))
+        assertEquals(null, cache.get(key2))
+        assertEquals(false, cache.contains(key1))
+        assertEquals(false, cache.contains(key2))
     }
 }
