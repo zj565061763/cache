@@ -2,7 +2,6 @@ package com.sd.lib.cache.handler
 
 import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.CacheInfo
-import com.sd.lib.cache.handler.BaseCacheHandler
 
 /**
  * Object处理类

@@ -1,8 +1,8 @@
 package com.sd.lib.cache
 
 import android.content.Context
-import com.sd.lib.cache.impl.MMKVCacheStore
 import com.sd.lib.cache.impl.GsonObjectConverter
+import com.sd.lib.cache.impl.MMKVCacheStore
 import java.io.File
 
 class CacheConfig private constructor(builder: Builder, context: Context) {
