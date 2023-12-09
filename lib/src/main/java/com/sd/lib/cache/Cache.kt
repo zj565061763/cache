@@ -99,16 +99,16 @@ interface Cache {
      */
     interface ObjectConverter {
         /**
-         * 对象转byte
+         * 编码
          */
         @Throws(Exception::class)
-        fun objectToByte(value: Any, clazz: Class<*>): ByteArray
+        fun encode(value: Any, clazz: Class<*>): ByteArray
 
         /**
-         * byte转对象
+         * 解码
          */
         @Throws(Exception::class)
-        fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T
+        fun <T> decode(bytes: ByteArray, clazz: Class<T>): T
     }
 
     /**

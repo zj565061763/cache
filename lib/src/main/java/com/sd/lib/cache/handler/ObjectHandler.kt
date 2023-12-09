@@ -9,11 +9,11 @@ import com.sd.lib.cache.CacheInfo
 internal class ObjectHandler(info: CacheInfo, keyPrefix: String) : BaseCacheHandler<Any>(info, keyPrefix) {
     override fun encode(value: Any, clazz: Class<*>?): ByteArray {
         if (clazz == null) throw CacheException("class is null")
-        return cacheInfo.objectConverter.objectToByte(value, clazz)
+        return cacheInfo.objectConverter.encode(value, clazz)
     }
 
     override fun decode(bytes: ByteArray, clazz: Class<*>?): Any {
         if (clazz == null) throw CacheException("class is null")
-        return cacheInfo.objectConverter.byteToObject(bytes, clazz)
+        return cacheInfo.objectConverter.decode(bytes, clazz)
     }
 }
