@@ -71,7 +71,7 @@ internal abstract class BaseCacheHandler<T>(
         val key = transformKey(key)
         synchronized(Cache::class.java) {
             return try {
-                val data = encodeImpl(value, clazz)
+                val data = encode(value, clazz)
                 _cacheStore.putCache(key, data)
             } catch (e: Exception) {
                 notifyException(e)
@@ -85,7 +85,7 @@ internal abstract class BaseCacheHandler<T>(
         synchronized(Cache::class.java) {
             return try {
                 _cacheStore.getCache(key)?.let { data ->
-                    decodeImpl(data, clazz)
+                    decode(data, clazz)
                 }
             } catch (e: Exception) {
                 notifyException(e)
@@ -123,11 +123,11 @@ internal abstract class BaseCacheHandler<T>(
      * 编码
      */
     @Throws(Exception::class)
-    protected abstract fun encodeImpl(value: T, clazz: Class<*>?): ByteArray
+    protected abstract fun encode(value: T, clazz: Class<*>?): ByteArray
 
     /**
      * 解码
      */
     @Throws(Exception::class)
-    protected abstract fun decodeImpl(bytes: ByteArray, clazz: Class<*>?): T
+    protected abstract fun decode(bytes: ByteArray, clazz: Class<*>?): T
 }
