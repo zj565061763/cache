@@ -40,7 +40,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
 
     //---------- Cache start ----------
 
-    override fun cacheInteger(): CommonCache<Int> {
+    override fun cacheInt(): CommonCache<Int> {
         return _integerHandler
     }
 

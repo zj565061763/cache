@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun putData() {
-        cache.cacheInteger().put(Key, 1)
+        cache.cacheInt().put(Key, 1)
         cache.cacheLong().put(Key, 22L)
         cache.cacheFloat().put(Key, 333.333f)
         cache.cacheDouble().put(Key, 4444.4444)
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getData() {
-        logMsg { "cacheInteger:" + cache.cacheInteger().get(Key) }
+        logMsg { "cacheInteger:" + cache.cacheInt().get(Key) }
         logMsg { "cacheLong:" + cache.cacheLong().get(Key) }
         logMsg { "cacheFloat:" + cache.cacheFloat().get(Key) }
         logMsg { "cacheDouble:" + cache.cacheDouble().get(Key) }
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun removeData() {
-        cache.cacheInteger().remove(Key)
+        cache.cacheInt().remove(Key)
         cache.cacheLong().remove(Key)
         cache.cacheFloat().remove(Key)
         cache.cacheDouble().remove(Key)

@@ -13,7 +13,7 @@ interface Cache {
 
     //---------- cache start ----------
 
-    fun cacheInteger(): CommonCache<Int>
+    fun cacheInt(): CommonCache<Int>
     fun cacheLong(): CommonCache<Long>
     fun cacheFloat(): CommonCache<Float>
     fun cacheDouble(): CommonCache<Double>
