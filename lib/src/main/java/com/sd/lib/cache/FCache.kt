@@ -17,7 +17,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
         override val exceptionHandler: ExceptionHandler get() = _exceptionHandler ?: CacheConfig.get().exceptionHandler
     }
 
-    private val _intHandler by lazy { IntegerHandler(_cacheInfo) }
+    private val _intHandler by lazy { IntHandler(_cacheInfo) }
     private val _longHandler by lazy { LongHandler(_cacheInfo) }
     private val _floatHandler by lazy { FloatHandler(_cacheInfo) }
     private val _doubleHandler by lazy { DoubleHandler(_cacheInfo) }
