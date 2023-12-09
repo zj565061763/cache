@@ -257,5 +257,12 @@ class ExampleInstrumentedTest {
         assertEquals(null, cache.get(key2))
         assertEquals(false, cache.contains(key1))
         assertEquals(false, cache.contains(key2))
+
+        assertEquals(false, cache.remove(key1))
+        assertEquals(false, cache.remove(key2))
+        assertEquals(null, cache.get(key1))
+        assertEquals(null, cache.get(key2))
+        assertEquals(false, cache.contains(key1))
+        assertEquals(false, cache.contains(key2))
     }
 }
