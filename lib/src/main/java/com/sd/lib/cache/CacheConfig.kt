@@ -89,7 +89,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         internal fun get(): CacheConfig {
             sConfig?.let { return it }
             synchronized(Cache::class.java) {
-                return sConfig ?: error("CacheConfig has not been init")
+                return sConfig ?: error("You should call init() before this.")
             }
         }
     }
