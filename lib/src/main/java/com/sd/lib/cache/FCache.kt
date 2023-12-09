@@ -112,18 +112,14 @@ open class FCache(cacheStore: CacheStore) : Cache {
     //---------- Cache end ----------
 
     companion object {
-        /**
-         * 默认使用内部存储目录"/data/包名/files/f_disk_cache"，可以在初始化的时候设置[CacheConfig.Builder.setCacheStore]
-         */
         @JvmStatic
-        fun disk(): Cache {
-            val cacheStore = CacheConfig.get().cacheStore
-            return FCache(cacheStore)
+        fun instance(): Cache {
+            return FCache(CacheConfig.get().cacheStore)
         }
     }
 }
 
 /**
- * [FCache.disk]
+ * [FCache.instance]
  */
-val fCache: Cache get() = FCache.disk()
+val fCache: Cache get() = FCache.instance()
