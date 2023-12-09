@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         _cache.cacheString().put(Key, "hello String")
 
         val model = TestModel()
-        _cache.cacheObject().put(model)
+        _cache.objectSingle(TestModel::class.java).put(model)
         _cache.objectMulti(TestModel::class.java).put(Key, model)
         _cache.objectMulti(TestModel::class.java).put(Key + Key, model)
     }
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         logMsg { "cacheDouble:" + _cache.cacheDouble().get(Key) }
         logMsg { "cacheBoolean:" + _cache.cacheBoolean().get(Key) }
         logMsg { "cacheString:" + _cache.cacheString().get(Key) }
-        logMsg { "cacheObject:" + _cache.cacheObject().get(TestModel::class.java) }
+        logMsg { "objectSingle:" + _cache.objectSingle(TestModel::class.java).get() }
         logMsg { "objectMulti:" + _cache.objectMulti(TestModel::class.java).get(Key) }
         logMsg { "objectMulti:" + _cache.objectMulti(TestModel::class.java).get(Key + Key) }
     }
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         _cache.cacheDouble().remove(Key)
         _cache.cacheBoolean().remove(Key)
         _cache.cacheString().remove(Key)
-        _cache.cacheObject().remove(TestModel::class.java)
+        _cache.objectSingle(TestModel::class.java).remove()
         _cache.objectMulti(TestModel::class.java).remove(Key)
         _cache.objectMulti(TestModel::class.java).remove(Key + Key)
     }

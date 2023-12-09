@@ -4,7 +4,6 @@ import com.sd.lib.cache.Cache.CacheStore
 import com.sd.lib.cache.Cache.CommonCache
 import com.sd.lib.cache.Cache.ExceptionHandler
 import com.sd.lib.cache.Cache.MultiObjectCache
-import com.sd.lib.cache.Cache.ObjectCache
 import com.sd.lib.cache.Cache.ObjectConverter
 import com.sd.lib.cache.Cache.SingleObjectCache
 import com.sd.lib.cache.handler.impl.BooleanHandler
@@ -15,7 +14,6 @@ import com.sd.lib.cache.handler.impl.IntHandler
 import com.sd.lib.cache.handler.impl.LongHandler
 import com.sd.lib.cache.handler.impl.StringHandler
 import com.sd.lib.cache.simple.MultiObjectCacheImpl
-import com.sd.lib.cache.simple.SimpleObjectCache
 import com.sd.lib.cache.simple.SingleObjectCacheImpl
 
 open class FCache(cacheStore: CacheStore) : Cache {
@@ -37,8 +35,6 @@ open class FCache(cacheStore: CacheStore) : Cache {
     private var _booleanHandler: CommonCache<Boolean>? = null
     private var _stringHandler: CommonCache<String>? = null
     private var _bytesHandler: CommonCache<ByteArray>? = null
-
-    private var _objectCache: ObjectCache? = null
 
     private var _objectSingle: SingleObjectCacheImpl<*>? = null
     private var _objectMulti: MultiObjectCacheImpl<*>? = null
@@ -94,12 +90,6 @@ open class FCache(cacheStore: CacheStore) : Cache {
     override fun cacheBytes(): CommonCache<ByteArray> {
         return _bytesHandler ?: BytesHandler(_cacheInfo).also {
             _bytesHandler = it
-        }
-    }
-
-    override fun cacheObject(): ObjectCache {
-        return _objectCache ?: SimpleObjectCache(_cacheInfo).also {
-            _objectCache = it
         }
     }
 
