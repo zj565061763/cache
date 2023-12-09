@@ -67,21 +67,26 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheFloat() {
         val key = "TestKey"
+        val cache = fCache.cacheFloat()
 
         // test get defaultValue
-        fCache.cacheFloat().remove(key)
-        assertEquals(null, fCache.cacheFloat().get(key))
-        assertEquals(false, fCache.cacheFloat().contains(key))
+        cache.remove(key)
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
 
         // test put and get
-        assertEquals(true, fCache.cacheFloat().put(key, 1.0f))
-        assertEquals(1.0f, fCache.cacheFloat().get(key))
-        assertEquals(true, fCache.cacheFloat().contains(key))
+        assertEquals(true, cache.put(key, 1.0f))
+        assertEquals(1.0f, cache.get(key))
+        assertEquals(true, cache.contains(key))
 
         // test remove and get
-        assertEquals(true, fCache.cacheFloat().remove(key))
-        assertEquals(null, fCache.cacheFloat().get(key))
-        assertEquals(false, fCache.cacheFloat().contains(key))
+        assertEquals(true, cache.remove(key))
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
+
+        assertEquals(false, cache.remove(key))
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
