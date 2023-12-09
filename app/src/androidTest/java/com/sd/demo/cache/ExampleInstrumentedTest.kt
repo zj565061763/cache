@@ -33,6 +33,10 @@ class ExampleInstrumentedTest {
         assertEquals(true, cache.remove(key))
         assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+
+        assertEquals(false, cache.remove(key))
+        assertEquals(null, cache.get(key))
+        assertEquals(false, cache.contains(key))
     }
 
     @Test
