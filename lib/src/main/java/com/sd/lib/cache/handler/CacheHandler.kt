@@ -120,13 +120,13 @@ internal abstract class BaseCacheHandler<T>(
     //---------- CacheHandler end ----------
 
     /**
-     * 缓存转byte
+     * 编码
      */
     @Throws(Exception::class)
     protected abstract fun encodeToByteImpl(value: T, clazz: Class<*>?): ByteArray
 
     /**
-     * byte转缓存
+     * 解码
      */
     @Throws(Exception::class)
     protected abstract fun decodeFromByteImpl(bytes: ByteArray, clazz: Class<*>?): T
