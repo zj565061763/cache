@@ -8,6 +8,7 @@ internal class MultiObjectCacheImpl<T>(
     cacheInfo: CacheInfo,
     val objectClass: Class<T>,
 ) : MultiObjectCache<T> {
+
     private val _objectHandler = ObjectHandler(cacheInfo, "multi_object")
 
     private fun transformKey(key: String): String {
