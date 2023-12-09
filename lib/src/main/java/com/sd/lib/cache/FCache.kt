@@ -6,6 +6,7 @@ import com.sd.lib.cache.Cache.ExceptionHandler
 import com.sd.lib.cache.Cache.MultiObjectCache
 import com.sd.lib.cache.Cache.ObjectCache
 import com.sd.lib.cache.Cache.ObjectConverter
+import com.sd.lib.cache.Cache.SingleObjectCache
 import com.sd.lib.cache.handler.impl.BooleanHandler
 import com.sd.lib.cache.handler.impl.BytesHandler
 import com.sd.lib.cache.handler.impl.DoubleHandler
@@ -15,6 +16,7 @@ import com.sd.lib.cache.handler.impl.LongHandler
 import com.sd.lib.cache.handler.impl.StringHandler
 import com.sd.lib.cache.simple.SimpleMultiObjectCache
 import com.sd.lib.cache.simple.SimpleObjectCache
+import com.sd.lib.cache.simple.SingleObjectCacheImpl
 
 open class FCache(cacheStore: CacheStore) : Cache {
     private val _cacheStore = cacheStore
@@ -37,6 +39,8 @@ open class FCache(cacheStore: CacheStore) : Cache {
     private var _bytesHandler: CommonCache<ByteArray>? = null
 
     private var _objectCache: ObjectCache? = null
+
+    private var _singleObjectCache: SingleObjectCacheImpl<*>? = null
     private var _multiObjectCache: SimpleMultiObjectCache<*>? = null
 
     override fun setObjectConverter(converter: ObjectConverter?): Cache {
@@ -96,6 +100,14 @@ open class FCache(cacheStore: CacheStore) : Cache {
     override fun cacheObject(): ObjectCache {
         return _objectCache ?: SimpleObjectCache(_cacheInfo).also {
             _objectCache = it
+        }
+    }
+
+    override fun <T> cacheSingleObject(clazz: Class<T>): SingleObjectCache<T> {
+        val cache = _singleObjectCache
+        if (cache?.objectClass == clazz) return (cache as SingleObjectCache<T>)
+        return SingleObjectCacheImpl(_cacheInfo, clazz).also {
+            _singleObjectCache = it
         }
     }
 

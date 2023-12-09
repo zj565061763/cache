@@ -22,6 +22,8 @@ interface Cache {
     fun cacheBytes(): CommonCache<ByteArray>
 
     fun cacheObject(): ObjectCache
+
+    fun <T> cacheSingleObject(clazz: Class<T>): SingleObjectCache<T>
     fun <T> cacheMultiObject(clazz: Class<T>): MultiObjectCache<T>
 
     //---------- cache end ----------
@@ -61,6 +63,16 @@ interface Cache {
         fun <T> get(clazz: Class<T>): T?
         fun remove(clazz: Class<*>): Boolean
         fun contains(clazz: Class<*>): Boolean
+    }
+
+    /**
+     * 单对象缓存接口
+     */
+    interface SingleObjectCache<T> {
+        fun put(value: T?): Boolean
+        fun get(): T?
+        fun remove(): Boolean
+        fun contains(): Boolean
     }
 
     /**
