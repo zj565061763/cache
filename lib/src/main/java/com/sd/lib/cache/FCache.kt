@@ -100,9 +100,7 @@ open class FCache(cacheStore: CacheStore) : Cache {
 
     companion object {
         @JvmStatic
-        fun instance(): Cache {
-            return FCache(CacheConfig.get().cacheStore)
-        }
+        fun instance(): Cache = FCache(CacheConfig.get().cacheStore)
 
         /** [SingleObjectCache] */
         @JvmStatic
@@ -146,3 +144,6 @@ open class FCache(cacheStore: CacheStore) : Cache {
  * [FCache.instance]
  */
 val fCache: Cache get() = FCache.instance()
+
+/** Int */
+fun fCacheInt(): CommonCache<Int> = FCache.cacheInt()
