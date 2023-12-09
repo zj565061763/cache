@@ -11,7 +11,7 @@ import kotlin.coroutines.cancellation.CancellationException
 internal interface CacheHandler<T> {
     fun putCache(key: String, value: T, clazz: Class<T>?): Boolean
 
-    fun getCache(key: String, clazz: Class<*>?): T?
+    fun getCache(key: String, clazz: Class<T>?): T?
 
     fun removeCache(key: String)
 
@@ -80,7 +80,7 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    final override fun getCache(key: String, clazz: Class<*>?): T? {
+    final override fun getCache(key: String, clazz: Class<T>?): T? {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
             return try {
@@ -129,5 +129,5 @@ internal abstract class BaseCacheHandler<T>(
      * 解码
      */
     @Throws(Exception::class)
-    protected abstract fun decode(bytes: ByteArray, clazz: Class<*>?): T
+    protected abstract fun decode(bytes: ByteArray, clazz: Class<T>?): T
 }

@@ -12,9 +12,8 @@ internal class ObjectHandler<T>(info: CacheInfo, keyPrefix: String) : BaseCacheH
         return cacheInfo.objectConverter.encode(value, clazz)
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun decode(bytes: ByteArray, clazz: Class<*>?): T {
+    override fun decode(bytes: ByteArray, clazz: Class<T>?): T {
         if (clazz == null) throw CacheException("class is null")
-        return cacheInfo.objectConverter.decode(bytes, clazz) as T
+        return cacheInfo.objectConverter.decode(bytes, clazz)
     }
 }
