@@ -21,10 +21,10 @@ internal class MultiObjectCacheImpl<T>(
         return _objectHandler.putCache(transformKey(key), value, objectClass)
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun get(key: String): T? {
         if (key.isEmpty()) return null
         val cache = _objectHandler.getCache(transformKey(key), objectClass) ?: return null
+        @Suppress("UNCHECKED_CAST")
         return cache as T
     }
 
