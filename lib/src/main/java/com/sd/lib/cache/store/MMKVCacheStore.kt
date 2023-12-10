@@ -15,7 +15,7 @@ internal class MMKVCacheStore : CacheStore, AutoCloseable {
 
     override fun init(context: Context, directory: File, id: String) {
         _mmkv?.let { return }
-        _mmkv = MMKV.mmkvWithID(md5(id.toByteArray()))
+        _mmkv = MMKV.mmkvWithID(md5(id))
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
@@ -53,9 +53,9 @@ internal class MMKVCacheStore : CacheStore, AutoCloseable {
     }
 }
 
-private fun md5(input: ByteArray): String {
+private fun md5(input: String): String {
     return MessageDigest.getInstance("MD5")
-        .digest(input)
+        .digest(input.toByteArray())
         .let { bytes ->
             bytes.joinToString("") { "%02X".format(it) }
         }
