@@ -179,7 +179,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheObject() {
         val model = TestModel()
-        val cache = fCache.objectSingle(TestModel::class.java)
+        val cache = fCache.cObject(TestModel::class.java)
 
         // test get defaultValue
         cache.remove()
@@ -205,7 +205,7 @@ class ExampleInstrumentedTest {
         val model1 = TestModel("TestModel1")
         val model2 = TestModel("TestModel2")
 
-        val cache = fCache.objectMulti(TestModel::class.java)
+        val cache = fCache.cObjects(TestModel::class.java)
 
         // test get defaultValue
         cache.let {

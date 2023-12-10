@@ -40,9 +40,9 @@ class MainActivity : AppCompatActivity() {
         _cache.cString().put(Key, "hello String")
 
         val model = TestModel()
-        _cache.objectSingle(TestModel::class.java).put(model)
-        _cache.objectMulti(TestModel::class.java).put(Key, model)
-        _cache.objectMulti(TestModel::class.java).put(Key + Key, model)
+        _cache.cObject(TestModel::class.java).put(model)
+        _cache.cObjects(TestModel::class.java).put(Key, model)
+        _cache.cObjects(TestModel::class.java).put(Key + Key, model)
     }
 
     private fun getData() {
@@ -52,9 +52,9 @@ class MainActivity : AppCompatActivity() {
         logMsg { "cacheDouble:" + _cache.cDouble().get(Key) }
         logMsg { "cacheBoolean:" + _cache.cDouble().get(Key) }
         logMsg { "cacheString:" + _cache.cString().get(Key) }
-        logMsg { "objectSingle:" + _cache.objectSingle(TestModel::class.java).get() }
-        logMsg { "objectMulti:" + _cache.objectMulti(TestModel::class.java).get(Key) }
-        logMsg { "objectMulti:" + _cache.objectMulti(TestModel::class.java).get(Key + Key) }
+        logMsg { "objectSingle:" + _cache.cObject(TestModel::class.java).get() }
+        logMsg { "objectMulti:" + _cache.cObjects(TestModel::class.java).get(Key) }
+        logMsg { "objectMulti:" + _cache.cObjects(TestModel::class.java).get(Key + Key) }
     }
 
     private fun removeData() {
@@ -64,9 +64,9 @@ class MainActivity : AppCompatActivity() {
         _cache.cDouble().remove(Key)
         _cache.cDouble().remove(Key)
         _cache.cString().remove(Key)
-        _cache.objectSingle(TestModel::class.java).remove()
-        _cache.objectMulti(TestModel::class.java).remove(Key)
-        _cache.objectMulti(TestModel::class.java).remove(Key + Key)
+        _cache.cObject(TestModel::class.java).remove()
+        _cache.cObjects(TestModel::class.java).remove(Key)
+        _cache.cObjects(TestModel::class.java).remove(Key + Key)
     }
 }
 

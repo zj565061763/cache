@@ -12,8 +12,8 @@ interface Cache {
     fun cString(): CommonCache<String>
     fun cBytes(): CommonCache<ByteArray>
 
-    fun <T> objectSingle(clazz: Class<T>): SingleObjectCache<T>
-    fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T>
+    fun <T> cObject(clazz: Class<T>): SingleObjectCache<T>
+    fun <T> cObjects(clazz: Class<T>): MultiObjectCache<T>
 
     /**
      * 基本数据类型，通用缓存接口

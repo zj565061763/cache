@@ -26,8 +26,8 @@ class FCache private constructor(store: CacheStore) : Cache {
     private var _cString: CommonCache<String>? = null
     private var _cBytes: CommonCache<ByteArray>? = null
 
-    private var _objectSingle: SingleObjectCacheImpl<*>? = null
-    private var _objectMulti: MultiObjectCacheImpl<*>? = null
+    private var _cObject: SingleObjectCacheImpl<*>? = null
+    private var _cObjects: MultiObjectCacheImpl<*>? = null
 
     private val _cacheInfo = object : CacheInfo {
         override val cacheStore: CacheStore get() = store
@@ -79,19 +79,19 @@ class FCache private constructor(store: CacheStore) : Cache {
         }
     }
 
-    override fun <T> objectSingle(clazz: Class<T>): SingleObjectCache<T> {
-        val cache = _objectSingle
+    override fun <T> cObject(clazz: Class<T>): SingleObjectCache<T> {
+        val cache = _cObject
         if (cache?.objectClass == clazz) return (cache as SingleObjectCache<T>)
         return SingleObjectCacheImpl(_cacheInfo, clazz).also {
-            _objectSingle = it
+            _cObject = it
         }
     }
 
-    override fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T> {
-        val cache = _objectMulti
+    override fun <T> cObjects(clazz: Class<T>): MultiObjectCache<T> {
+        val cache = _cObjects
         if (cache?.objectClass == clazz) return (cache as MultiObjectCache<T>)
         return MultiObjectCacheImpl(_cacheInfo, clazz).also {
-            _objectMulti = it
+            _cObjects = it
         }
     }
 
