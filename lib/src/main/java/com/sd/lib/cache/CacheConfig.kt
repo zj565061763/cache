@@ -196,7 +196,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     }
 }
 
-internal enum class StoreType {
+private enum class StoreType {
     Unlimited,
     LimitCount,
     LimitByte,
