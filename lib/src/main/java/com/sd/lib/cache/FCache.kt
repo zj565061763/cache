@@ -79,6 +79,7 @@ class FCache private constructor(store: CacheStore) : Cache {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T> cObject(clazz: Class<T>): SingleObjectCache<T> {
         val cache = _cObject
         if (cache?.objectClass == clazz) return (cache as SingleObjectCache<T>)
@@ -87,6 +88,7 @@ class FCache private constructor(store: CacheStore) : Cache {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T> cObjects(clazz: Class<T>): MultiObjectCache<T> {
         val cache = _cObjects
         if (cache?.objectClass == clazz) return (cache as MultiObjectCache<T>)
@@ -104,3 +106,11 @@ class FCache private constructor(store: CacheStore) : Cache {
 }
 
 val fCache: Cache get() = FCache.get()
+
+inline fun <reified T> Cache.cacheObject(): SingleObjectCache<T> {
+    return this.cObject(T::class.java)
+}
+
+inline fun <reified T> Cache.cacheObjects(): MultiObjectCache<T> {
+    return this.cObjects(T::class.java)
+}
