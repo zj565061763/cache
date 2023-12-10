@@ -7,12 +7,18 @@ import java.io.File
 /**
  * 限制大小的LRU算法仓库，单位Byte
  */
-internal fun limitByteCacheStore(limit: Int, store: CacheStore): LimitCacheStore = LimitByteCacheStore(limit, store)
+internal fun limitByteCacheStore(
+    limit: Int,
+    store: CacheStore,
+): LimitCacheStore = LimitByteCacheStore(limit, store)
 
 /**
  * 限制个数的LRU算法仓库
  */
-internal fun limitCountCacheStore(limit: Int, store: CacheStore): LimitCacheStore = LimitCountCacheStore(limit, store)
+internal fun limitCountCacheStore(
+    limit: Int,
+    store: CacheStore,
+): LimitCacheStore = LimitCountCacheStore(limit, store)
 
 interface LimitCacheStore : CacheStore {
     /**
