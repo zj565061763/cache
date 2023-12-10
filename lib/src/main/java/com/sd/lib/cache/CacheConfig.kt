@@ -98,6 +98,9 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         /** 默认仓库 */
         private lateinit var sDefaultStore: CacheStore
 
+        /** 保存ID对应的仓库类型 */
+        private val sIDHolder: MutableMap<String, StoreType> = hashMapOf()
+
         /** 限制大小的仓库 */
         private val sLimitByteStoreHolder: MutableMap<String, LimitCacheStore> = hashMapOf()
 
@@ -110,7 +113,9 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                 sConfig?.let { return }
                 sConfig = config
                 MMKV.initialize(config.context, config.directory.absolutePath, MMKVLogLevel.LevelNone)
-                sDefaultStore = config.newCacheStore(id = DefaultID, init = true)
+                sDefaultStore = config.newCacheStore(id = DefaultID, init = true).also {
+                    sIDHolder[DefaultID] = StoreType.Unlimited
+                }
             }
         }
 
@@ -126,8 +131,10 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
          * 限制大小的仓库，单位Byte
          * @param id 必须保证唯一性
          */
-        internal fun limitSizeStore(limit: Int, id: String): CacheStore {
-            if (id == DefaultID) error("Default id is unlimited.")
+        internal fun limitByteStore(limit: Int, id: String): CacheStore {
+            sIDHolder[id]?.let { type ->
+                check(type == StoreType.LimitByte) { "ID $id exist with type ${type}." }
+            }
 
             val store = sLimitByteStoreHolder.getOrPut(id) {
                 limitByteCacheStore(
@@ -139,6 +146,8 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                         directory = get().directory,
                         id = id,
                     )
+                }.also {
+                    sIDHolder[id] = StoreType.LimitByte
                 }
             }
             return store.also {
@@ -153,4 +162,10 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
             }
         }
     }
+}
+
+private enum class StoreType {
+    Unlimited,
+    LimitByte,
+    LimitCount,
 }

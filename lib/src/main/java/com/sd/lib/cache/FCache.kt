@@ -115,7 +115,7 @@ class FCache private constructor(store: CacheStore) : Cache {
          */
         @JvmStatic
         fun limitByte(limit: Int, id: String): Cache {
-            val store = CacheConfig.limitSizeStore(limit, id)
+            val store = CacheConfig.limitByteStore(limit, id)
             return FCache(store)
         }
     }
