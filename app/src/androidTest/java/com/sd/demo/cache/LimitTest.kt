@@ -11,13 +11,32 @@ class LimitTest {
 
     @Test
     fun testLimitCount() {
-        val cache = FCache.limitCount(10, "testLimitCount").cString()
-        repeat(10) { index ->
+        val limit = 10
+        val cache = FCache.limitCount(limit, "testLimitCount").cString()
+        repeat(limit) { index ->
             val key = index.toString()
             val value = index.toString()
             assertEquals(true, cache.put(key, value))
             assertEquals(true, cache.contains(key))
             assertEquals(value, cache.get(key))
         }
+
+        fun testOverLimit(index: Int) {
+            val key = index.toString()
+            val value = index.toString()
+
+            assertEquals(false, cache.contains(key))
+            assertEquals(null, cache.get(key))
+
+            assertEquals(true, cache.put(key, value))
+            assertEquals(true, cache.contains(key))
+            assertEquals(value, cache.get(key))
+
+            val removedKey = (limit - index).toString()
+            assertEquals(false, cache.contains(removedKey))
+            assertEquals(null, cache.get(removedKey))
+        }
+
+        testOverLimit(limit)
     }
 }
