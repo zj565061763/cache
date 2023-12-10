@@ -15,16 +15,16 @@ import java.io.File
 class CacheConfig private constructor(builder: Builder, context: Context) {
     internal val context: Context
     internal val directory: File
-
     private val cacheStore: Class<out CacheStore>
+
     internal val objectConverter: Cache.ObjectConverter
     internal val exceptionHandler: Cache.ExceptionHandler
 
     init {
         this.context = context.applicationContext
         this.directory = builder.directory ?: context.filesDir.resolve("f_cache")
-
         this.cacheStore = builder.cacheStore ?: MMKVCacheStore::class.java
+
         this.objectConverter = builder.objectConverter ?: GsonObjectConverter()
         this.exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }
     }
@@ -159,35 +159,38 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         private fun limitStore(limit: Int, id: String, type: StoreType): CacheStore {
             val config = get()
             if (type == StoreType.Unlimited) error("Only limited.")
-            sIDTypes[id]?.let { cache ->
-                check(cache == type) { "ID $id exist with type ${cache}." }
-            }
 
-            val store = sLimitStores.getOrPut(id) {
-                when (type) {
-                    StoreType.LimitByte -> limitByteCacheStore(
-                        limit = limit,
-                        store = config.newCacheStore(id = id, init = false),
-                    )
-
-                    StoreType.LimitCount -> limitCountCacheStore(
-                        limit = limit,
-                        store = config.newCacheStore(id = id, init = false),
-                    )
-
-                    else -> error("Only limited.")
-                }.also {
-                    it.init(
-                        context = config.context,
-                        directory = config.directory,
-                        id = id,
-                    )
-                    sIDTypes[id] = type
+            synchronized(Cache::class.java) {
+                sIDTypes[id]?.let { cache ->
+                    check(cache == type) { "ID $id exist with type ${cache}." }
                 }
-            }
 
-            return store.also {
-                it.limit(limit)
+                val store = sLimitStores.getOrPut(id) {
+                    when (type) {
+                        StoreType.LimitByte -> limitByteCacheStore(
+                            limit = limit,
+                            store = config.newCacheStore(id = id, init = false),
+                        )
+
+                        StoreType.LimitCount -> limitCountCacheStore(
+                            limit = limit,
+                            store = config.newCacheStore(id = id, init = false),
+                        )
+
+                        else -> error("Only limited.")
+                    }.also {
+                        it.init(
+                            context = config.context,
+                            directory = config.directory,
+                            id = id,
+                        )
+                        sIDTypes[id] = type
+                    }
+                }
+
+                return store.also {
+                    it.limit(limit)
+                }
             }
         }
 
