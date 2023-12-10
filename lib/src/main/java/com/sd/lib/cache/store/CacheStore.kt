@@ -40,7 +40,7 @@ interface CacheStore {
     fun keys(): Array<String>?
 
     /**
-     * [key]对应的缓存大小
+     * [key]对应的缓存大小，单位Byte
      */
     fun sizeOf(key: String): Int
 }

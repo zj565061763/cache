@@ -4,8 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.sd.lib.cache.impl.GsonObjectConverter
 import com.sd.lib.cache.store.CacheStore
-import com.sd.lib.cache.store.LimitSizeCacheStore
+import com.sd.lib.cache.store.LimitCacheStore
 import com.sd.lib.cache.store.MMKVCacheStore
+import com.sd.lib.cache.store.limitByteCacheStore
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
 import java.io.File
@@ -95,8 +96,8 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         /** 默认仓库 */
         private lateinit var sDefaultStore: CacheStore
 
-        /** 保存限制大小的仓库 */
-        private val sLimitedStoreHolder: MutableMap<String, LimitSizeCacheStore> = hashMapOf()
+        /** 限制大小的仓库 */
+        private val sLimitByteStoreHolder: MutableMap<String, LimitCacheStore> = hashMapOf()
 
         /**
          * 初始化
@@ -120,25 +121,25 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         }
 
         /**
-         * 限制大小的仓库
+         * 限制大小的仓库，单位Byte
          */
         internal fun limitSizeStore(
-            limitMB: Int,
+            limit: Int,
             directory: File,
         ): CacheStore {
             val key = directory.absolutePath
             if (key == get().directory.absolutePath) error("Default directory is unlimited ${key}.")
 
-            val store = sLimitedStoreHolder.getOrPut(key) {
-                LimitSizeCacheStore(
-                    limitMB = limitMB,
+            val store = sLimitByteStoreHolder.getOrPut(key) {
+                limitByteCacheStore(
+                    limit = limit,
                     store = get().newCacheStore(init = false),
                 ).apply {
                     this.init(get().context, directory)
                 }
             }
             return store.also {
-                it.limitMB(limitMB)
+                it.limit(limit)
             }
         }
 
