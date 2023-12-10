@@ -1,4 +1,4 @@
-package com.sd.lib.cache.impl
+package com.sd.lib.cache.store
 
 import android.content.Context
 import com.sd.lib.cache.Cache.CacheStore
