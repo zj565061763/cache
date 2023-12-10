@@ -16,7 +16,7 @@ internal class LimitedCacheStore(
         check(limitMB > 0)
     }
 
-    private val _lruCache = object : LruCache<String, Int>(limitMB * 1024 * 1024) {
+    private val _lruCache = object : LruCache<String, Int>(limitMB.toByteCount()) {
         override fun sizeOf(key: String, value: Int?): Int {
             return value ?: 0
         }
@@ -25,6 +25,16 @@ internal class LimitedCacheStore(
             if (evicted) {
                 store.removeCache(key)
             }
+        }
+    }
+
+    /**
+     * 限制大小，单位MB
+     */
+    fun limitMB(limitMB: Int) {
+        val limit = limitMB.toByteCount()
+        if (_lruCache.maxSize() != limit) {
+            _lruCache.resize(limit)
         }
     }
 
@@ -67,3 +77,8 @@ internal class LimitedCacheStore(
         }
     }
 }
+
+/**
+ * MB -> B
+ */
+private fun Int.toByteCount(): Int = this * 1024 * 1024

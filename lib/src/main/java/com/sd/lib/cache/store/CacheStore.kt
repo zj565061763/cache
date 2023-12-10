@@ -56,6 +56,9 @@ internal interface CacheStore {
         /** 默认仓库 */
         private lateinit var sDefaultStore: CacheStore
 
+        /** 保存限制大小的仓库 */
+        private val sLimitedStoreHolder: MutableMap<String, LimitedCacheStore> = hashMapOf()
+
         /**
          * 初始化
          */
@@ -68,6 +71,31 @@ internal interface CacheStore {
                 }
             }
             return sDefaultStore
+        }
+
+        /**
+         * 返回限制大小的仓库
+         */
+        fun limitedStore(
+            context: Context,
+            directory: File,
+            limitMB: Int,
+        ): CacheStore {
+            check(sInit.get())
+            val key = directory.absolutePath
+            if (key == sDefaultDirectory.absolutePath) error("Default directory is unlimited ${key}.")
+
+            val store = sLimitedStoreHolder.getOrPut(key) {
+                LimitedCacheStore(
+                    limitMB = limitMB,
+                    store = MMKVCacheStore(),
+                ).apply {
+                    this.init(context, directory)
+                }
+            }
+            return store.also {
+                it.limitMB(limitMB)
+            }
         }
     }
 }
