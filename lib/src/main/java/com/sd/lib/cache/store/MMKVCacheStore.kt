@@ -1,9 +1,7 @@
 package com.sd.lib.cache.store
 
 import android.content.Context
-import com.sd.lib.cache.Cache.CacheStore
 import com.tencent.mmkv.MMKV
-import com.tencent.mmkv.MMKVLogLevel
 import java.io.File
 
 internal class MMKVCacheStore : CacheStore {
@@ -11,8 +9,7 @@ internal class MMKVCacheStore : CacheStore {
 
     override fun init(context: Context, directory: File) {
         if (::_mmkv.isInitialized) return
-        MMKV.initialize(context, directory.absolutePath, MMKVLogLevel.LevelNone)
-        _mmkv = MMKV.defaultMMKV()
+        _mmkv = MMKV.mmkvWithID(directory.absolutePath)
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
@@ -31,5 +28,14 @@ internal class MMKVCacheStore : CacheStore {
 
     override fun containsCache(key: String): Boolean {
         return _mmkv.contains(key)
+    }
+
+
+    override fun keys(): Array<String>? {
+        return _mmkv.allKeys()
+    }
+
+    override fun sizeOf(key: String): Int {
+        return _mmkv.decodeBytes(key)?.size ?: 0
     }
 }

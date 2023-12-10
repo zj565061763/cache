@@ -3,6 +3,7 @@ package com.sd.lib.cache.handler
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.store.CacheStore
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
@@ -26,7 +27,7 @@ internal abstract class BaseCacheHandler<T>(
     private val keyPrefix: String,
 ) : CacheHandler<T>, Cache.CommonCache<T> {
 
-    private val _cacheStore: Cache.CacheStore
+    private val _cacheStore: CacheStore
         get() = cacheInfo.cacheStore
 
     init {

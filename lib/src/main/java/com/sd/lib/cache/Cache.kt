@@ -1,7 +1,6 @@
 package com.sd.lib.cache
 
-import android.content.Context
-import java.io.File
+import com.sd.lib.cache.store.CacheStore
 
 interface Cache {
 
@@ -62,38 +61,6 @@ interface Cache {
         fun contains(key: String): Boolean
     }
 
-    interface CacheStore {
-        /**
-         * 初始化
-         */
-        fun init(context: Context, directory: File)
-
-        /**
-         * 保存缓存
-         * @return true-保存成功，false-保存失败
-         */
-        @Throws(Exception::class)
-        fun putCache(key: String, value: ByteArray): Boolean
-
-        /**
-         * 获取缓存
-         */
-        @Throws(Exception::class)
-        fun getCache(key: String): ByteArray?
-
-        /**
-         * 删除缓存
-         */
-        @Throws(Exception::class)
-        fun removeCache(key: String)
-
-        /**
-         * 是否有[key]对应的缓存
-         */
-        @Throws(Exception::class)
-        fun containsCache(key: String): Boolean
-    }
-
     /**
      * 对象转换器
      */
@@ -121,7 +88,7 @@ interface Cache {
 
 internal interface CacheInfo {
     /** 仓库 */
-    val cacheStore: Cache.CacheStore
+    val cacheStore: CacheStore
 
     /** 对象转换 */
     val objectConverter: Cache.ObjectConverter
