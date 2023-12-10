@@ -14,7 +14,7 @@ import org.junit.runner.RunWith
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
+class CommonTest {
     private val _testEmptyByteArray = true
     private val _testEmptyString = true
 
@@ -176,63 +176,5 @@ class ExampleInstrumentedTest {
         cache.remove(key)
         assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
-    }
-
-    @Test
-    fun testCacheObject() {
-        val model = TestModel()
-        val cache = fCache.cacheObject<TestModel>()
-
-        // test get defaultValue
-        cache.remove()
-        assertEquals(null, cache.get())
-        assertEquals(false, cache.contains())
-
-        // test put and get
-        assertEquals(true, cache.put(model))
-        assertEquals(model, cache.get())
-        assertEquals(true, cache.contains())
-
-        // test remove and get
-        cache.remove()
-        assertEquals(null, cache.get())
-        assertEquals(false, cache.contains())
-    }
-
-    @Test
-    fun testCacheMultiObject() {
-        val key1 = "TestKey1"
-        val key2 = "TestKey2"
-
-        val model1 = TestModel("TestModel1")
-        val model2 = TestModel("TestModel2")
-
-        val cache = fCache.cacheObjects<TestModel>()
-
-        // test get defaultValue
-        cache.let {
-            it.remove(key1)
-            it.remove(key2)
-        }
-        assertEquals(null, cache.get(key1))
-        assertEquals(null, cache.get(key2))
-        assertEquals(false, cache.contains(key1))
-        assertEquals(false, cache.contains(key2))
-
-        // test put and get
-        assertEquals(true, cache.put(key1, model1))
-        assertEquals(true, cache.put(key2, model2))
-        assertEquals(model1, cache.get(key1))
-        assertEquals(model2, cache.get(key2))
-        assertEquals(true, cache.contains(key1))
-        assertEquals(true, cache.contains(key2))
-
-        // test remove and get
-        cache.remove(key1)
-        cache.remove(key2)
-        assertEquals(null, cache.get(key1))
-        assertEquals(null, cache.get(key2))
-        assertEquals(false, cache.contains(key1))
-        assertEquals(false, cache.contains(key2))
     }
 }
