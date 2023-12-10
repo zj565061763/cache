@@ -3,6 +3,7 @@ package com.sd.lib.cache.store
 import android.content.Context
 import com.tencent.mmkv.MMKV
 import java.io.File
+import java.security.MessageDigest
 
 /**
  * 基于腾讯MMKV实现的仓库
@@ -13,7 +14,8 @@ internal class MMKVCacheStore : CacheStore, AutoCloseable {
 
     override fun init(context: Context, directory: File) {
         _mmkv?.let { return }
-        _mmkv = MMKV.mmkvWithID(directory.absolutePath)
+        val id = md5(directory.absolutePath.toByteArray())
+        _mmkv = MMKV.mmkvWithID(id)
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
@@ -50,4 +52,12 @@ internal class MMKVCacheStore : CacheStore, AutoCloseable {
             _mmkv = null
         }
     }
+}
+
+private fun md5(input: ByteArray): String {
+    return MessageDigest.getInstance("MD5")
+        .digest(input)
+        .let { bytes ->
+            bytes.joinToString("") { "%02X".format(it) }
+        }
 }
