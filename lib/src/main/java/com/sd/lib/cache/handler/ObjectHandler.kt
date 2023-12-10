@@ -10,7 +10,7 @@ internal class ObjectHandler<T>(info: CacheInfo, keyPrefix: String) : BaseCacheH
     override fun encode(value: T, clazz: Class<T>?): ByteArray {
         if (clazz == null) throw CacheException("class is null")
         return cacheInfo.objectConverter.encode(value, clazz).also {
-            if (it.isEmpty()) error("Converter encode return empty ${clazz.name}")
+            if (it.isEmpty()) error("Converter encode returns empty ${clazz.name}")
         }
     }
 
