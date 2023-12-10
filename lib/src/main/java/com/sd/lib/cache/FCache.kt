@@ -101,7 +101,7 @@ class FCache private constructor(store: CacheStore) : Cache {
 
     companion object {
         @JvmStatic
-        fun get(): Cache = FCache(CacheConfig.get().cacheStore)
+        fun get(): Cache = FCache(CacheConfig.defaultStore())
     }
 }
 

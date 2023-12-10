@@ -4,6 +4,9 @@ import android.content.Context
 import com.tencent.mmkv.MMKV
 import java.io.File
 
+/**
+ * 基于腾讯MMKV实现的仓库
+ */
 internal class MMKVCacheStore : CacheStore, AutoCloseable {
     private var _mmkv: MMKV? = null
     private val mmkv: MMKV get() = checkNotNull(_mmkv)
