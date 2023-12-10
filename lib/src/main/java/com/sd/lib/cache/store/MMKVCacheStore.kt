@@ -9,13 +9,13 @@ import java.security.MessageDigest
  * 基于腾讯MMKV实现的仓库
  */
 internal class MMKVCacheStore : CacheStore, AutoCloseable {
+
     private var _mmkv: MMKV? = null
     private val mmkv: MMKV get() = checkNotNull(_mmkv)
 
-    override fun init(context: Context, directory: File) {
+    override fun init(context: Context, directory: File, id: String) {
         _mmkv?.let { return }
-        val id = md5(directory.absolutePath.toByteArray())
-        _mmkv = MMKV.mmkvWithID(id)
+        _mmkv = MMKV.mmkvWithID(md5(id.toByteArray()))
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {

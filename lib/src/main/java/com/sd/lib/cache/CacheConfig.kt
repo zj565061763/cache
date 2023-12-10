@@ -31,10 +31,10 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     /**
      * 创建新的仓库
      */
-    private fun newCacheStore(init: Boolean = true): CacheStore {
+    private fun newCacheStore(id: String, init: Boolean): CacheStore {
         return cacheStore.getDeclaredConstructor().newInstance().apply {
             if (init) {
-                this.init(context, directory)
+                this.init(context, directory, id)
             }
         }
     }
@@ -89,6 +89,8 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     }
 
     companion object {
+        private const val DefaultID = "com.sd.lib.cache.id.default"
+
         @SuppressLint("StaticFieldLeak")
         @Volatile
         private var sConfig: CacheConfig? = null
@@ -108,7 +110,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                 sConfig?.let { return }
                 sConfig = config
                 MMKV.initialize(config.context, config.directory.absolutePath, MMKVLogLevel.LevelNone)
-                sDefaultStore = config.newCacheStore()
+                sDefaultStore = config.newCacheStore(id = DefaultID, init = true)
             }
         }
 
@@ -122,20 +124,21 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
 
         /**
          * 限制大小的仓库，单位Byte
+         * @param id 必须保证唯一性
          */
-        internal fun limitSizeStore(
-            limit: Int,
-            directory: File,
-        ): CacheStore {
-            val key = directory.absolutePath
-            if (key == get().directory.absolutePath) error("Default directory is unlimited ${key}.")
+        internal fun limitSizeStore(limit: Int, id: String): CacheStore {
+            if (id == DefaultID) error("Default id is unlimited.")
 
-            val store = sLimitByteStoreHolder.getOrPut(key) {
+            val store = sLimitByteStoreHolder.getOrPut(id) {
                 limitByteCacheStore(
                     limit = limit,
-                    store = get().newCacheStore(init = false),
+                    store = get().newCacheStore(id = id, init = false),
                 ).apply {
-                    this.init(get().context, directory)
+                    this.init(
+                        context = get().context,
+                        directory = get().directory,
+                        id = id,
+                    )
                 }
             }
             return store.also {
