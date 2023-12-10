@@ -14,7 +14,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     internal val context: Context
     internal val directory: File
 
-    internal val cacheStore: Class<out CacheStore>
+    private val cacheStore: Class<out CacheStore>
     internal val objectConverter: Cache.ObjectConverter
     internal val exceptionHandler: Cache.ExceptionHandler
 
