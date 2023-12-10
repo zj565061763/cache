@@ -20,6 +20,12 @@ internal class LimitedCacheStore(
         override fun sizeOf(key: String, value: Int?): Int {
             return value ?: 0
         }
+
+        override fun entryRemoved(evicted: Boolean, key: String, oldValue: Int?, newValue: Int?) {
+            if (evicted) {
+                store.removeCache(key)
+            }
+        }
     }
 
     override fun init(context: Context, directory: File) {
@@ -34,12 +40,13 @@ internal class LimitedCacheStore(
     }
 
     override fun getCache(key: String): ByteArray? {
+        _lruCache.get(key)
         return store.getCache(key)
     }
 
     override fun removeCache(key: String) {
-        store.removeCache(key)
         _lruCache.remove(key)
+        store.removeCache(key)
     }
 
     override fun containsCache(key: String): Boolean {
