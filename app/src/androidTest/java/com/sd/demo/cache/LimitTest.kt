@@ -37,6 +37,8 @@ class LimitTest {
             assertEquals(null, cache.get(removedKey))
         }
 
-        testOverLimit(limit)
+        repeat(10) { index ->
+            testOverLimit(limit + index)
+        }
     }
 }
