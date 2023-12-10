@@ -25,18 +25,18 @@ class CommonTest {
 
         // test get defaultValue
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
 
         // test put and get
         assertEquals(true, cache.put(key, 1))
-        assertEquals(1, cache.get(key))
         assertEquals(true, cache.contains(key))
+        assertEquals(1, cache.get(key))
 
         // test remove and get
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
     }
 
     @Test
@@ -46,18 +46,18 @@ class CommonTest {
 
         // test get defaultValue
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
 
         // test put and get
         assertEquals(true, cache.put(key, 1L))
-        assertEquals(1L, cache.get(key))
         assertEquals(true, cache.contains(key))
+        assertEquals(1L, cache.get(key))
 
         // test remove and get
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
     }
 
     @Test
@@ -67,18 +67,18 @@ class CommonTest {
 
         // test get defaultValue
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
 
         // test put and get
         assertEquals(true, cache.put(key, 1.0f))
-        assertEquals(1.0f, cache.get(key))
         assertEquals(true, cache.contains(key))
+        assertEquals(1.0f, cache.get(key))
 
         // test remove and get
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
     }
 
     @Test
@@ -88,18 +88,18 @@ class CommonTest {
 
         // test get defaultValue
         cache.remove(key)
-        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
         assertEquals(false, cache.contains(key))
+        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
 
         // test put and get
         assertEquals(true, cache.put(key, 1.0))
-        assertEquals(1.0, cache.get(key) ?: 0.0, 0.01)
         assertEquals(true, cache.contains(key))
+        assertEquals(1.0, cache.get(key) ?: 0.0, 0.01)
 
         // test remove and get
         cache.remove(key)
-        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
         assertEquals(false, cache.contains(key))
+        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
     }
 
     @Test
@@ -109,18 +109,18 @@ class CommonTest {
 
         // test get defaultValue
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
 
         // test put and get
         assertEquals(true, cache.put(key, true))
-        assertEquals(true, cache.get(key))
         assertEquals(true, cache.contains(key))
+        assertEquals(true, cache.get(key))
 
         // test remove and get
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
     }
 
     @Test
@@ -130,24 +130,24 @@ class CommonTest {
 
         // test get defaultValue
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
 
         // test put and get
         assertEquals(true, cache.put(key, "hello"))
-        assertEquals("hello", cache.get(key))
         assertEquals(true, cache.contains(key))
+        assertEquals("hello", cache.get(key))
 
         if (_testEmptyString) {
             assertEquals(true, cache.put(key, ""))
-            assertEquals("", cache.get(key))
             assertEquals(true, cache.contains(key))
+            assertEquals("", cache.get(key))
         }
 
         // test remove and get
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
     }
 
     @Test
@@ -157,24 +157,24 @@ class CommonTest {
 
         // test get defaultValue
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
 
         // test put and get
         assertEquals(true, cache.put(key, "hello".toByteArray()))
-        assertEquals("hello", cache.get(key)?.let { String(it) })
         assertEquals(true, cache.contains(key))
+        assertEquals("hello", cache.get(key)?.let { String(it) })
 
         if (_testEmptyByteArray) {
             val emptyByteArray = "".toByteArray()
             assertEquals(true, cache.put(key, emptyByteArray))
-            assertEquals(0, cache.get(key)?.size)
             assertEquals(true, cache.contains(key))
+            assertEquals(0, cache.get(key)?.size)
         }
 
         // test remove and get
         cache.remove(key)
-        assertEquals(null, cache.get(key))
         assertEquals(false, cache.contains(key))
+        assertEquals(null, cache.get(key))
     }
 }
