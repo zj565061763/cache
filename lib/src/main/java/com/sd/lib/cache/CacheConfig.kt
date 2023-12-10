@@ -30,9 +30,11 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     /**
      * 创建新的仓库
      */
-    private fun newCacheStore(): CacheStore {
+    private fun newCacheStore(init: Boolean = true): CacheStore {
         return cacheStore.newInstance().apply {
-            this.init(context, directory)
+            if (init) {
+                this.init(context, directory)
+            }
         }
     }
 
@@ -130,8 +132,10 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
             val store = sLimitedStoreHolder.getOrPut(key) {
                 LimitedCacheStore(
                     limitMB = limitMB,
-                    store = get().newCacheStore(),
-                )
+                    store = get().newCacheStore(init = false),
+                ).apply {
+                    this.init(get().context, get().directory)
+                }
             }
             return store.also {
                 it.limitMB(limitMB)
