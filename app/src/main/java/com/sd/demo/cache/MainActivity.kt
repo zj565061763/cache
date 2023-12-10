@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         logMsg { "cacheLong:" + _cache.cLong().get(Key) }
         logMsg { "cacheFloat:" + _cache.cFloat().get(Key) }
         logMsg { "cacheDouble:" + _cache.cDouble().get(Key) }
-        logMsg { "cacheBoolean:" + _cache.cDouble().get(Key) }
+        logMsg { "cacheBoolean:" + _cache.cBoolean().get(Key) }
         logMsg { "cacheString:" + _cache.cString().get(Key) }
         logMsg { "objectSingle:" + _cache.cObject(TestModel::class.java).get() }
         logMsg { "objectMulti:" + _cache.cObjects(TestModel::class.java).get(Key) }

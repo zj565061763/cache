@@ -1,6 +1,7 @@
 package com.sd.demo.cache
 
 import android.app.Application
+import com.sd.demo.cache.impl.CacheExceptionHandler
 import com.sd.lib.cache.CacheConfig
 
 class App : Application() {
@@ -8,9 +9,8 @@ class App : Application() {
         super.onCreate()
         CacheConfig.init(
             CacheConfig.Builder()
-                .setExceptionHandler {
-                    logMsg { "error:$it" }
-                }
+                // 监听异常信息
+                .setExceptionHandler(CacheExceptionHandler())
                 .build(this)
         )
     }
