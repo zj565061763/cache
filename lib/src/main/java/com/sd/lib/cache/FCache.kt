@@ -110,7 +110,7 @@ class FCache private constructor(store: CacheStore) : Cache {
         }
 
         /**
-         * 限制个数的仓库
+         * 限制个数的缓存
          * @param id 必须保证唯一性
          */
         @JvmStatic
