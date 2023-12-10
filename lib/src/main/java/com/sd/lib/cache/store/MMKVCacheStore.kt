@@ -40,7 +40,7 @@ internal class MMKVCacheStore : CacheStore, AutoCloseable {
     }
 
     override fun sizeOf(key: String): Int {
-        return mmkv.decodeBytes(key)?.size ?: 0
+        return mmkv.getValueActualSize(key)
     }
 
     override fun close() {
