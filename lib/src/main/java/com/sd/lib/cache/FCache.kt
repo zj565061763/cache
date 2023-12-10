@@ -110,16 +110,6 @@ class FCache private constructor(store: CacheStore) : Cache {
         }
 
         /**
-         * 限制大小的缓存，单位Byte
-         * @param id 必须保证唯一性
-         */
-        @JvmStatic
-        fun limitByte(limit: Int, id: String): Cache {
-            val store = CacheConfig.limitByteStore(limit, id)
-            return FCache(store)
-        }
-
-        /**
          * 限制个数的仓库
          * @param id 必须保证唯一性
          */

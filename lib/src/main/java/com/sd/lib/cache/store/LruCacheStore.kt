@@ -5,20 +5,20 @@ import android.util.LruCache
 import java.io.File
 
 /**
- * 限制大小的LRU算法仓库，单位Byte
- */
-internal fun limitByteCacheStore(
-    limit: Int,
-    store: CacheStore,
-): LimitCacheStore = LimitByteCacheStore(limit, store)
-
-/**
  * 限制个数的LRU算法仓库
  */
 internal fun limitCountCacheStore(
     limit: Int,
     store: CacheStore,
 ): LimitCacheStore = LimitCountCacheStore(limit, store)
+
+/**
+ * 限制大小的LRU算法仓库，单位Byte
+ */
+internal fun limitByteCacheStore(
+    limit: Int,
+    store: CacheStore,
+): LimitCacheStore = LimitByteCacheStore(limit, store)
 
 /**
  * 限制大小的LRU算法仓库
@@ -111,16 +111,6 @@ private abstract class LruCacheStore protected constructor(
 }
 
 /**
- * 限制大小的LRU算法仓库，单位Byte
- */
-private class LimitByteCacheStore(
-    limit: Int,
-    store: CacheStore,
-) : LruCacheStore(limit, store) {
-    override fun sizeOfEntry(key: String, value: ByteArray?): Int = value?.size ?: sizeOf(key)
-}
-
-/**
  * 限制个数的LRU算法仓库
  */
 private class LimitCountCacheStore(
@@ -128,4 +118,14 @@ private class LimitCountCacheStore(
     store: CacheStore,
 ) : LruCacheStore(limit, store) {
     override fun sizeOfEntry(key: String, value: ByteArray?): Int = 1
+}
+
+/**
+ * 限制大小的LRU算法仓库，单位Byte
+ */
+private class LimitByteCacheStore(
+    limit: Int,
+    store: CacheStore,
+) : LruCacheStore(limit, store) {
+    override fun sizeOfEntry(key: String, value: ByteArray?): Int = value?.size ?: sizeOf(key)
 }

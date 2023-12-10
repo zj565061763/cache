@@ -129,18 +129,6 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         }
 
         /**
-         * 限制大小的仓库，单位Byte
-         * @param id 必须保证唯一性
-         */
-        internal fun limitByteStore(limit: Int, id: String): CacheStore {
-            return limitStore(
-                limit = limit,
-                id = id,
-                type = StoreType.LimitByte,
-            )
-        }
-
-        /**
          * 限制个数的仓库
          * @param id 必须保证唯一性
          */
@@ -149,6 +137,18 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                 limit = limit,
                 id = id,
                 type = StoreType.LimitCount,
+            )
+        }
+
+        /**
+         * 限制大小的仓库，单位Byte
+         * @param id 必须保证唯一性
+         */
+        internal fun limitByteStore(limit: Int, id: String): CacheStore {
+            return limitStore(
+                limit = limit,
+                id = id,
+                type = StoreType.LimitByte,
             )
         }
 
@@ -167,12 +167,12 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
 
                 val store = sLimitStores.getOrPut(id) {
                     when (type) {
-                        StoreType.LimitByte -> limitByteCacheStore(
+                        StoreType.LimitCount -> limitCountCacheStore(
                             limit = limit,
                             store = config.newCacheStore(id = id, init = false),
                         )
 
-                        StoreType.LimitCount -> limitCountCacheStore(
+                        StoreType.LimitByte -> limitByteCacheStore(
                             limit = limit,
                             store = config.newCacheStore(id = id, init = false),
                         )
@@ -205,6 +205,6 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
 
 internal enum class StoreType {
     Unlimited,
-    LimitByte,
     LimitCount,
+    LimitByte,
 }
