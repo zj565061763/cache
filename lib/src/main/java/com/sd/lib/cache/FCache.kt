@@ -15,6 +15,7 @@ import com.sd.lib.cache.handler.StringHandler
 import com.sd.lib.cache.impl.MultiObjectCacheImpl
 import com.sd.lib.cache.impl.SingleObjectCacheImpl
 import com.sd.lib.cache.store.CacheStore
+import java.io.File
 
 class FCache private constructor(store: CacheStore) : Cache {
 
@@ -100,8 +101,23 @@ class FCache private constructor(store: CacheStore) : Cache {
     //---------- Cache end ----------
 
     companion object {
+        /**
+         * 默认缓存
+         */
         @JvmStatic
-        fun get(): Cache = FCache(CacheConfig.defaultStore())
+        fun get(): Cache {
+            val store = CacheConfig.defaultStore()
+            return FCache(store)
+        }
+
+        /**
+         * 限制大小的缓存，单位Byte
+         */
+        @JvmStatic
+        fun limitByte(limit: Int, directory: File): Cache {
+            val store = CacheConfig.limitSizeStore(limit, directory)
+            return FCache(store)
+        }
     }
 }
 
