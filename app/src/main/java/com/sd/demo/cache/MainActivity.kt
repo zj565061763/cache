@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-private fun testPerformance(repeat: Int) {
+private fun testPerformance(repeat: Int = 100) {
     val content = "1".repeat(1024)
     measureTime {
         repeat(repeat) { index ->
