@@ -99,33 +99,8 @@ class FCache private constructor(store: CacheStore) : Cache {
 
     companion object {
         @JvmStatic
-        fun instance(): Cache = FCache(CacheConfig.get().cacheStore)
+        fun get(): Cache = FCache(CacheConfig.get().cacheStore)
     }
 }
 
-/** [SingleObjectCache] */
-inline fun <reified T> fCacheObject(): SingleObjectCache<T> = FCache.instance().objectSingle(T::class.java)
-
-/** [MultiObjectCache] */
-inline fun <reified T> fCacheObjectMulti(): MultiObjectCache<T> = FCache.instance().objectMulti(T::class.java)
-
-/** Int */
-val fCacheInt: CommonCache<Int> get() = FCache.instance().cacheInt()
-
-/** Long */
-val fCacheLong: CommonCache<Long> get() = FCache.instance().cacheLong()
-
-/** Float */
-val fCacheFloat: CommonCache<Float> get() = FCache.instance().cacheFloat()
-
-/** Double */
-val fCacheDouble: CommonCache<Double> get() = FCache.instance().cacheDouble()
-
-/** Boolean */
-val fCacheBoolean: CommonCache<Boolean> get() = FCache.instance().cacheBoolean()
-
-/** String */
-val fCacheString: CommonCache<String> get() = FCache.instance().cacheString()
-
-/** Bytes */
-val fCacheBytes: CommonCache<ByteArray> get() = FCache.instance().cacheBytes()
+val fCache: Cache get() = FCache.get()
