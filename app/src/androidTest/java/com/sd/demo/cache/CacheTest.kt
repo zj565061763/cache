@@ -1,6 +1,7 @@
 package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.sd.lib.cache.FCache
 import com.sd.lib.cache.cacheObject
 import com.sd.lib.cache.cacheObjects
 import com.sd.lib.cache.fCache
@@ -14,7 +15,7 @@ import org.junit.runner.RunWith
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class CommonTest {
+class CacheTest {
     private val _testEmptyByteArray = true
     private val _testEmptyString = true
 
@@ -234,5 +235,38 @@ class CommonTest {
         assertEquals(false, cache.contains(key2))
         assertEquals(null, cache.get(key1))
         assertEquals(null, cache.get(key2))
+    }
+
+    @Test
+    fun testLimitCount() {
+        val limit = 10
+        val cache = FCache.limitCount(limit, "testLimitCount").cString()
+        repeat(limit) { index ->
+            val key = index.toString()
+            val value = index.toString()
+            assertEquals(true, cache.put(key, value))
+            assertEquals(true, cache.contains(key))
+            assertEquals(value, cache.get(key))
+        }
+
+        fun testOverLimit(index: Int) {
+            val key = index.toString()
+            val value = index.toString()
+
+            assertEquals(false, cache.contains(key))
+            assertEquals(null, cache.get(key))
+
+            assertEquals(true, cache.put(key, value))
+            assertEquals(true, cache.contains(key))
+            assertEquals(value, cache.get(key))
+
+            val removedKey = (limit - index).toString()
+            assertEquals(false, cache.contains(removedKey))
+            assertEquals(null, cache.get(removedKey))
+        }
+
+        repeat(10) { index ->
+            testOverLimit(limit + index)
+        }
     }
 }
