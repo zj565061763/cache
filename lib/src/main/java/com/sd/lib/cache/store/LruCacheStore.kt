@@ -20,6 +20,9 @@ internal fun limitCountCacheStore(
     store: CacheStore,
 ): LimitCacheStore = LimitCountCacheStore(limit, store)
 
+/**
+ * 限制大小的LRU算法仓库
+ */
 interface LimitCacheStore : CacheStore {
     /**
      * 限制大小
@@ -27,9 +30,6 @@ interface LimitCacheStore : CacheStore {
     fun limit(limit: Int)
 }
 
-/**
- * 限制大小的LRU算法仓库
- */
 private abstract class LruCacheStore protected constructor(
     limit: Int,
     private val store: CacheStore,
