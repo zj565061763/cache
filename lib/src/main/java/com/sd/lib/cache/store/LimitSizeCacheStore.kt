@@ -7,7 +7,7 @@ import java.io.File
 /**
  * 限制大小的LRU算法仓库，单位MB
  */
-internal class LimitedCacheStore(
+internal class LimitSizeCacheStore(
     limitMB: Int,
     private val store: CacheStore,
 ) : CacheStore, AutoCloseable {

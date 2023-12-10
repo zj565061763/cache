@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.sd.lib.cache.impl.GsonObjectConverter
 import com.sd.lib.cache.store.CacheStore
-import com.sd.lib.cache.store.LimitedCacheStore
+import com.sd.lib.cache.store.LimitSizeCacheStore
 import com.sd.lib.cache.store.MMKVCacheStore
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
@@ -96,7 +96,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         private lateinit var sDefaultStore: CacheStore
 
         /** 保存限制大小的仓库 */
-        private val sLimitedStoreHolder: MutableMap<String, LimitedCacheStore> = hashMapOf()
+        private val sLimitedStoreHolder: MutableMap<String, LimitSizeCacheStore> = hashMapOf()
 
         /**
          * 初始化
@@ -122,19 +122,19 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         /**
          * 限制大小的仓库
          */
-        internal fun limitedStore(
-            directory: File,
+        internal fun limitSizeStore(
             limitMB: Int,
+            directory: File,
         ): CacheStore {
             val key = directory.absolutePath
             if (key == get().directory.absolutePath) error("Default directory is unlimited ${key}.")
 
             val store = sLimitedStoreHolder.getOrPut(key) {
-                LimitedCacheStore(
+                LimitSizeCacheStore(
                     limitMB = limitMB,
                     store = get().newCacheStore(init = false),
                 ).apply {
-                    this.init(get().context, get().directory)
+                    this.init(get().context, directory)
                 }
             }
             return store.also {
