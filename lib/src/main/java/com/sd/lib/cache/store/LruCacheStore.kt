@@ -51,7 +51,7 @@ private abstract class LruCacheStore protected constructor(
         }
     }
 
-    protected abstract fun sizeOfEntry(key: String): Int
+    protected abstract fun sizeOfEntry(key: String, value: ByteArray?): Int
 
     /**
      * 限制大小
@@ -66,7 +66,7 @@ private abstract class LruCacheStore protected constructor(
     final override fun init(context: Context, directory: File) {
         store.init(context, directory)
         keys()?.forEach { key ->
-            val size = sizeOfEntry(key)
+            val size = sizeOfEntry(key, null)
             _lruCache.put(key, size)
         }
     }
@@ -74,7 +74,7 @@ private abstract class LruCacheStore protected constructor(
     final override fun putCache(key: String, value: ByteArray): Boolean {
         return store.putCache(key, value).also { result ->
             if (result) {
-                val size = sizeOfEntry(key)
+                val size = sizeOfEntry(key, value)
                 _lruCache.put(key, size)
             }
         }
@@ -116,7 +116,7 @@ private class LimitByteCacheStore(
     limit: Int,
     store: CacheStore,
 ) : LruCacheStore(limit, store) {
-    override fun sizeOfEntry(key: String): Int = sizeOf(key)
+    override fun sizeOfEntry(key: String, value: ByteArray?): Int = value?.size ?: sizeOf(key)
 }
 
 /**
@@ -126,5 +126,5 @@ private class LimitCountCacheStore(
     limit: Int,
     store: CacheStore,
 ) : LruCacheStore(limit, store) {
-    override fun sizeOfEntry(key: String): Int = 1
+    override fun sizeOfEntry(key: String, value: ByteArray?): Int = 1
 }
