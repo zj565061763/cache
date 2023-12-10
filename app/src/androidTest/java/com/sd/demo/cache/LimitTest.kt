@@ -2,6 +2,7 @@ package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sd.lib.cache.FCache
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -9,8 +10,16 @@ import org.junit.runner.RunWith
 class LimitTest {
 
     @Test
-    fun testLimitByte() {
-        val key = "TestKey"
-        val cache = FCache.limitByte(100 * 1024, "testLimitByte")
+    fun testLimitCount() {
+        val cache = FCache.limitByte(10, "testLimitByte").cString()
+
+        val content = "1".repeat(1024)
+        repeat(100) { index ->
+            val key = index.toString()
+
+            assertEquals(true, cache.put(key, content))
+            assertEquals(true, cache.contains(key))
+            assertEquals(content, cache.get(key))
+        }
     }
 }

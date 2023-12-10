@@ -7,6 +7,7 @@ import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.LimitCacheStore
 import com.sd.lib.cache.store.MMKVCacheStore
 import com.sd.lib.cache.store.limitByteCacheStore
+import com.sd.lib.cache.store.limitCountCacheStore
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
 import java.io.File
@@ -98,11 +99,11 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         /** 默认仓库 */
         private lateinit var sDefaultStore: CacheStore
 
-        /** 保存ID对应的仓库类型 */
-        private val sIDHolder: MutableMap<String, StoreType> = hashMapOf()
+        /** ID对应的仓库类型 */
+        private val sIDTypes: MutableMap<String, StoreType> = hashMapOf()
 
         /** 限制大小的仓库 */
-        private val sLimitByteStoreHolder: MutableMap<String, LimitCacheStore> = hashMapOf()
+        private val sLimitStores: MutableMap<String, LimitCacheStore> = hashMapOf()
 
         /**
          * 初始化
@@ -114,7 +115,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                 sConfig = config
                 MMKV.initialize(config.context, config.directory.absolutePath, MMKVLogLevel.LevelNone)
                 sDefaultStore = config.newCacheStore(id = DefaultID, init = true).also {
-                    sIDHolder[DefaultID] = StoreType.Unlimited
+                    sIDTypes[DefaultID] = StoreType.Unlimited
                 }
             }
         }
@@ -132,24 +133,59 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
          * @param id 必须保证唯一性
          */
         internal fun limitByteStore(limit: Int, id: String): CacheStore {
-            sIDHolder[id]?.let { type ->
-                check(type == StoreType.LimitByte) { "ID $id exist with type ${type}." }
+            return limitStore(
+                limit = limit,
+                id = id,
+                type = StoreType.LimitByte,
+            )
+        }
+
+        /**
+         * 限制大小的仓库，单位Byte
+         * @param id 必须保证唯一性
+         */
+        internal fun limitCountStore(limit: Int, id: String): CacheStore {
+            return limitStore(
+                limit = limit,
+                id = id,
+                type = StoreType.LimitCount,
+            )
+        }
+
+        /**
+         * 限制大小的仓库
+         * @param id 必须保证唯一性
+         */
+        private fun limitStore(limit: Int, id: String, type: StoreType): CacheStore {
+            val config = get()
+            if (type == StoreType.Unlimited) error("Only limited.")
+            sIDTypes[id]?.let { cache ->
+                check(cache == type) { "ID $id exist with type ${cache}." }
             }
 
-            val store = sLimitByteStoreHolder.getOrPut(id) {
-                limitByteCacheStore(
-                    limit = limit,
-                    store = get().newCacheStore(id = id, init = false),
-                ).apply {
-                    this.init(
-                        context = get().context,
-                        directory = get().directory,
+            val store = sLimitStores.getOrPut(id) {
+                when (type) {
+                    StoreType.LimitByte -> limitByteCacheStore(
+                        limit = limit,
+                        store = config.newCacheStore(id = id, init = false),
+                    )
+
+                    StoreType.LimitCount -> limitCountCacheStore(
+                        limit = limit,
+                        store = config.newCacheStore(id = id, init = false),
+                    )
+
+                    else -> error("Only limited.")
+                }.also {
+                    it.init(
+                        context = config.context,
+                        directory = config.directory,
                         id = id,
                     )
-                }.also {
-                    sIDHolder[id] = StoreType.LimitByte
+                    sIDTypes[id] = type
                 }
             }
+
             return store.also {
                 it.limit(limit)
             }
@@ -164,7 +200,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     }
 }
 
-private enum class StoreType {
+internal enum class StoreType {
     Unlimited,
     LimitByte,
     LimitCount,
