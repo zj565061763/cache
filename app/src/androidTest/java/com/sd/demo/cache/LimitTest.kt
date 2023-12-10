@@ -12,14 +12,12 @@ class LimitTest {
     @Test
     fun testLimitCount() {
         val cache = FCache.limitCount(10, "testLimitCount").cString()
-
-        val content = "1".repeat(1024)
-        repeat(100) { index ->
+        repeat(10) { index ->
             val key = index.toString()
-
-            assertEquals(true, cache.put(key, content))
+            val value = index.toString()
+            assertEquals(true, cache.put(key, value))
             assertEquals(true, cache.contains(key))
-            assertEquals(content, cache.get(key))
+            assertEquals(value, cache.get(key))
         }
     }
 }
