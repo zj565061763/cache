@@ -48,9 +48,12 @@ internal interface CacheStore {
     fun sizeOf(key: String): Int
 
     companion object {
+        /** 是否已经初始化过了 */
         private val sInit = AtomicBoolean(false)
 
+        /** 默认目录 */
         private lateinit var sDefaultDirectory: File
+        /** 默认仓库 */
         private lateinit var sDefaultStore: CacheStore
 
         /**
