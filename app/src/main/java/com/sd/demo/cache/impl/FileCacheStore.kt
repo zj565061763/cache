@@ -3,12 +3,11 @@ package com.sd.demo.cache.impl
 import android.content.Context
 import com.sd.lib.cache.store.CacheStore
 import java.io.File
-import java.io.OutputStream
 import java.security.MessageDigest
 
 class FileCacheStore : CacheStore {
     private lateinit var _directory: File
-    private val _outputs = hashMapOf<String, OutputStream>()
+    private val _files = hashMapOf<String, FileResource>()
 
     override fun init(context: Context, directory: File, id: String) {
         if (::_directory.isInitialized) return
@@ -19,28 +18,24 @@ class FileCacheStore : CacheStore {
         return _directory.resolve(md5(key))
     }
 
-    private fun outputOfKey(key: String): OutputStream {
-        val output = _outputs.getOrPut(key) {
-            fileOfKey(key).also { it.fCreateFile() }.outputStream().buffered()
+    private fun fileResource(key: String): FileResource {
+        return _files.getOrPut(key) {
+            val file = fileOfKey(key)
+            FileResource.create(file)
         }
-        return output
     }
 
-
     override fun putCache(key: String, value: ByteArray): Boolean {
-        val output = outputOfKey(key)
-        output.write(value)
-        output.flush()
+        fileResource(key).write(value)
         return true
     }
 
-    override fun getCache(key: String): ByteArray? {
-        val file = fileOfKey(key)
-        return if (file.isFile) file.readBytes() else null
+    override fun getCache(key: String): ByteArray {
+        return fileResource(key).read()
     }
 
     override fun removeCache(key: String) {
-        fileOfKey(key).deleteRecursively()
+        fileResource(key).delete()
     }
 
     override fun containsCache(key: String): Boolean {
@@ -52,7 +47,7 @@ class FileCacheStore : CacheStore {
     }
 
     override fun sizeOf(key: String): Int {
-        return fileOfKey(key).length().toInt()
+        return fileResource(key).size().toInt()
     }
 }
 
@@ -62,18 +57,4 @@ private fun md5(input: String): String {
         .let { bytes ->
             bytes.joinToString("") { "%02X".format(it) }
         }
-}
-
-private fun File?.fCreateFile(): Boolean {
-    if (this == null) return false
-    if (this.isFile) return true
-    if (this.isDirectory) this.deleteRecursively()
-    return this.parentFile.fMakeDirs() && this.createNewFile()
-}
-
-private fun File?.fMakeDirs(): Boolean {
-    if (this == null) return false
-    if (this.isDirectory) return true
-    if (this.isFile) this.delete()
-    return this.mkdirs()
 }
