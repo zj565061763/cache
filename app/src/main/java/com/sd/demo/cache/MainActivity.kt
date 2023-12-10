@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.cache.databinding.ActivityMainBinding
 import com.sd.lib.cache.FCache
+import com.sd.lib.cache.fCache
+import kotlin.time.measureTime
 
 private const val Key = "key"
 
@@ -67,6 +69,17 @@ class MainActivity : AppCompatActivity() {
         _cache.cObject(TestModel::class.java).remove()
         _cache.cObjects(TestModel::class.java).remove(Key)
         _cache.cObjects(TestModel::class.java).remove(Key + Key)
+    }
+}
+
+private fun testPerformance(repeat: Int) {
+    val content = "1".repeat(1024)
+    measureTime {
+        repeat(repeat) { index ->
+            fCache.cString().put(index.toString(), content)
+        }
+    }.let {
+        logMsg { "time:${it.inWholeMilliseconds}" }
     }
 }
 
