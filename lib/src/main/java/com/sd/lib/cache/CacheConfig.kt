@@ -166,17 +166,10 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                 }
 
                 val limitStore = sLimitStores.getOrPut(id) {
+                    val newStore = config.newCacheStore(id = id, init = false)
                     when (type) {
-                        StoreType.LimitCount -> limitCountCacheStore(
-                            limit = limit,
-                            store = config.newCacheStore(id = id, init = false),
-                        )
-
-                        StoreType.LimitByte -> limitByteCacheStore(
-                            limit = limit,
-                            store = config.newCacheStore(id = id, init = false),
-                        )
-
+                        StoreType.LimitCount -> limitCountCacheStore(limit, newStore)
+                        StoreType.LimitByte -> limitByteCacheStore(limit, newStore)
                         else -> error("Only limited.")
                     }.also {
                         it.init(
