@@ -4,7 +4,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sd.lib.cache.cacheObject
 import com.sd.lib.cache.cacheObjects
 import com.sd.lib.cache.fCache
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
