@@ -8,7 +8,7 @@ import java.io.RandomAccessFile
 interface FileResource : AutoCloseable {
     fun write(data: ByteArray)
 
-    fun read(): ByteArray
+    fun read(): ByteArray?
 
     fun size(): Long
 
@@ -44,10 +44,13 @@ private class FileResourceImpl(
         getRaf().write(data)
     }
 
-    override fun read(): ByteArray {
+    override fun read(): ByteArray? {
         val buffer = ByteArray(size().toInt())
-        getRaf().readFully(buffer)
-        return buffer
+        getRaf().let {
+            it.seek(0)
+            it.readFully(buffer)
+        }
+        return if (buffer.isEmpty()) return null else buffer
     }
 
     override fun size(): Long {

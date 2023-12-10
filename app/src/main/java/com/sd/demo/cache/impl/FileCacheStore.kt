@@ -30,7 +30,7 @@ class FileCacheStore : CacheStore {
         return true
     }
 
-    override fun getCache(key: String): ByteArray {
+    override fun getCache(key: String): ByteArray? {
         return fileResource(key).read()
     }
 
