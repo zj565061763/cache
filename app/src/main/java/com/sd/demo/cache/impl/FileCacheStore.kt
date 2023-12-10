@@ -7,7 +7,6 @@ import java.security.MessageDigest
 
 class FileCacheStore : CacheStore {
     private lateinit var _directory: File
-    private val _files = hashMapOf<String, FileResource>()
 
     override fun init(context: Context, directory: File, id: String) {
         if (::_directory.isInitialized) return
@@ -19,10 +18,8 @@ class FileCacheStore : CacheStore {
     }
 
     private fun fileResource(key: String): FileResource {
-        return _files.getOrPut(key) {
-            val file = fileOfKey(key)
-            FileResource.create(file)
-        }
+        val file = fileOfKey(key)
+        return FileResource.create(file)
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {

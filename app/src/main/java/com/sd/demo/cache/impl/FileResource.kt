@@ -1,9 +1,10 @@
 package com.sd.demo.cache.impl
 
 import com.sd.demo.cache.logMsg
-import com.sd.lib.closeable.FCloseableFactory
+import com.sd.lib.closeable.FAutoCloseFactory
 import java.io.File
-import java.io.RandomAccessFile
+import java.io.InputStream
+import java.io.OutputStream
 
 interface FileResource : AutoCloseable {
     fun write(data: ByteArray)
@@ -15,7 +16,7 @@ interface FileResource : AutoCloseable {
     fun delete()
 
     companion object {
-        private val _factory = FCloseableFactory(FileResource::class.java)
+        private val _factory = FAutoCloseFactory(FileResource::class.java)
 
         fun create(file: File): FileResource {
             val key = file.absolutePath
@@ -28,29 +29,40 @@ private class FileResourceImpl(
     private val file: File,
 ) : FileResource {
 
-    private var _raf: RandomAccessFile? = null
+    private var _output: OutputStream? = null
+    private var _input: InputStream? = null
 
-    private fun getRaf(): RandomAccessFile {
-        return _raf ?: kotlin.run {
-            logMsg { "file open ${file.absolutePath}" }
+    private fun getOutput(): OutputStream {
+        return _output ?: kotlin.run {
             file.fCreateFile()
-            RandomAccessFile(file, "rw").also {
-                _raf = it
+            file.outputStream().buffered().also {
+                _output = it
+            }
+        }
+    }
+
+    private fun getInput(): InputStream {
+        return _input ?: kotlin.run {
+            file.fCreateFile()
+            file.inputStream().buffered().also {
+                _input = it
             }
         }
     }
 
     override fun write(data: ByteArray) {
-        getRaf().write(data)
+        getOutput().run {
+            write(data)
+            flush()
+        }
     }
 
     override fun read(): ByteArray? {
-        val buffer = ByteArray(size().toInt())
-        getRaf().let {
-            it.seek(0)
-            it.readFully(buffer)
+        return if (_input != null || file.isFile) {
+            getInput().readBytes()
+        } else {
+            null
         }
-        return if (buffer.isEmpty()) return null else buffer
     }
 
     override fun size(): Long {
@@ -58,15 +70,21 @@ private class FileResourceImpl(
     }
 
     override fun delete() {
+        close()
         file.deleteRecursively()
     }
 
     override fun close() {
+        logMsg { "file close ${file.absolutePath}" }
         try {
-            _raf?.close()
+            _input?.close()
         } finally {
-            _raf = null
-            logMsg { "file close ${file.absolutePath}" }
+            _input = null
+        }
+        try {
+            _output?.close()
+        } finally {
+            _output = null
         }
     }
 }
