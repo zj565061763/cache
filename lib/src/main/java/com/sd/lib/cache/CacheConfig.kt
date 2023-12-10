@@ -165,7 +165,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                     check(cache == type) { "ID $id exist with type ${cache}." }
                 }
 
-                val store = sLimitStores.getOrPut(id) {
+                val limitStore = sLimitStores.getOrPut(id) {
                     when (type) {
                         StoreType.LimitCount -> limitCountCacheStore(
                             limit = limit,
@@ -188,7 +188,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                     }
                 }
 
-                return store.also {
+                return limitStore.also {
                     it.limit(limit)
                 }
             }
