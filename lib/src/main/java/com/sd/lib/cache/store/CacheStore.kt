@@ -4,19 +4,7 @@ import android.content.Context
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
 import java.io.File
-
-/**
- * 初始化默认仓库
- */
-internal fun initCacheStore(
-    context: Context,
-    directory: File,
-): CacheStore {
-    MMKV.initialize(context, directory.absolutePath, MMKVLogLevel.LevelNone)
-    return MMKVCacheStore().apply {
-        this.init(context, directory)
-    }
-}
+import java.util.concurrent.atomic.AtomicBoolean
 
 internal interface CacheStore {
     /**
@@ -58,4 +46,25 @@ internal interface CacheStore {
      * [key]对应的缓存大小
      */
     fun sizeOf(key: String): Int
+
+    companion object {
+        private val sInit = AtomicBoolean(false)
+
+        private lateinit var sDefaultDirectory: File
+        private lateinit var sDefaultStore: CacheStore
+
+        /**
+         * 初始化
+         */
+        fun init(context: Context, directory: File): CacheStore {
+            if (sInit.compareAndSet(false, true)) {
+                MMKV.initialize(context, directory.absolutePath, MMKVLogLevel.LevelNone)
+                sDefaultDirectory = directory
+                sDefaultStore = MMKVCacheStore().apply {
+                    this.init(context, directory)
+                }
+            }
+            return sDefaultStore
+        }
+    }
 }
