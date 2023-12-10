@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         _cache.cLong().remove(Key)
         _cache.cFloat().remove(Key)
         _cache.cDouble().remove(Key)
-        _cache.cDouble().remove(Key)
+        _cache.cBoolean().remove(Key)
         _cache.cString().remove(Key)
         _cache.cObject(TestModel::class.java).remove()
         _cache.cObjects(TestModel::class.java).remove(Key)
