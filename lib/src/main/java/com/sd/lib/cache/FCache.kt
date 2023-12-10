@@ -118,6 +118,16 @@ class FCache private constructor(store: CacheStore) : Cache {
             val store = CacheConfig.limitByteStore(limit, id)
             return FCache(store)
         }
+
+        /**
+         * 限制个数的仓库
+         * @param id 必须保证唯一性
+         */
+        @JvmStatic
+        fun limitCount(limit: Int, id: String): Cache {
+            val store = CacheConfig.limitCountStore(limit, id)
+            return FCache(store)
+        }
     }
 }
 

@@ -141,7 +141,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         }
 
         /**
-         * 限制大小的仓库，单位Byte
+         * 限制个数的仓库
          * @param id 必须保证唯一性
          */
         internal fun limitCountStore(limit: Int, id: String): CacheStore {

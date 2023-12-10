@@ -11,7 +11,7 @@ class LimitTest {
 
     @Test
     fun testLimitCount() {
-        val cache = FCache.limitByte(10, "testLimitByte").cString()
+        val cache = FCache.limitCount(10, "testLimitCount").cString()
 
         val content = "1".repeat(1024)
         repeat(100) { index ->
