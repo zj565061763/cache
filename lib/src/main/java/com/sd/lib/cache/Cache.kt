@@ -4,13 +4,13 @@ import com.sd.lib.cache.store.CacheStore
 
 interface Cache {
 
-    fun cacheInt(): CommonCache<Int>
-    fun cacheLong(): CommonCache<Long>
-    fun cacheFloat(): CommonCache<Float>
-    fun cacheDouble(): CommonCache<Double>
-    fun cacheBoolean(): CommonCache<Boolean>
-    fun cacheString(): CommonCache<String>
-    fun cacheBytes(): CommonCache<ByteArray>
+    fun cInt(): CommonCache<Int>
+    fun cLong(): CommonCache<Long>
+    fun cFloat(): CommonCache<Float>
+    fun cDouble(): CommonCache<Double>
+    fun cBoolean(): CommonCache<Boolean>
+    fun cString(): CommonCache<String>
+    fun cBytes(): CommonCache<ByteArray>
 
     fun <T> objectSingle(clazz: Class<T>): SingleObjectCache<T>
     fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T>

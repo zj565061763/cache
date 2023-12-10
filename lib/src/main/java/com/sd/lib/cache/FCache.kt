@@ -18,13 +18,13 @@ import com.sd.lib.cache.store.CacheStore
 
 class FCache private constructor(store: CacheStore) : Cache {
 
-    private var _intHandler: CommonCache<Int>? = null
-    private var _longHandler: CommonCache<Long>? = null
-    private var _floatHandler: CommonCache<Float>? = null
-    private var _doubleHandler: CommonCache<Double>? = null
-    private var _booleanHandler: CommonCache<Boolean>? = null
-    private var _stringHandler: CommonCache<String>? = null
-    private var _bytesHandler: CommonCache<ByteArray>? = null
+    private var _cInt: CommonCache<Int>? = null
+    private var _cLong: CommonCache<Long>? = null
+    private var _cFloat: CommonCache<Float>? = null
+    private var _cDouble: CommonCache<Double>? = null
+    private var _cBoolean: CommonCache<Boolean>? = null
+    private var _cString: CommonCache<String>? = null
+    private var _cBytes: CommonCache<ByteArray>? = null
 
     private var _objectSingle: SingleObjectCacheImpl<*>? = null
     private var _objectMulti: MultiObjectCacheImpl<*>? = null
@@ -37,45 +37,45 @@ class FCache private constructor(store: CacheStore) : Cache {
 
     //---------- Cache start ----------
 
-    override fun cacheInt(): CommonCache<Int> {
-        return _intHandler ?: IntHandler(_cacheInfo).also {
-            _intHandler = it
+    override fun cInt(): CommonCache<Int> {
+        return _cInt ?: IntHandler(_cacheInfo).also {
+            _cInt = it
         }
     }
 
-    override fun cacheLong(): CommonCache<Long> {
-        return _longHandler ?: LongHandler(_cacheInfo).also {
-            _longHandler = it
+    override fun cLong(): CommonCache<Long> {
+        return _cLong ?: LongHandler(_cacheInfo).also {
+            _cLong = it
         }
     }
 
-    override fun cacheFloat(): CommonCache<Float> {
-        return _floatHandler ?: FloatHandler(_cacheInfo).also {
-            _floatHandler = it
+    override fun cFloat(): CommonCache<Float> {
+        return _cFloat ?: FloatHandler(_cacheInfo).also {
+            _cFloat = it
         }
     }
 
-    override fun cacheDouble(): CommonCache<Double> {
-        return _doubleHandler ?: DoubleHandler(_cacheInfo).also {
-            _doubleHandler = it
+    override fun cDouble(): CommonCache<Double> {
+        return _cDouble ?: DoubleHandler(_cacheInfo).also {
+            _cDouble = it
         }
     }
 
-    override fun cacheBoolean(): CommonCache<Boolean> {
-        return _booleanHandler ?: BooleanHandler(_cacheInfo).also {
-            _booleanHandler = it
+    override fun cBoolean(): CommonCache<Boolean> {
+        return _cBoolean ?: BooleanHandler(_cacheInfo).also {
+            _cBoolean = it
         }
     }
 
-    override fun cacheString(): CommonCache<String> {
-        return _stringHandler ?: StringHandler(_cacheInfo).also {
-            _stringHandler = it
+    override fun cString(): CommonCache<String> {
+        return _cString ?: StringHandler(_cacheInfo).also {
+            _cString = it
         }
     }
 
-    override fun cacheBytes(): CommonCache<ByteArray> {
-        return _bytesHandler ?: BytesHandler(_cacheInfo).also {
-            _bytesHandler = it
+    override fun cBytes(): CommonCache<ByteArray> {
+        return _cBytes ?: BytesHandler(_cacheInfo).also {
+            _cBytes = it
         }
     }
 

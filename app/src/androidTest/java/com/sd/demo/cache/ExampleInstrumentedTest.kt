@@ -19,7 +19,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheInt() {
         val key = "TestKey"
-        val cache = fCache.cacheInt()
+        val cache = fCache.cInt()
 
         // test get defaultValue
         cache.remove(key)
@@ -40,7 +40,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheLong() {
         val key = "TestKey"
-        val cache = fCache.cacheLong()
+        val cache = fCache.cLong()
 
         // test get defaultValue
         cache.remove(key)
@@ -61,7 +61,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheFloat() {
         val key = "TestKey"
-        val cache = fCache.cacheFloat()
+        val cache = fCache.cFloat()
 
         // test get defaultValue
         cache.remove(key)
@@ -82,7 +82,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheDouble() {
         val key = "TestKey"
-        val cache = fCache.cacheDouble()
+        val cache = fCache.cDouble()
 
         // test get defaultValue
         cache.remove(key)
@@ -103,7 +103,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheBoolean() {
         val key = "TestKey"
-        val cache = fCache.cacheBoolean()
+        val cache = fCache.cBoolean()
 
         // test get defaultValue
         cache.remove(key)
@@ -124,7 +124,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheString() {
         val key = "TestKey"
-        val cache = fCache.cacheString()
+        val cache = fCache.cString()
 
         // test get defaultValue
         cache.remove(key)
@@ -151,7 +151,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testCacheBytes() {
         val key = "TestKey"
-        val cache = fCache.cacheBytes()
+        val cache = fCache.cBytes()
 
         // test get defaultValue
         cache.remove(key)
