@@ -65,7 +65,8 @@ private abstract class LruCacheStore protected constructor(
 
     final override fun init(context: Context, directory: File, id: String) {
         store.init(context, directory, id)
-        allKeys()?.forEach { key ->
+        val keys = allKeys()
+        keys?.forEach { key ->
             val size = sizeOfEntry(key, null)
             _lruCache.put(key, size)
         }
