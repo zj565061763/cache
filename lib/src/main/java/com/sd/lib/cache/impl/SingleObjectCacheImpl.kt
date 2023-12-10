@@ -2,7 +2,7 @@ package com.sd.lib.cache.impl
 
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.CacheInfo
-import com.sd.lib.cache.handler.impl.ObjectHandler
+import com.sd.lib.cache.handler.ObjectHandler
 
 internal class SingleObjectCacheImpl<T>(
     cacheInfo: CacheInfo,
@@ -10,7 +10,7 @@ internal class SingleObjectCacheImpl<T>(
 ) : Cache.SingleObjectCache<T> {
 
     private val _key = objectClass.name
-    private val _handler = ObjectHandler(cacheInfo, "single_object")
+    private val _handler = ObjectHandler<T>(cacheInfo, "single_object")
 
     override fun put(value: T?): Boolean {
         if (value == null) return false
@@ -18,9 +18,7 @@ internal class SingleObjectCacheImpl<T>(
     }
 
     override fun get(): T? {
-        val cache = _handler.getCache(_key, objectClass) ?: return null
-        @Suppress("UNCHECKED_CAST")
-        return cache as T
+        return _handler.getCache(_key, objectClass)
     }
 
     override fun remove() {

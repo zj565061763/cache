@@ -1,33 +1,19 @@
 package com.sd.lib.cache
 
-import android.content.Context
-import java.io.File
+import com.sd.lib.cache.store.CacheStore
 
 interface Cache {
-    /**
-     * 对象转换
-     */
-    fun setObjectConverter(converter: ObjectConverter?): Cache
 
-    /**
-     * 异常处理
-     */
-    fun setExceptionHandler(handler: ExceptionHandler?): Cache
+    fun cInt(): CommonCache<Int>
+    fun cLong(): CommonCache<Long>
+    fun cFloat(): CommonCache<Float>
+    fun cDouble(): CommonCache<Double>
+    fun cBoolean(): CommonCache<Boolean>
+    fun cString(): CommonCache<String>
+    fun cBytes(): CommonCache<ByteArray>
 
-    //---------- cache start ----------
-
-    fun cacheInt(): CommonCache<Int>
-    fun cacheLong(): CommonCache<Long>
-    fun cacheFloat(): CommonCache<Float>
-    fun cacheDouble(): CommonCache<Double>
-    fun cacheBoolean(): CommonCache<Boolean>
-    fun cacheString(): CommonCache<String>
-    fun cacheBytes(): CommonCache<ByteArray>
-
-    fun <T> objectSingle(clazz: Class<T>): SingleObjectCache<T>
-    fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T>
-
-    //---------- cache end ----------
+    fun <T> cObject(clazz: Class<T>): SingleObjectCache<T>
+    fun <T> cObjects(clazz: Class<T>): MultiObjectCache<T>
 
     /**
      * 基本数据类型，通用缓存接口
@@ -75,53 +61,21 @@ interface Cache {
         fun contains(key: String): Boolean
     }
 
-    interface CacheStore {
-        /**
-         * 初始化
-         */
-        fun init(context: Context, directory: File)
-
-        /**
-         * 保存缓存
-         * @return true-保存成功，false-保存失败
-         */
-        @Throws(Exception::class)
-        fun putCache(key: String, value: ByteArray): Boolean
-
-        /**
-         * 获取缓存
-         */
-        @Throws(Exception::class)
-        fun getCache(key: String): ByteArray?
-
-        /**
-         * 删除缓存
-         */
-        @Throws(Exception::class)
-        fun removeCache(key: String)
-
-        /**
-         * 是否有[key]对应的缓存
-         */
-        @Throws(Exception::class)
-        fun containsCache(key: String): Boolean
-    }
-
     /**
      * 对象转换器
      */
     interface ObjectConverter {
         /**
-         * 对象转byte
+         * 编码
          */
         @Throws(Exception::class)
-        fun objectToByte(value: Any, clazz: Class<*>): ByteArray
+        fun <T> encode(value: T, clazz: Class<T>): ByteArray
 
         /**
-         * byte转对象
+         * 解码
          */
         @Throws(Exception::class)
-        fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T
+        fun <T> decode(bytes: ByteArray, clazz: Class<T>): T
     }
 
     /**
@@ -134,7 +88,7 @@ interface Cache {
 
 internal interface CacheInfo {
     /** 仓库 */
-    val cacheStore: Cache.CacheStore
+    val cacheStore: CacheStore
 
     /** 对象转换 */
     val objectConverter: Cache.ObjectConverter

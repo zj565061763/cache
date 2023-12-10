@@ -3,14 +3,14 @@ package com.sd.lib.cache.impl
 import com.google.gson.Gson
 import com.sd.lib.cache.Cache.ObjectConverter
 
-internal class ObjectConverterImpl : ObjectConverter {
+internal class GsonObjectConverter : ObjectConverter {
     private val _gson = Gson()
 
-    override fun objectToByte(value: Any, clazz: Class<*>): ByteArray {
+    override fun <T> encode(value: T, clazz: Class<T>): ByteArray {
         return _gson.toJson(value).toByteArray()
     }
 
-    override fun <T> byteToObject(bytes: ByteArray, clazz: Class<T>): T {
+    override fun <T> decode(bytes: ByteArray, clazz: Class<T>): T {
         return _gson.fromJson(String(bytes), clazz)
     }
 }

@@ -6,10 +6,10 @@ plugins {
 
 val libGroupId = "com.sd.lib.android"
 val libArtifactId = "cache"
-val libVersionName = "2.0.0-alpha01"
+val libVersionName = "2.0.0-alpha02"
 
 android {
-    namespace ="com.sd.lib.cache"
+    namespace = "com.sd.lib.cache"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()

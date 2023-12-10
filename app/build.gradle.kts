@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace ="com.sd.demo.cache"
+    namespace = "com.sd.demo.cache"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
@@ -13,7 +13,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner= "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -37,11 +37,10 @@ kotlin {
 
 dependencies {
     implementation(libs.androidx.appcompat)
+    implementation(libs.squareup.moshi)
 
-    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 
     implementation(project(":lib"))
-    implementation(libs.tencent.mmkv)
 }

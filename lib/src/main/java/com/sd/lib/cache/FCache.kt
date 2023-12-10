@@ -1,111 +1,99 @@
 package com.sd.lib.cache
 
-import com.sd.lib.cache.Cache.CacheStore
 import com.sd.lib.cache.Cache.CommonCache
 import com.sd.lib.cache.Cache.ExceptionHandler
 import com.sd.lib.cache.Cache.MultiObjectCache
 import com.sd.lib.cache.Cache.ObjectConverter
 import com.sd.lib.cache.Cache.SingleObjectCache
-import com.sd.lib.cache.handler.impl.BooleanHandler
-import com.sd.lib.cache.handler.impl.BytesHandler
-import com.sd.lib.cache.handler.impl.DoubleHandler
-import com.sd.lib.cache.handler.impl.FloatHandler
-import com.sd.lib.cache.handler.impl.IntHandler
-import com.sd.lib.cache.handler.impl.LongHandler
-import com.sd.lib.cache.handler.impl.StringHandler
+import com.sd.lib.cache.handler.BooleanHandler
+import com.sd.lib.cache.handler.BytesHandler
+import com.sd.lib.cache.handler.DoubleHandler
+import com.sd.lib.cache.handler.FloatHandler
+import com.sd.lib.cache.handler.IntHandler
+import com.sd.lib.cache.handler.LongHandler
+import com.sd.lib.cache.handler.StringHandler
 import com.sd.lib.cache.impl.MultiObjectCacheImpl
 import com.sd.lib.cache.impl.SingleObjectCacheImpl
+import com.sd.lib.cache.store.CacheStore
 
-open class FCache(cacheStore: CacheStore) : Cache {
-    private val _cacheStore = cacheStore
+class FCache private constructor(store: CacheStore) : Cache {
 
-    private var _objectConverter: ObjectConverter? = null
-    private var _exceptionHandler: ExceptionHandler? = null
+    private var _cInt: CommonCache<Int>? = null
+    private var _cLong: CommonCache<Long>? = null
+    private var _cFloat: CommonCache<Float>? = null
+    private var _cDouble: CommonCache<Double>? = null
+    private var _cBoolean: CommonCache<Boolean>? = null
+    private var _cString: CommonCache<String>? = null
+    private var _cBytes: CommonCache<ByteArray>? = null
+
+    private var _cObject: SingleObjectCacheImpl<*>? = null
+    private var _cObjects: MultiObjectCacheImpl<*>? = null
 
     private val _cacheInfo = object : CacheInfo {
-        override val cacheStore: CacheStore get() = _cacheStore
-        override val objectConverter: ObjectConverter get() = _objectConverter ?: CacheConfig.get().objectConverter
-        override val exceptionHandler: ExceptionHandler get() = _exceptionHandler ?: CacheConfig.get().exceptionHandler
-    }
-
-    private var _intHandler: CommonCache<Int>? = null
-    private var _longHandler: CommonCache<Long>? = null
-    private var _floatHandler: CommonCache<Float>? = null
-    private var _doubleHandler: CommonCache<Double>? = null
-    private var _booleanHandler: CommonCache<Boolean>? = null
-    private var _stringHandler: CommonCache<String>? = null
-    private var _bytesHandler: CommonCache<ByteArray>? = null
-
-    private var _objectSingle: SingleObjectCacheImpl<*>? = null
-    private var _objectMulti: MultiObjectCacheImpl<*>? = null
-
-    override fun setObjectConverter(converter: ObjectConverter?): Cache {
-        _objectConverter = converter
-        return this
-    }
-
-    override fun setExceptionHandler(handler: ExceptionHandler?): Cache {
-        _exceptionHandler = handler
-        return this
+        override val cacheStore: CacheStore get() = store
+        override val objectConverter: ObjectConverter get() = CacheConfig.get().objectConverter
+        override val exceptionHandler: ExceptionHandler get() = CacheConfig.get().exceptionHandler
     }
 
     //---------- Cache start ----------
 
-    override fun cacheInt(): CommonCache<Int> {
-        return _intHandler ?: IntHandler(_cacheInfo).also {
-            _intHandler = it
+    override fun cInt(): CommonCache<Int> {
+        return _cInt ?: IntHandler(_cacheInfo).also {
+            _cInt = it
         }
     }
 
-    override fun cacheLong(): CommonCache<Long> {
-        return _longHandler ?: LongHandler(_cacheInfo).also {
-            _longHandler = it
+    override fun cLong(): CommonCache<Long> {
+        return _cLong ?: LongHandler(_cacheInfo).also {
+            _cLong = it
         }
     }
 
-    override fun cacheFloat(): CommonCache<Float> {
-        return _floatHandler ?: FloatHandler(_cacheInfo).also {
-            _floatHandler = it
+    override fun cFloat(): CommonCache<Float> {
+        return _cFloat ?: FloatHandler(_cacheInfo).also {
+            _cFloat = it
         }
     }
 
-    override fun cacheDouble(): CommonCache<Double> {
-        return _doubleHandler ?: DoubleHandler(_cacheInfo).also {
-            _doubleHandler = it
+    override fun cDouble(): CommonCache<Double> {
+        return _cDouble ?: DoubleHandler(_cacheInfo).also {
+            _cDouble = it
         }
     }
 
-    override fun cacheBoolean(): CommonCache<Boolean> {
-        return _booleanHandler ?: BooleanHandler(_cacheInfo).also {
-            _booleanHandler = it
+    override fun cBoolean(): CommonCache<Boolean> {
+        return _cBoolean ?: BooleanHandler(_cacheInfo).also {
+            _cBoolean = it
         }
     }
 
-    override fun cacheString(): CommonCache<String> {
-        return _stringHandler ?: StringHandler(_cacheInfo).also {
-            _stringHandler = it
+    override fun cString(): CommonCache<String> {
+        return _cString ?: StringHandler(_cacheInfo).also {
+            _cString = it
         }
     }
 
-    override fun cacheBytes(): CommonCache<ByteArray> {
-        return _bytesHandler ?: BytesHandler(_cacheInfo).also {
-            _bytesHandler = it
+    override fun cBytes(): CommonCache<ByteArray> {
+        return _cBytes ?: BytesHandler(_cacheInfo).also {
+            _cBytes = it
         }
     }
 
-    override fun <T> objectSingle(clazz: Class<T>): SingleObjectCache<T> {
-        val cache = _objectSingle
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> cObject(clazz: Class<T>): SingleObjectCache<T> {
+        val cache = _cObject
         if (cache?.objectClass == clazz) return (cache as SingleObjectCache<T>)
         return SingleObjectCacheImpl(_cacheInfo, clazz).also {
-            _objectSingle = it
+            _cObject = it
         }
     }
 
-    override fun <T> objectMulti(clazz: Class<T>): MultiObjectCache<T> {
-        val cache = _objectMulti
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> cObjects(clazz: Class<T>): MultiObjectCache<T> {
+        val cache = _cObjects
         if (cache?.objectClass == clazz) return (cache as MultiObjectCache<T>)
         return MultiObjectCacheImpl(_cacheInfo, clazz).also {
-            _objectMulti = it
+            _cObjects = it
         }
     }
 
@@ -113,17 +101,32 @@ open class FCache(cacheStore: CacheStore) : Cache {
 
     companion object {
         /**
-         * 默认使用内部存储目录"/data/包名/files/f_disk_cache"，可以在初始化的时候设置[CacheConfig.Builder.setCacheStore]
+         * 默认缓存
          */
         @JvmStatic
-        fun disk(): Cache {
-            val cacheStore = CacheConfig.get().cacheStore
-            return FCache(cacheStore)
+        fun get(): Cache {
+            val store = CacheConfig.defaultStore()
+            return FCache(store)
+        }
+
+        /**
+         * 限制个数的缓存
+         * @param id 必须保证唯一性
+         */
+        @JvmStatic
+        fun limitCount(limit: Int, id: String): Cache {
+            val store = CacheConfig.limitCountStore(limit, id)
+            return FCache(store)
         }
     }
 }
 
-/**
- * [FCache.disk]
- */
-val fCache: Cache get() = FCache.disk()
+val fCache: Cache get() = FCache.get()
+
+inline fun <reified T> Cache.cacheObject(): SingleObjectCache<T> {
+    return this.cObject(T::class.java)
+}
+
+inline fun <reified T> Cache.cacheObjects(): MultiObjectCache<T> {
+    return this.cObjects(T::class.java)
+}
