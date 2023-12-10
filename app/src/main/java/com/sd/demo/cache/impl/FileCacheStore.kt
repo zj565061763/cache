@@ -3,10 +3,12 @@ package com.sd.demo.cache.impl
 import android.content.Context
 import com.sd.lib.cache.store.CacheStore
 import java.io.File
+import java.io.OutputStream
 import java.security.MessageDigest
 
 class FileCacheStore : CacheStore {
     private lateinit var _directory: File
+    private val _outputs = hashMapOf<String, OutputStream>()
 
     override fun init(context: Context, directory: File, id: String) {
         if (::_directory.isInitialized) return
@@ -17,9 +19,18 @@ class FileCacheStore : CacheStore {
         return _directory.resolve(md5(key))
     }
 
+    private fun outputOfKey(key: String): OutputStream {
+        val output = _outputs.getOrPut(key) {
+            fileOfKey(key).also { it.fCreateFile() }.outputStream().buffered()
+        }
+        return output
+    }
+
+
     override fun putCache(key: String, value: ByteArray): Boolean {
-        val file = fileOfKey(key).also { it.fCreateFile() }
-        file.writeBytes(value)
+        val output = outputOfKey(key)
+        output.write(value)
+        output.flush()
         return true
     }
 

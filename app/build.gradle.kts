@@ -38,6 +38,7 @@ kotlin {
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.squareup.moshi)
+    implementation(libs.sd.closeable)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
