@@ -4,38 +4,47 @@ import android.content.Context
 import com.tencent.mmkv.MMKV
 import java.io.File
 
-internal class MMKVCacheStore : CacheStore {
-    private lateinit var _mmkv: MMKV
+internal class MMKVCacheStore : CacheStore, AutoCloseable {
+    private var _mmkv: MMKV? = null
+    private val mmkv: MMKV get() = checkNotNull(_mmkv)
 
     override fun init(context: Context, directory: File) {
-        if (::_mmkv.isInitialized) return
+        _mmkv?.let { return }
         _mmkv = MMKV.mmkvWithID(directory.absolutePath)
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
-        return _mmkv.encode(key, value)
+        return mmkv.encode(key, value)
     }
 
     override fun getCache(key: String): ByteArray? {
-        return _mmkv.decodeBytes(key) ?: kotlin.run {
-            if (_mmkv.contains(key)) byteArrayOf() else null
+        return mmkv.decodeBytes(key) ?: kotlin.run {
+            if (mmkv.contains(key)) byteArrayOf() else null
         }
     }
 
     override fun removeCache(key: String) {
-        _mmkv.remove(key)
+        mmkv.remove(key)
     }
 
     override fun containsCache(key: String): Boolean {
-        return _mmkv.contains(key)
+        return mmkv.contains(key)
     }
 
 
     override fun keys(): Array<String>? {
-        return _mmkv.allKeys()
+        return mmkv.allKeys()
     }
 
     override fun sizeOf(key: String): Int {
-        return _mmkv.decodeBytes(key)?.size ?: 0
+        return mmkv.decodeBytes(key)?.size ?: 0
+    }
+
+    override fun close() {
+        try {
+            _mmkv?.close()
+        } finally {
+            _mmkv = null
+        }
     }
 }

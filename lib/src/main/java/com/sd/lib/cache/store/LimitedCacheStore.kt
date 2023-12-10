@@ -10,7 +10,7 @@ import java.io.File
 internal class LimitedCacheStore(
     limitMB: Int,
     private val store: CacheStore,
-) : CacheStore {
+) : CacheStore, AutoCloseable {
 
     init {
         check(limitMB > 0)
@@ -59,5 +59,11 @@ internal class LimitedCacheStore(
 
     override fun sizeOf(key: String): Int {
         return store.sizeOf(key)
+    }
+
+    override fun close() {
+        if (store is AutoCloseable) {
+            store.close()
+        }
     }
 }
