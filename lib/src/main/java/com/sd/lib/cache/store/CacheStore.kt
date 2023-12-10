@@ -37,7 +37,7 @@ interface CacheStore {
     /**
      * 返回所有的Key
      */
-    fun keys(): Array<String>?
+    fun allKeys(): Array<String>?
 
     /**
      * [key]对应的缓存大小，单位Byte
