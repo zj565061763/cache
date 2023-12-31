@@ -34,9 +34,16 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     private fun newCacheStore(id: String, init: Boolean): CacheStore {
         return cacheStore.getDeclaredConstructor().newInstance().also { store ->
             if (init) {
-                store.init(context, directory, id)
+                initCacheStore(store, id)
             }
         }
+    }
+
+    /**
+     * 初始化仓库
+     */
+    private fun initCacheStore(store: CacheStore, id: String) {
+        store.init(context, directory, id)
     }
 
     class Builder {
