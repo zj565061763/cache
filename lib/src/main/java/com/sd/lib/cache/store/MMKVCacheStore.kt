@@ -6,45 +6,44 @@ import java.io.File
 import java.security.MessageDigest
 
 /**
- * 基于腾讯MMKV实现的仓库
+ * 基于[https://github.com/Tencent/MMKV]实现的仓库
  */
 internal class MMKVCacheStore : CacheStore, AutoCloseable {
-
-    private var _mmkv: MMKV? = null
-    private val mmkv: MMKV get() = checkNotNull(_mmkv)
+    private var _store: MMKV? = null
+    private val store: MMKV get() = checkNotNull(_store)
 
     override fun init(context: Context, directory: File, id: String) {
-        _mmkv?.let { return }
-        _mmkv = MMKV.mmkvWithID(md5(id))
+        _store?.let { return }
+        _store = MMKV.mmkvWithID(md5(id))
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
-        return mmkv.encode(key, value)
+        return store.encode(key, value)
     }
 
     override fun getCache(key: String): ByteArray? {
-        return mmkv.decodeBytes(key) ?: kotlin.run {
-            if (mmkv.contains(key)) byteArrayOf() else null
+        return store.decodeBytes(key) ?: kotlin.run {
+            if (store.contains(key)) byteArrayOf() else null
         }
     }
 
     override fun removeCache(key: String) {
-        mmkv.remove(key)
+        store.remove(key)
     }
 
     override fun containsCache(key: String): Boolean {
-        return mmkv.contains(key)
+        return store.contains(key)
     }
 
     override fun allKeys(): Array<String>? {
-        return mmkv.allKeys()
+        return store.allKeys()
     }
 
     override fun close() {
         try {
-            _mmkv?.close()
+            _store?.close()
         } finally {
-            _mmkv = null
+            _store = null
         }
     }
 }
