@@ -83,8 +83,9 @@ private abstract class LruCacheStore protected constructor(
     }
 
     final override fun getCache(key: String): ByteArray? {
-        _lruCache.get(key)
-        return store.getCache(key)
+        return store.getCache(key).also {
+            _lruCache.get(key)
+        }
     }
 
     final override fun removeCache(key: String) {
