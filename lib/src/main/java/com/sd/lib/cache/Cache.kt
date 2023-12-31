@@ -82,7 +82,7 @@ interface Cache {
      * 异常处理类
      */
     fun interface ExceptionHandler {
-        fun onException(e: Exception)
+        fun onException(error: Throwable)
     }
 }
 

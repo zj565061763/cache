@@ -60,27 +60,29 @@ internal abstract class BaseCacheHandler<T>(
         return keyPrefix + "_" + key
     }
 
-    private fun notifyException(e: Exception) {
-        if (e is CacheException) throw e
-        if (e is CancellationException) throw e
-        cacheInfo.exceptionHandler.onException(e)
+    private fun notifyException(error: Throwable) {
+        if (error is CacheException) throw error
+        if (error is CancellationException) throw error
+        cacheInfo.exceptionHandler.onException(error)
     }
 
     //---------- CacheHandler start ----------
 
+    @Suppress("NAME_SHADOWING")
     final override fun putCache(key: String, value: T, clazz: Class<T>?): Boolean {
         val key = transformKey(key)
-        synchronized(Cache::class.java) {
-            return try {
+        return synchronized(Cache::class.java) {
+            kotlin.runCatching {
                 val data = encode(value, clazz)
                 _cacheStore.putCache(key, data)
-            } catch (e: Exception) {
-                notifyException(e)
-                false
             }
+        }.getOrElse {
+            notifyException(it)
+            false
         }
     }
 
+    @Suppress("NAME_SHADOWING")
     final override fun getCache(key: String, clazz: Class<T>?): T? {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
@@ -95,6 +97,7 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
+    @Suppress("NAME_SHADOWING")
     final override fun removeCache(key: String) {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
@@ -106,6 +109,7 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
+    @Suppress("NAME_SHADOWING")
     final override fun containsCache(key: String): Boolean {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
