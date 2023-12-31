@@ -165,11 +165,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                         StoreType.LimitCount -> newStore.limitCount(limit)
                         else -> error("Only limited.")
                     }.also {
-                        it.init(
-                            context = config.context,
-                            directory = config.directory,
-                            id = id,
-                        )
+                        config.initCacheStore(it, id)
                         sIDTypes[id] = type
                     }
                 }
