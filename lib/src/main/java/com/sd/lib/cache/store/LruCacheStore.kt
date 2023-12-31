@@ -7,10 +7,10 @@ import java.io.File
 /**
  * 限制个数的LRU算法仓库
  */
-internal fun limitCountCacheStore(
-    limit: Int,
-    store: CacheStore,
-): LimitCacheStore = LimitCountCacheStore(limit, store)
+internal fun CacheStore.limitCount(limit: Int): LimitCacheStore {
+    return if (this is LimitCountCacheStore) this
+    else LimitCountCacheStore(limit, this)
+}
 
 /**
  * 限制大小的LRU算法仓库
@@ -20,6 +20,16 @@ internal interface LimitCacheStore : CacheStore {
      * 限制大小
      */
     fun limit(limit: Int)
+}
+
+/**
+ * 限制个数的LRU算法仓库
+ */
+private class LimitCountCacheStore(
+    limit: Int,
+    store: CacheStore,
+) : LruCacheStore(limit, store) {
+    override fun sizeOfEntry(key: String, value: ByteArray?): Int = 1
 }
 
 private abstract class LruCacheStore protected constructor(
@@ -96,14 +106,4 @@ private abstract class LruCacheStore protected constructor(
             store.close()
         }
     }
-}
-
-/**
- * 限制个数的LRU算法仓库
- */
-private class LimitCountCacheStore(
-    limit: Int,
-    store: CacheStore,
-) : LruCacheStore(limit, store) {
-    override fun sizeOfEntry(key: String, value: ByteArray?): Int = 1
 }

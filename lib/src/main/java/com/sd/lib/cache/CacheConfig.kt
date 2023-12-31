@@ -6,7 +6,7 @@ import com.sd.lib.cache.impl.GsonObjectConverter
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.LimitCacheStore
 import com.sd.lib.cache.store.MMKVCacheStore
-import com.sd.lib.cache.store.limitCountCacheStore
+import com.sd.lib.cache.store.limitCount
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
 import java.io.File
@@ -155,7 +155,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                 val limitStore = sLimitStores.getOrPut(id) {
                     val newStore = config.newCacheStore(id = id, init = false)
                     when (type) {
-                        StoreType.LimitCount -> limitCountCacheStore(limit, newStore)
+                        StoreType.LimitCount -> newStore.limitCount(limit)
                         else -> error("Only limited.")
                     }.also {
                         it.init(
