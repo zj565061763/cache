@@ -164,7 +164,7 @@ class CacheTest {
         // test put and get
         assertEquals(true, cache.put(key, "hello".toByteArray()))
         assertEquals(true, cache.contains(key))
-        assertEquals("hello", cache.get(key)?.let { String(it) })
+        assertEquals("hello", cache.get(key)?.decodeToString())
 
         if (_testEmptyByteArray) {
             val emptyByteArray = "".toByteArray()

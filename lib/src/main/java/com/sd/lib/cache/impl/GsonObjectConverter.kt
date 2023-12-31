@@ -11,6 +11,6 @@ internal class GsonObjectConverter : ObjectConverter {
     }
 
     override fun <T> decode(bytes: ByteArray, clazz: Class<T>): T {
-        return _gson.fromJson(String(bytes), clazz)
+        return _gson.fromJson(bytes.decodeToString(), clazz)
     }
 }
