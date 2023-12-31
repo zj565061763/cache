@@ -124,9 +124,3 @@ class FCache private constructor(store: CacheStore) : Cache {
 }
 
 val fCache: Cache get() = FCache.get()
-
-inline fun <T> Cache.edit(block: Cache.() -> T): T {
-    synchronized(Cache::class.java) {
-        return block()
-    }
-}
