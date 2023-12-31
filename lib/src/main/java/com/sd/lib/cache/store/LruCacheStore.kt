@@ -23,7 +23,7 @@ internal fun limitByteCacheStore(
 /**
  * 限制大小的LRU算法仓库
  */
-interface LimitCacheStore : CacheStore {
+internal interface LimitCacheStore : CacheStore {
     /**
      * 限制大小
      */
