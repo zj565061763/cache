@@ -112,13 +112,13 @@ internal abstract class BaseCacheHandler<T>(
     @Suppress("NAME_SHADOWING")
     final override fun containsCache(key: String): Boolean {
         val key = transformKey(key)
-        synchronized(Cache::class.java) {
-            return try {
+        return synchronized(Cache::class.java) {
+            kotlin.runCatching {
                 _cacheStore.containsCache(key)
-            } catch (e: Exception) {
-                notifyException(e)
-                false
             }
+        }.getOrElse {
+            notifyException(it)
+            false
         }
     }
 
