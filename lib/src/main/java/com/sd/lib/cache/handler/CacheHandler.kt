@@ -101,11 +101,11 @@ internal abstract class BaseCacheHandler<T>(
     final override fun removeCache(key: String) {
         val key = transformKey(key)
         synchronized(Cache::class.java) {
-            try {
+            kotlin.runCatching {
                 _cacheStore.removeCache(key)
-            } catch (e: Exception) {
-                notifyException(e)
             }
+        }.onFailure {
+            notifyException(it)
         }
     }
 
