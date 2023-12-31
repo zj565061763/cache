@@ -2,8 +2,6 @@ package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sd.lib.cache.FCache
-import com.sd.lib.cache.cacheObject
-import com.sd.lib.cache.cacheObjects
 import com.sd.lib.cache.fCache
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -182,7 +180,7 @@ class CacheTest {
     @Test
     fun testCacheObject() {
         val model = TestModel()
-        val cache = fCache.cacheObject<TestModel>()
+        val cache = fCache.cObject(TestModel::class.java)
 
         // test get defaultValue
         cache.remove()
@@ -208,7 +206,7 @@ class CacheTest {
         val model1 = TestModel("TestModel1")
         val model2 = TestModel("TestModel2")
 
-        val cache = fCache.cacheObjects<TestModel>()
+        val cache = fCache.cObjects(TestModel::class.java)
 
         // test get defaultValue
         cache.let {

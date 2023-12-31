@@ -124,11 +124,3 @@ class FCache private constructor(store: CacheStore) : Cache {
 }
 
 val fCache: Cache get() = FCache.get()
-
-inline fun <reified T> Cache.cacheObject(): SingleObjectCache<T> {
-    return this.cObject(T::class.java)
-}
-
-inline fun <reified T> Cache.cacheObjects(): MultiObjectCache<T> {
-    return this.cObjects(T::class.java)
-}
