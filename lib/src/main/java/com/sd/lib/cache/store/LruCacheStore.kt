@@ -13,14 +13,6 @@ internal fun limitCountCacheStore(
 ): LimitCacheStore = LimitCountCacheStore(limit, store)
 
 /**
- * 限制大小的LRU算法仓库，单位Byte
- */
-internal fun limitByteCacheStore(
-    limit: Int,
-    store: CacheStore,
-): LimitCacheStore = LimitByteCacheStore(limit, store)
-
-/**
  * 限制大小的LRU算法仓库
  */
 internal interface LimitCacheStore : CacheStore {
@@ -99,10 +91,6 @@ private abstract class LruCacheStore protected constructor(
         return store.allKeys()
     }
 
-    final override fun sizeOf(key: String): Int {
-        return store.sizeOf(key)
-    }
-
     final override fun close() {
         if (store is AutoCloseable) {
             store.close()
@@ -118,14 +106,4 @@ private class LimitCountCacheStore(
     store: CacheStore,
 ) : LruCacheStore(limit, store) {
     override fun sizeOfEntry(key: String, value: ByteArray?): Int = 1
-}
-
-/**
- * 限制大小的LRU算法仓库，单位Byte
- */
-private class LimitByteCacheStore(
-    limit: Int,
-    store: CacheStore,
-) : LruCacheStore(limit, store) {
-    override fun sizeOfEntry(key: String, value: ByteArray?): Int = value?.size ?: sizeOf(key)
 }

@@ -6,7 +6,6 @@ import com.sd.lib.cache.impl.GsonObjectConverter
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.LimitCacheStore
 import com.sd.lib.cache.store.MMKVCacheStore
-import com.sd.lib.cache.store.limitByteCacheStore
 import com.sd.lib.cache.store.limitCountCacheStore
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
@@ -141,18 +140,6 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         }
 
         /**
-         * 限制大小的仓库，单位Byte
-         * @param id 必须保证唯一性
-         */
-        internal fun limitByteStore(limit: Int, id: String): CacheStore {
-            return limitStore(
-                limit = limit,
-                id = id,
-                type = StoreType.LimitByte,
-            )
-        }
-
-        /**
          * 限制大小的仓库
          * @param id 必须保证唯一性
          */
@@ -169,7 +156,6 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                     val newStore = config.newCacheStore(id = id, init = false)
                     when (type) {
                         StoreType.LimitCount -> limitCountCacheStore(limit, newStore)
-                        StoreType.LimitByte -> limitByteCacheStore(limit, newStore)
                         else -> error("Only limited.")
                     }.also {
                         it.init(
@@ -199,5 +185,4 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
 private enum class StoreType {
     Unlimited,
     LimitCount,
-    LimitByte,
 }
