@@ -100,14 +100,16 @@ class FCache private constructor(store: CacheStore) : Cache {
     //---------- Cache end ----------
 
     companion object {
+        private val sDefault by lazy {
+            val store = CacheConfig.defaultStore()
+            FCache(store)
+        }
+
         /**
-         * 默认缓存
+         * 默认无限制缓存
          */
         @JvmStatic
-        fun get(): Cache {
-            val store = CacheConfig.defaultStore()
-            return FCache(store)
-        }
+        fun get(): Cache = sDefault
 
         /**
          * 限制个数的缓存
