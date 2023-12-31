@@ -89,8 +89,8 @@ private abstract class LruCacheStore protected constructor(
     }
 
     final override fun removeCache(key: String) {
-        _lruCache.remove(key)
         store.removeCache(key)
+        _lruCache.remove(key)
     }
 
     final override fun containsCache(key: String): Boolean {
