@@ -6,7 +6,7 @@ plugins {
 
 val libGroupId = "com.sd.lib.android"
 val libArtifactId = "cache"
-val libVersionName = "2.0.0-beta01"
+val libVersionName = "2.0.0-beta02"
 
 android {
     namespace = "com.sd.lib.cache"
