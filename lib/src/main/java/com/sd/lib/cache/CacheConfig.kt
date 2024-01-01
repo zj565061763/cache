@@ -155,8 +155,8 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
             if (type == StoreType.Unlimited) error("Only limited.")
 
             synchronized(Cache::class.java) {
-                sIDTypes[id]?.let { cache ->
-                    check(cache == type) { "ID $id exist with type ${cache}." }
+                sIDTypes[id]?.let { cacheType ->
+                    check(cacheType == type) { "ID $id exist with type ${cacheType}." }
                 }
 
                 return sLimitStores.getOrPut(id) {
