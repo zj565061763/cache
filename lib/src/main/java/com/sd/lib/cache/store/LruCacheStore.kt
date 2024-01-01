@@ -27,10 +27,6 @@ private abstract class LruCacheStore protected constructor(
     private val store: CacheStore,
 ) : CacheStore by store {
 
-    init {
-        check(limit > 0)
-    }
-
     private val _lruCache = object : LruCache<String, Int>(limit) {
         override fun sizeOf(key: String, value: Int): Int {
             return value
