@@ -135,7 +135,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         }
 
         /**
-         * 限制个数的仓库
+         * 限制个数的仓库，如果[id]相同则返回的是同一个仓库，[limit]以第一次创建为准
          * @param id 必须保证唯一性
          */
         internal fun limitCountStore(limit: Int, id: String): CacheStore {
@@ -150,7 +150,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
          * 限制大小的仓库
          * @param id 必须保证唯一性
          */
-        private fun limitStore(limit: Int, id: String, type: StoreType): CacheStore {
+        private fun limitStore(limit: Int, id: String, type: StoreType): LimitCacheStore {
             val config = get()
             if (type == StoreType.Unlimited) error("Only limited.")
 
@@ -159,7 +159,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                     check(cache == type) { "ID $id exist with type ${cache}." }
                 }
 
-                val limitStore = sLimitStores.getOrPut(id) {
+                return sLimitStores.getOrPut(id) {
                     val newStore = config.newCacheStore(id = id, init = false)
                     when (type) {
                         StoreType.LimitCount -> newStore.limitCount(limit)
@@ -168,10 +168,6 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                         config.initCacheStore(it, id)
                         sIDTypes[id] = type
                     }
-                }
-
-                return limitStore.also {
-                    it.limit(limit)
                 }
             }
         }

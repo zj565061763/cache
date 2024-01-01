@@ -5,21 +5,16 @@ import android.util.LruCache
 import java.io.File
 
 /**
+ * 限制大小的LRU算法仓库
+ */
+internal interface LimitCacheStore : CacheStore
+
+/**
  * 限制个数的LRU算法仓库
  */
 internal fun CacheStore.limitCount(limit: Int): LimitCacheStore {
     return if (this is LimitCountCacheStore) this
     else LimitCountCacheStore(limit, this)
-}
-
-/**
- * 限制大小的LRU算法仓库
- */
-internal interface LimitCacheStore : CacheStore {
-    /**
-     * 限制大小
-     */
-    fun limit(limit: Int)
 }
 
 /**
@@ -54,16 +49,6 @@ private abstract class LruCacheStore protected constructor(
     }
 
     protected abstract fun sizeOfEntry(key: String, value: ByteArray?): Int
-
-    /**
-     * 限制大小
-     */
-    final override fun limit(limit: Int) {
-        check(limit > 0)
-        if (_lruCache.maxSize() != limit) {
-            _lruCache.resize(limit)
-        }
-    }
 
     final override fun init(context: Context, directory: File, id: String) {
         store.init(context, directory, id)

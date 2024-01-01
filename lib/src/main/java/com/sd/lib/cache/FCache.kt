@@ -112,7 +112,7 @@ class FCache private constructor(store: CacheStore) : Cache {
         fun get(): Cache = sDefault
 
         /**
-         * 限制个数的缓存
+         * 限制个数的缓存，如果[id]相同则返回的是同一个缓存，[limit]以第一次创建为准
          * @param id 必须保证唯一性
          */
         @JvmStatic
