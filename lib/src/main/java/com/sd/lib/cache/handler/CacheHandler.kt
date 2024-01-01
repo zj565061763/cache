@@ -100,8 +100,8 @@ internal abstract class BaseCacheHandler<T>(
     @Suppress("NAME_SHADOWING")
     final override fun removeCache(key: String) {
         val key = transformKey(key)
-        synchronized(Cache::class.java) {
-            kotlin.runCatching {
+        kotlin.runCatching {
+            synchronized(Cache::class.java) {
                 _cacheStore.removeCache(key)
             }
         }.onFailure {
