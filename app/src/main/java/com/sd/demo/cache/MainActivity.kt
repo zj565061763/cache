@@ -79,7 +79,7 @@ private fun testPerformance(
     cache: Cache = FCache.get(),
     repeat: Int = 100,
 ) {
-    val content = "1".repeat(1024)
+    val content = "1".repeat(10 * 1024)
     measureTime {
         repeat(repeat) { index ->
             cache.cString().put(index.toString(), content)
