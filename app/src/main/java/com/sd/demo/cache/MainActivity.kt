@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.cache.databinding.ActivityMainBinding
+import com.sd.lib.cache.Cache
 import com.sd.lib.cache.FCache
 import kotlin.time.measureTime
 
@@ -74,12 +75,14 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-private fun testPerformance(repeat: Int = 100) {
+private fun testPerformance(
+    cache: Cache = FCache.get(),
+    repeat: Int = 100,
+) {
     val content = "1".repeat(1024)
-    val cache = FCache.get().cString()
     measureTime {
         repeat(repeat) { index ->
-            cache.put(index.toString(), content)
+            cache.cString().put(index.toString(), content)
         }
     }.let {
         logMsg { "time:${it.inWholeMilliseconds}" }
