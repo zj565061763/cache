@@ -59,6 +59,7 @@ interface Cache {
         fun get(key: String): T?
         fun remove(key: String)
         fun contains(key: String): Boolean
+        fun keys(): Array<String>
     }
 
     /**

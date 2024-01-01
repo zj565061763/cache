@@ -17,6 +17,8 @@ internal interface CacheHandler<T> {
     fun removeCache(key: String)
 
     fun containsCache(key: String): Boolean
+
+    fun keys(): Array<String>
 }
 
 /**
@@ -24,14 +26,16 @@ internal interface CacheHandler<T> {
  */
 internal abstract class BaseCacheHandler<T>(
     val cacheInfo: CacheInfo,
-    private val keyPrefix: String,
+    private val handlerKey: String,
 ) : CacheHandler<T>, Cache.CommonCache<T> {
+
+    private val _keyPrefix = "${handlerKey}_"
 
     private val _cacheStore: CacheStore
         get() = cacheInfo.cacheStore
 
     init {
-        require(keyPrefix.isNotEmpty()) { "keyPrefix is empty" }
+        require(handlerKey.isNotEmpty()) { "handlerKey is empty" }
     }
 
     //---------- CommonCache start ----------
@@ -55,9 +59,14 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CommonCache end ----------
 
-    private fun transformKey(key: String): String {
+    private fun packKey(key: String): String {
         require(key.isNotEmpty()) { "key is empty" }
-        return keyPrefix + "_" + key
+        return _keyPrefix + key
+    }
+
+    private fun unpackKey(key: String): String {
+        require(key.isNotEmpty()) { "key is empty" }
+        return key.removePrefix(_keyPrefix)
     }
 
     private fun notifyException(error: Throwable) {
@@ -70,7 +79,7 @@ internal abstract class BaseCacheHandler<T>(
 
     @Suppress("NAME_SHADOWING")
     final override fun putCache(key: String, value: T, clazz: Class<T>?): Boolean {
-        val key = transformKey(key)
+        val key = packKey(key)
         return kotlin.runCatching {
             val data = encode(value, clazz)
             synchronized(Cache::class.java) {
@@ -84,7 +93,7 @@ internal abstract class BaseCacheHandler<T>(
 
     @Suppress("NAME_SHADOWING")
     final override fun getCache(key: String, clazz: Class<T>?): T? {
-        val key = transformKey(key)
+        val key = packKey(key)
         return kotlin.runCatching {
             synchronized(Cache::class.java) {
                 _cacheStore.getCache(key)
@@ -99,7 +108,7 @@ internal abstract class BaseCacheHandler<T>(
 
     @Suppress("NAME_SHADOWING")
     final override fun removeCache(key: String) {
-        val key = transformKey(key)
+        val key = packKey(key)
         kotlin.runCatching {
             synchronized(Cache::class.java) {
                 _cacheStore.removeCache(key)
@@ -111,7 +120,7 @@ internal abstract class BaseCacheHandler<T>(
 
     @Suppress("NAME_SHADOWING")
     final override fun containsCache(key: String): Boolean {
-        val key = transformKey(key)
+        val key = packKey(key)
         return kotlin.runCatching {
             synchronized(Cache::class.java) {
                 _cacheStore.containsCache(key)
@@ -119,6 +128,19 @@ internal abstract class BaseCacheHandler<T>(
         }.getOrElse {
             notifyException(it)
             false
+        }
+    }
+
+    final override fun keys(): Array<String> {
+        return kotlin.runCatching {
+            synchronized(Cache::class.java) {
+                val rawKeys = _cacheStore.keys() ?: emptyArray()
+                val realKeys = rawKeys.map { unpackKey(it) }
+                realKeys.toTypedArray()
+            }
+        }.getOrElse {
+            notifyException(it)
+            emptyArray()
         }
     }
 

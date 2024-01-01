@@ -36,4 +36,8 @@ internal class MultiObjectCacheImpl<T>(
         if (key.isEmpty()) return false
         return _objectHandler.containsCache(transformKey(key))
     }
+
+    override fun keys(): Array<String> {
+        return _objectHandler.keys()
+    }
 }
