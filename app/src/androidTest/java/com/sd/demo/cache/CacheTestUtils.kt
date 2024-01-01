@@ -205,6 +205,13 @@ object CacheTestUtils {
         assertEquals(model1, c.get(key1))
         assertEquals(model2, c.get(key2))
 
+        // test keys
+        c.keys().let {
+            assertEquals(2, it.size)
+            assertEquals(key1, it[0])
+            assertEquals(key2, it[1])
+        }
+
         // test remove and get
         c.remove(key1)
         c.remove(key2)
@@ -212,6 +219,11 @@ object CacheTestUtils {
         assertEquals(false, c.contains(key2))
         assertEquals(null, c.get(key1))
         assertEquals(null, c.get(key2))
+
+        // test keys
+        c.keys().let {
+            assertEquals(0, it.size)
+        }
     }
 
     fun testLimitCount(cache: Cache) {
