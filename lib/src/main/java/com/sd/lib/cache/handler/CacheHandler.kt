@@ -21,6 +21,8 @@ internal interface CacheHandler<T> {
     fun keys(): Array<String>
 }
 
+private const val KeyPrefixTag = "f_cache_"
+
 /**
  * 缓存处理基类
  */
@@ -29,7 +31,7 @@ internal abstract class BaseCacheHandler<T>(
     private val handlerKey: String,
 ) : CacheHandler<T>, Cache.CommonCache<T> {
 
-    private val _keyPrefix = "${handlerKey}_"
+    private val _keyPrefix = KeyPrefixTag + "${handlerKey}_"
 
     private val _cacheStore: CacheStore
         get() = cacheInfo.cacheStore
@@ -134,9 +136,16 @@ internal abstract class BaseCacheHandler<T>(
     final override fun keys(): Array<String> {
         return kotlin.runCatching {
             synchronized(Cache::class.java) {
-                val rawKeys = _cacheStore.keys() ?: emptyArray()
-                val realKeys = rawKeys.map { unpackKey(it) }
-                realKeys.toTypedArray()
+                val keys = _cacheStore.keys()
+                if (keys.isNullOrEmpty()) {
+                    emptyArray()
+                } else {
+                    val realKeys = keys.asSequence()
+                        .filter { it.startsWith(KeyPrefixTag) }
+                        .map { unpackKey(it) }
+                        .toList()
+                    realKeys.toTypedArray()
+                }
             }
         }.getOrElse {
             notifyException(it)
