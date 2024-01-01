@@ -141,7 +141,7 @@ class FCache private constructor(store: CacheStore) : Cache {
          */
         @JvmStatic
         fun limitCountMemory(limit: Int, id: String): Cache {
-            val store = CacheConfig.getStore(id, StoreType.MemoryLimitCount) {
+            val store = CacheConfig.getStore(id, StoreType.LimitCountMemory) {
                 it.newMemoryStore().limitCount(limit)
             }
             return FCache(store)

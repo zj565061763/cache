@@ -140,7 +140,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
          * 默认内存仓库
          */
         internal fun defaultMemoryStore(): CacheStore {
-            return getStore(DefaultMemoryID, StoreType.MemoryUnlimited) {
+            return getStore(DefaultMemoryID, StoreType.UnlimitedMemory) {
                 it.newMemoryStore()
             }
         }
@@ -178,6 +178,6 @@ internal enum class StoreType {
     Unlimited,
     LimitCount,
 
-    MemoryUnlimited,
-    MemoryLimitCount,
+    UnlimitedMemory,
+    LimitCountMemory,
 }
