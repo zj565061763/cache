@@ -38,6 +38,7 @@ internal class MultiObjectCacheImpl<T>(
     }
 
     override fun keys(): Array<String> {
-        return _objectHandler.keys()
+        val keys = _objectHandler.keys()
+        return keys.toTypedArray()
     }
 }

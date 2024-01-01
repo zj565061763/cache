@@ -18,7 +18,7 @@ internal interface CacheHandler<T> {
 
     fun containsCache(key: String): Boolean
 
-    fun keys(): Array<String>
+    fun keys(): List<String>
 }
 
 private const val KeyPrefixTag = "f_cache_"
@@ -133,23 +133,22 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    final override fun keys(): Array<String> {
+    final override fun keys(): List<String> {
         return kotlin.runCatching {
             synchronized(Cache::class.java) {
                 val keys = _cacheStore.keys()
                 if (keys.isNullOrEmpty()) {
-                    emptyArray()
+                    emptyList()
                 } else {
-                    val realKeys = keys.asSequence()
+                    keys.asSequence()
                         .filter { it.startsWith(KeyPrefixTag) }
                         .map { unpackKey(it) }
                         .toList()
-                    realKeys.toTypedArray()
                 }
             }
         }.getOrElse {
             notifyException(it)
-            emptyArray()
+            emptyList()
         }
     }
 
