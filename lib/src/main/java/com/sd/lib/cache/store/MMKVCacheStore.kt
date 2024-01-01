@@ -14,7 +14,8 @@ internal class MMKVCacheStore : CacheStore {
 
     override fun init(context: Context, directory: File, id: String) {
         _store?.let { return }
-        _store = MMKV.mmkvWithID(md5(id))
+        val safeID = md5(id)
+        _store = MMKV.mmkvWithID(safeID)
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
