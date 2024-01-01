@@ -85,11 +85,11 @@ internal abstract class BaseCacheHandler<T>(
     @Suppress("NAME_SHADOWING")
     final override fun getCache(key: String, clazz: Class<T>?): T? {
         val key = transformKey(key)
-        return synchronized(Cache::class.java) {
-            kotlin.runCatching {
-                _cacheStore.getCache(key)?.let { data ->
-                    decode(data, clazz)
-                }
+        return kotlin.runCatching {
+            synchronized(Cache::class.java) {
+                _cacheStore.getCache(key)
+            }?.let { data ->
+                decode(data, clazz)
             }
         }.getOrElse {
             notifyException(it)
