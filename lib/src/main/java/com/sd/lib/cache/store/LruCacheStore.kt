@@ -39,8 +39,6 @@ private abstract class LruCacheStore protected constructor(
         }
     }
 
-    protected abstract fun sizeOfEntry(key: String, value: ByteArray?): Int
-
     final override fun init(context: Context, directory: File, id: String) {
         store.init(context, directory, id)
         keys()?.forEach { key ->
@@ -68,4 +66,6 @@ private abstract class LruCacheStore protected constructor(
         store.removeCache(key)
         _lruCache.remove(key)
     }
+
+    protected abstract fun sizeOfEntry(key: String, value: ByteArray?): Int
 }
