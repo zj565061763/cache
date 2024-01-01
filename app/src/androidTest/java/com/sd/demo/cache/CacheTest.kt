@@ -2,7 +2,6 @@ package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sd.lib.cache.FCache
-import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -20,252 +19,62 @@ class CacheTest {
 
     @Test
     fun testCacheInt() {
-        val key = "TestKey"
-        val cache = _cache.cInt()
-
-        // test get defaultValue
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
-
-        // test put and get
-        assertEquals(true, cache.put(key, 1))
-        assertEquals(true, cache.contains(key))
-        assertEquals(1, cache.get(key))
-
-        // test remove and get
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
+        CacheTestUtils.testCacheInt(FCache.get())
+        CacheTestUtils.testCacheInt(FCache.getMemory())
     }
 
     @Test
     fun testCacheLong() {
-        val key = "TestKey"
-        val cache = _cache.cLong()
-
-        // test get defaultValue
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
-
-        // test put and get
-        assertEquals(true, cache.put(key, 1L))
-        assertEquals(true, cache.contains(key))
-        assertEquals(1L, cache.get(key))
-
-        // test remove and get
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
+        CacheTestUtils.testCacheLong(FCache.get())
+        CacheTestUtils.testCacheLong(FCache.getMemory())
     }
 
     @Test
     fun testCacheFloat() {
-        val key = "TestKey"
-        val cache = _cache.cFloat()
-
-        // test get defaultValue
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
-
-        // test put and get
-        assertEquals(true, cache.put(key, 1.0f))
-        assertEquals(true, cache.contains(key))
-        assertEquals(1.0f, cache.get(key))
-
-        // test remove and get
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
+        CacheTestUtils.testCacheFloat(FCache.get())
+        CacheTestUtils.testCacheFloat(FCache.getMemory())
     }
 
     @Test
     fun testCacheDouble() {
-        val key = "TestKey"
-        val cache = _cache.cDouble()
-
-        // test get defaultValue
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
-
-        // test put and get
-        assertEquals(true, cache.put(key, 1.0))
-        assertEquals(true, cache.contains(key))
-        assertEquals(1.0, cache.get(key) ?: 0.0, 0.01)
-
-        // test remove and get
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(0.0, cache.get(key) ?: 0.0, 0.01)
+        CacheTestUtils.testCacheDouble(FCache.get())
+        CacheTestUtils.testCacheDouble(FCache.getMemory())
     }
 
     @Test
     fun testCacheBoolean() {
-        val key = "TestKey"
-        val cache = _cache.cBoolean()
-
-        // test get defaultValue
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
-
-        // test put and get
-        assertEquals(true, cache.put(key, true))
-        assertEquals(true, cache.contains(key))
-        assertEquals(true, cache.get(key))
-
-        // test remove and get
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
+        CacheTestUtils.testCacheBoolean(FCache.get())
+        CacheTestUtils.testCacheBoolean(FCache.getMemory())
     }
 
     @Test
     fun testCacheString() {
-        val key = "TestKey"
-        val cache = _cache.cString()
-
-        // test get defaultValue
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
-
-        // test put and get
-        assertEquals(true, cache.put(key, "hello"))
-        assertEquals(true, cache.contains(key))
-        assertEquals("hello", cache.get(key))
-
-        if (_testEmptyString) {
-            assertEquals(true, cache.put(key, ""))
-            assertEquals(true, cache.contains(key))
-            assertEquals("", cache.get(key))
-        }
-
-        // test remove and get
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
+        CacheTestUtils.testCacheString(FCache.get(), _testEmptyString)
+        CacheTestUtils.testCacheString(FCache.getMemory(), _testEmptyString)
     }
 
     @Test
     fun testCacheBytes() {
-        val key = "TestKey"
-        val cache = _cache.cBytes()
-
-        // test get defaultValue
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
-
-        // test put and get
-        assertEquals(true, cache.put(key, "hello".toByteArray()))
-        assertEquals(true, cache.contains(key))
-        assertEquals("hello", cache.get(key)?.decodeToString())
-
-        if (_testEmptyByteArray) {
-            val emptyByteArray = "".toByteArray()
-            assertEquals(true, cache.put(key, emptyByteArray))
-            assertEquals(true, cache.contains(key))
-            assertEquals(0, cache.get(key)?.size)
-        }
-
-        // test remove and get
-        cache.remove(key)
-        assertEquals(false, cache.contains(key))
-        assertEquals(null, cache.get(key))
+        CacheTestUtils.testCacheBytes(FCache.get(), _testEmptyByteArray)
+        CacheTestUtils.testCacheBytes(FCache.getMemory(), _testEmptyByteArray)
     }
 
     @Test
     fun testCacheObject() {
-        val model = TestModel()
-        val cache = _cache.cObject(TestModel::class.java)
-
-        // test get defaultValue
-        cache.remove()
-        assertEquals(false, cache.contains())
-        assertEquals(null, cache.get())
-
-        // test put and get
-        assertEquals(true, cache.put(model))
-        assertEquals(true, cache.contains())
-        assertEquals(model, cache.get())
-
-        // test remove and get
-        cache.remove()
-        assertEquals(false, cache.contains())
-        assertEquals(null, cache.get())
+        CacheTestUtils.testCacheObject(FCache.get())
+        CacheTestUtils.testCacheObject(FCache.getMemory())
     }
 
     @Test
     fun testCacheMultiObject() {
-        val key1 = "TestKey1"
-        val key2 = "TestKey2"
-
-        val model1 = TestModel("TestModel1")
-        val model2 = TestModel("TestModel2")
-
-        val cache = _cache.cObjects(TestModel::class.java)
-
-        // test get defaultValue
-        cache.let {
-            it.remove(key1)
-            it.remove(key2)
-        }
-        assertEquals(false, cache.contains(key1))
-        assertEquals(false, cache.contains(key2))
-        assertEquals(null, cache.get(key1))
-        assertEquals(null, cache.get(key2))
-
-        // test put and get
-        assertEquals(true, cache.put(key1, model1))
-        assertEquals(true, cache.put(key2, model2))
-        assertEquals(true, cache.contains(key1))
-        assertEquals(true, cache.contains(key2))
-        assertEquals(model1, cache.get(key1))
-        assertEquals(model2, cache.get(key2))
-
-        // test remove and get
-        cache.remove(key1)
-        cache.remove(key2)
-        assertEquals(false, cache.contains(key1))
-        assertEquals(false, cache.contains(key2))
-        assertEquals(null, cache.get(key1))
-        assertEquals(null, cache.get(key2))
+        CacheTestUtils.testCacheMultiObject(FCache.get())
+        CacheTestUtils.testCacheMultiObject(FCache.getMemory())
     }
 
     @Test
     fun testLimitCount() {
         val limit = 10
-        val cache = FCache.limitCount(limit, "testLimitCount").cString()
-        repeat(limit) { index ->
-            val key = index.toString()
-            val value = index.toString()
-            assertEquals(true, cache.put(key, value))
-            assertEquals(true, cache.contains(key))
-            assertEquals(value, cache.get(key))
-        }
-
-        fun testOverLimit(index: Int) {
-            val key = index.toString()
-            val value = index.toString()
-
-            assertEquals(false, cache.contains(key))
-            assertEquals(null, cache.get(key))
-
-            assertEquals(true, cache.put(key, value))
-            assertEquals(true, cache.contains(key))
-            assertEquals(value, cache.get(key))
-
-            val removedKey = (limit - index).toString()
-            assertEquals(false, cache.contains(removedKey))
-            assertEquals(null, cache.get(removedKey))
-        }
-
-        repeat(10) { index ->
-            testOverLimit(limit + index)
-        }
+        CacheTestUtils.testLimitCount(FCache.limitCount(limit, "limitCount"), limit)
+        CacheTestUtils.testLimitCount(FCache.limitCountMemory(limit, "limitCountMemory"), limit)
     }
 }

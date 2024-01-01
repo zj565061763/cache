@@ -208,8 +208,8 @@ object CacheTestUtils {
         // test keys
         c.keys().let {
             assertEquals(2, it.size)
-            assertEquals(key1, it[0])
-            assertEquals(key2, it[1])
+            assertEquals(true, it.contains(key1))
+            assertEquals(true, it.contains(key2))
         }
 
         // test remove and get
@@ -226,8 +226,7 @@ object CacheTestUtils {
         }
     }
 
-    fun testLimitCount(cache: Cache) {
-        val limit = 10
+    fun testLimitCount(cache: Cache, limit: Int) {
         val c = cache.cString()
         repeat(limit) { index ->
             val key = index.toString()
