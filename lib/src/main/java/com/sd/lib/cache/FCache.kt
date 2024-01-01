@@ -134,5 +134,17 @@ class FCache private constructor(store: CacheStore) : Cache {
             }
             return FCache(store)
         }
+
+        /**
+         * 内存限制个数，如果[id]相同则返回的是同一个缓存，[limit]以第一次创建为准
+         * @param id 必须保证唯一性
+         */
+        @JvmStatic
+        fun limitCountMemory(limit: Int, id: String): Cache {
+            val store = CacheConfig.getStore(id, StoreType.MemoryLimitCount) {
+                it.newMemoryStore().limitCount(limit)
+            }
+            return FCache(store)
+        }
     }
 }
