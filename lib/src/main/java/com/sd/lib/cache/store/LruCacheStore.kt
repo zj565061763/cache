@@ -25,18 +25,18 @@ private class LimitCountStore(
 private abstract class LruCacheStore protected constructor(
     limit: Int,
     private val store: CacheStore,
-) : CacheStore, AutoCloseable {
+) : CacheStore by store, AutoCloseable {
 
     init {
         check(limit > 0)
     }
 
     private val _lruCache = object : LruCache<String, Int>(limit) {
-        override fun sizeOf(key: String, value: Int?): Int {
-            return value ?: 0
+        override fun sizeOf(key: String, value: Int): Int {
+            return value
         }
 
-        override fun entryRemoved(evicted: Boolean, key: String, oldValue: Int?, newValue: Int?) {
+        override fun entryRemoved(evicted: Boolean, key: String, oldValue: Int, newValue: Int) {
             if (evicted) {
                 store.removeCache(key)
             }
@@ -71,14 +71,6 @@ private abstract class LruCacheStore protected constructor(
     final override fun removeCache(key: String) {
         store.removeCache(key)
         _lruCache.remove(key)
-    }
-
-    final override fun containsCache(key: String): Boolean {
-        return store.containsCache(key)
-    }
-
-    final override fun keys(): Array<String>? {
-        return store.keys()
     }
 
     final override fun close() {
