@@ -76,9 +76,10 @@ class MainActivity : AppCompatActivity() {
 
 private fun testPerformance(repeat: Int = 100) {
     val content = "1".repeat(1024)
+    val cache = FCache.get().cString()
     measureTime {
         repeat(repeat) { index ->
-            FCache.get().cString().put(index.toString(), content)
+            cache.put(index.toString(), content)
         }
     }.let {
         logMsg { "time:${it.inWholeMilliseconds}" }
