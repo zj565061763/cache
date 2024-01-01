@@ -35,7 +35,7 @@ internal class MMKVCacheStore : CacheStore, AutoCloseable {
         return store.contains(key)
     }
 
-    override fun allKeys(): Array<String>? {
+    override fun keys(): Array<String>? {
         return store.allKeys()
     }
 

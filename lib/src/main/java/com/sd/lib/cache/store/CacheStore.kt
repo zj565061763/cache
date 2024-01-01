@@ -37,5 +37,5 @@ interface CacheStore {
     /**
      * 返回所有的Key
      */
-    fun allKeys(): Array<String>?
+    fun keys(): Array<String>?
 }
