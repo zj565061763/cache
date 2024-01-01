@@ -4,9 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.sd.lib.cache.impl.GsonObjectConverter
 import com.sd.lib.cache.store.CacheStore
-import com.sd.lib.cache.store.LimitCacheStore
 import com.sd.lib.cache.store.MMKVCacheStore
-import com.sd.lib.cache.store.limitCount
+import com.sd.lib.cache.store.MemoryCacheStore
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
 import java.io.File
@@ -29,20 +28,23 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     }
 
     /**
-     * 创建新的仓库
+     * 创建仓库
      */
-    private fun newCacheStore(id: String, init: Boolean): CacheStore {
-        return cacheStore.getDeclaredConstructor().newInstance().also { store ->
-            if (init) {
-                initCacheStore(store, id)
-            }
-        }
+    internal fun newStore(): CacheStore {
+        return cacheStore.getDeclaredConstructor().newInstance()
+    }
+
+    /**
+     * 创建内存仓库
+     */
+    internal fun newMemoryStore(): CacheStore {
+        return MemoryCacheStore()
     }
 
     /**
      * 初始化仓库
      */
-    private fun initCacheStore(store: CacheStore, id: String) {
+    private fun initStore(store: CacheStore, id: String) {
         store.init(context, directory, id)
     }
 
@@ -97,19 +99,13 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
 
     companion object {
         private const val DefaultID = "com.sd.lib.cache.id.default"
+        private const val DefaultMemoryID = "${DefaultID}.memory"
 
         @SuppressLint("StaticFieldLeak")
         @Volatile
         private var sConfig: CacheConfig? = null
 
-        /** 默认仓库 */
-        private lateinit var sDefaultStore: CacheStore
-
-        /** ID对应的仓库类型 */
-        private val sIDTypes: MutableMap<String, StoreType> = hashMapOf()
-
-        /** 限制大小的仓库 */
-        private val sLimitStores: MutableMap<String, LimitCacheStore> = hashMapOf()
+        private val sHolder: MutableMap<String, StoreHolder> = hashMapOf()
 
         /**
          * 初始化
@@ -117,57 +113,9 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         @JvmStatic
         fun init(config: CacheConfig) {
             synchronized(Cache::class.java) {
-                sConfig?.let { return }
-                sConfig = config
-                MMKV.initialize(config.context, config.directory.absolutePath, MMKVLogLevel.LevelNone)
-                sDefaultStore = config.newCacheStore(id = DefaultID, init = true).also {
-                    sIDTypes[DefaultID] = StoreType.Unlimited
-                }
-            }
-        }
-
-        /**
-         * 默认的仓库
-         */
-        internal fun defaultStore(): CacheStore {
-            get()
-            return sDefaultStore
-        }
-
-        /**
-         * 限制个数的仓库，如果[id]相同则返回的是同一个仓库，[limit]以第一次创建为准
-         * @param id 必须保证唯一性
-         */
-        internal fun limitCountStore(limit: Int, id: String): CacheStore {
-            return limitStore(
-                limit = limit,
-                id = id,
-                type = StoreType.LimitCount,
-            )
-        }
-
-        /**
-         * 限制大小的仓库
-         * @param id 必须保证唯一性
-         */
-        private fun limitStore(limit: Int, id: String, type: StoreType): LimitCacheStore {
-            val config = get()
-            if (type == StoreType.Unlimited) error("Only limited.")
-
-            synchronized(Cache::class.java) {
-                sIDTypes[id]?.let { cacheType ->
-                    check(cacheType == type) { "ID $id exist with type ${cacheType}." }
-                }
-
-                return sLimitStores.getOrPut(id) {
-                    val newStore = config.newCacheStore(id = id, init = false)
-                    when (type) {
-                        StoreType.LimitCount -> newStore.limitCount(limit)
-                        else -> error("Only limited.")
-                    }.also {
-                        config.initCacheStore(it, id)
-                        sIDTypes[id] = type
-                    }
+                if (sConfig == null) {
+                    sConfig = config
+                    MMKV.initialize(config.context, config.directory.absolutePath, MMKVLogLevel.LevelNone)
                 }
             }
         }
@@ -178,10 +126,58 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                 return sConfig ?: error("You should call init() before this.")
             }
         }
+
+        /**
+         * 默认仓库
+         */
+        internal fun defaultStore(): CacheStore {
+            return getStore(DefaultID, StoreType.Unlimited) {
+                it.newStore()
+            }
+        }
+
+        /**
+         * 默认内存仓库
+         */
+        internal fun defaultMemoryStore(): CacheStore {
+            return getStore(DefaultMemoryID, StoreType.MemoryUnlimited) {
+                it.newMemoryStore()
+            }
+        }
+
+        /**
+         * 获取仓库
+         * @param id 必须保证唯一性
+         */
+        internal fun getStore(
+            id: String,
+            type: StoreType,
+            factory: (CacheConfig) -> CacheStore,
+        ): CacheStore {
+            val config = get()
+            synchronized(Cache::class.java) {
+                sHolder[id]?.let { holder ->
+                    check(holder.type == type) { "ID $id exist with type ${holder.type}." }
+                    return holder.store
+                }
+                return factory(config).also { store ->
+                    sHolder[id] = StoreHolder(type, store)
+                    config.initStore(store, id)
+                }
+            }
+        }
     }
 }
 
-private enum class StoreType {
+private data class StoreHolder(
+    val type: StoreType,
+    val store: CacheStore,
+)
+
+internal enum class StoreType {
     Unlimited,
     LimitCount,
+
+    MemoryUnlimited,
+    MemoryLimitCount,
 }

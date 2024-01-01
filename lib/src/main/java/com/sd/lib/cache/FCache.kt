@@ -15,6 +15,7 @@ import com.sd.lib.cache.handler.StringHandler
 import com.sd.lib.cache.impl.MultiObjectCacheImpl
 import com.sd.lib.cache.impl.SingleObjectCacheImpl
 import com.sd.lib.cache.store.CacheStore
+import com.sd.lib.cache.store.limitCount
 
 class FCache private constructor(store: CacheStore) : Cache {
 
@@ -100,24 +101,37 @@ class FCache private constructor(store: CacheStore) : Cache {
     //---------- Cache end ----------
 
     companion object {
-        private val sDefault by lazy {
+        private val sDefaultCache: Cache by lazy {
             val store = CacheConfig.defaultStore()
             FCache(store)
         }
 
-        /**
-         * 默认无限制缓存
-         */
-        @JvmStatic
-        fun get(): Cache = sDefault
+        private val sDefaultMemoryCache: Cache by lazy {
+            val store = CacheConfig.defaultMemoryStore()
+            FCache(store)
+        }
 
         /**
-         * 限制个数的缓存，如果[id]相同则返回的是同一个缓存，[limit]以第一次创建为准
+         * 默认无限制
+         */
+        @JvmStatic
+        fun get(): Cache = sDefaultCache
+
+        /**
+         * 默认内存无限制
+         */
+        @JvmStatic
+        fun getMemory(): Cache = sDefaultMemoryCache
+
+        /**
+         * 限制个数，如果[id]相同则返回的是同一个缓存，[limit]以第一次创建为准
          * @param id 必须保证唯一性
          */
         @JvmStatic
         fun limitCount(limit: Int, id: String): Cache {
-            val store = CacheConfig.limitCountStore(limit, id)
+            val store = CacheConfig.getStore(id, StoreType.LimitCount) {
+                it.newStore().limitCount(limit)
+            }
             return FCache(store)
         }
     }
