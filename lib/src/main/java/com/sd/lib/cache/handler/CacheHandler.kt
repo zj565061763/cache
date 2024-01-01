@@ -141,7 +141,7 @@ internal abstract class BaseCacheHandler<T>(
                     emptyList()
                 } else {
                     keys.asSequence()
-                        .filter { it.startsWith(KeyPrefixTag) }
+                        .filter { it.startsWith(_keyPrefix) }
                         .map { unpackKey(it) }
                         .toList()
                 }
