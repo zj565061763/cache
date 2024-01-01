@@ -2,7 +2,6 @@ package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sd.lib.cache.FCache
-import com.sd.lib.cache.fCache
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,13 +13,15 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class CacheTest {
+    private val _cache = FCache.get()
+
     private val _testEmptyByteArray = true
     private val _testEmptyString = true
 
     @Test
     fun testCacheInt() {
         val key = "TestKey"
-        val cache = fCache.cInt()
+        val cache = _cache.cInt()
 
         // test get defaultValue
         cache.remove(key)
@@ -41,7 +42,7 @@ class CacheTest {
     @Test
     fun testCacheLong() {
         val key = "TestKey"
-        val cache = fCache.cLong()
+        val cache = _cache.cLong()
 
         // test get defaultValue
         cache.remove(key)
@@ -62,7 +63,7 @@ class CacheTest {
     @Test
     fun testCacheFloat() {
         val key = "TestKey"
-        val cache = fCache.cFloat()
+        val cache = _cache.cFloat()
 
         // test get defaultValue
         cache.remove(key)
@@ -83,7 +84,7 @@ class CacheTest {
     @Test
     fun testCacheDouble() {
         val key = "TestKey"
-        val cache = fCache.cDouble()
+        val cache = _cache.cDouble()
 
         // test get defaultValue
         cache.remove(key)
@@ -104,7 +105,7 @@ class CacheTest {
     @Test
     fun testCacheBoolean() {
         val key = "TestKey"
-        val cache = fCache.cBoolean()
+        val cache = _cache.cBoolean()
 
         // test get defaultValue
         cache.remove(key)
@@ -125,7 +126,7 @@ class CacheTest {
     @Test
     fun testCacheString() {
         val key = "TestKey"
-        val cache = fCache.cString()
+        val cache = _cache.cString()
 
         // test get defaultValue
         cache.remove(key)
@@ -152,7 +153,7 @@ class CacheTest {
     @Test
     fun testCacheBytes() {
         val key = "TestKey"
-        val cache = fCache.cBytes()
+        val cache = _cache.cBytes()
 
         // test get defaultValue
         cache.remove(key)
@@ -180,7 +181,7 @@ class CacheTest {
     @Test
     fun testCacheObject() {
         val model = TestModel()
-        val cache = fCache.cObject(TestModel::class.java)
+        val cache = _cache.cObject(TestModel::class.java)
 
         // test get defaultValue
         cache.remove()
@@ -206,7 +207,7 @@ class CacheTest {
         val model1 = TestModel("TestModel1")
         val model2 = TestModel("TestModel2")
 
-        val cache = fCache.cObjects(TestModel::class.java)
+        val cache = _cache.cObjects(TestModel::class.java)
 
         // test get defaultValue
         cache.let {
