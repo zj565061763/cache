@@ -5,22 +5,17 @@ import android.util.LruCache
 import java.io.File
 
 /**
- * 限制大小的LRU算法仓库
- */
-internal interface LimitCacheStore : CacheStore
-
-/**
  * 限制个数的LRU算法仓库
  */
-internal fun CacheStore.limitCount(limit: Int): LimitCacheStore {
-    return if (this is LimitCountCacheStore) this
-    else LimitCountCacheStore(limit, this)
+internal fun CacheStore.limitCount(limit: Int): CacheStore {
+    return if (this is LimitCountStore) this
+    else LimitCountStore(limit, this)
 }
 
 /**
  * 限制个数的LRU算法仓库
  */
-private class LimitCountCacheStore(
+private class LimitCountStore(
     limit: Int,
     store: CacheStore,
 ) : LruCacheStore(limit, store) {
@@ -30,7 +25,7 @@ private class LimitCountCacheStore(
 private abstract class LruCacheStore protected constructor(
     limit: Int,
     private val store: CacheStore,
-) : LimitCacheStore, AutoCloseable {
+) : CacheStore, AutoCloseable {
 
     init {
         check(limit > 0)
