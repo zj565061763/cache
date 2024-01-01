@@ -71,9 +71,9 @@ internal abstract class BaseCacheHandler<T>(
     @Suppress("NAME_SHADOWING")
     final override fun putCache(key: String, value: T, clazz: Class<T>?): Boolean {
         val key = transformKey(key)
-        return synchronized(Cache::class.java) {
-            kotlin.runCatching {
-                val data = encode(value, clazz)
+        return kotlin.runCatching {
+            val data = encode(value, clazz)
+            synchronized(Cache::class.java) {
                 _cacheStore.putCache(key, data)
             }
         }.getOrElse {
