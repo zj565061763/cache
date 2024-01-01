@@ -136,5 +136,3 @@ class FCache private constructor(store: CacheStore) : Cache {
         }
     }
 }
-
-val fCache: Cache get() = FCache.get()
