@@ -9,36 +9,42 @@ internal class MultiObjectCacheImpl<T>(
     val objectClass: Class<T>,
 ) : MultiObjectCache<T> {
 
+    private val _keyPrefix = "${objectClass.name}_"
     private val _objectHandler = ObjectHandler<T>(cacheInfo, "multi_object")
 
-    private fun transformKey(key: String): String {
+    private fun packKey(key: String): String {
         require(key.isNotEmpty()) { "key is empty" }
-        return "${objectClass.name}_$key"
+        return _keyPrefix + key
+    }
+
+    private fun unpackKey(key: String): String {
+        require(key.isNotEmpty()) { "key is empty" }
+        return key.removePrefix(_keyPrefix)
     }
 
     override fun put(key: String, value: T?): Boolean {
         if (key.isEmpty()) return false
         if (value == null) return false
-        return _objectHandler.putCache(transformKey(key), value, objectClass)
+        return _objectHandler.putCache(packKey(key), value, objectClass)
     }
 
     override fun get(key: String): T? {
         if (key.isEmpty()) return null
-        return _objectHandler.getCache(transformKey(key), objectClass)
+        return _objectHandler.getCache(packKey(key), objectClass)
     }
 
     override fun remove(key: String) {
         if (key.isEmpty()) return
-        _objectHandler.removeCache(transformKey(key))
+        _objectHandler.removeCache(packKey(key))
     }
 
     override fun contains(key: String): Boolean {
         if (key.isEmpty()) return false
-        return _objectHandler.containsCache(transformKey(key))
+        return _objectHandler.containsCache(packKey(key))
     }
 
     override fun keys(): Array<String> {
-        val keys = _objectHandler.keys()
+        val keys = _objectHandler.keys().map { unpackKey(it) }
         return keys.toTypedArray()
     }
 }
