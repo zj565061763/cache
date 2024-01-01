@@ -228,6 +228,7 @@ object CacheTestUtils {
 
     fun testLimitCount(cache: Cache, limit: Int) {
         val c = cache.cString()
+
         repeat(limit) { index ->
             val key = index.toString()
             val value = index.toString()
@@ -252,7 +253,7 @@ object CacheTestUtils {
             assertEquals(null, c.get(removedKey))
         }
 
-        repeat(10) { index ->
+        repeat(limit) { index ->
             testOverLimit(limit + index)
         }
     }

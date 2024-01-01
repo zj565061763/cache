@@ -32,7 +32,7 @@ private abstract class LruCacheStore protected constructor(
             return value
         }
 
-        override fun entryRemoved(evicted: Boolean, key: String, oldValue: Int, newValue: Int) {
+        override fun entryRemoved(evicted: Boolean, key: String, oldValue: Int?, newValue: Int?) {
             if (evicted) {
                 store.removeCache(key)
             }
