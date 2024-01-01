@@ -25,7 +25,7 @@ private class LimitCountStore(
 private abstract class LruCacheStore protected constructor(
     limit: Int,
     private val store: CacheStore,
-) : CacheStore by store, AutoCloseable {
+) : CacheStore by store {
 
     init {
         check(limit > 0)
@@ -71,11 +71,5 @@ private abstract class LruCacheStore protected constructor(
     final override fun removeCache(key: String) {
         store.removeCache(key)
         _lruCache.remove(key)
-    }
-
-    final override fun close() {
-        if (store is AutoCloseable) {
-            store.close()
-        }
     }
 }

@@ -8,7 +8,7 @@ import java.security.MessageDigest
 /**
  * 基于[https://github.com/Tencent/MMKV]实现的仓库
  */
-internal class MMKVCacheStore : CacheStore, AutoCloseable {
+internal class MMKVCacheStore : CacheStore {
     private var _store: MMKV? = null
     private val store: MMKV get() = checkNotNull(_store)
 
@@ -37,14 +37,6 @@ internal class MMKVCacheStore : CacheStore, AutoCloseable {
 
     override fun keys(): Array<String>? {
         return store.allKeys()
-    }
-
-    override fun close() {
-        try {
-            _store?.close()
-        } finally {
-            _store = null
-        }
     }
 }
 
