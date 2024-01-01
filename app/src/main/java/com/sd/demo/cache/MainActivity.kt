@@ -57,6 +57,9 @@ class MainActivity : AppCompatActivity() {
         logMsg { "objectSingle:" + _cache.cObject(TestModel::class.java).get() }
         logMsg { "objectMulti:" + _cache.cObjects(TestModel::class.java).get(Key) }
         logMsg { "objectMulti:" + _cache.cObjects(TestModel::class.java).get(Key + Key) }
+
+        val keys = _cache.cObjects(TestModel::class.java).keys()
+        logMsg { "objectMulti keys:" + keys.joinToString(prefix = "[", postfix = "]", separator = ",") }
     }
 
     private fun removeData() {
