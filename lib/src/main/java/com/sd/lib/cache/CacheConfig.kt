@@ -152,10 +152,10 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         }
 
         /**
-         * 获取仓库
+         * 获取[id]对应的仓库，如果仓库不存在则调用[factory]创建后保存
          * @param id 必须保证唯一性
          */
-        internal fun getStore(
+        internal fun getOrPutStore(
             id: String,
             type: StoreType,
             factory: (CacheConfig) -> CacheStore,

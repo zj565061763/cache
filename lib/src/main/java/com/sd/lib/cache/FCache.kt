@@ -125,7 +125,7 @@ class FCache private constructor(store: CacheStore) : Cache {
          */
         @JvmStatic
         fun unlimited(id: String): Cache {
-            val store = CacheConfig.getStore(id, StoreType.Unlimited) {
+            val store = CacheConfig.getOrPutStore(id, StoreType.Unlimited) {
                 it.newStore()
             }
             return FCache(store)
@@ -136,7 +136,7 @@ class FCache private constructor(store: CacheStore) : Cache {
          */
         @JvmStatic
         fun unlimitedMemory(id: String): Cache {
-            val store = CacheConfig.getStore(id, StoreType.UnlimitedMemory) {
+            val store = CacheConfig.getOrPutStore(id, StoreType.UnlimitedMemory) {
                 it.newMemoryStore()
             }
             return FCache(store)
@@ -148,7 +148,7 @@ class FCache private constructor(store: CacheStore) : Cache {
          */
         @JvmStatic
         fun limitCount(limit: Int, id: String): Cache {
-            val store = CacheConfig.getStore(id, StoreType.LimitCount) {
+            val store = CacheConfig.getOrPutStore(id, StoreType.LimitCount) {
                 it.newStore().limitCount(limit)
             }
             return FCache(store)
@@ -160,7 +160,7 @@ class FCache private constructor(store: CacheStore) : Cache {
          */
         @JvmStatic
         fun limitCountMemory(limit: Int, id: String): Cache {
-            val store = CacheConfig.getStore(id, StoreType.LimitCountMemory) {
+            val store = CacheConfig.getOrPutStore(id, StoreType.LimitCountMemory) {
                 it.newMemoryStore().limitCount(limit)
             }
             return FCache(store)
