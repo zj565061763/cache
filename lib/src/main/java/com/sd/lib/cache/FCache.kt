@@ -7,6 +7,7 @@ import com.sd.lib.cache.Cache.ObjectConverter
 import com.sd.lib.cache.Cache.SingleObjectCache
 import com.sd.lib.cache.handler.BooleanHandler
 import com.sd.lib.cache.handler.BytesHandler
+import com.sd.lib.cache.handler.CacheInfo
 import com.sd.lib.cache.handler.DoubleHandler
 import com.sd.lib.cache.handler.FloatHandler
 import com.sd.lib.cache.handler.IntHandler

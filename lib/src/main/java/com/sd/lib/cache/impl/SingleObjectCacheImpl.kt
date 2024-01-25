@@ -1,7 +1,7 @@
 package com.sd.lib.cache.impl
 
 import com.sd.lib.cache.Cache
-import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.handler.CacheInfo
 import com.sd.lib.cache.handler.ObjectHandler
 
 internal class SingleObjectCacheImpl<T>(

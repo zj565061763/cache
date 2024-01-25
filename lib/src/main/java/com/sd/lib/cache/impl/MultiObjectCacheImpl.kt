@@ -1,7 +1,7 @@
 package com.sd.lib.cache.impl
 
 import com.sd.lib.cache.Cache.MultiObjectCache
-import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.handler.CacheInfo
 import com.sd.lib.cache.handler.ObjectHandler
 
 internal class MultiObjectCacheImpl<T>(
@@ -44,6 +44,7 @@ internal class MultiObjectCacheImpl<T>(
     }
 
     override fun keys(): Array<String> {
+        // TODO transform
         val keys = _objectHandler.keys().map { unpackKey(it) }
         return keys.toTypedArray()
     }

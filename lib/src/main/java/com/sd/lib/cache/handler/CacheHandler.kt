@@ -2,7 +2,6 @@ package com.sd.lib.cache.handler
 
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.CacheException
-import com.sd.lib.cache.CacheInfo
 import com.sd.lib.cache.store.CacheStore
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -19,6 +18,17 @@ internal interface CacheHandler<T> {
     fun containsCache(key: String): Boolean
 
     fun keys(): List<String>
+}
+
+internal interface CacheInfo {
+    /** 仓库 */
+    val cacheStore: CacheStore
+
+    /** 对象转换 */
+    val objectConverter: Cache.ObjectConverter
+
+    /** 异常处理 */
+    val exceptionHandler: Cache.ExceptionHandler
 }
 
 private const val KeyPrefixTag = "f_cache_"

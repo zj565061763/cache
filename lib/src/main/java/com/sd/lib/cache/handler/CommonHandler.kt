@@ -1,7 +1,5 @@
 package com.sd.lib.cache.handler
 
-import com.sd.lib.cache.CacheInfo
-
 internal class StringHandler(info: CacheInfo) : BaseCacheHandler<String>(info, "string") {
     override fun encode(value: String, clazz: Class<String>?): ByteArray = value.toByteArray()
     override fun decode(bytes: ByteArray, clazz: Class<String>?): String = bytes.decodeToString()

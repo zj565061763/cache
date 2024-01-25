@@ -1,7 +1,5 @@
 package com.sd.lib.cache
 
-import com.sd.lib.cache.store.CacheStore
-
 interface Cache {
 
     fun cInt(): CommonCache<Int>
@@ -85,17 +83,6 @@ interface Cache {
     fun interface ExceptionHandler {
         fun onException(error: Throwable)
     }
-}
-
-internal interface CacheInfo {
-    /** 仓库 */
-    val cacheStore: CacheStore
-
-    /** 对象转换 */
-    val objectConverter: Cache.ObjectConverter
-
-    /** 异常处理 */
-    val exceptionHandler: Cache.ExceptionHandler
 }
 
 class CacheException(
