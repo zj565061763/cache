@@ -37,6 +37,11 @@ internal class MMKVCacheStore : CacheStore {
     override fun keys(): Array<String>? {
         return store.allKeys()
     }
+
+    override fun close() {
+        _store?.close()
+        _store = null
+    }
 }
 
 private fun md5(input: String): String {

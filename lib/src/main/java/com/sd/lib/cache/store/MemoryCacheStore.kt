@@ -32,4 +32,7 @@ internal class MemoryCacheStore : CacheStore {
     override fun keys(): Array<String>? {
         return _holder.keys.toTypedArray()
     }
+
+    override fun close() {
+    }
 }
