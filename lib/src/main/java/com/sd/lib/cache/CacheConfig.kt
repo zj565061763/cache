@@ -98,10 +98,13 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     }
 
     companion object {
+        private const val sDefaultGroup = "Default"
+
         @SuppressLint("StaticFieldLeak")
         @Volatile
         private var sConfig: CacheConfig? = null
 
+        private var sGroup: String = sDefaultGroup
         private val sHolder: MutableMap<String, StoreHolder> = hashMapOf()
 
         /**
@@ -113,6 +116,30 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
                 if (sConfig == null) {
                     sConfig = config
                     MMKV.initialize(config.context, config.directory.absolutePath, MMKVLogLevel.LevelNone)
+                }
+            }
+        }
+
+        /**
+         * 设置组
+         */
+        internal fun setGroup(group: String?) {
+            @Suppress("NAME_SHADOWING")
+            val group = group ?: sDefaultGroup
+            get()
+            synchronized(Cache::class.java) {
+                if (sGroup == group) return
+
+                sGroup = group
+                val copyList = sHolder.values.toList()
+                sHolder.clear()
+
+                copyList.forEach {
+                    try {
+                        it.store.close()
+                    } catch (e: Throwable) {
+                        get().exceptionHandler.onException(e)
+                    }
                 }
             }
         }
@@ -133,6 +160,8 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
             type: StoreType,
             factory: (CacheConfig) -> CacheStore,
         ): CacheStore {
+            @Suppress("NAME_SHADOWING")
+            val id = "${sGroup}:${id}"
             val config = get()
             synchronized(Cache::class.java) {
                 sHolder[id]?.let { holder ->

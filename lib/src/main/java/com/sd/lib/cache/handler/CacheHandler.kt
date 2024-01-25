@@ -28,7 +28,7 @@ private const val KeyPrefixTag = "f_cache_"
  */
 internal abstract class BaseCacheHandler<T>(
     val cacheInfo: CacheInfo,
-    private val handlerKey: String,
+    handlerKey: String,
 ) : CacheHandler<T>, Cache.CommonCache<T> {
 
     private val _keyPrefix = KeyPrefixTag + "${handlerKey}_"
@@ -157,12 +157,10 @@ internal abstract class BaseCacheHandler<T>(
     /**
      * 编码
      */
-    @Throws(Exception::class)
     protected abstract fun encode(value: T, clazz: Class<T>?): ByteArray
 
     /**
      * 解码
      */
-    @Throws(Exception::class)
     protected abstract fun decode(bytes: ByteArray, clazz: Class<T>?): T?
 }

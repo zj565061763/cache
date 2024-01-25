@@ -69,13 +69,13 @@ interface Cache {
         /**
          * 编码
          */
-        @Throws(Exception::class)
+        @Throws(Throwable::class)
         fun <T> encode(value: T, clazz: Class<T>): ByteArray
 
         /**
          * 解码
          */
-        @Throws(Exception::class)
+        @Throws(Throwable::class)
         fun <T> decode(bytes: ByteArray, clazz: Class<T>): T
     }
 
