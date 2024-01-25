@@ -79,8 +79,8 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CacheHandler start ----------
 
-    @Suppress("NAME_SHADOWING")
     final override fun putCache(key: String, value: T, clazz: Class<T>?): Boolean {
+        @Suppress("NAME_SHADOWING")
         val key = packKey(key)
         return kotlin.runCatching {
             val data = encode(value, clazz)
@@ -93,8 +93,8 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    @Suppress("NAME_SHADOWING")
     final override fun getCache(key: String, clazz: Class<T>?): T? {
+        @Suppress("NAME_SHADOWING")
         val key = packKey(key)
         return kotlin.runCatching {
             synchronized(Cache::class.java) {
@@ -108,8 +108,8 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    @Suppress("NAME_SHADOWING")
     final override fun removeCache(key: String) {
+        @Suppress("NAME_SHADOWING")
         val key = packKey(key)
         kotlin.runCatching {
             synchronized(Cache::class.java) {
@@ -120,8 +120,8 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    @Suppress("NAME_SHADOWING")
     final override fun containsCache(key: String): Boolean {
+        @Suppress("NAME_SHADOWING")
         val key = packKey(key)
         return kotlin.runCatching {
             synchronized(Cache::class.java) {
