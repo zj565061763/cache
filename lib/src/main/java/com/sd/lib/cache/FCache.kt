@@ -101,15 +101,11 @@ class FCache private constructor(store: CacheStore) : Cache {
     //---------- Cache end ----------
 
     companion object {
-        private val sDefaultCache: Cache by lazy {
-            val store = CacheConfig.defaultStore()
-            FCache(store)
-        }
+        private const val DefaultID = "com.sd.lib.cache.id.default"
+        private const val DefaultMemoryID = "${DefaultID}.memory"
 
-        private val sDefaultMemoryCache: Cache by lazy {
-            val store = CacheConfig.defaultMemoryStore()
-            FCache(store)
-        }
+        private val sDefaultCache: Cache by lazy { unlimited(DefaultID) }
+        private val sDefaultMemoryCache: Cache by lazy { unlimitedMemory(DefaultMemoryID) }
 
         /**
          * 默认无限制
@@ -122,6 +118,28 @@ class FCache private constructor(store: CacheStore) : Cache {
          */
         @JvmStatic
         fun getMemory(): Cache = sDefaultMemoryCache
+
+        /**
+         * 返回[id]对应的无限制缓存
+         */
+        @JvmStatic
+        fun unlimited(id: String): Cache {
+            val store = CacheConfig.getStore(id, StoreType.Unlimited) {
+                it.newStore()
+            }
+            return FCache(store)
+        }
+
+        /**
+         * 返回[id]对应的无限制内存缓存
+         */
+        @JvmStatic
+        fun unlimitedMemory(id: String): Cache {
+            val store = CacheConfig.getStore(id, StoreType.UnlimitedMemory) {
+                it.newMemoryStore()
+            }
+            return FCache(store)
+        }
 
         /**
          * 限制个数，如果[id]相同则返回的是同一个缓存，[limit]以第一次创建为准

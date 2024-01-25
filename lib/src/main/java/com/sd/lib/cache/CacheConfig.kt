@@ -98,9 +98,6 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     }
 
     companion object {
-        private const val DefaultID = "com.sd.lib.cache.id.default"
-        private const val DefaultMemoryID = "${DefaultID}.memory"
-
         @SuppressLint("StaticFieldLeak")
         @Volatile
         private var sConfig: CacheConfig? = null
@@ -124,24 +121,6 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
             sConfig?.let { return it }
             synchronized(Cache::class.java) {
                 return sConfig ?: error("You should call init() before this.")
-            }
-        }
-
-        /**
-         * 默认仓库
-         */
-        internal fun defaultStore(): CacheStore {
-            return getStore(DefaultID, StoreType.Unlimited) {
-                it.newStore()
-            }
-        }
-
-        /**
-         * 默认内存仓库
-         */
-        internal fun defaultMemoryStore(): CacheStore {
-            return getStore(DefaultMemoryID, StoreType.UnlimitedMemory) {
-                it.newMemoryStore()
             }
         }
 
