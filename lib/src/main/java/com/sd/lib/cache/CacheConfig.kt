@@ -6,6 +6,7 @@ import com.sd.lib.cache.impl.GsonObjectConverter
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.MMKVCacheStore
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 
 class CacheConfig private constructor(builder: Builder, context: Context) {
     private val context: Context
@@ -92,6 +93,8 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     }
 
     companion object {
+        private val sInitFlag = AtomicBoolean(false)
+
         @SuppressLint("StaticFieldLeak")
         @Volatile
         private var sConfig: CacheConfig? = null
@@ -101,18 +104,13 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
          */
         @JvmStatic
         fun init(config: CacheConfig) {
-            synchronized(CacheLock) {
-                if (sConfig == null) {
-                    sConfig = config
-                }
+            if (sInitFlag.compareAndSet(false, true)) {
+                sConfig = config
             }
         }
 
         internal fun get(): CacheConfig {
-            sConfig?.let { return it }
-            synchronized(CacheLock) {
-                return sConfig ?: error("You should call init() before this.")
-            }
+            return checkNotNull(sConfig) { "You should call init() before this." }
         }
     }
 }
