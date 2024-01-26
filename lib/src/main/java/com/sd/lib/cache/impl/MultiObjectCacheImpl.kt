@@ -45,8 +45,7 @@ internal class MultiObjectCacheImpl<T>(
     }
 
     override fun keys(): Array<String> {
-        // TODO transform
-        val keys = _objectHandler.keys().map { unpackKey(it) }
+        val keys = _objectHandler.keys { unpackKey(it) }
         return keys.toTypedArray()
     }
 }

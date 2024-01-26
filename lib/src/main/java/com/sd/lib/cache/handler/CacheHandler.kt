@@ -17,7 +17,7 @@ internal interface CacheHandler<T> {
 
     fun containsCache(key: String): Boolean
 
-    fun keys(): List<String>
+    fun keys(transform: (String) -> String): List<String>
 }
 
 internal interface CacheInfo {
@@ -141,7 +141,7 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    final override fun keys(): List<String> {
+    final override fun keys(transform: (String) -> String): List<String> {
         return kotlin.runCatching {
             synchronized(CacheLock) {
                 val keys = _cacheStore.keys()
@@ -151,6 +151,7 @@ internal abstract class BaseCacheHandler<T>(
                     keys.asSequence()
                         .filter { it.startsWith(_keyPrefix) }
                         .map { unpackKey(it) }
+                        .map(transform)
                         .toList()
                 }
             }
