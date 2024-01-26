@@ -22,7 +22,7 @@ private class LimitCountStore(
     override fun sizeOfEntry(key: String, value: ByteArray?): Int = 1
 }
 
-private abstract class LruCacheStore protected constructor(
+private abstract class LruCacheStore(
     limit: Int,
     private val store: CacheStore,
 ) : CacheStore by store {
