@@ -9,8 +9,8 @@ class App : Application() {
         super.onCreate()
         CacheConfig.init(
             CacheConfig.Builder()
-                // 监听异常信息
                 .setExceptionHandler(CacheExceptionHandler())
+//                .setObjectConverter(MoshiObjectConverter())
                 .build(this)
         )
     }
