@@ -42,14 +42,14 @@ private class CacheStoreHolderImpl(
             info.cacheStore
         } else {
             val config = CacheConfig.get()
-            factory(config).also { store ->
-                _stores[id] = StoreInfo(store, cacheSizePolicy)
-                config.initCacheStore(store, group = group, id = id)
+            factory(config).also { cacheStore ->
+                _stores[id] = StoreInfo(cacheStore, cacheSizePolicy)
+                config.initCacheStore(cacheStore, group = group, id = id)
             }
         }
     }
 
-    private data class StoreInfo(
+    private class StoreInfo(
         val cacheStore: CacheStore,
         val cacheSizePolicy: CacheSizePolicy,
     )
