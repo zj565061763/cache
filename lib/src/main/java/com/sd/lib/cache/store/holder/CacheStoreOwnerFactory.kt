@@ -1,7 +1,7 @@
 package com.sd.lib.cache.store.holder
 
-import com.sd.lib.cache.Cache
 import com.sd.lib.cache.CacheConfig
+import com.sd.lib.cache.CacheLock
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.EmptyCacheStore
 
@@ -33,7 +33,7 @@ internal object CacheStoreOwnerFactory {
         factory: (CacheConfig) -> CacheStore,
     ): CacheStoreOwner {
         return CacheStoreOwner {
-            synchronized(Cache::class.java) {
+            synchronized(CacheLock) {
                 val currentGroup = _currentGroup
                 if (currentGroup.isEmpty()) {
                     EmptyCacheStore
@@ -55,7 +55,7 @@ internal object CacheStoreOwnerFactory {
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStore {
-        synchronized(Cache::class.java) {
+        synchronized(CacheLock) {
             return _holder.group(group).getOrPut(
                 id = id,
                 cacheSizePolicy = cacheSizePolicy,

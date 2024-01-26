@@ -2,8 +2,10 @@ package com.sd.lib.cache.store
 
 import android.content.Context
 import com.tencent.mmkv.MMKV
+import com.tencent.mmkv.MMKVLogLevel
 import java.io.File
 import java.security.MessageDigest
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * 基于[https://github.com/Tencent/MMKV]实现的仓库
@@ -13,6 +15,7 @@ internal class MMKVCacheStore : CacheStore {
     private val store: MMKV get() = checkNotNull(_store)
 
     override fun init(context: Context, directory: File, id: String) {
+        initMMKV(context, directory)
         _store?.let { return }
         val safeID = md5(id)
         _store = MMKV.mmkvWithID(safeID)
@@ -41,6 +44,16 @@ internal class MMKVCacheStore : CacheStore {
     override fun close() {
         _store?.close()
         _store = null
+    }
+
+    companion object {
+        private val sInit = AtomicBoolean(false)
+
+        fun initMMKV(context: Context, directory: File) {
+            if (sInit.compareAndSet(false, true)) {
+                MMKV.initialize(context, directory.absolutePath, MMKVLogLevel.LevelNone)
+            }
+        }
     }
 }
 

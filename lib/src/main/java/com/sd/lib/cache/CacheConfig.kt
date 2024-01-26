@@ -5,8 +5,6 @@ import android.content.Context
 import com.sd.lib.cache.impl.GsonObjectConverter
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.MMKVCacheStore
-import com.tencent.mmkv.MMKV
-import com.tencent.mmkv.MMKVLogLevel
 import java.io.File
 
 class CacheConfig private constructor(builder: Builder, context: Context) {
@@ -100,17 +98,16 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
          */
         @JvmStatic
         fun init(config: CacheConfig) {
-            synchronized(Cache::class.java) {
+            synchronized(CacheLock) {
                 if (sConfig == null) {
                     sConfig = config
-                    MMKV.initialize(config.context, config.directory.absolutePath, MMKVLogLevel.LevelNone)
                 }
             }
         }
 
         internal fun get(): CacheConfig {
             sConfig?.let { return it }
-            synchronized(Cache::class.java) {
+            synchronized(CacheLock) {
                 return sConfig ?: error("You should call init() before this.")
             }
         }

@@ -1,7 +1,6 @@
 package com.sd.lib.cache
 
 interface Cache {
-
     fun cInt(): CommonCache<Int>
     fun cLong(): CommonCache<Long>
     fun cFloat(): CommonCache<Float>

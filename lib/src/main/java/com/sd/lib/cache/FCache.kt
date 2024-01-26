@@ -24,3 +24,5 @@ object FCache {
     @JvmStatic
     fun currentGroup(): CacheFactory = CurrentGroupCacheFactory()
 }
+
+internal val CacheLock: Any = Any()

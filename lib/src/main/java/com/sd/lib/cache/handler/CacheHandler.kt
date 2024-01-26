@@ -2,6 +2,7 @@ package com.sd.lib.cache.handler
 
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.CacheException
+import com.sd.lib.cache.CacheLock
 import com.sd.lib.cache.store.CacheStore
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -94,7 +95,7 @@ internal abstract class BaseCacheHandler<T>(
         val key = packKey(key)
         return kotlin.runCatching {
             val data = encode(value, clazz)
-            synchronized(Cache::class.java) {
+            synchronized(CacheLock) {
                 _cacheStore.putCache(key, data)
             }
         }.getOrElse {
@@ -107,7 +108,7 @@ internal abstract class BaseCacheHandler<T>(
         @Suppress("NAME_SHADOWING")
         val key = packKey(key)
         return kotlin.runCatching {
-            synchronized(Cache::class.java) {
+            synchronized(CacheLock) {
                 _cacheStore.getCache(key)
             }?.let { data ->
                 decode(data, clazz)
@@ -122,7 +123,7 @@ internal abstract class BaseCacheHandler<T>(
         @Suppress("NAME_SHADOWING")
         val key = packKey(key)
         kotlin.runCatching {
-            synchronized(Cache::class.java) {
+            synchronized(CacheLock) {
                 _cacheStore.removeCache(key)
             }
         }.onFailure {
@@ -134,7 +135,7 @@ internal abstract class BaseCacheHandler<T>(
         @Suppress("NAME_SHADOWING")
         val key = packKey(key)
         return kotlin.runCatching {
-            synchronized(Cache::class.java) {
+            synchronized(CacheLock) {
                 _cacheStore.containsCache(key)
             }
         }.getOrElse {
@@ -145,7 +146,7 @@ internal abstract class BaseCacheHandler<T>(
 
     final override fun keys(): List<String> {
         return kotlin.runCatching {
-            synchronized(Cache::class.java) {
+            synchronized(CacheLock) {
                 val keys = _cacheStore.keys()
                 if (keys.isNullOrEmpty()) {
                     emptyList()
