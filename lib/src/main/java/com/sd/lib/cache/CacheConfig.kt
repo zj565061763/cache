@@ -35,8 +35,10 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
      * 初始化仓库
      */
     internal fun initCacheStore(cacheStore: CacheStore, group: String, id: String) {
-        val fullID = fullID(group = group, id = id)
-        cacheStore.init(context, directory, fullID)
+        require(group.isNotEmpty())
+        require(id.isNotEmpty())
+        val uid = "${group}:${id}"
+        cacheStore.init(context, directory, uid)
     }
 
     class Builder {
@@ -80,9 +82,6 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
             this.exceptionHandler = handler
         }
 
-        /**
-         * 构建配置
-         */
         fun build(context: Context): CacheConfig {
             return CacheConfig(this, context)
         }
@@ -112,10 +111,4 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
             }
         }
     }
-}
-
-private fun fullID(group: String, id: String): String {
-    require(group.isNotEmpty())
-    require(id.isNotEmpty())
-    return "${group}:${id}"
 }
