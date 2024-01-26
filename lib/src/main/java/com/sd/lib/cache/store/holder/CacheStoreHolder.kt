@@ -7,6 +7,7 @@ internal class GroupCacheStoreHolder {
     private val _groups: MutableMap<String, CacheStoreHolder> = hashMapOf()
 
     fun group(group: String): CacheStoreHolder {
+        require(group.isNotEmpty())
         return _groups.getOrPut(group) { CacheStoreHolderImpl(group) }
     }
 }
@@ -23,10 +24,6 @@ private class CacheStoreHolderImpl(
     private val group: String
 ) : CacheStoreHolder {
     private val _stores: MutableMap<String, StoreInfo> = hashMapOf()
-
-    init {
-        require(group.isNotEmpty())
-    }
 
     override fun getOrPut(
         id: String,
