@@ -8,8 +8,8 @@ import com.sd.lib.cache.store.MMKVCacheStore
 import java.io.File
 
 class CacheConfig private constructor(builder: Builder, context: Context) {
-    internal val context: Context
-    internal val directory: File
+    private val context: Context
+    private val directory: File
     private val cacheStoreClass: Class<out CacheStore>
 
     internal val objectConverter: Cache.ObjectConverter
