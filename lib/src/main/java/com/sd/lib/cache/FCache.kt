@@ -11,7 +11,7 @@ object FCache {
     private var _currentGroup = ""
 
     /** 保存所有仓库 */
-    private val _stores: MutableMap<String, StoreHolder> = hashMapOf()
+    private val _stores: MutableMap<String, StoreInfo> = hashMapOf()
 
     /** 默认无限制缓存 */
     private val _defaultCache: Cache = CacheFactory.groupDefault().unlimited(DefaultID)
@@ -76,20 +76,20 @@ object FCache {
         val fullID = fullID(group = group ?: DefaultGroup, id = id)
         val config = CacheConfig.get()
         synchronized(Cache::class.java) {
-            _stores[fullID]?.let { holder ->
-                check(holder.cacheSizePolicy == cacheSizePolicy) {
+            _stores[fullID]?.let { info ->
+                check(info.cacheSizePolicy == cacheSizePolicy) {
                     "ID $id exist with ${cacheSizePolicy.name}."
                 }
             }
             factory(config).also { store ->
-                _stores[fullID] = StoreHolder(store, cacheSizePolicy)
+                _stores[fullID] = StoreInfo(store, cacheSizePolicy)
                 config.initStore(store, fullID)
             }
         }
     }
 }
 
-private data class StoreHolder(
+private data class StoreInfo(
     val cacheStore: CacheStore,
     val cacheSizePolicy: CacheSizePolicy,
 )
