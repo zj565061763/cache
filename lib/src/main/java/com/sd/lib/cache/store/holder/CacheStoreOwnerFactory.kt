@@ -13,6 +13,20 @@ internal object CacheStoreOwnerFactory {
     /** 当前Group */
     private var _currentGroup = ""
 
+    /**
+     * 设置当前Group
+     */
+    fun setCurrentGroup(group: String) {
+        synchronized(CacheLock) {
+            val oldGroup = _currentGroup
+            if (oldGroup == group) return
+
+            require(group != DefaultGroup)
+            _currentGroup = group
+            _holder.remove(group)
+        }
+    }
+
     fun createDefaultGroup(
         id: String,
         cacheSizePolicy: CacheSizePolicy,
