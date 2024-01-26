@@ -8,7 +8,7 @@ import com.sd.lib.cache.store.EmptyCacheStore
 internal object CacheStoreOwnerFactory {
     private const val DefaultGroup = "com.sd.lib.cache.default.group"
 
-    private val _holder = GroupsCacheStoreHolder()
+    private val _holder = GroupCacheStoreHolder()
 
     /** 当前Group */
     private var _currentGroup = ""

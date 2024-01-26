@@ -3,15 +3,15 @@ package com.sd.lib.cache.store.holder
 import com.sd.lib.cache.CacheConfig
 import com.sd.lib.cache.store.CacheStore
 
-internal class GroupsCacheStoreHolder {
-    private val _groups: MutableMap<String, GroupCacheStoreHolder> = hashMapOf()
+internal class GroupCacheStoreHolder {
+    private val _groups: MutableMap<String, CacheStoreHolder> = hashMapOf()
 
-    fun group(group: String): GroupCacheStoreHolder {
-        return _groups.getOrPut(group) { GroupCacheStoreHolderImpl(group) }
+    fun group(group: String): CacheStoreHolder {
+        return _groups.getOrPut(group) { CacheStoreHolderImpl(group) }
     }
 }
 
-internal interface GroupCacheStoreHolder {
+internal interface CacheStoreHolder {
     fun getOrPut(
         id: String,
         cacheSizePolicy: CacheSizePolicy,
@@ -19,9 +19,9 @@ internal interface GroupCacheStoreHolder {
     ): CacheStore
 }
 
-private class GroupCacheStoreHolderImpl(
+private class CacheStoreHolderImpl(
     private val group: String
-) : GroupCacheStoreHolder {
+) : CacheStoreHolder {
     private val _stores: MutableMap<String, StoreInfo> = hashMapOf()
 
     init {
