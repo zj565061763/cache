@@ -9,7 +9,7 @@ internal class MultiObjectCacheImpl<T>(
     val objectClass: Class<T>,
 ) : MultiObjectCache<T> {
 
-    private val _keyPrefix = "${objectClass.name}_"
+    private val _keyPrefix: String = "${objectClass.name}_"
     private val _objectHandler = ObjectHandler<T>(cacheInfo, "multi_object")
 
     private fun packKey(key: String): String {
