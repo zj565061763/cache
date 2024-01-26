@@ -60,14 +60,14 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
             private set
 
         /**
-         * 保存目录
+         * 缓存目录
          */
         fun setDirectory(directory: File) = apply {
             this.directory = directory
         }
 
         /**
-         * 设置仓库
+         * 缓存仓库
          */
         fun setCacheStore(store: Class<out CacheStore>) = apply {
             this.cacheStore = store
