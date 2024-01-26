@@ -5,7 +5,7 @@ import com.sd.lib.cache.notifyException
 import com.sd.lib.cache.store.CacheStore
 
 internal class GroupCacheStoreHolder {
-    private val _groups: MutableMap<String, CacheStoreHolder> = hashMapOf()
+    private val _groups: MutableMap<String, CacheStoreHolderImpl> = hashMapOf()
 
     fun group(group: String): CacheStoreHolder {
         require(group.isNotEmpty())
@@ -23,8 +23,6 @@ internal interface CacheStoreHolder {
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStore
-
-    fun destroy()
 }
 
 private class CacheStoreHolderImpl(
@@ -55,7 +53,7 @@ private class CacheStoreHolderImpl(
         }
     }
 
-    override fun destroy() {
+    fun destroy() {
         _isDestroyed = true
         _stores.values.forEach {
             try {
