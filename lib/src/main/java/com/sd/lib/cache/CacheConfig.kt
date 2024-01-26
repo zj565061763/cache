@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.sd.lib.cache.impl.GsonObjectConverter
 import com.sd.lib.cache.store.CacheStore
-import com.sd.lib.cache.store.MMKVCacheStore
+import com.sd.lib.cache.store.DefaultCacheStore
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -19,7 +19,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     init {
         this.context = context.applicationContext
         this.directory = builder.directory ?: context.filesDir.resolve("f_cache")
-        this.cacheStoreClass = builder.cacheStore ?: MMKVCacheStore::class.java
+        this.cacheStoreClass = builder.cacheStore ?: DefaultCacheStore::class.java
 
         this.objectConverter = builder.objectConverter ?: GsonObjectConverter()
         this.exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }

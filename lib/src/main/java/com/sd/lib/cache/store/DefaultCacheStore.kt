@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * 基于[https://github.com/Tencent/MMKV]实现的仓库
  */
-internal class MMKVCacheStore : CacheStore {
+class DefaultCacheStore : CacheStore {
     private var _store: MMKV? = null
     private val store: MMKV get() = checkNotNull(_store)
 
