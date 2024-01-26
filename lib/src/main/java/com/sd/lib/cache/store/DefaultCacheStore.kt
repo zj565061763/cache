@@ -47,10 +47,10 @@ class DefaultCacheStore : CacheStore {
     }
 
     companion object {
-        private val sInit = AtomicBoolean(false)
+        private val sInitFlag = AtomicBoolean(false)
 
         fun initMMKV(context: Context, directory: File) {
-            if (sInit.compareAndSet(false, true)) {
+            if (sInitFlag.compareAndSet(false, true)) {
                 MMKV.initialize(context, directory.absolutePath, MMKVLogLevel.LevelNone)
             }
         }
