@@ -1,10 +1,9 @@
 package com.sd.lib.cache.handler
 
 import com.sd.lib.cache.Cache
-import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.CacheLock
+import com.sd.lib.cache.notifyException
 import com.sd.lib.cache.store.CacheStore
-import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * 缓存处理接口
@@ -83,9 +82,7 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     private fun notifyException(error: Throwable) {
-        if (error is CacheException) throw error
-        if (error is CancellationException) throw error
-        cacheInfo.exceptionHandler.onException(error)
+        cacheInfo.exceptionHandler.notifyException(error)
     }
 
     //---------- CacheHandler start ----------

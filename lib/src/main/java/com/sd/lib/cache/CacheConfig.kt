@@ -38,7 +38,11 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         require(group.isNotEmpty())
         require(id.isNotEmpty())
         val uid = "${group}:${id}"
-        cacheStore.init(context, directory, uid)
+        try {
+            cacheStore.init(context, directory, uid)
+        } catch (e: Throwable) {
+            exceptionHandler.notifyException(e)
+        }
     }
 
     class Builder {
