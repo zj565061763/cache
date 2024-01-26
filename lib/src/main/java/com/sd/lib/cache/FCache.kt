@@ -1,169 +1,106 @@
 package com.sd.lib.cache
 
-import com.sd.lib.cache.Cache.CommonCache
-import com.sd.lib.cache.Cache.ExceptionHandler
-import com.sd.lib.cache.Cache.MultiObjectCache
-import com.sd.lib.cache.Cache.ObjectConverter
-import com.sd.lib.cache.Cache.SingleObjectCache
-import com.sd.lib.cache.handler.BooleanHandler
-import com.sd.lib.cache.handler.BytesHandler
-import com.sd.lib.cache.handler.CacheInfo
-import com.sd.lib.cache.handler.DoubleHandler
-import com.sd.lib.cache.handler.FloatHandler
-import com.sd.lib.cache.handler.IntHandler
-import com.sd.lib.cache.handler.LongHandler
-import com.sd.lib.cache.handler.StringHandler
-import com.sd.lib.cache.impl.MultiObjectCacheImpl
-import com.sd.lib.cache.impl.SingleObjectCacheImpl
 import com.sd.lib.cache.store.CacheStore
-import com.sd.lib.cache.store.limitCount
+import com.sd.lib.cache.store.EmptyCacheStore
 
-class FCache private constructor(store: CacheStore) : Cache {
+object FCache {
+    private const val DefaultGroup = "com.sd.lib.cache.default.group"
+    private const val DefaultID = "com.sd.lib.cache.default.id"
 
-    private var _cInt: CommonCache<Int>? = null
-    private var _cLong: CommonCache<Long>? = null
-    private var _cFloat: CommonCache<Float>? = null
-    private var _cDouble: CommonCache<Double>? = null
-    private var _cBoolean: CommonCache<Boolean>? = null
-    private var _cString: CommonCache<String>? = null
-    private var _cBytes: CommonCache<ByteArray>? = null
+    /** 当前组 */
+    private var _currentGroup = ""
 
-    private var _cObject: SingleObjectCacheImpl<*>? = null
-    private var _cObjects: MultiObjectCacheImpl<*>? = null
+    /** 保存所有仓库 */
+    private val _stores: MutableMap<String, StoreHolder> = hashMapOf()
 
-    private val _cacheInfo = object : CacheInfo {
-        override val cacheStore: CacheStore get() = store
-        override val objectConverter: ObjectConverter get() = CacheConfig.get().objectConverter
-        override val exceptionHandler: ExceptionHandler get() = CacheConfig.get().exceptionHandler
-    }
+    /** 默认无限制缓存 */
+    private val _defaultCache: Cache = CacheFactory.groupDefault().unlimited(DefaultID)
 
-    //---------- Cache start ----------
+    /**
+     * 默认无限制缓存
+     */
+    @JvmStatic
+    fun get(): Cache = _defaultCache
 
-    override fun cInt(): CommonCache<Int> {
-        return _cInt ?: IntHandler(_cacheInfo).also {
-            _cInt = it
-        }
-    }
-
-    override fun cLong(): CommonCache<Long> {
-        return _cLong ?: LongHandler(_cacheInfo).also {
-            _cLong = it
-        }
-    }
-
-    override fun cFloat(): CommonCache<Float> {
-        return _cFloat ?: FloatHandler(_cacheInfo).also {
-            _cFloat = it
-        }
-    }
-
-    override fun cDouble(): CommonCache<Double> {
-        return _cDouble ?: DoubleHandler(_cacheInfo).also {
-            _cDouble = it
-        }
-    }
-
-    override fun cBoolean(): CommonCache<Boolean> {
-        return _cBoolean ?: BooleanHandler(_cacheInfo).also {
-            _cBoolean = it
-        }
-    }
-
-    override fun cString(): CommonCache<String> {
-        return _cString ?: StringHandler(_cacheInfo).also {
-            _cString = it
-        }
-    }
-
-    override fun cBytes(): CommonCache<ByteArray> {
-        return _cBytes ?: BytesHandler(_cacheInfo).also {
-            _cBytes = it
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T> cObject(clazz: Class<T>): SingleObjectCache<T> {
-        val cache = _cObject
-        if (cache?.objectClass == clazz) return (cache as SingleObjectCache<T>)
-        return SingleObjectCacheImpl(_cacheInfo, clazz).also {
-            _cObject = it
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T> cObjects(clazz: Class<T>): MultiObjectCache<T> {
-        val cache = _cObjects
-        if (cache?.objectClass == clazz) return (cache as MultiObjectCache<T>)
-        return MultiObjectCacheImpl(_cacheInfo, clazz).also {
-            _cObjects = it
-        }
-    }
-
-    //---------- Cache end ----------
-
-    companion object {
-        private const val DefaultID = "com.sd.lib.cache.id.default"
-        private const val DefaultMemoryID = "${DefaultID}.memory"
-
-        private val sDefaultCache: Cache by lazy { unlimited(DefaultID) }
-        private val sDefaultMemoryCache: Cache by lazy { unlimitedMemory(DefaultMemoryID) }
-
-        /**
-         * 默认无限制
-         */
-        @JvmStatic
-        fun get(): Cache = sDefaultCache
-
-        /**
-         * 默认内存无限制
-         */
-        @JvmStatic
-        fun getMemory(): Cache = sDefaultMemoryCache
-
-        /**
-         * 返回[id]对应的无限制缓存
-         */
-        @JvmStatic
-        fun unlimited(id: String): Cache {
-            val store = CacheConfig.getOrPutStore(id, StoreType.Unlimited) {
-                it.newStore()
+    internal fun getCacheStore(
+        group: String?,
+        id: String,
+    ): CacheStore {
+        return when (group) {
+            // 默认Group
+            null -> {
+                val fullID = fullID(group = DefaultGroup, id = id)
+                checkNotNull(_stores[fullID]).cacheStore
             }
-            return FCache(store)
-        }
 
-        /**
-         * 返回[id]对应的无限制内存缓存
-         */
-        @JvmStatic
-        fun unlimitedMemory(id: String): Cache {
-            val store = CacheConfig.getOrPutStore(id, StoreType.UnlimitedMemory) {
-                it.newMemoryStore()
+            // 当前Group
+            "" -> {
+                val currentGroup = _currentGroup
+                if (currentGroup.isEmpty()) {
+                    EmptyCacheStore
+                } else {
+                    val fullID = fullID(group = currentGroup, id = id)
+                    checkNotNull(_stores[fullID]).cacheStore
+                }
             }
-            return FCache(store)
-        }
 
-        /**
-         * 限制个数，如果[id]相同则返回的是同一个缓存，[limit]以第一次创建为准
-         * @param id 必须保证唯一性
-         */
-        @JvmStatic
-        fun limitCount(limit: Int, id: String): Cache {
-            val store = CacheConfig.getOrPutStore(id, StoreType.LimitCount) {
-                it.newStore().limitCount(limit)
+            // 自定义Group
+            else -> {
+                val fullID = fullID(group = group, id = id)
+                checkNotNull(_stores[fullID]).cacheStore
             }
-            return FCache(store)
-        }
-
-        /**
-         * 内存限制个数，如果[id]相同则返回的是同一个缓存，[limit]以第一次创建为准
-         * @param id 必须保证唯一性
-         */
-        @JvmStatic
-        fun limitCountMemory(limit: Int, id: String): Cache {
-            val store = CacheConfig.getOrPutStore(id, StoreType.LimitCountMemory) {
-                it.newMemoryStore().limitCount(limit)
-            }
-            return FCache(store)
         }
     }
+
+    internal fun newCache(
+        group: String?,
+        id: String,
+        cacheSizePolicy: CacheSizePolicy,
+        factory: (CacheConfig) -> CacheStore,
+    ): Cache {
+        initCacheStore(
+            group = group,
+            id = id,
+            cacheSizePolicy = cacheSizePolicy,
+            factory = factory,
+        )
+        return CacheImpl(group = group, id = id)
+    }
+
+    private fun initCacheStore(
+        group: String?,
+        id: String,
+        cacheSizePolicy: CacheSizePolicy,
+        factory: (CacheConfig) -> CacheStore,
+    ) {
+        val fullID = fullID(group = group ?: DefaultGroup, id = id)
+        val config = CacheConfig.get()
+        synchronized(Cache::class.java) {
+            _stores[fullID]?.let { holder ->
+                check(holder.cacheSizePolicy == cacheSizePolicy) {
+                    "ID $id exist with ${cacheSizePolicy.name}."
+                }
+            }
+            factory(config).also { store ->
+                _stores[fullID] = StoreHolder(store, cacheSizePolicy)
+                config.initStore(store, fullID)
+            }
+        }
+    }
+}
+
+private data class StoreHolder(
+    val cacheStore: CacheStore,
+    val cacheSizePolicy: CacheSizePolicy,
+)
+
+internal enum class CacheSizePolicy {
+    Unlimited,
+    LimitCount
+}
+
+private fun fullID(group: String, id: String): String {
+    require(group.isNotEmpty())
+    require(id.isNotEmpty())
+    return "${group}:${id}"
 }

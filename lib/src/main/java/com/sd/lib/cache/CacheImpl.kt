@@ -12,7 +12,10 @@ import com.sd.lib.cache.impl.MultiObjectCacheImpl
 import com.sd.lib.cache.impl.SingleObjectCacheImpl
 import com.sd.lib.cache.store.CacheStore
 
-internal class CacheImpl(store: CacheStore) : Cache {
+internal class CacheImpl(
+    private val group: String?,
+    private val id: String,
+) : Cache {
 
     private var _cInt: Cache.CommonCache<Int>? = null
     private var _cLong: Cache.CommonCache<Long>? = null
@@ -26,7 +29,7 @@ internal class CacheImpl(store: CacheStore) : Cache {
     private var _cObjects: MultiObjectCacheImpl<*>? = null
 
     private val _cacheInfo = object : CacheInfo {
-        override val cacheStore: CacheStore get() = store
+        override val cacheStore: CacheStore get() = FCache.getCacheStore(group = group, id = id)
         override val objectConverter: Cache.ObjectConverter get() = CacheConfig.get().objectConverter
         override val exceptionHandler: Cache.ExceptionHandler get() = CacheConfig.get().exceptionHandler
     }

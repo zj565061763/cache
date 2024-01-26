@@ -5,7 +5,6 @@ import android.content.Context
 import com.sd.lib.cache.impl.GsonObjectConverter
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.MMKVCacheStore
-import com.sd.lib.cache.store.MemoryCacheStore
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
 import java.io.File
@@ -35,16 +34,9 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     }
 
     /**
-     * 创建内存仓库
-     */
-    internal fun newMemoryStore(): CacheStore {
-        return MemoryCacheStore()
-    }
-
-    /**
      * 初始化仓库
      */
-    private fun initStore(store: CacheStore, id: String) {
+    internal fun initStore(store: CacheStore, id: String) {
         store.init(context, directory, id)
     }
 
@@ -98,14 +90,9 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     }
 
     companion object {
-        private const val sDefaultGroup = "Default"
-
         @SuppressLint("StaticFieldLeak")
         @Volatile
         private var sConfig: CacheConfig? = null
-
-        private var sGroup: String = sDefaultGroup
-        private val sHolder: MutableMap<String, StoreHolder> = hashMapOf()
 
         /**
          * 初始化
@@ -120,72 +107,11 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
             }
         }
 
-        /**
-         * 设置组
-         */
-        internal fun setGroup(group: String?) {
-            @Suppress("NAME_SHADOWING")
-            val group = group ?: sDefaultGroup
-            get()
-            synchronized(Cache::class.java) {
-                if (sGroup == group) return
-
-                sGroup = group
-                val copyList = sHolder.values.toList()
-                sHolder.clear()
-
-                copyList.forEach {
-                    try {
-                        it.store.close()
-                    } catch (e: Throwable) {
-                        get().exceptionHandler.onException(e)
-                    }
-                }
-            }
-        }
-
         internal fun get(): CacheConfig {
             sConfig?.let { return it }
             synchronized(Cache::class.java) {
                 return sConfig ?: error("You should call init() before this.")
             }
         }
-
-        /**
-         * 获取[id]对应的仓库，如果仓库不存在则调用[factory]创建后保存
-         * @param id 必须保证唯一性
-         */
-        internal fun getOrPutStore(
-            id: String,
-            type: StoreType,
-            factory: (CacheConfig) -> CacheStore,
-        ): CacheStore {
-            @Suppress("NAME_SHADOWING")
-            val id = "${sGroup}:${id}"
-            val config = get()
-            synchronized(Cache::class.java) {
-                sHolder[id]?.let { holder ->
-                    check(holder.type == type) { "ID $id exist with type ${holder.type}." }
-                    return holder.store
-                }
-                return factory(config).also { store ->
-                    sHolder[id] = StoreHolder(type, store)
-                    config.initStore(store, id)
-                }
-            }
-        }
     }
-}
-
-private data class StoreHolder(
-    val type: StoreType,
-    val store: CacheStore,
-)
-
-internal enum class StoreType {
-    Unlimited,
-    LimitCount,
-
-    UnlimitedMemory,
-    LimitCountMemory,
 }
