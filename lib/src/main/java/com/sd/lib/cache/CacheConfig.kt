@@ -12,7 +12,7 @@ import java.io.File
 class CacheConfig private constructor(builder: Builder, context: Context) {
     internal val context: Context
     internal val directory: File
-    private val cacheStore: Class<out CacheStore>
+    private val cacheStoreClass: Class<out CacheStore>
 
     internal val objectConverter: Cache.ObjectConverter
     internal val exceptionHandler: Cache.ExceptionHandler
@@ -20,7 +20,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     init {
         this.context = context.applicationContext
         this.directory = builder.directory ?: context.filesDir.resolve("f_cache")
-        this.cacheStore = builder.cacheStore ?: MMKVCacheStore::class.java
+        this.cacheStoreClass = builder.cacheStore ?: MMKVCacheStore::class.java
 
         this.objectConverter = builder.objectConverter ?: GsonObjectConverter()
         this.exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }
@@ -29,15 +29,16 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     /**
      * 创建仓库
      */
-    internal fun newStore(): CacheStore {
-        return cacheStore.getDeclaredConstructor().newInstance()
+    internal fun newCacheStore(): CacheStore {
+        return cacheStoreClass.getDeclaredConstructor().newInstance()
     }
 
     /**
      * 初始化仓库
      */
-    internal fun initStore(store: CacheStore, id: String) {
-        store.init(context, directory, id)
+    internal fun initCacheStore(cacheStore: CacheStore, group: String, id: String) {
+        val fullID = fullID(group = group, id = id)
+        cacheStore.init(context, directory, fullID)
     }
 
     class Builder {
@@ -114,4 +115,10 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
             }
         }
     }
+}
+
+private fun fullID(group: String, id: String): String {
+    require(group.isNotEmpty())
+    require(id.isNotEmpty())
+    return "${group}:${id}"
 }

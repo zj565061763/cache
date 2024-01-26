@@ -66,7 +66,7 @@ class CacheTest {
     @Test
     fun testLimitCount() {
         val limit = 10
-        val cache = CacheFactory.groupDefault().limitCount("limitCount", limit)
+        val cache = FCache.defaultGroup().limitCount("limitCount", limit)
         CacheTestUtils.testLimitCount(cache, limit)
     }
 }

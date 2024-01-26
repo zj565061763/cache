@@ -11,12 +11,11 @@ import com.sd.lib.cache.handler.StringHandler
 import com.sd.lib.cache.impl.MultiObjectCacheImpl
 import com.sd.lib.cache.impl.SingleObjectCacheImpl
 import com.sd.lib.cache.store.CacheStore
+import com.sd.lib.cache.store.holder.CacheStoreOwner
 
 internal class CacheImpl(
-    private val group: String?,
-    private val id: String,
+    private val cacheStoreOwner: CacheStoreOwner
 ) : Cache {
-
     private var _cInt: Cache.CommonCache<Int>? = null
     private var _cLong: Cache.CommonCache<Long>? = null
     private var _cFloat: Cache.CommonCache<Float>? = null
@@ -29,7 +28,7 @@ internal class CacheImpl(
     private var _cObjects: MultiObjectCacheImpl<*>? = null
 
     private val _cacheInfo = object : CacheInfo {
-        override val cacheStore: CacheStore get() = FCache.getCacheStore(group = group, id = id)
+        override val cacheStore: CacheStore get() = cacheStoreOwner.getCacheStore()
         override val objectConverter: Cache.ObjectConverter get() = CacheConfig.get().objectConverter
         override val exceptionHandler: Cache.ExceptionHandler get() = CacheConfig.get().exceptionHandler
     }
