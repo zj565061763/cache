@@ -6,7 +6,7 @@ import java.io.File
 /**
  * 保存在内存中的仓库
  */
-internal class MemoryCacheStore : CacheStore {
+class MemoryCacheStore : CacheStore {
     private val _holder: MutableMap<String, ByteArray> = hashMapOf()
 
     override fun init(context: Context, directory: File, id: String) {
@@ -29,7 +29,7 @@ internal class MemoryCacheStore : CacheStore {
         return _holder.containsKey(key)
     }
 
-    override fun keys(): Array<String>? {
+    override fun keys(): Array<String> {
         return _holder.keys.toTypedArray()
     }
 
