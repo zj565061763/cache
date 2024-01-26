@@ -5,7 +5,7 @@ import com.sd.lib.cache.CacheException
 /**
  * Object处理类
  */
-internal class ObjectHandler<T>(info: CacheInfo, keyPrefix: String) : BaseCacheHandler<T>(info, keyPrefix) {
+internal class ObjectHandler<T>(info: CacheInfo, handlerKey: String) : BaseCacheHandler<T>(info, handlerKey) {
     override fun encode(value: T, clazz: Class<T>?): ByteArray {
         if (clazz == null) throw CacheException("class is null")
         return cacheInfo.objectConverter.encode(value, clazz).also {
