@@ -1,7 +1,6 @@
 package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.sd.lib.cache.CacheFactory
 import com.sd.lib.cache.FCache
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -13,8 +12,6 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class CacheTest {
-    private val _cache = FCache.get()
-
     private val _testEmptyByteArray = true
     private val _testEmptyString = true
 
