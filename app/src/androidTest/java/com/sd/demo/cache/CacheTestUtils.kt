@@ -105,7 +105,7 @@ object CacheTestUtils {
         assertEquals(null, c.get(key))
     }
 
-    fun testCacheString(cache: Cache, testEmpty: Boolean) {
+    fun testCacheString(cache: Cache) {
         val key = "TestKey"
         val c = cache.cString()
 
@@ -119,11 +119,9 @@ object CacheTestUtils {
         assertEquals(true, c.contains(key))
         assertEquals("hello", c.get(key))
 
-        if (testEmpty) {
-            assertEquals(true, c.put(key, ""))
-            assertEquals(true, c.contains(key))
-            assertEquals("", c.get(key))
-        }
+        assertEquals(true, c.put(key, ""))
+        assertEquals(true, c.contains(key))
+        assertEquals("", c.get(key))
 
         // test remove and get
         c.remove(key)
@@ -131,7 +129,7 @@ object CacheTestUtils {
         assertEquals(null, c.get(key))
     }
 
-    fun testCacheBytes(cache: Cache, testEmpty: Boolean) {
+    fun testCacheBytes(cache: Cache) {
         val key = "TestKey"
         val c = cache.cBytes()
 
@@ -145,12 +143,10 @@ object CacheTestUtils {
         assertEquals(true, c.contains(key))
         assertEquals("hello", c.get(key)?.decodeToString())
 
-        if (testEmpty) {
-            val emptyByteArray = "".toByteArray()
-            assertEquals(true, c.put(key, emptyByteArray))
-            assertEquals(true, c.contains(key))
-            assertEquals(0, c.get(key)?.size)
-        }
+        val emptyByteArray = "".toByteArray()
+        assertEquals(true, c.put(key, emptyByteArray))
+        assertEquals(true, c.contains(key))
+        assertEquals(0, c.get(key)?.size)
 
         // test remove and get
         c.remove(key)
