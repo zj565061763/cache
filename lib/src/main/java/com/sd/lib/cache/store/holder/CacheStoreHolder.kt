@@ -1,7 +1,7 @@
 package com.sd.lib.cache.store.holder
 
 import com.sd.lib.cache.CacheConfig
-import com.sd.lib.cache.notifyException
+import com.sd.lib.cache.libNotifyException
 import com.sd.lib.cache.store.CacheStore
 
 internal class GroupCacheStoreHolder {
@@ -59,7 +59,7 @@ private class CacheStoreHolderImpl(
             try {
                 it.cacheStore.close()
             } catch (e: Throwable) {
-                CacheConfig.get().exceptionHandler.notifyException(e)
+                libNotifyException(e)
             }
         }
         _stores.clear()

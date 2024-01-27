@@ -2,7 +2,6 @@ package com.sd.lib.cache.handler
 
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.CacheLock
-import com.sd.lib.cache.notifyException
 import com.sd.lib.cache.store.CacheStore
 
 /**
@@ -82,7 +81,7 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     private fun notifyException(error: Throwable) {
-        cacheInfo.exceptionHandler.notifyException(error)
+        cacheInfo.exceptionHandler.onException(error)
     }
 
     //---------- CacheHandler start ----------

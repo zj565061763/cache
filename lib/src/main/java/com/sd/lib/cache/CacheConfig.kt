@@ -22,7 +22,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         this.cacheStoreClass = builder.cacheStore ?: DefaultCacheStore::class.java
 
         this.objectConverter = builder.objectConverter ?: GsonObjectConverter()
-        this.exceptionHandler = builder.exceptionHandler ?: Cache.ExceptionHandler { }
+        this.exceptionHandler = builder.exceptionHandler.libHandler()
     }
 
     /**
@@ -42,7 +42,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         try {
             cacheStore.init(context, directory, uid)
         } catch (e: Throwable) {
-            exceptionHandler.notifyException(e)
+            libNotifyException(e)
         }
     }
 

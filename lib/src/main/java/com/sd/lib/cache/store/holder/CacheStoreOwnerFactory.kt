@@ -1,9 +1,12 @@
 package com.sd.lib.cache.store.holder
 
+import android.content.Context
 import com.sd.lib.cache.CacheConfig
+import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.CacheLock
+import com.sd.lib.cache.libNotifyException
 import com.sd.lib.cache.store.CacheStore
-import com.sd.lib.cache.store.EmptyCacheStore
+import java.io.File
 
 internal object CacheStoreOwnerFactory {
     private const val DefaultGroup = "com.sd.lib.cache.default.group"
@@ -51,7 +54,7 @@ internal object CacheStoreOwnerFactory {
             synchronized(CacheLock) {
                 val currentGroup = _currentGroup
                 if (currentGroup.isEmpty()) {
-                    EmptyCacheStore
+                    EmptyCurrentGroupCacheStore
                 } else {
                     getOrPut(
                         group = currentGroup,
@@ -77,5 +80,43 @@ internal object CacheStoreOwnerFactory {
                 factory = factory,
             )
         }
+    }
+}
+
+private object EmptyCurrentGroupCacheStore : CacheStore {
+    override fun init(context: Context, directory: File, id: String) {
+        notifyException("Empty current group CacheStore.init()")
+    }
+
+    override fun putCache(key: String, value: ByteArray): Boolean {
+        notifyException("Empty current group CacheStore.putCache()")
+        return false
+    }
+
+    override fun getCache(key: String): ByteArray? {
+        notifyException("Empty current group CacheStore.getCache()")
+        return null
+    }
+
+    override fun removeCache(key: String) {
+        notifyException("Empty current group CacheStore.removeCache()")
+    }
+
+    override fun containsCache(key: String): Boolean {
+        notifyException("Empty current group CacheStore.containsCache()")
+        return false
+    }
+
+    override fun keys(): Array<String>? {
+        notifyException("Empty current group CacheStore.keys()")
+        return null
+    }
+
+    override fun close() {
+        notifyException("Empty current group CacheStore.close()")
+    }
+
+    private fun notifyException(message: String) {
+        libNotifyException(CacheException(message = message))
     }
 }
