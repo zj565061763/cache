@@ -83,13 +83,3 @@ interface Cache {
         fun onException(error: Throwable)
     }
 }
-
-internal fun Cache.ExceptionHandler.notifyException(error: Throwable) {
-    if (error is CacheException) throw error
-    onException(error)
-}
-
-class CacheException(
-    message: String = "",
-    cause: Throwable? = null,
-) : Exception(message, cause)
