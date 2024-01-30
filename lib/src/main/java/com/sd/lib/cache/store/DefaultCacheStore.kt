@@ -60,7 +60,5 @@ class DefaultCacheStore : CacheStore {
 private fun md5(input: String): String {
     return MessageDigest.getInstance("MD5")
         .digest(input.toByteArray())
-        .let { bytes ->
-            bytes.joinToString("") { "%02X".format(it) }
-        }
+        .joinToString("") { "%02X".format(it) }
 }
