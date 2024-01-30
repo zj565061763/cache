@@ -19,17 +19,21 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(_binding.root)
+        FCache.setCurrentGroup("1")
 
         _binding.btnPut.setOnClickListener {
             putData(_defaultGroupCache)
+            putData(_currentGroupCache)
         }
 
         _binding.btnGet.setOnClickListener {
             getData(_defaultGroupCache)
+            getData(_currentGroupCache)
         }
 
         _binding.btnRemove.setOnClickListener {
             removeData(_defaultGroupCache)
+            removeData(_currentGroupCache)
         }
     }
 
