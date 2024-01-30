@@ -13,27 +13,22 @@ private const val Key = "key"
 class MainActivity : AppCompatActivity() {
     private val _binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    private val _defaultGroupCache = FCache.get()
-    private val _currentGroupCache = FCache.currentGroup().unlimited("unlimited")
+    private val _cache = FCache.get()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(_binding.root)
-        FCache.setCurrentGroup("1")
 
         _binding.btnPut.setOnClickListener {
-            putData(_defaultGroupCache)
-            putData(_currentGroupCache)
+            putData(_cache)
         }
 
         _binding.btnGet.setOnClickListener {
-            getData(_defaultGroupCache)
-            getData(_currentGroupCache)
+            getData(_cache)
         }
 
         _binding.btnRemove.setOnClickListener {
-            removeData(_defaultGroupCache)
-            removeData(_currentGroupCache)
+            removeData(_cache)
         }
     }
 
