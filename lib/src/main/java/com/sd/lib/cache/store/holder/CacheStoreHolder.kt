@@ -12,8 +12,8 @@ internal class GroupCacheStoreHolder {
         return _groups.getOrPut(group) { CacheStoreHolderImpl(group) }
     }
 
-    fun remove(group: String) {
-        _groups.remove(group)?.destroy()
+    fun close(group: String) {
+        _groups.remove(group)?.close()
     }
 }
 
@@ -28,7 +28,7 @@ internal interface CacheStoreHolder {
 private class CacheStoreHolderImpl(
     private val group: String
 ) : CacheStoreHolder {
-    private var _isDestroyed = false
+    private var _isClosed = false
     private val _stores: MutableMap<String, StoreInfo> = hashMapOf()
 
     override fun getOrPut(
@@ -36,7 +36,7 @@ private class CacheStoreHolderImpl(
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStore {
-        check(!_isDestroyed)
+        check(!_isClosed)
         require(id.isNotEmpty())
         val info = _stores[id]
         return if (info != null) {
@@ -53,8 +53,8 @@ private class CacheStoreHolderImpl(
         }
     }
 
-    fun destroy() {
-        _isDestroyed = true
+    fun close() {
+        _isClosed = true
         _stores.values.forEach {
             try {
                 it.cacheStore.close()
