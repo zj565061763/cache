@@ -9,6 +9,7 @@ class App : Application() {
         super.onCreate()
         CacheConfig.init(
             CacheConfig.Builder()
+                .setDirectory(getExternalFilesDir("app_cache")!!)
                 .setExceptionHandler(CacheExceptionHandler())
 //                .setObjectConverter(MoshiObjectConverter())
                 .build(this)
