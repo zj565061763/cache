@@ -1,6 +1,7 @@
 package com.sd.demo.cache.impl
 
 import android.content.Context
+import android.util.Base64
 import com.sd.lib.cache.store.CacheStore
 import java.io.File
 import java.io.FileNotFoundException
@@ -17,7 +18,7 @@ class FileCacheStore : CacheStore {
         id: String,
     ) {
         if (_initFlag) error("CacheStore has already been initialized.")
-        _directory = directory.resolve(encodeKey(group)).resolve(encodeKey(id))
+        _directory = directory.resolve(md5(group)).resolve(md5(id))
         _initFlag = true
     }
 
@@ -63,10 +64,15 @@ class FileCacheStore : CacheStore {
     }
 }
 
-private fun encodeKey(key: String): String {
+private fun md5(key: String): String {
     return MessageDigest.getInstance("MD5")
         .digest(key.toByteArray())
         .joinToString("") { "%02X".format(it) }
+}
+
+private fun encodeKey(key: String): String {
+    val input = key.toByteArray()
+    return Base64.encode(input, Base64.DEFAULT).decodeToString()
 }
 
 private fun File?.fMakeDirs(): Boolean {
