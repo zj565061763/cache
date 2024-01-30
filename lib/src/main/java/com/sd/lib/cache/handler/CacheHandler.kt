@@ -141,22 +141,17 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     final override fun keys(transform: (String) -> String): List<String> {
-        return kotlin.runCatching {
-            synchronized(CacheLock) {
-                val keys = _cacheStore.keys()
-                if (keys.isNullOrEmpty()) {
-                    emptyList()
-                } else {
-                    keys.asSequence()
-                        .filter { it.startsWith(_keyPrefix) }
-                        .map { unpackKey(it) }
-                        .map(transform)
-                        .toList()
-                }
+        synchronized(CacheLock) {
+            val keys = _cacheStore.keys()
+            return if (keys.isNullOrEmpty()) {
+                emptyList()
+            } else {
+                keys.asSequence()
+                    .filter { it.startsWith(_keyPrefix) }
+                    .map { unpackKey(it) }
+                    .map(transform)
+                    .toList()
             }
-        }.getOrElse {
-            notifyException(it)
-            emptyList()
         }
     }
 
