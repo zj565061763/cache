@@ -3,7 +3,7 @@ package com.sd.demo.cache.impl
 import android.content.Context
 import com.sd.lib.cache.store.CacheStore
 import java.io.File
-import java.io.IOException
+import java.io.FileNotFoundException
 import java.security.MessageDigest
 
 class FileCacheStore : CacheStore {
@@ -31,7 +31,7 @@ class FileCacheStore : CacheStore {
         val file = fileOf(key) ?: return null
         return try {
             file.readBytes()
-        } catch (e: IOException) {
+        } catch (e: FileNotFoundException) {
             null
         }
     }
