@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-private fun testPerformance(
+private fun testPerformancePut(
     cache: Cache = FCache.get(),
     repeat: Int = 100,
 ) {
@@ -85,7 +85,20 @@ private fun testPerformance(
             cache.cString().put(index.toString(), content)
         }
     }.let {
-        logMsg { "time:${it.inWholeMilliseconds}" }
+        logMsg { "put time:${it.inWholeMilliseconds}" }
+    }
+}
+
+private fun testPerformanceGet(
+    cache: Cache = FCache.get(),
+    repeat: Int = 100,
+) {
+    measureTime {
+        repeat(repeat) { index ->
+            cache.cString().get(index.toString())
+        }
+    }.let {
+        logMsg { "get time:${it.inWholeMilliseconds}" }
     }
 }
 
