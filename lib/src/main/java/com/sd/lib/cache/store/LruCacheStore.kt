@@ -39,8 +39,18 @@ private abstract class LruCacheStore(
         }
     }
 
-    final override fun init(context: Context, directory: File, id: String) {
-        store.init(context, directory, id)
+    final override fun init(
+        context: Context,
+        directory: File,
+        group: String,
+        id: String,
+    ) {
+        store.init(
+            context = context,
+            directory = directory,
+            group = group,
+            id = id,
+        )
         keys()?.forEach { key ->
             val size = sizeOfEntry(key, null)
             _lruCache.put(key, size)

@@ -9,8 +9,7 @@ import java.io.File
 class MemoryCacheStore : CacheStore {
     private val _holder: MutableMap<String, ByteArray> = hashMapOf()
 
-    override fun init(context: Context, directory: File, id: String) {
-    }
+    override fun init(context: Context, directory: File, group: String, id: String) = Unit
 
     override fun putCache(key: String, value: ByteArray): Boolean {
         _holder[key] = value
@@ -33,6 +32,5 @@ class MemoryCacheStore : CacheStore {
         return _holder.keys.toTypedArray()
     }
 
-    override fun close() {
-    }
+    override fun close() = Unit
 }

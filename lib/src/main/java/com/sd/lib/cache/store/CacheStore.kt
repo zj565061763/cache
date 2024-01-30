@@ -10,7 +10,12 @@ interface CacheStore {
     /**
      * 初始化
      */
-    fun init(context: Context, directory: File, id: String)
+    fun init(
+        context: Context,
+        directory: File,
+        group: String,
+        id: String,
+    )
 
     /**
      * 保存缓存

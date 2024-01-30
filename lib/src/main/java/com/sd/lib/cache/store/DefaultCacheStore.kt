@@ -14,10 +14,15 @@ class DefaultCacheStore : CacheStore {
     private var _mmkv: MMKV? = null
     private val mmkv: MMKV get() = checkNotNull(_mmkv)
 
-    override fun init(context: Context, directory: File, id: String) {
+    override fun init(
+        context: Context,
+        directory: File,
+        group: String,
+        id: String,
+    ) {
         initMMKV(context, directory)
         _mmkv?.let { return }
-        val safeID = md5(id)
+        val safeID = md5(group) + "_" + md5(id)
         _mmkv = MMKV.mmkvWithID(safeID)
     }
 

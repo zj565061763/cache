@@ -84,7 +84,7 @@ internal object CacheStoreOwnerFactory {
 }
 
 private object EmptyCurrentGroupCacheStore : CacheStore {
-    override fun init(context: Context, directory: File, id: String) {
+    override fun init(context: Context, directory: File, group: String, id: String) {
         notifyException("Empty current group CacheStore.init()")
     }
 

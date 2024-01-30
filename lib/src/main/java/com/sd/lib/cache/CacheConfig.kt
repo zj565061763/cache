@@ -38,9 +38,13 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     internal fun initCacheStore(cacheStore: CacheStore, group: String, id: String) {
         require(group.isNotEmpty())
         require(id.isNotEmpty())
-        val uid = "${group}:${id}"
         try {
-            cacheStore.init(context, directory, uid)
+            cacheStore.init(
+                context = context,
+                directory = directory,
+                group = group,
+                id = id,
+            )
         } catch (e: Throwable) {
             libNotifyException(e)
         }
