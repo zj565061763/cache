@@ -11,39 +11,39 @@ import java.util.concurrent.atomic.AtomicBoolean
  * 基于[https://github.com/Tencent/MMKV]实现的仓库
  */
 class DefaultCacheStore : CacheStore {
-    private var _store: MMKV? = null
-    private val store: MMKV get() = checkNotNull(_store)
+    private var _mmkv: MMKV? = null
+    private val mmkv: MMKV get() = checkNotNull(_mmkv)
 
     override fun init(context: Context, directory: File, id: String) {
         initMMKV(context, directory)
-        _store?.let { return }
+        _mmkv?.let { return }
         val safeID = md5(id)
-        _store = MMKV.mmkvWithID(safeID)
+        _mmkv = MMKV.mmkvWithID(safeID)
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
-        return store.encode(key, value)
+        return mmkv.encode(key, value)
     }
 
     override fun getCache(key: String): ByteArray? {
-        return store.decodeBytes(key)
+        return mmkv.decodeBytes(key)
     }
 
     override fun removeCache(key: String) {
-        store.remove(key)
+        mmkv.remove(key)
     }
 
     override fun containsCache(key: String): Boolean {
-        return store.contains(key)
+        return mmkv.contains(key)
     }
 
     override fun keys(): Array<String>? {
-        return store.allKeys()
+        return mmkv.allKeys()
     }
 
     override fun close() {
-        _store?.close()
-        _store = null
+        _mmkv?.close()
+        _mmkv = null
     }
 
     companion object {
