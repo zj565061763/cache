@@ -12,7 +12,7 @@ internal class GroupCacheStoreHolder {
         return _groups.getOrPut(group) { CacheStoreHolderImpl(group) }
     }
 
-    fun close(group: String) {
+    fun removeAndClose(group: String) {
         _groups.remove(group)?.close()
     }
 }

@@ -27,7 +27,7 @@ internal object CacheStoreOwnerFactory {
             require(group != DefaultGroup)
             _currentGroup = group
 
-            _holder.close(oldGroup)
+            _holder.removeAndClose(oldGroup)
         }
     }
 
