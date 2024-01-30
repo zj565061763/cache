@@ -22,8 +22,9 @@ class DefaultCacheStore : CacheStore {
     ) {
         initMMKV(context, directory)
         _mmkv?.let { return }
-        val safeID = md5(group) + "_" + md5(id)
-        _mmkv = MMKV.mmkvWithID(safeID)
+
+        val groupDir = directory.resolve(md5(group)).absolutePath
+        _mmkv = MMKV.mmkvWithID(md5(id), groupDir)
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
