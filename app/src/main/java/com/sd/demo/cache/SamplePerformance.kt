@@ -17,16 +17,22 @@ class SamplePerformance : AppCompatActivity() {
         setContentView(_binding.root)
 
         _binding.btnPut.setOnClickListener {
-            testPerformancePut()
+            testPut()
+        }
+        _binding.btnGet.setOnClickListener {
+            testGet()
         }
 
-        _binding.btnGet.setOnClickListener {
-            testPerformanceGet()
+        _binding.btnMd5.setOnClickListener {
+            testMd5()
+        }
+        _binding.btnBase64.setOnClickListener {
+            testBase64()
         }
     }
 }
 
-private fun testPerformancePut(
+private fun testPut(
     cache: Cache = FCache.get(),
     repeat: Int = 100,
 ) {
@@ -40,7 +46,7 @@ private fun testPerformancePut(
     }
 }
 
-private fun testPerformanceGet(
+private fun testGet(
     cache: Cache = FCache.get(),
     repeat: Int = 100,
 ) {
