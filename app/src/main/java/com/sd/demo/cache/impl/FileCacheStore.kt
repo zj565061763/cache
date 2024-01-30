@@ -17,7 +17,7 @@ class FileCacheStore : CacheStore {
         id: String,
     ) {
         if (_initFlag) error("CacheStore has already been initialized.")
-        _directory = directory.resolve(md5(group)).resolve(md5(id))
+        _directory = directory.resolve(encodeKey(group)).resolve(encodeKey(id))
         _initFlag = true
     }
 
@@ -55,7 +55,7 @@ class FileCacheStore : CacheStore {
     private fun fileOf(key: String): File? {
         return _directory.let { dir ->
             if (dir.fMakeDirs()) {
-                dir.resolve(md5(key))
+                dir.resolve(encodeKey(key))
             } else {
                 null
             }
@@ -63,9 +63,9 @@ class FileCacheStore : CacheStore {
     }
 }
 
-private fun md5(input: String): String {
+private fun encodeKey(key: String): String {
     return MessageDigest.getInstance("MD5")
-        .digest(input.toByteArray())
+        .digest(key.toByteArray())
         .joinToString("") { "%02X".format(it) }
 }
 
