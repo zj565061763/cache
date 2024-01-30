@@ -11,8 +11,21 @@ import java.util.concurrent.atomic.AtomicBoolean
  * 基于[https://github.com/Tencent/MMKV]实现的仓库
  */
 class DefaultCacheStore : CacheStore {
+    private var _initFlag = false
+
+    private lateinit var _directory: File
+    private lateinit var _group: String
+    private lateinit var _id: String
+
     private var _mmkv: MMKV? = null
-    private val mmkv: MMKV get() = checkNotNull(_mmkv)
+
+    private val mmkv: MMKV
+        get() {
+            _mmkv?.let { return it }
+            val id = md5(_id)
+            val groupDir = _directory.resolve(md5(_group)).absolutePath
+            return MMKV.mmkvWithID(id, groupDir).also { _mmkv = it }
+        }
 
     override fun init(
         context: Context,
@@ -21,10 +34,13 @@ class DefaultCacheStore : CacheStore {
         id: String,
     ) {
         initMMKV(context, directory)
-        _mmkv?.let { return }
 
-        val groupDir = directory.resolve(md5(group)).absolutePath
-        _mmkv = MMKV.mmkvWithID(md5(id), groupDir)
+        if (_initFlag) error("CacheStore has already been initialized.")
+
+        _directory = directory
+        _group = group
+        _id = id
+        _initFlag = true
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
