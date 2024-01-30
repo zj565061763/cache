@@ -47,7 +47,9 @@ class FileCacheStore : CacheStore {
     }
 
     override fun keys(): Array<String>? {
-        return _directory.list()
+        val list = _directory.list()
+        if (list.isNullOrEmpty()) return null
+        return Array(list.size) { decodeKey(list[it]) }
     }
 
     override fun close() {
@@ -73,6 +75,11 @@ private fun md5(key: String): String {
 private fun encodeKey(key: String): String {
     val input = key.toByteArray()
     return Base64.encode(input, Base64.DEFAULT).decodeToString()
+}
+
+private fun decodeKey(key: String): String {
+    val input = key.toByteArray()
+    return Base64.decode(input, Base64.DEFAULT).decodeToString()
 }
 
 private fun File?.fMakeDirs(): Boolean {
