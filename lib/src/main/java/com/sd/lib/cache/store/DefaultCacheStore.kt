@@ -22,9 +22,9 @@ class DefaultCacheStore : CacheStore {
     private val mmkv: MMKV
         get() {
             _mmkv?.let { return it }
-            val id = md5(_id)
+            val uid = md5("group:${_group}_id:${_id}")
             val groupDir = _directory.resolve(md5(_group)).absolutePath
-            return MMKV.mmkvWithID(id, groupDir).also { _mmkv = it }
+            return MMKV.mmkvWithID(uid, groupDir).also { _mmkv = it }
         }
 
     override fun init(
