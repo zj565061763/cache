@@ -23,6 +23,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".SampleCache"/>
+        <activity android:name=".SamplePerformance"/>
+
     </application>
 
 </manifest>

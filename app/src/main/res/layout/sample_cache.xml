@@ -6,17 +6,24 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/btn_sample_cache"
+        android:id="@+id/btn_put"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SampleCache"
+        android:text="put"
         android:textAllCaps="false" />
 
     <Button
-        android:id="@+id/btn_sample_performance"
+        android:id="@+id/btn_get"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SamplePerformance"
+        android:text="get"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="remove"
         android:textAllCaps="false" />
 
 </LinearLayout>
