@@ -40,6 +40,7 @@ class DefaultCacheStore : CacheStore {
         _directory = directory
         _group = group
         _id = id
+
         _initFlag = true
     }
 
