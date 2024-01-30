@@ -20,58 +20,58 @@ class MainActivity : AppCompatActivity() {
         setContentView(_binding.root)
 
         _binding.btnPut.setOnClickListener {
-            putData()
+            putData(_cache)
         }
 
         _binding.btnGet.setOnClickListener {
-            getData()
+            getData(_cache)
         }
 
         _binding.btnRemove.setOnClickListener {
-            removeData()
+            removeData(_cache)
         }
     }
 
 
-    private fun putData() {
-        _cache.cInt().put(Key, 1)
-        _cache.cLong().put(Key, 22L)
-        _cache.cFloat().put(Key, 333.333f)
-        _cache.cDouble().put(Key, 4444.4444)
-        _cache.cBoolean().put(Key, true)
-        _cache.cString().put(Key, "hello String")
+    private fun putData(cache: Cache) {
+        cache.cInt().put(Key, 1)
+        cache.cLong().put(Key, 22L)
+        cache.cFloat().put(Key, 333.333f)
+        cache.cDouble().put(Key, 4444.4444)
+        cache.cBoolean().put(Key, true)
+        cache.cString().put(Key, "hello String")
 
         val model = TestModel()
-        _cache.cObject(TestModel::class.java).put(model)
-        _cache.cObjects(TestModel::class.java).put(Key, model)
-        _cache.cObjects(TestModel::class.java).put(Key + Key, model)
+        cache.cObject(TestModel::class.java).put(model)
+        cache.cObjects(TestModel::class.java).put(Key, model)
+        cache.cObjects(TestModel::class.java).put(Key + Key, model)
     }
 
-    private fun getData() {
-        logMsg { "cacheInt:" + _cache.cInt().get(Key) }
-        logMsg { "cacheLong:" + _cache.cLong().get(Key) }
-        logMsg { "cacheFloat:" + _cache.cFloat().get(Key) }
-        logMsg { "cacheDouble:" + _cache.cDouble().get(Key) }
-        logMsg { "cacheBoolean:" + _cache.cBoolean().get(Key) }
-        logMsg { "cacheString:" + _cache.cString().get(Key) }
-        logMsg { "objectSingle:" + _cache.cObject(TestModel::class.java).get() }
-        logMsg { "objectMulti:" + _cache.cObjects(TestModel::class.java).get(Key) }
-        logMsg { "objectMulti:" + _cache.cObjects(TestModel::class.java).get(Key + Key) }
+    private fun getData(cache: Cache) {
+        logMsg { "cacheInt:" + cache.cInt().get(Key) }
+        logMsg { "cacheLong:" + cache.cLong().get(Key) }
+        logMsg { "cacheFloat:" + cache.cFloat().get(Key) }
+        logMsg { "cacheDouble:" + cache.cDouble().get(Key) }
+        logMsg { "cacheBoolean:" + cache.cBoolean().get(Key) }
+        logMsg { "cacheString:" + cache.cString().get(Key) }
+        logMsg { "objectSingle:" + cache.cObject(TestModel::class.java).get() }
+        logMsg { "objectMulti:" + cache.cObjects(TestModel::class.java).get(Key) }
+        logMsg { "objectMulti:" + cache.cObjects(TestModel::class.java).get(Key + Key) }
 
-        val keys = _cache.cObjects(TestModel::class.java).keys()
+        val keys = cache.cObjects(TestModel::class.java).keys()
         logMsg { "objectMulti keys:" + keys.joinToString(prefix = "[", postfix = "]", separator = ",") }
     }
 
-    private fun removeData() {
-        _cache.cInt().remove(Key)
-        _cache.cLong().remove(Key)
-        _cache.cFloat().remove(Key)
-        _cache.cDouble().remove(Key)
-        _cache.cBoolean().remove(Key)
-        _cache.cString().remove(Key)
-        _cache.cObject(TestModel::class.java).remove()
-        _cache.cObjects(TestModel::class.java).remove(Key)
-        _cache.cObjects(TestModel::class.java).remove(Key + Key)
+    private fun removeData(cache: Cache) {
+        cache.cInt().remove(Key)
+        cache.cLong().remove(Key)
+        cache.cFloat().remove(Key)
+        cache.cDouble().remove(Key)
+        cache.cBoolean().remove(Key)
+        cache.cString().remove(Key)
+        cache.cObject(TestModel::class.java).remove()
+        cache.cObjects(TestModel::class.java).remove(Key)
+        cache.cObjects(TestModel::class.java).remove(Key + Key)
     }
 }
 
