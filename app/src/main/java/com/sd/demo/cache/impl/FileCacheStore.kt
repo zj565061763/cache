@@ -3,6 +3,7 @@ package com.sd.demo.cache.impl
 import android.content.Context
 import com.sd.lib.cache.store.CacheStore
 import java.io.File
+import java.io.IOException
 import java.security.MessageDigest
 
 class FileCacheStore : CacheStore {
@@ -28,7 +29,11 @@ class FileCacheStore : CacheStore {
 
     override fun getCache(key: String): ByteArray? {
         val file = fileOf(key) ?: return null
-        return file.readBytes()
+        return try {
+            file.readBytes()
+        } catch (e: IOException) {
+            null
+        }
     }
 
     override fun removeCache(key: String) {
