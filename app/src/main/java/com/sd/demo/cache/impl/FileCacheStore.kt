@@ -7,12 +7,7 @@ import java.security.MessageDigest
 
 class FileCacheStore : CacheStore {
     private var _initFlag = false
-
     private lateinit var _directory: File
-    private lateinit var _group: String
-    private lateinit var _id: String
-
-    private lateinit var _groupDir: File
 
     override fun init(
         context: Context,
@@ -21,12 +16,7 @@ class FileCacheStore : CacheStore {
         id: String,
     ) {
         if (_initFlag) error("CacheStore has already been initialized.")
-
-        _directory = directory
-        _group = group
-        _id = id
-
-        _groupDir = directory.resolve(md5(group)).resolve(md5(id))
+        _directory = directory.resolve(md5(group)).resolve(md5(id))
         _initFlag = true
     }
 
@@ -51,16 +41,20 @@ class FileCacheStore : CacheStore {
     }
 
     override fun keys(): Array<String>? {
-        return _groupDir.list()
+        return _directory.list()
     }
 
     override fun close() {
     }
 
     private fun fileOf(key: String): File? {
-        val dir = _groupDir
-        if (!dir.fMakeDirs()) return null
-        return dir.resolve(md5(key))
+        return _directory.let { dir ->
+            if (dir.fMakeDirs()) {
+                dir.resolve(md5(key))
+            } else {
+                null
+            }
+        }
     }
 }
 
