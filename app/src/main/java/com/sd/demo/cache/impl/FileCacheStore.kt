@@ -5,6 +5,7 @@ import android.util.Base64
 import com.sd.lib.cache.store.CacheStore
 import java.io.File
 import java.io.FileNotFoundException
+import java.security.MessageDigest
 
 class FileCacheStore : CacheStore {
     private var _initFlag = false
@@ -18,8 +19,8 @@ class FileCacheStore : CacheStore {
     ) {
         if (_initFlag) error("CacheStore has already been initialized.")
         _directory = directory
-            .resolve(group.encodeToFilename())
-            .resolve(id.encodeToFilename())
+            .resolve(group.md5())
+            .resolve(id.md5())
         _initFlag = true
     }
 
@@ -60,7 +61,7 @@ class FileCacheStore : CacheStore {
     override fun keys(): Array<String>? {
         val list = _directory.list()
         if (list.isNullOrEmpty()) return null
-        return Array(list.size) { list[it].decodeFromFilename() }
+        return Array(list.size) { list[it].decodeKey() }
     }
 
     override fun close() {
@@ -69,7 +70,7 @@ class FileCacheStore : CacheStore {
     private fun fileOf(key: String): File? {
         return _directory.let { dir ->
             if (dir.fMakeDirs()) {
-                dir.resolve(key.encodeToFilename())
+                dir.resolve(key.encodeKey())
             } else {
                 null
             }
@@ -77,13 +78,20 @@ class FileCacheStore : CacheStore {
     }
 }
 
-private fun String.encodeToFilename(): String {
+private fun String.md5(): String {
+    val input = this.toByteArray()
+    return MessageDigest.getInstance("MD5")
+        .digest(input)
+        .joinToString("") { "%02X".format(it) }
+}
+
+private fun String.encodeKey(): String {
     val input = this.toByteArray()
     val flag = Base64.URL_SAFE or Base64.NO_WRAP
     return Base64.encode(input, flag).decodeToString()
 }
 
-private fun String.decodeFromFilename(): String {
+private fun String.decodeKey(): String {
     val input = this.toByteArray()
     val flag = Base64.URL_SAFE or Base64.NO_WRAP
     return Base64.decode(input, flag).decodeToString()
