@@ -11,7 +11,7 @@ internal class MultiObjectCacheImpl<T>(
 ) : MultiObjectCache<T> {
 
     private val _keyPrefix: String = "${objectClass.name}_"
-    private val _objectHandler: CacheHandler<T> = ObjectHandler(cacheInfo, "multi_object")
+    private val _objectHandler: CacheHandler<T> = ObjectHandler(cacheInfo, "m_obj")
 
     private fun packKey(key: String): String {
         require(key.isNotEmpty()) { "key is empty" }

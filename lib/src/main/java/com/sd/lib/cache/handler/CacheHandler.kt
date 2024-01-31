@@ -30,8 +30,6 @@ internal interface CacheInfo {
     val exceptionHandler: Cache.ExceptionHandler
 }
 
-private const val KeyPrefixTag = "f_cache_"
-
 /**
  * 缓存处理基类
  */
@@ -40,7 +38,7 @@ internal abstract class BaseCacheHandler<T>(
     handlerKey: String,
 ) : CacheHandler<T>, Cache.CommonCache<T> {
 
-    private val _keyPrefix = KeyPrefixTag + "${handlerKey}_"
+    private val _keyPrefix = "${handlerKey}_"
 
     private val _cacheStore: CacheStore
         get() = cacheInfo.cacheStore
