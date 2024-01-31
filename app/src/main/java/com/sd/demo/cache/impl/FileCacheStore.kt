@@ -34,7 +34,7 @@ class FileCacheStore : CacheStore {
                 file.writeBytes(value)
                 true
             } else {
-                false
+                throw e
             }
         }
     }
