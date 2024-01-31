@@ -18,8 +18,8 @@ class FileCacheStore : CacheStore {
     ) {
         if (_initFlag) error("CacheStore has already been initialized.")
         _directory = directory
-            .resolve(encodeToFilename(group))
-            .resolve(encodeToFilename(id))
+            .resolve(group.encodeToFilename())
+            .resolve(id.encodeToFilename())
         _initFlag = true
     }
 
@@ -69,7 +69,7 @@ class FileCacheStore : CacheStore {
     private fun fileOf(key: String): File? {
         return _directory.let { dir ->
             if (dir.fMakeDirs()) {
-                dir.resolve(encodeToFilename(key))
+                dir.resolve(key.encodeToFilename())
             } else {
                 null
             }
@@ -77,9 +77,10 @@ class FileCacheStore : CacheStore {
     }
 }
 
-private fun encodeToFilename(input: String): String {
+private fun String.encodeToFilename(): String {
+    val input = this.toByteArray()
     val flag = Base64.URL_SAFE or Base64.NO_WRAP
-    return Base64.encode(input.toByteArray(), flag).decodeToString()
+    return Base64.encode(input, flag).decodeToString()
 }
 
 private fun decodeFromFilename(input: String): String {
