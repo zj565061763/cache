@@ -29,7 +29,6 @@ class SampleCache : AppCompatActivity() {
         }
     }
 
-
     private fun putData(cache: Cache) {
         cache.cInt().put(Key, 1)
         cache.cLong().put(Key, 22L)
