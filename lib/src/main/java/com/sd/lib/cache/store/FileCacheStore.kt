@@ -1,13 +1,12 @@
-package com.sd.demo.cache.impl
+package com.sd.lib.cache.store
 
 import android.content.Context
 import android.util.Base64
-import com.sd.lib.cache.store.CacheStore
 import java.io.File
 import java.io.FileNotFoundException
 import java.security.MessageDigest
 
-class FileCacheStore : CacheStore {
+internal class FileCacheStore : CacheStore {
     private var _initFlag = false
     private lateinit var _directory: File
 
