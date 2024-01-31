@@ -60,7 +60,7 @@ class FileCacheStore : CacheStore {
     override fun keys(): Array<String>? {
         val list = _directory.list()
         if (list.isNullOrEmpty()) return null
-        return Array(list.size) { decodeFromFilename(list[it]) }
+        return Array(list.size) { list[it].decodeFromFilename() }
     }
 
     override fun close() {
@@ -83,9 +83,10 @@ private fun String.encodeToFilename(): String {
     return Base64.encode(input, flag).decodeToString()
 }
 
-private fun decodeFromFilename(input: String): String {
+private fun String.decodeFromFilename(): String {
+    val input = this.toByteArray()
     val flag = Base64.URL_SAFE or Base64.NO_WRAP
-    return Base64.decode(input.toByteArray(), flag).decodeToString()
+    return Base64.decode(input, flag).decodeToString()
 }
 
 private fun File?.fMakeDirs(): Boolean {
