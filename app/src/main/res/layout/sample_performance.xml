@@ -19,18 +19,4 @@
         android:text="get"
         android:textAllCaps="false" />
 
-    <Button
-        android:id="@+id/btn_md5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="md5"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/btn_base64"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="base64"
-        android:textAllCaps="false" />
-
 </LinearLayout>

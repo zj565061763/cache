@@ -21,11 +21,9 @@ class SampleCache : AppCompatActivity() {
         _binding.btnPut.setOnClickListener {
             putData(_cache)
         }
-
         _binding.btnGet.setOnClickListener {
             getData(_cache)
         }
-
         _binding.btnRemove.setOnClickListener {
             removeData(_cache)
         }
