@@ -18,9 +18,7 @@ class FileCacheStore : CacheStore {
         id: String,
     ) {
         if (_initFlag) error("CacheStore has already been initialized.")
-        _directory = directory
-            .resolve(group.md5())
-            .resolve(id.md5())
+        _directory = directory.resolve(group.md5()).resolve(id.md5())
         _initFlag = true
     }
 
