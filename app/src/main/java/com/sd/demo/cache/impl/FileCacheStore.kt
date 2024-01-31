@@ -5,7 +5,6 @@ import android.util.Base64
 import com.sd.lib.cache.store.CacheStore
 import java.io.File
 import java.io.FileNotFoundException
-import java.security.MessageDigest
 
 class FileCacheStore : CacheStore {
     private var _initFlag = false
@@ -18,7 +17,9 @@ class FileCacheStore : CacheStore {
         id: String,
     ) {
         if (_initFlag) error("CacheStore has already been initialized.")
-        _directory = directory.resolve(md5(group)).resolve(md5(id))
+        _directory = directory
+            .resolve(encodeToFilename(group))
+            .resolve(encodeToFilename(id))
         _initFlag = true
     }
 
@@ -64,12 +65,6 @@ class FileCacheStore : CacheStore {
             }
         }
     }
-}
-
-private fun md5(key: String): String {
-    return MessageDigest.getInstance("MD5")
-        .digest(key.toByteArray())
-        .joinToString("") { "%02X".format(it) }
 }
 
 private fun encodeToFilename(input: String): String {
