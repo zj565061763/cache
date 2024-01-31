@@ -26,22 +26,30 @@ internal class MultiObjectCacheImpl<T>(
     override fun put(key: String, value: T?): Boolean {
         if (key.isEmpty()) return false
         if (value == null) return false
-        return _objectHandler.putCache(packKey(key), value, objectClass)
+        @Suppress("NAME_SHADOWING")
+        val key = packKey(key)
+        return _objectHandler.putCache(key, value, objectClass)
     }
 
     override fun get(key: String): T? {
         if (key.isEmpty()) return null
-        return _objectHandler.getCache(packKey(key), objectClass)
+        @Suppress("NAME_SHADOWING")
+        val key = packKey(key)
+        return _objectHandler.getCache(key, objectClass)
     }
 
     override fun remove(key: String) {
         if (key.isEmpty()) return
-        _objectHandler.removeCache(packKey(key))
+        @Suppress("NAME_SHADOWING")
+        val key = packKey(key)
+        _objectHandler.removeCache(key)
     }
 
     override fun contains(key: String): Boolean {
         if (key.isEmpty()) return false
-        return _objectHandler.containsCache(packKey(key))
+        @Suppress("NAME_SHADOWING")
+        val key = packKey(key)
+        return _objectHandler.containsCache(key)
     }
 
     override fun keys(): Array<String> {
