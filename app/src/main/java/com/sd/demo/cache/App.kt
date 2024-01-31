@@ -12,6 +12,7 @@ class App : Application() {
                 .setDirectory(getExternalFilesDir("app_cache")!!)
                 .setExceptionHandler(CacheExceptionHandler())
 //                .setObjectConverter(MoshiObjectConverter())
+//                .setCacheStore(FileCacheStore::class.java)
                 .build(this)
         )
     }
