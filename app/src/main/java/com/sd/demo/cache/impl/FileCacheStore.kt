@@ -25,8 +25,13 @@ class FileCacheStore : CacheStore {
 
     override fun putCache(key: String, value: ByteArray): Boolean {
         val file = fileOf(key) ?: return false
-        file.writeBytes(value)
-        return true
+        return try {
+            file.writeBytes(value)
+            true
+        } catch (e: FileNotFoundException) {
+            file.deleteRecursively()
+            false
+        }
     }
 
     override fun getCache(key: String): ByteArray? {
