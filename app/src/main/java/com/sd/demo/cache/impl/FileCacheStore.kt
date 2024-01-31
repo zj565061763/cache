@@ -29,8 +29,13 @@ class FileCacheStore : CacheStore {
             file.writeBytes(value)
             true
         } catch (e: FileNotFoundException) {
-            file.deleteRecursively()
-            false
+            if (file.isDirectory) {
+                file.deleteRecursively()
+                file.writeBytes(value)
+                true
+            } else {
+                false
+            }
         }
     }
 
