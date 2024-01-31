@@ -50,19 +50,23 @@ internal abstract class BaseCacheHandler<T>(
     //---------- CommonCache start ----------
 
     final override fun put(key: String, value: T?): Boolean {
+        if (key.isEmpty()) return false
         if (value == null) return false
         return putCache(key, value, null)
     }
 
     final override fun get(key: String): T? {
+        if (key.isEmpty()) return null
         return getCache(key, null)
     }
 
     final override fun remove(key: String) {
+        if (key.isEmpty()) return
         removeCache(key)
     }
 
     final override fun contains(key: String): Boolean {
+        if (key.isEmpty()) return false
         return containsCache(key)
     }
 
