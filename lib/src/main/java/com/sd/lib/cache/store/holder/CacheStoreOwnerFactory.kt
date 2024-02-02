@@ -2,6 +2,7 @@ package com.sd.lib.cache.store.holder
 
 import android.content.Context
 import com.sd.lib.cache.CacheConfig
+import com.sd.lib.cache.CacheError
 import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.CacheLock
 import com.sd.lib.cache.libNotifyException
@@ -24,7 +25,7 @@ internal object CacheStoreOwnerFactory {
             val oldGroup = _currentGroup
             if (oldGroup == group) return
 
-            require(group != DefaultGroup)
+            if (group == DefaultGroup) throw CacheError("group is default group.")
             _currentGroup = group
 
             _holder.removeAndClose(oldGroup)
