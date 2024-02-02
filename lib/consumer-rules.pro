@@ -1,0 +1,2 @@
+-keep class com.sd.lib.cache.** { *; }
+-keep class * extends com.sd.lib.cache.store.CacheStore
