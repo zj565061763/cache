@@ -13,17 +13,17 @@ class CacheGroupTest {
     fun testCurrentGroup() {
         val cache = FCache.currentGroup().unlimited("testCurrentGroup")
 
-        testCacheIntCurrentGroup(cache)
+        testCacheIntEmptyCurrentGroup(cache)
 
         FCache.setCurrentGroup("100")
         CacheTestUtils.testCacheInt(cache)
 
         FCache.setCurrentGroup("")
-        testCacheIntCurrentGroup(cache)
+        testCacheIntEmptyCurrentGroup(cache)
     }
 }
 
-private fun testCacheIntCurrentGroup(cache: Cache) {
+private fun testCacheIntEmptyCurrentGroup(cache: Cache) {
     val key = "testCacheIntCurrentGroup"
     val c = cache.cInt()
 
