@@ -2,7 +2,7 @@ package com.sd.lib.cache.store
 
 import android.content.Context
 import android.util.Base64
-import com.sd.lib.cache.CacheError
+import com.sd.lib.cache.libError
 import java.io.File
 import java.io.FileNotFoundException
 import java.security.MessageDigest
@@ -17,7 +17,7 @@ internal class FileCacheStore : CacheStore {
         group: String,
         id: String,
     ) {
-        if (_initFlag) throw CacheError("CacheStore (${group}) (${id}) has already been initialized.")
+        if (_initFlag) libError("CacheStore (${group}) (${id}) has already been initialized.")
         _directory = directory.resolve(group.md5()).resolve(id.md5())
         _initFlag = true
     }

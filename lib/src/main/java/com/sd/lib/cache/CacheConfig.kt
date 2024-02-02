@@ -36,8 +36,8 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
      * 初始化仓库
      */
     internal fun initCacheStore(cacheStore: CacheStore, group: String, id: String) {
-        require(group.isNotEmpty())
-        require(id.isNotEmpty())
+        if (group.isEmpty()) libError("group is empty.")
+        if (id.isEmpty()) libError("id is empty.")
         try {
             cacheStore.init(
                 context = context,

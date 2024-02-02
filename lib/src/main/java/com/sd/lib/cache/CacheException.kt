@@ -14,6 +14,10 @@ internal fun libNotifyException(error: Throwable) {
     CacheConfig.get().exceptionHandler.onException(error)
 }
 
+internal fun libError(message: String): Nothing {
+    throw CacheError(message)
+}
+
 internal fun Cache.ExceptionHandler?.libHandler(): Cache.ExceptionHandler {
     return if (this is LibExceptionHandler) this else LibExceptionHandler(this)
 }

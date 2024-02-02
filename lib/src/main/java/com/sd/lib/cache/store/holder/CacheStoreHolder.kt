@@ -1,7 +1,7 @@
 package com.sd.lib.cache.store.holder
 
 import com.sd.lib.cache.CacheConfig
-import com.sd.lib.cache.CacheError
+import com.sd.lib.cache.libError
 import com.sd.lib.cache.libNotifyException
 import com.sd.lib.cache.store.CacheStore
 
@@ -9,7 +9,6 @@ internal class GroupCacheStoreHolder {
     private val _groups: MutableMap<String, CacheStoreHolderImpl> = hashMapOf()
 
     fun group(group: String): CacheStoreHolder {
-        if (group.isEmpty()) throw CacheError("group is empty.")
         return _groups.getOrPut(group) { CacheStoreHolderImpl(group) }
     }
 
@@ -37,12 +36,11 @@ private class CacheStoreHolderImpl(
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStore {
-        if (_isClosed) throw CacheError("Closed.")
-        if (id.isEmpty()) throw CacheError("id is empty.")
+        if (_isClosed) libError("Closed.")
         val info = _stores[id]
         return if (info != null) {
             if (info.cacheSizePolicy != cacheSizePolicy) {
-                throw CacheError("ID (${id}) exist with ${cacheSizePolicy.name}.")
+                libError("ID (${id}) exist with ${cacheSizePolicy.name}.")
             }
             info.cacheStore
         } else {

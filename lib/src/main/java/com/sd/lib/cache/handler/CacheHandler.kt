@@ -2,6 +2,7 @@ package com.sd.lib.cache.handler
 
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.CacheLock
+import com.sd.lib.cache.libError
 import com.sd.lib.cache.store.CacheStore
 
 /**
@@ -44,7 +45,7 @@ internal abstract class BaseCacheHandler<T>(
         get() = cacheInfo.cacheStore
 
     init {
-        require(handlerKey.isNotEmpty()) { "handlerKey is empty" }
+        if (handlerKey.isEmpty()) libError("handlerKey is empty")
     }
 
     //---------- CommonCache start ----------
