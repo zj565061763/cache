@@ -9,7 +9,7 @@ internal class GroupCacheStoreHolder {
     private val _groups: MutableMap<String, CacheStoreHolderImpl> = hashMapOf()
 
     fun group(group: String): CacheStoreHolder {
-        require(group.isNotEmpty())
+        if (group.isEmpty()) throw CacheError("group is empty.")
         return _groups.getOrPut(group) { CacheStoreHolderImpl(group) }
     }
 
