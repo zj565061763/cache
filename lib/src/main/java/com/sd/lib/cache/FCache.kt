@@ -35,4 +35,4 @@ object FCache {
     fun currentGroup(): CacheFactory = CurrentGroupCacheFactory()
 }
 
-internal val CacheLock: Any = Any()
+internal val CacheLock: Any = FCache
