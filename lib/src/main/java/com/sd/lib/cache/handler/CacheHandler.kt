@@ -74,12 +74,12 @@ internal abstract class BaseCacheHandler<T>(
     //---------- CommonCache end ----------
 
     private fun packKey(key: String): String {
-        require(key.isNotEmpty()) { "key is empty" }
+        if (key.isEmpty()) libError("key is empty")
         return _keyPrefix + key
     }
 
     private fun unpackKey(key: String): String {
-        require(key.isNotEmpty()) { "key is empty" }
+        if (key.isEmpty()) libError("key is empty")
         return key.removePrefix(_keyPrefix)
     }
 

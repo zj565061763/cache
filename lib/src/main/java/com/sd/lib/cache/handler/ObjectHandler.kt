@@ -1,5 +1,6 @@
 package com.sd.lib.cache.handler
 
+import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.libError
 
 /**
@@ -9,7 +10,9 @@ internal class ObjectHandler<T>(info: CacheInfo, handlerKey: String) : BaseCache
     override fun encode(value: T, clazz: Class<T>?): ByteArray {
         if (clazz == null) libError("class is null")
         return cacheInfo.objectConverter.encode(value, clazz).also {
-            if (it.isEmpty()) error("Converter encode returns empty ${clazz.name}")
+            if (it.isEmpty()) {
+                throw CacheException("Converter encode returns empty ${clazz.name}")
+            }
         }
     }
 
