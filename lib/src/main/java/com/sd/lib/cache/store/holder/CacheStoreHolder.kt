@@ -38,7 +38,7 @@ private class CacheStoreHolderImpl(
         factory: (CacheConfig) -> CacheStore,
     ): CacheStore {
         if (_isClosed) throw CacheError("Closed.")
-        require(id.isNotEmpty())
+        if (id.isEmpty()) throw CacheError("id is empty.")
         val info = _stores[id]
         return if (info != null) {
             if (info.cacheSizePolicy != cacheSizePolicy) {
