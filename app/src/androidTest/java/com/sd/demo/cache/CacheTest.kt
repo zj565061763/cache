@@ -2,6 +2,7 @@ package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sd.lib.cache.FCache
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -12,6 +13,25 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class CacheTest {
+
+    @Test
+    fun testEmptyKey() {
+        val cache = FCache.get()
+
+        cache.cInt().let { cInt ->
+            assertEquals(false, cInt.put("", 1))
+            assertEquals(null, cInt.get(""))
+            assertEquals(false, cInt.contains(""))
+            cInt.remove("")
+        }
+
+        cache.cObjects(TestModel::class.java).let { cObject ->
+            assertEquals(false, cObject.put("", TestModel()))
+            assertEquals(null, cObject.get(""))
+            assertEquals(false, cObject.contains(""))
+            cObject.remove("")
+        }
+    }
 
     @Test
     fun testCacheInt() {
