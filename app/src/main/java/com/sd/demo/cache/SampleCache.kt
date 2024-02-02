@@ -70,7 +70,3 @@ class SampleCache : AppCompatActivity() {
         cache.cObjects(TestModel::class.java).remove(Key + Key)
     }
 }
-
-inline fun logMsg(block: () -> String) {
-    Log.i("cache-demo", block())
-}
