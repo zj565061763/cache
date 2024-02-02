@@ -1,6 +1,7 @@
 package com.sd.lib.cache.store.holder
 
 import com.sd.lib.cache.CacheConfig
+import com.sd.lib.cache.CacheError
 import com.sd.lib.cache.libNotifyException
 import com.sd.lib.cache.store.CacheStore
 
@@ -36,12 +37,12 @@ private class CacheStoreHolderImpl(
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStore {
-        check(!_isClosed)
+        if (_isClosed) throw CacheError("Closed.")
         require(id.isNotEmpty())
         val info = _stores[id]
         return if (info != null) {
-            check(info.cacheSizePolicy == cacheSizePolicy) {
-                "ID (${id}) exist with ${cacheSizePolicy.name}."
+            if (info.cacheSizePolicy != cacheSizePolicy) {
+                throw CacheError("ID (${id}) exist with ${cacheSizePolicy.name}.")
             }
             info.cacheStore
         } else {
