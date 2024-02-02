@@ -22,15 +22,13 @@ internal class FileCacheStore : CacheStore {
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
-        val file = fileOf(key) ?: return false
+        val file = fileOf(key)
         return try {
             file.writeBytes(value)
             true
         } catch (e: FileNotFoundException) {
-            if (file.isDirectory) {
-                file.deleteRecursively()
-                file.writeBytes(value)
-                true
+            if (_directory.fMakeDirs()) {
+                writeFile(file, value)
             } else {
                 throw e
             }
@@ -38,7 +36,7 @@ internal class FileCacheStore : CacheStore {
     }
 
     override fun getCache(key: String): ByteArray? {
-        val file = fileOf(key) ?: return null
+        val file = fileOf(key)
         return try {
             file.readBytes()
         } catch (e: FileNotFoundException) {
@@ -47,12 +45,11 @@ internal class FileCacheStore : CacheStore {
     }
 
     override fun removeCache(key: String) {
-        fileOf(key)?.deleteRecursively()
+        fileOf(key).deleteRecursively()
     }
 
     override fun containsCache(key: String): Boolean {
-        val file = fileOf(key) ?: return false
-        return file.isFile
+        return fileOf(key).isFile
     }
 
     override fun keys(): Array<String>? {
@@ -64,14 +61,8 @@ internal class FileCacheStore : CacheStore {
     override fun close() {
     }
 
-    private fun fileOf(key: String): File? {
-        return _directory.let { dir ->
-            if (dir.fMakeDirs()) {
-                dir.resolve(key.encodeKey())
-            } else {
-                null
-            }
-        }
+    private fun fileOf(key: String): File {
+        return _directory.resolve(key.encodeKey())
     }
 }
 
@@ -99,4 +90,19 @@ private fun File?.fMakeDirs(): Boolean {
     if (this.isDirectory) return true
     if (this.isFile) this.delete()
     return this.mkdirs()
+}
+
+private fun writeFile(file: File, value: ByteArray): Boolean {
+    return try {
+        file.writeBytes(value)
+        true
+    } catch (e: FileNotFoundException) {
+        if (file.isDirectory) {
+            file.deleteRecursively()
+            file.writeBytes(value)
+            true
+        } else {
+            throw e
+        }
+    }
 }
