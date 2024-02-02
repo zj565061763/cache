@@ -118,6 +118,6 @@ private object EmptyCurrentGroupCacheStore : CacheStore {
     }
 
     private fun notifyException(message: String) {
-        libNotifyException(CacheException(message = message))
+        libNotifyException(CacheException(message))
     }
 }
