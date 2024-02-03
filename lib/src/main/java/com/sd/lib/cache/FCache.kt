@@ -15,6 +15,14 @@ object FCache {
     fun get(): Cache = _defaultCache
 
     /**
+     * 当前Group
+     */
+    @JvmStatic
+    fun getCurrentGroup(): String {
+        return CacheStoreOwnerFactory.getCurrentGroup()
+    }
+
+    /**
      * 设置当前Group
      */
     @JvmStatic

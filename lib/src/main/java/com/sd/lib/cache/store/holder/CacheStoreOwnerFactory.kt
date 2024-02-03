@@ -18,6 +18,15 @@ internal object CacheStoreOwnerFactory {
     private var _currentGroup = ""
 
     /**
+     * 当前Group
+     */
+    fun getCurrentGroup(): String {
+        synchronized(CacheLock) {
+            return _currentGroup
+        }
+    }
+
+    /**
      * 设置当前Group
      */
     fun setCurrentGroup(group: String) {

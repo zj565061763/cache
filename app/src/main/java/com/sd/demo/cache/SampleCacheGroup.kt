@@ -15,12 +15,15 @@ class SampleCacheGroup : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(_binding.root)
+        logMsg { "currentGroup:${FCache.getCurrentGroup()}" }
 
         _binding.btnSetGroup.setOnClickListener {
-            FCache.setCurrentGroup("group")
+            FCache.setCurrentGroup("666")
+            logMsg { "currentGroup:${FCache.getCurrentGroup()}" }
         }
         _binding.btnRemoveGroup.setOnClickListener {
             FCache.setCurrentGroup("")
+            logMsg { "currentGroup:${FCache.getCurrentGroup()}" }
         }
 
         _binding.btnPut.setOnClickListener {
@@ -90,5 +93,11 @@ class SampleCacheGroup : AppCompatActivity() {
         cache.cObjects(TestModel::class.java).remove(key)
         cache.cObjects(TestModel::class.java).remove(key + key)
         logMsg { "removeData" }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        FCache.setCurrentGroup("")
+        logMsg { "currentGroup:${FCache.getCurrentGroup()}" }
     }
 }
