@@ -23,6 +23,9 @@ class SampleCache : AppCompatActivity() {
         _binding.btnGet.setOnClickListener {
             getData(_cache)
         }
+        _binding.btnContains.setOnClickListener {
+            containsData(_cache)
+        }
         _binding.btnRemove.setOnClickListener {
             removeData(_cache)
         }
@@ -56,6 +59,18 @@ class SampleCache : AppCompatActivity() {
         cache.cObjects(TestModel::class.java).keys().also { keys ->
             logMsg { "objectMulti keys:" + keys.joinToString(prefix = "[", postfix = "]", separator = ",") }
         }
+    }
+
+    private fun containsData(cache: Cache) {
+        cache.cInt().contains(Key).also { logMsg { "cInt:$it" } }
+        cache.cLong().contains(Key).also { logMsg { "cLong:$it" } }
+        cache.cFloat().contains(Key).also { logMsg { "cFloat:$it" } }
+        cache.cDouble().contains(Key).also { logMsg { "cDouble:$it" } }
+        cache.cBoolean().contains(Key).also { logMsg { "cBoolean:$it" } }
+        cache.cString().contains(Key).also { logMsg { "cString:$it" } }
+        cache.cObject(TestModel::class.java).contains().also { logMsg { "cObject:$it" } }
+        cache.cObjects(TestModel::class.java).contains(Key).also { logMsg { "cObjects:$it" } }
+        cache.cObjects(TestModel::class.java).contains(Key + Key).also { logMsg { "cObjects:$it" } }
     }
 
     private fun removeData(cache: Cache) {
