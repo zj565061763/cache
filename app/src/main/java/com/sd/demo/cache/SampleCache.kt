@@ -1,7 +1,6 @@
 package com.sd.demo.cache
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.cache.databinding.SampleCacheBinding
 import com.sd.lib.cache.Cache
@@ -30,32 +29,33 @@ class SampleCache : AppCompatActivity() {
     }
 
     private fun putData(cache: Cache) {
-        cache.cInt().put(Key, 1)
-        cache.cLong().put(Key, 22L)
-        cache.cFloat().put(Key, 333.333f)
-        cache.cDouble().put(Key, 4444.4444)
-        cache.cBoolean().put(Key, true)
-        cache.cString().put(Key, "hello String")
+        cache.cInt().put(Key, 1).also { logMsg { "cInt:$it" } }
+        cache.cLong().put(Key, 22L).also { logMsg { "cLong:$it" } }
+        cache.cFloat().put(Key, 333.333f).also { logMsg { "cFloat:$it" } }
+        cache.cDouble().put(Key, 4444.4444).also { logMsg { "cDouble:$it" } }
+        cache.cBoolean().put(Key, true).also { logMsg { "cBoolean:$it" } }
+        cache.cString().put(Key, "hello String").also { logMsg { "cString:$it" } }
 
         val model = TestModel()
-        cache.cObject(TestModel::class.java).put(model)
-        cache.cObjects(TestModel::class.java).put(Key, model)
-        cache.cObjects(TestModel::class.java).put(Key + Key, model)
+        cache.cObject(TestModel::class.java).put(model).also { logMsg { "cObject:$it" } }
+        cache.cObjects(TestModel::class.java).put(Key, model).also { logMsg { "cObjects:$it" } }
+        cache.cObjects(TestModel::class.java).put(Key + Key, model).also { logMsg { "cObjects:$it" } }
     }
 
     private fun getData(cache: Cache) {
-        logMsg { "cacheInt:" + cache.cInt().get(Key) }
-        logMsg { "cacheLong:" + cache.cLong().get(Key) }
-        logMsg { "cacheFloat:" + cache.cFloat().get(Key) }
-        logMsg { "cacheDouble:" + cache.cDouble().get(Key) }
-        logMsg { "cacheBoolean:" + cache.cBoolean().get(Key) }
-        logMsg { "cacheString:" + cache.cString().get(Key) }
-        logMsg { "objectSingle:" + cache.cObject(TestModel::class.java).get() }
-        logMsg { "objectMulti:" + cache.cObjects(TestModel::class.java).get(Key) }
-        logMsg { "objectMulti:" + cache.cObjects(TestModel::class.java).get(Key + Key) }
+        cache.cInt().get(Key).also { logMsg { "cInt:$it" } }
+        cache.cLong().get(Key).also { logMsg { "cLong:$it" } }
+        cache.cFloat().get(Key).also { logMsg { "cFloat:$it" } }
+        cache.cDouble().get(Key).also { logMsg { "cDouble:$it" } }
+        cache.cBoolean().get(Key).also { logMsg { "cBoolean:$it" } }
+        cache.cString().get(Key).also { logMsg { "cString:$it" } }
+        cache.cObject(TestModel::class.java).get().also { logMsg { "cObject:$it" } }
+        cache.cObjects(TestModel::class.java).get(Key).also { logMsg { "cObjects:$it" } }
+        cache.cObjects(TestModel::class.java).get(Key + Key).also { logMsg { "cObjects:$it" } }
 
-        val keys = cache.cObjects(TestModel::class.java).keys()
-        logMsg { "objectMulti keys:" + keys.joinToString(prefix = "[", postfix = "]", separator = ",") }
+        cache.cObjects(TestModel::class.java).keys().also { keys ->
+            logMsg { "objectMulti keys:" + keys.joinToString(prefix = "[", postfix = "]", separator = ",") }
+        }
     }
 
     private fun removeData(cache: Cache) {
@@ -68,5 +68,6 @@ class SampleCache : AppCompatActivity() {
         cache.cObject(TestModel::class.java).remove()
         cache.cObjects(TestModel::class.java).remove(Key)
         cache.cObjects(TestModel::class.java).remove(Key + Key)
+        logMsg { "removeData" }
     }
 }
