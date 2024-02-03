@@ -16,7 +16,9 @@ class MainActivity : AppCompatActivity() {
         _binding.btnSampleCache.setOnClickListener {
             startActivity(Intent(this, SampleCache::class.java))
         }
-
+        _binding.btnSampleCacheGroup.setOnClickListener {
+            startActivity(Intent(this, SampleCacheGroup::class.java))
+        }
         _binding.btnSamplePerformance.setOnClickListener {
             startActivity(Intent(this, SamplePerformance::class.java))
         }

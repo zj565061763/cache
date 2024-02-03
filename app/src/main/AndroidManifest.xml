@@ -24,6 +24,7 @@
         </activity>
 
         <activity android:name=".SampleCache"/>
+        <activity android:name=".SampleCacheGroup"/>
         <activity android:name=".SamplePerformance"/>
 
     </application>
