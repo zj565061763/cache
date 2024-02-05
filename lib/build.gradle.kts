@@ -13,7 +13,6 @@ android {
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
-        consumerProguardFiles("consumer-rules.pro")
     }
 
     kotlinOptions {
