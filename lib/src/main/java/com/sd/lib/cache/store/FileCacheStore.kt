@@ -18,7 +18,7 @@ internal class FileCacheStore : CacheStore {
         id: String,
     ) {
         if (_initFlag) libError("CacheStore (${group}) (${id}) has already been initialized.")
-        _directory = directory.resolve(group.md5()).resolve(id.md5())
+        _directory = directory.resolve(fMd5(group)).resolve(fMd5(id))
         _initFlag = true
     }
 
@@ -67,13 +67,6 @@ internal class FileCacheStore : CacheStore {
     }
 }
 
-private fun String.md5(): String {
-    val input = this.toByteArray()
-    return MessageDigest.getInstance("MD5")
-        .digest(input)
-        .joinToString("") { "%02X".format(it) }
-}
-
 private fun String.encodeKey(): String {
     val input = this.toByteArray()
     val flag = Base64.URL_SAFE or Base64.NO_WRAP
@@ -84,6 +77,17 @@ private fun String.decodeKey(): String {
     val input = this.toByteArray()
     val flag = Base64.URL_SAFE or Base64.NO_WRAP
     return Base64.decode(input, flag).decodeToString()
+}
+
+private fun fMd5(input: String): String {
+    val md5Bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray())
+    return buildString {
+        for (byte in md5Bytes) {
+            val hex = Integer.toHexString(0xff and byte.toInt())
+            if (hex.length == 1) append("0")
+            append(hex)
+        }
+    }
 }
 
 private fun File?.fMakeDirs(): Boolean {
