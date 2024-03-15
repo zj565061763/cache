@@ -7,8 +7,8 @@ android {
     namespace = "com.sd.demo.cache"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
     defaultConfig {
-        minSdk = libs.versions.androidMinSdk.get().toInt()
-        targetSdk = libs.versions.androidTargetSdk.get().toInt()
+        targetSdk = libs.versions.androidCompileSdk.get().toInt()
+        minSdk = 21
         applicationId = "com.sd.demo.cache"
         versionCode = 1
         versionName = "1.0"
