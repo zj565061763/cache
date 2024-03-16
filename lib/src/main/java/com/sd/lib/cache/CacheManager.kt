@@ -42,7 +42,7 @@ internal object CacheManager {
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStoreOwner {
-        val cacheStore = getOrPut(
+        val cacheStore = getCacheStore(
             group = DEFAULT_GROUP,
             id = id,
             cacheSizePolicy = cacheSizePolicy,
@@ -62,7 +62,7 @@ internal object CacheManager {
                 if (currentGroup.isEmpty()) {
                     EmptyCurrentGroupCacheStore
                 } else {
-                    getOrPut(
+                    getCacheStore(
                         group = currentGroup,
                         id = id,
                         cacheSizePolicy = cacheSizePolicy,
@@ -73,7 +73,7 @@ internal object CacheManager {
         }
     }
 
-    private fun getOrPut(
+    private fun getCacheStore(
         group: String,
         id: String,
         cacheSizePolicy: CacheSizePolicy,
