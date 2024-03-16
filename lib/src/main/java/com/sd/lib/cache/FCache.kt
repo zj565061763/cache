@@ -16,17 +16,13 @@ object FCache {
      * 当前Group
      */
     @JvmStatic
-    fun getCurrentGroup(): String {
-        return CacheManager.getCurrentGroup()
-    }
+    fun getCurrentGroup(): String = CacheManager.getCurrentGroup()
 
     /**
      * 设置当前Group
      */
     @JvmStatic
-    fun setCurrentGroup(group: String) {
-        CacheManager.setCurrentGroup(group)
-    }
+    fun setCurrentGroup(group: String) = CacheManager.setCurrentGroup(group)
 
     /**
      * 默认Group
