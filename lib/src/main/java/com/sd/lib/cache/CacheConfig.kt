@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class CacheConfig private constructor(builder: Builder, context: Context) {
     private val context: Context
+
     private val directory: File
     private val cacheStoreClass: Class<out CacheStore>
 
@@ -18,6 +19,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
 
     init {
         this.context = context.applicationContext
+
         this.directory = builder.directory ?: context.filesDir.resolve("f_cache")
         this.cacheStoreClass = builder.cacheStore ?: FileCacheStore::class.java
 
@@ -71,7 +73,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         }
 
         /**
-         * 缓存仓库
+         * 缓存仓库，[store]必须有无参构造方法用于反射创建对象
          */
         fun setCacheStore(store: Class<out CacheStore>) = apply {
             this.cacheStore = store
