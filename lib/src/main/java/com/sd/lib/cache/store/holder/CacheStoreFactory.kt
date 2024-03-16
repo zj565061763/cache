@@ -6,10 +6,10 @@ import com.sd.lib.cache.libNotifyException
 import com.sd.lib.cache.store.CacheStore
 
 internal class GroupCacheStoreHolder {
-    private val _groups: MutableMap<String, CacheStoreHolderImpl> = hashMapOf()
+    private val _groups: MutableMap<String, CacheStoreFactoryImpl> = hashMapOf()
 
-    fun group(group: String): CacheStoreHolder {
-        return _groups.getOrPut(group) { CacheStoreHolderImpl(group) }
+    fun group(group: String): CacheStoreFactory {
+        return _groups.getOrPut(group) { CacheStoreFactoryImpl(group) }
     }
 
     fun removeAndClose(group: String) {
@@ -17,7 +17,7 @@ internal class GroupCacheStoreHolder {
     }
 }
 
-internal interface CacheStoreHolder {
+internal interface CacheStoreFactory {
     fun getOrPut(
         id: String,
         cacheSizePolicy: CacheSizePolicy,
@@ -25,9 +25,15 @@ internal interface CacheStoreHolder {
     ): CacheStore
 }
 
-private class CacheStoreHolderImpl(
-    private val group: String
-) : CacheStoreHolder {
+internal enum class CacheSizePolicy {
+    /** 不限制 */
+    Unlimited,
+
+    /** 限制个数 */
+    LimitCount
+}
+
+private class CacheStoreFactoryImpl(private val group: String) : CacheStoreFactory {
     private var _isClosed = false
     private val _stores: MutableMap<String, StoreInfo> = hashMapOf()
 
@@ -68,12 +74,4 @@ private class CacheStoreHolderImpl(
         val cacheStore: CacheStore,
         val cacheSizePolicy: CacheSizePolicy,
     )
-}
-
-internal enum class CacheSizePolicy {
-    /** 不限制 */
-    Unlimited,
-
-    /** 限制个数 */
-    LimitCount
 }
