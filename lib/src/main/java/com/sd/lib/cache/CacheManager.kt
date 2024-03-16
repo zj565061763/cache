@@ -92,6 +92,8 @@ internal object CacheManager {
     }
 }
 
+internal val CacheLock: Any = FCache
+
 private object EmptyCurrentGroupCacheStore : CacheStore {
     override fun init(context: Context, directory: File, group: String, id: String) {
         notifyException("Empty current group CacheStore.init()")
