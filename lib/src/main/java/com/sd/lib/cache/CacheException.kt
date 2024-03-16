@@ -18,11 +18,7 @@ internal fun libError(message: String): Nothing {
     throw CacheError(message)
 }
 
-internal fun Cache.ExceptionHandler?.libHandler(): Cache.ExceptionHandler {
-    return if (this is LibExceptionHandler) this else LibExceptionHandler(this)
-}
-
-private class LibExceptionHandler(
+internal class LibExceptionHandler(
     private val handler: Cache.ExceptionHandler?
 ) : Cache.ExceptionHandler {
     override fun onException(error: Throwable) {

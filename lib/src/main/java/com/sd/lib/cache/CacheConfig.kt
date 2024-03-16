@@ -22,7 +22,7 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
         this.cacheStoreClass = builder.cacheStore ?: FileCacheStore::class.java
 
         this.objectConverter = builder.objectConverter ?: GsonObjectConverter()
-        this.exceptionHandler = builder.exceptionHandler.libHandler()
+        this.exceptionHandler = LibExceptionHandler(builder.exceptionHandler)
     }
 
     /**
