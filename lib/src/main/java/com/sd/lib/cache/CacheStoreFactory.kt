@@ -31,14 +31,17 @@ internal class CacheStoreFactory(
 
     fun close() {
         _isClosed = true
-        _stores.values.forEach {
-            try {
-                it.cacheStore.close()
-            } catch (e: Throwable) {
-                libNotifyException(e)
+        while (_stores.isNotEmpty()) {
+            _stores.keys.toTypedArray().forEach { key ->
+                _stores.remove(key)?.cacheStore?.let {
+                    try {
+                        it.close()
+                    } catch (e: Throwable) {
+                        libNotifyException(e)
+                    }
+                }
             }
         }
-        _stores.clear()
     }
 
     private class StoreInfo(
