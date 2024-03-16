@@ -11,8 +11,7 @@ interface CacheFactory {
     fun unlimited(id: String): Cache
 
     /**
-     * 限制个数的缓存
-     * @param id 必须保证唯一性
+     * 限制[limit]个数的缓存
      */
     fun limitCount(id: String, limit: Int): Cache
 }
