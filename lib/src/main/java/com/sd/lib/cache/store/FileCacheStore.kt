@@ -56,11 +56,21 @@ internal class FileCacheStore : CacheStore {
     override fun keys(): Array<String>? {
         val list = _directory.list()
         if (list.isNullOrEmpty()) return null
-        return Array(list.size) { list[it].decodeKey() }
+        return list.asSequence()
+            .map {
+                try {
+                    it.decodeKey()
+                } catch (e: IllegalArgumentException) {
+                    e.printStackTrace()
+                    null
+                }
+            }
+            .filterNotNull()
+            .toList()
+            .toTypedArray()
     }
 
-    override fun close() {
-    }
+    override fun close() = Unit
 
     private fun fileOf(key: String): File {
         return _directory.resolve(key.encodeKey())
@@ -73,6 +83,7 @@ private fun String.encodeKey(): String {
     return Base64.encode(input, flag).decodeToString()
 }
 
+@Throws(IllegalArgumentException::class)
 private fun String.decodeKey(): String {
     val input = this.toByteArray()
     val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
