@@ -5,10 +5,7 @@ open class CacheException(
     cause: Throwable? = null,
 ) : Exception(message, cause)
 
-class CacheError(
-    message: String = "",
-    cause: Throwable? = null,
-) : CacheException(message = message, cause = cause)
+class CacheError(message: String) : CacheException(message)
 
 internal fun libNotifyException(error: Throwable) {
     CacheConfig.get().exceptionHandler.onException(error)
