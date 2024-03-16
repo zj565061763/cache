@@ -27,7 +27,7 @@ internal object CacheManager {
      * 设置当前Group
      */
     fun setCurrentGroup(group: String) {
-        require(group != DEFAULT_GROUP) { "Require not default group." }
+        if (group == DEFAULT_GROUP) libError("Require not default group.")
         synchronized(CacheLock) {
             val oldGroup = _currentGroup
             if (oldGroup == group) return
