@@ -1,6 +1,6 @@
 package com.sd.lib.cache
 
-import com.sd.lib.cache.store.holder.CacheStoreOwnerFactory
+import com.sd.lib.cache.store.holder.CacheStoreManager
 
 object FCache {
     private const val DefaultID = "com.sd.lib.cache.default.id"
@@ -19,7 +19,7 @@ object FCache {
      */
     @JvmStatic
     fun getCurrentGroup(): String {
-        return CacheStoreOwnerFactory.getCurrentGroup()
+        return CacheStoreManager.getCurrentGroup()
     }
 
     /**
@@ -27,7 +27,7 @@ object FCache {
      */
     @JvmStatic
     fun setCurrentGroup(group: String) {
-        CacheStoreOwnerFactory.setCurrentGroup(group)
+        CacheStoreManager.setCurrentGroup(group)
     }
 
     /**

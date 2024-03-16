@@ -10,7 +10,7 @@ import com.sd.lib.cache.libNotifyException
 import com.sd.lib.cache.store.CacheStore
 import java.io.File
 
-internal object CacheStoreOwnerFactory {
+internal object CacheStoreManager {
     private const val DefaultGroup = "com.sd.lib.cache.default.group"
 
     private val _holder = GroupCacheStoreHolder()
