@@ -21,9 +21,8 @@ internal class DefaultGroupCacheFactory : CacheFactory {
         val cacheStoreOwner = CacheStoreOwnerFactory.cacheStoreOwnerForDefaultGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.Unlimited,
-        ) {
-            it.newCacheStore()
-        }
+            factory = { it.newCacheStore() },
+        )
         return CacheImpl(cacheStoreOwner)
     }
 
@@ -31,9 +30,8 @@ internal class DefaultGroupCacheFactory : CacheFactory {
         val cacheStoreOwner = CacheStoreOwnerFactory.cacheStoreOwnerForDefaultGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.LimitCount,
-        ) {
-            it.newCacheStore().limitCount(limit)
-        }
+            factory = { it.newCacheStore().limitCount(limit) },
+        )
         return CacheImpl(cacheStoreOwner)
     }
 }
@@ -43,9 +41,8 @@ internal class CurrentGroupCacheFactory : CacheFactory {
         val cacheStoreOwner = CacheStoreOwnerFactory.cacheStoreOwnerForCurrentGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.Unlimited,
-        ) {
-            it.newCacheStore()
-        }
+            factory = { it.newCacheStore() },
+        )
         return CacheImpl(cacheStoreOwner)
     }
 
@@ -53,9 +50,8 @@ internal class CurrentGroupCacheFactory : CacheFactory {
         val cacheStoreOwner = CacheStoreOwnerFactory.cacheStoreOwnerForCurrentGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.LimitCount,
-        ) {
-            it.newCacheStore().limitCount(limit)
-        }
+            factory = { it.newCacheStore().limitCount(limit) },
+        )
         return CacheImpl(cacheStoreOwner)
     }
 }
