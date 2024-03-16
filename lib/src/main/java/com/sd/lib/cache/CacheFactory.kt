@@ -18,7 +18,7 @@ interface CacheFactory {
 
 internal class DefaultGroupCacheFactory : CacheFactory {
     override fun unlimited(id: String): Cache {
-        val cacheStoreOwner = CacheStoreOwnerFactory.createDefaultGroup(
+        val cacheStoreOwner = CacheStoreOwnerFactory.cacheStoreOwnerForDefaultGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.Unlimited,
         ) {
@@ -28,7 +28,7 @@ internal class DefaultGroupCacheFactory : CacheFactory {
     }
 
     override fun limitCount(id: String, limit: Int): Cache {
-        val cacheStoreOwner = CacheStoreOwnerFactory.createDefaultGroup(
+        val cacheStoreOwner = CacheStoreOwnerFactory.cacheStoreOwnerForDefaultGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.LimitCount,
         ) {
@@ -40,7 +40,7 @@ internal class DefaultGroupCacheFactory : CacheFactory {
 
 internal class CurrentGroupCacheFactory : CacheFactory {
     override fun unlimited(id: String): Cache {
-        val cacheStoreOwner = CacheStoreOwnerFactory.createCurrentGroup(
+        val cacheStoreOwner = CacheStoreOwnerFactory.cacheStoreOwnerForCurrentGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.Unlimited,
         ) {
@@ -50,7 +50,7 @@ internal class CurrentGroupCacheFactory : CacheFactory {
     }
 
     override fun limitCount(id: String, limit: Int): Cache {
-        val cacheStoreOwner = CacheStoreOwnerFactory.createCurrentGroup(
+        val cacheStoreOwner = CacheStoreOwnerFactory.cacheStoreOwnerForCurrentGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.LimitCount,
         ) {

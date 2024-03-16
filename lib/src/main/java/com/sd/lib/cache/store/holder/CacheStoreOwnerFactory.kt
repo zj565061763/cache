@@ -41,7 +41,7 @@ internal object CacheStoreOwnerFactory {
         }
     }
 
-    fun createDefaultGroup(
+    fun cacheStoreOwnerForDefaultGroup(
         id: String,
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
@@ -55,7 +55,7 @@ internal object CacheStoreOwnerFactory {
         return CacheStoreOwner { cacheStore }
     }
 
-    fun createCurrentGroup(
+    fun cacheStoreOwnerForCurrentGroup(
         id: String,
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
