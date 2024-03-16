@@ -5,8 +5,10 @@ import com.sd.lib.cache.store.CacheStore
 import java.io.File
 
 internal object CacheManager {
-    private const val DefaultGroup = "com.sd.lib.cache.default.group"
+    /** 默认的Group */
+    private const val DEFAULT_GROUP = "com.sd.lib.cache.default.group"
 
+    /** Group对应的[CacheStoreFactory] */
     private val _mapGroupFactory: MutableMap<String, CacheStoreFactory> = hashMapOf()
 
     /** 当前Group */
@@ -29,7 +31,7 @@ internal object CacheManager {
             val oldGroup = _currentGroup
             if (oldGroup == group) return
 
-            if (group == DefaultGroup) libError("group is default group.")
+            if (group == DEFAULT_GROUP) libError("group is default group.")
             _currentGroup = group
 
             _mapGroupFactory.remove(oldGroup)?.close()
@@ -42,7 +44,7 @@ internal object CacheManager {
         factory: (CacheConfig) -> CacheStore,
     ): CacheStoreOwner {
         val cacheStore = getOrPut(
-            group = DefaultGroup,
+            group = DEFAULT_GROUP,
             id = id,
             cacheSizePolicy = cacheSizePolicy,
             factory = factory,
