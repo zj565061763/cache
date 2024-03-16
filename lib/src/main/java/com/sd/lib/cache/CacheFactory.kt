@@ -16,7 +16,7 @@ interface CacheFactory {
 
 internal class DefaultGroupCacheFactory : CacheFactory {
     override fun unlimited(id: String): Cache {
-        val cacheStoreOwner = CacheStoreManager.cacheStoreOwnerForDefaultGroup(
+        val cacheStoreOwner = CacheManager.cacheStoreOwnerForDefaultGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.Unlimited,
             factory = { it.newCacheStore() },
@@ -25,7 +25,7 @@ internal class DefaultGroupCacheFactory : CacheFactory {
     }
 
     override fun limitCount(id: String, limit: Int): Cache {
-        val cacheStoreOwner = CacheStoreManager.cacheStoreOwnerForDefaultGroup(
+        val cacheStoreOwner = CacheManager.cacheStoreOwnerForDefaultGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.LimitCount,
             factory = { it.newCacheStore().limitCount(limit) },
@@ -36,7 +36,7 @@ internal class DefaultGroupCacheFactory : CacheFactory {
 
 internal class CurrentGroupCacheFactory : CacheFactory {
     override fun unlimited(id: String): Cache {
-        val cacheStoreOwner = CacheStoreManager.cacheStoreOwnerForCurrentGroup(
+        val cacheStoreOwner = CacheManager.cacheStoreOwnerForCurrentGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.Unlimited,
             factory = { it.newCacheStore() },
@@ -45,7 +45,7 @@ internal class CurrentGroupCacheFactory : CacheFactory {
     }
 
     override fun limitCount(id: String, limit: Int): Cache {
-        val cacheStoreOwner = CacheStoreManager.cacheStoreOwnerForCurrentGroup(
+        val cacheStoreOwner = CacheManager.cacheStoreOwnerForCurrentGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.LimitCount,
             factory = { it.newCacheStore().limitCount(limit) },

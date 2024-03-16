@@ -4,7 +4,7 @@ import android.content.Context
 import com.sd.lib.cache.store.CacheStore
 import java.io.File
 
-internal object CacheStoreManager {
+internal object CacheManager {
     private const val DefaultGroup = "com.sd.lib.cache.default.group"
 
     private val _mapGroupFactory: MutableMap<String, CacheStoreFactory> = hashMapOf()

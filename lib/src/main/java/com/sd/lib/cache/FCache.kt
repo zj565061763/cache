@@ -17,7 +17,7 @@ object FCache {
      */
     @JvmStatic
     fun getCurrentGroup(): String {
-        return CacheStoreManager.getCurrentGroup()
+        return CacheManager.getCurrentGroup()
     }
 
     /**
@@ -25,7 +25,7 @@ object FCache {
      */
     @JvmStatic
     fun setCurrentGroup(group: String) {
-        CacheStoreManager.setCurrentGroup(group)
+        CacheManager.setCurrentGroup(group)
     }
 
     /**
