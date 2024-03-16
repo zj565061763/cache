@@ -69,13 +69,13 @@ internal class FileCacheStore : CacheStore {
 
 private fun String.encodeKey(): String {
     val input = this.toByteArray()
-    val flag = Base64.URL_SAFE or Base64.NO_WRAP
+    val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
     return Base64.encode(input, flag).decodeToString()
 }
 
 private fun String.decodeKey(): String {
     val input = this.toByteArray()
-    val flag = Base64.URL_SAFE or Base64.NO_WRAP
+    val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
     return Base64.decode(input, flag).decodeToString()
 }
 
