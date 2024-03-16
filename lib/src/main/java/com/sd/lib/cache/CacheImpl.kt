@@ -11,7 +11,10 @@ import com.sd.lib.cache.handler.StringHandler
 import com.sd.lib.cache.impl.MultiObjectCacheImpl
 import com.sd.lib.cache.impl.SingleObjectCacheImpl
 import com.sd.lib.cache.store.CacheStore
-import com.sd.lib.cache.store.holder.CacheStoreOwner
+
+internal fun interface CacheStoreOwner {
+    fun getCacheStore(): CacheStore
+}
 
 internal class CacheImpl(
     private val cacheStoreOwner: CacheStoreOwner

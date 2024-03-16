@@ -4,6 +4,7 @@ import android.content.Context
 import com.sd.lib.cache.CacheConfig
 import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.CacheLock
+import com.sd.lib.cache.CacheStoreOwner
 import com.sd.lib.cache.libError
 import com.sd.lib.cache.libNotifyException
 import com.sd.lib.cache.store.CacheStore
