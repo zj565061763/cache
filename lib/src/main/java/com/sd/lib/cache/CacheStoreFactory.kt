@@ -1,43 +1,12 @@
-package com.sd.lib.cache.store.holder
+package com.sd.lib.cache
 
-import com.sd.lib.cache.CacheConfig
-import com.sd.lib.cache.libError
-import com.sd.lib.cache.libNotifyException
 import com.sd.lib.cache.store.CacheStore
 
-internal class GroupCacheStoreHolder {
-    private val _groups: MutableMap<String, CacheStoreFactoryImpl> = hashMapOf()
-
-    fun group(group: String): CacheStoreFactory {
-        return _groups.getOrPut(group) { CacheStoreFactoryImpl(group) }
-    }
-
-    fun removeAndClose(group: String) {
-        _groups.remove(group)?.close()
-    }
-}
-
-internal interface CacheStoreFactory {
-    fun getOrPut(
-        id: String,
-        cacheSizePolicy: CacheSizePolicy,
-        factory: (CacheConfig) -> CacheStore,
-    ): CacheStore
-}
-
-internal enum class CacheSizePolicy {
-    /** 不限制 */
-    Unlimited,
-
-    /** 限制个数 */
-    LimitCount
-}
-
-private class CacheStoreFactoryImpl(private val group: String) : CacheStoreFactory {
+internal class CacheStoreFactory(private val group: String) {
     private var _isClosed = false
     private val _stores: MutableMap<String, StoreInfo> = hashMapOf()
 
-    override fun getOrPut(
+    fun getOrPut(
         id: String,
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
@@ -74,4 +43,12 @@ private class CacheStoreFactoryImpl(private val group: String) : CacheStoreFacto
         val cacheStore: CacheStore,
         val cacheSizePolicy: CacheSizePolicy,
     )
+}
+
+internal enum class CacheSizePolicy {
+    /** 不限制 */
+    Unlimited,
+
+    /** 限制个数 */
+    LimitCount
 }

@@ -1,7 +1,5 @@
 package com.sd.lib.cache
 
-import com.sd.lib.cache.store.holder.CacheSizePolicy
-import com.sd.lib.cache.store.holder.CacheStoreManager
 import com.sd.lib.cache.store.limitCount
 
 interface CacheFactory {

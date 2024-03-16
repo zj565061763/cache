@@ -1,7 +1,5 @@
 package com.sd.lib.cache
 
-import com.sd.lib.cache.store.holder.CacheStoreManager
-
 object FCache {
     private const val DefaultID = "com.sd.lib.cache.default.id"
 

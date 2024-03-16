@@ -1,19 +1,13 @@
-package com.sd.lib.cache.store.holder
+package com.sd.lib.cache
 
 import android.content.Context
-import com.sd.lib.cache.CacheConfig
-import com.sd.lib.cache.CacheException
-import com.sd.lib.cache.CacheLock
-import com.sd.lib.cache.CacheStoreOwner
-import com.sd.lib.cache.libError
-import com.sd.lib.cache.libNotifyException
 import com.sd.lib.cache.store.CacheStore
 import java.io.File
 
 internal object CacheStoreManager {
     private const val DefaultGroup = "com.sd.lib.cache.default.group"
 
-    private val _holder = GroupCacheStoreHolder()
+    private val _mapGroupFactory: MutableMap<String, CacheStoreFactory> = hashMapOf()
 
     /** 当前Group */
     private var _currentGroup = ""
@@ -38,7 +32,7 @@ internal object CacheStoreManager {
             if (group == DefaultGroup) libError("group is default group.")
             _currentGroup = group
 
-            _holder.removeAndClose(oldGroup)
+            _mapGroupFactory.remove(oldGroup)?.close()
         }
     }
 
@@ -85,7 +79,9 @@ internal object CacheStoreManager {
         factory: (CacheConfig) -> CacheStore,
     ): CacheStore {
         synchronized(CacheLock) {
-            return _holder.group(group).getOrPut(
+            return _mapGroupFactory.getOrPut(group) {
+                CacheStoreFactory(group)
+            }.getOrPut(
                 id = id,
                 cacheSizePolicy = cacheSizePolicy,
                 factory = factory,
