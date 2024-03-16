@@ -8,7 +8,7 @@ internal class CacheStoreFactory(
     private var _isClosed = false
     private val _stores: MutableMap<String, StoreInfo> = hashMapOf()
 
-    fun getOrPut(
+    fun create(
         id: String,
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,

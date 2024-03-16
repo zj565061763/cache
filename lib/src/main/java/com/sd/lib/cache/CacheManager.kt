@@ -82,7 +82,7 @@ internal object CacheManager {
         synchronized(CacheLock) {
             return _mapGroupFactory.getOrPut(group) {
                 CacheStoreFactory(group)
-            }.getOrPut(
+            }.create(
                 id = id,
                 cacheSizePolicy = cacheSizePolicy,
                 factory = factory,
