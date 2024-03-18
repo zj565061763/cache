@@ -3,8 +3,7 @@ package com.sd.demo.cache
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.cache.databinding.SamplePerformanceBinding
-import com.sd.lib.cache.Cache
-import com.sd.lib.cache.FCache
+import com.sd.lib.cache.fCache
 import kotlin.time.measureTime
 
 class SamplePerformance : AppCompatActivity() {
@@ -13,7 +12,6 @@ class SamplePerformance : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(_binding.root)
-
         _binding.btnPut.setOnClickListener {
             testPut()
         }
@@ -23,27 +21,23 @@ class SamplePerformance : AppCompatActivity() {
     }
 }
 
-private fun testPut(
-    cache: Cache = FCache.get(),
-    repeat: Int = 100,
-) {
+private fun testPut(repeat: Int = 100) {
+    val cache = fCache.single(TestModel::class.java)
     val model = TestModel()
     measureTime {
         repeat(repeat) {
-            cache.single(TestModel::class.java).put(model)
+            cache.put(model)
         }
     }.let {
         logMsg { "put time:${it.inWholeMilliseconds}" }
     }
 }
 
-private fun testGet(
-    cache: Cache = FCache.get(),
-    repeat: Int = 100,
-) {
+private fun testGet(repeat: Int = 100) {
+    val cache = fCache.single(TestModel::class.java)
     measureTime {
-        repeat(repeat) { index ->
-            cache.single(TestModel::class.java).get()
+        repeat(repeat) {
+            cache.get()
         }
     }.let {
         logMsg { "get time:${it.inWholeMilliseconds}" }

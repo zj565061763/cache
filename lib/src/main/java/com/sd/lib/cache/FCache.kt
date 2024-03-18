@@ -36,3 +36,6 @@ object FCache {
     @JvmStatic
     fun currentGroup(): CacheFactory = CurrentGroupCacheFactory()
 }
+
+/** [FCache.get] */
+val fCache: Cache get() = FCache.get()
