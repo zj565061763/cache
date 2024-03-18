@@ -2,8 +2,8 @@ package com.sd.lib.cache
 
 interface Cache {
 
-    fun <T> o(clazz: Class<T>): SingleObjectCache<T>
-    fun <T> oo(clazz: Class<T>): MultiObjectCache<T>
+    fun <T> single(clazz: Class<T>): SingleObjectCache<T>
+    fun <T> multi(clazz: Class<T>): MultiObjectCache<T>
 
     /**
      * 单对象缓存接口

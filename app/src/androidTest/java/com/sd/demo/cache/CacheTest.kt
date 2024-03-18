@@ -17,7 +17,7 @@ class CacheTest {
     @Test
     fun testEmptyKey() {
         val cache = FCache.get()
-        cache.oo(TestModel::class.java).let { c ->
+        cache.multi(TestModel::class.java).let { c ->
             assertEquals(false, c.put("", TestModel()))
             assertEquals(null, c.get(""))
             assertEquals(false, c.contains(""))

@@ -25,7 +25,7 @@ class CacheGroupTest {
 
 private fun testCacheEmptyCurrentGroup(cache: Cache) {
     val key = "testCacheEmptyCurrentGroup"
-    val c = cache.oo(TestModel::class.java)
+    val c = cache.multi(TestModel::class.java)
 
     // test get defaultValue
     c.remove(key)

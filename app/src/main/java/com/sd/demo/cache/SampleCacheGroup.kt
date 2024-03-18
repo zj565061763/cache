@@ -11,8 +11,8 @@ class SampleCacheGroup : AppCompatActivity() {
     private val key = "key"
 
     private val _cache = FCache.currentGroup().unlimited("Tom")
-    private val _singleCache = _cache.o(TestModel::class.java)
-    private val _multiCache = _cache.oo(TestModel::class.java)
+    private val _singleCache = _cache.single(TestModel::class.java)
+    private val _multiCache = _cache.multi(TestModel::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

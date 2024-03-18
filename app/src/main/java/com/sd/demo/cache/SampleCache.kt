@@ -10,8 +10,8 @@ class SampleCache : AppCompatActivity() {
 
     private val key = "key"
 
-    private val _singleCache = FCache.get().o(TestModel::class.java)
-    private val _multiCache = FCache.get().oo(TestModel::class.java)
+    private val _singleCache = FCache.get().single(TestModel::class.java)
+    private val _multiCache = FCache.get().multi(TestModel::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

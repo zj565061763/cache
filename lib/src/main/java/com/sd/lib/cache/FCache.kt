@@ -3,7 +3,7 @@ package com.sd.lib.cache
 object FCache {
     private const val DEFAULT_ID = "com.sd.lib.cache.default.id"
 
-    /** 默认无限制缓存 */
+    /** 默认Group无限制缓存 */
     private val _defaultCache: Cache = defaultGroup().unlimited(DEFAULT_ID)
 
     /**

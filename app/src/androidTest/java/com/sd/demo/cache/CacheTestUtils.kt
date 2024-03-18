@@ -7,7 +7,7 @@ object CacheTestUtils {
 
     fun testCacheObject(cache: Cache) {
         val model = TestModel()
-        val c = cache.o(TestModel::class.java)
+        val c = cache.single(TestModel::class.java)
 
         // test get defaultValue
         c.remove()
@@ -32,7 +32,7 @@ object CacheTestUtils {
         val model1 = TestModel("TestModel1")
         val model2 = TestModel("TestModel2")
 
-        val c = cache.oo(TestModel::class.java)
+        val c = cache.multi(TestModel::class.java)
 
         // test get defaultValue
         c.let {
@@ -74,7 +74,7 @@ object CacheTestUtils {
     }
 
     fun testLimitCount(cache: Cache, limit: Int) {
-        val c = cache.oo(TestModel::class.java)
+        val c = cache.multi(TestModel::class.java)
 
         repeat(limit) { index ->
             val key = index.toString()

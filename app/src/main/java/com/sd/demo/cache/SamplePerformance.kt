@@ -30,7 +30,7 @@ private fun testPut(
     val model = TestModel()
     measureTime {
         repeat(repeat) {
-            cache.o(TestModel::class.java).put(model)
+            cache.single(TestModel::class.java).put(model)
         }
     }.let {
         logMsg { "put time:${it.inWholeMilliseconds}" }
@@ -43,7 +43,7 @@ private fun testGet(
 ) {
     measureTime {
         repeat(repeat) { index ->
-            cache.o(TestModel::class.java).get()
+            cache.single(TestModel::class.java).get()
         }
     }.let {
         logMsg { "get time:${it.inWholeMilliseconds}" }
