@@ -20,7 +20,7 @@ class SampleCacheGroup : AppCompatActivity() {
         logMsg { "currentGroup:${FCache.getCurrentGroup()}" }
 
         _binding.btnSetGroup.setOnClickListener {
-            FCache.setCurrentGroup("Jerry")
+            FCache.setCurrentGroup("Tom")
             logMsg { "currentGroup:${FCache.getCurrentGroup()}" }
         }
         _binding.btnRemoveGroup.setOnClickListener {
