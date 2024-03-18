@@ -17,55 +17,12 @@ class CacheTest {
     @Test
     fun testEmptyKey() {
         val cache = FCache.get()
-
-        cache.cInt().let { cInt ->
-            assertEquals(false, cInt.put("", 1))
-            assertEquals(null, cInt.get(""))
-            assertEquals(false, cInt.contains(""))
-            cInt.remove("")
-        }
-
-        cache.cObjects(TestModel::class.java).let { cObject ->
+        cache.oo(TestModel::class.java).let { cObject ->
             assertEquals(false, cObject.put("", TestModel()))
             assertEquals(null, cObject.get(""))
             assertEquals(false, cObject.contains(""))
             cObject.remove("")
         }
-    }
-
-    @Test
-    fun testCacheInt() {
-        CacheTestUtils.testCacheInt(FCache.get())
-    }
-
-    @Test
-    fun testCacheLong() {
-        CacheTestUtils.testCacheLong(FCache.get())
-    }
-
-    @Test
-    fun testCacheFloat() {
-        CacheTestUtils.testCacheFloat(FCache.get())
-    }
-
-    @Test
-    fun testCacheDouble() {
-        CacheTestUtils.testCacheDouble(FCache.get())
-    }
-
-    @Test
-    fun testCacheBoolean() {
-        CacheTestUtils.testCacheBoolean(FCache.get())
-    }
-
-    @Test
-    fun testCacheString() {
-        CacheTestUtils.testCacheString(FCache.get())
-    }
-
-    @Test
-    fun testCacheBytes() {
-        CacheTestUtils.testCacheBytes(FCache.get())
     }
 
     @Test

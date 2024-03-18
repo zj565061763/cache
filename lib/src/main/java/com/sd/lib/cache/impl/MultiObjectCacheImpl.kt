@@ -12,7 +12,7 @@ internal class MultiObjectCacheImpl<T>(
 ) : MultiObjectCache<T> {
 
     private val _keyPrefix: String = "${objectClass.name}_"
-    private val _objectHandler: CacheHandler<T> = ObjectHandler(cacheInfo, "m_obj")
+    private val _objectHandler: CacheHandler<T> = ObjectHandler(cacheInfo, "oo")
 
     private fun packKey(key: String): String {
         if (key.isEmpty()) libError("key is empty")

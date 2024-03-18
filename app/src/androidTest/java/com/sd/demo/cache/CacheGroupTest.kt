@@ -13,19 +13,19 @@ class CacheGroupTest {
     fun testCurrentGroup() {
         val cache = FCache.currentGroup().unlimited("testCurrentGroup")
 
-        testCacheIntEmptyCurrentGroup(cache)
+        testCacheEmptyCurrentGroup(cache)
 
         FCache.setCurrentGroup("100")
-        CacheTestUtils.testCacheInt(cache)
+        CacheTestUtils.testCacheMultiObject(cache)
 
         FCache.setCurrentGroup("")
-        testCacheIntEmptyCurrentGroup(cache)
+        testCacheEmptyCurrentGroup(cache)
     }
 }
 
-private fun testCacheIntEmptyCurrentGroup(cache: Cache) {
-    val key = "testCacheIntCurrentGroup"
-    val c = cache.cInt()
+private fun testCacheEmptyCurrentGroup(cache: Cache) {
+    val key = "testCacheEmptyCurrentGroup"
+    val c = cache.oo(TestModel::class.java)
 
     // test get defaultValue
     c.remove(key)
@@ -33,7 +33,7 @@ private fun testCacheIntEmptyCurrentGroup(cache: Cache) {
     Assert.assertEquals(null, c.get(key))
 
     // test put and get
-    Assert.assertEquals(false, c.put(key, 1))
+    Assert.assertEquals(false, c.put(key, TestModel()))
     Assert.assertEquals(false, c.contains(key))
     Assert.assertEquals(null, c.get(key))
 }

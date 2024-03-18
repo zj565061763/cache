@@ -37,7 +37,7 @@ internal interface CacheInfo {
 internal abstract class BaseCacheHandler<T>(
     val cacheInfo: CacheInfo,
     handlerKey: String,
-) : CacheHandler<T>, Cache.CommonCache<T> {
+) : CacheHandler<T> {
 
     private val _keyPrefix = "${handlerKey}_"
 
@@ -47,31 +47,6 @@ internal abstract class BaseCacheHandler<T>(
     init {
         if (handlerKey.isEmpty()) libError("handlerKey is empty")
     }
-
-    //---------- CommonCache start ----------
-
-    final override fun put(key: String, value: T?): Boolean {
-        if (key.isEmpty()) return false
-        if (value == null) return false
-        return putCache(key, value, null)
-    }
-
-    final override fun get(key: String): T? {
-        if (key.isEmpty()) return null
-        return getCache(key, null)
-    }
-
-    final override fun remove(key: String) {
-        if (key.isEmpty()) return
-        removeCache(key)
-    }
-
-    final override fun contains(key: String): Boolean {
-        if (key.isEmpty()) return false
-        return containsCache(key)
-    }
-
-    //---------- CommonCache end ----------
 
     private fun packKey(key: String): String {
         if (key.isEmpty()) libError("key is empty")

@@ -27,10 +27,10 @@ private fun testPut(
     cache: Cache = FCache.get(),
     repeat: Int = 100,
 ) {
-    val content = "1".repeat(10 * 1024)
+    val model = TestModel()
     measureTime {
-        repeat(repeat) { index ->
-            cache.cString().put(index.toString(), content)
+        repeat(repeat) {
+            cache.o(TestModel::class.java).put(model)
         }
     }.let {
         logMsg { "put time:${it.inWholeMilliseconds}" }
@@ -43,7 +43,7 @@ private fun testGet(
 ) {
     measureTime {
         repeat(repeat) { index ->
-            cache.cString().get(index.toString())
+            cache.o(TestModel::class.java).get()
         }
     }.let {
         logMsg { "get time:${it.inWholeMilliseconds}" }

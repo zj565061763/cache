@@ -1,42 +1,9 @@
 package com.sd.lib.cache
 
 interface Cache {
-    fun cInt(): CommonCache<Int>
-    fun cLong(): CommonCache<Long>
-    fun cFloat(): CommonCache<Float>
-    fun cDouble(): CommonCache<Double>
-    fun cBoolean(): CommonCache<Boolean>
-    fun cString(): CommonCache<String>
-    fun cBytes(): CommonCache<ByteArray>
 
-    fun <T> cObject(clazz: Class<T>): SingleObjectCache<T>
-    fun <T> cObjects(clazz: Class<T>): MultiObjectCache<T>
-
-    /**
-     * 基本数据类型，通用缓存接口
-     */
-    interface CommonCache<T> {
-        /**
-         * 保存缓存
-         * @return true-保存成功，false-保存失败
-         */
-        fun put(key: String, value: T?): Boolean
-
-        /**
-         * 获取[key]对应的缓存
-         */
-        fun get(key: String): T?
-
-        /**
-         * 移除[key]对应的缓存
-         */
-        fun remove(key: String)
-
-        /**
-         * [key]对应的缓存是否存在
-         */
-        fun contains(key: String): Boolean
-    }
+    fun <T> o(clazz: Class<T>): SingleObjectCache<T>
+    fun <T> oo(clazz: Class<T>): MultiObjectCache<T>
 
     /**
      * 单对象缓存接口
