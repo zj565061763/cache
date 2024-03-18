@@ -13,8 +13,8 @@ internal class CacheImpl(
     private val cacheStoreOwner: CacheStoreOwner
 ) : Cache {
 
-    private var _cObject: SingleObjectCacheImpl<*>? = null
-    private var _cObjects: MultiObjectCacheImpl<*>? = null
+    private var _singleCache: SingleObjectCacheImpl<*>? = null
+    private var _multiCache: MultiObjectCacheImpl<*>? = null
 
     private val _cacheInfo = object : CacheInfo {
         override val cacheStore: CacheStore get() = cacheStoreOwner.getCacheStore()
@@ -23,26 +23,26 @@ internal class CacheImpl(
     }
 
     override fun <T> o(clazz: Class<T>): Cache.SingleObjectCache<T> {
-        _cObject?.let { cache ->
+        _singleCache?.let { cache ->
             if (cache.objectClass == clazz) {
                 @Suppress("UNCHECKED_CAST")
                 return (cache as Cache.SingleObjectCache<T>)
             }
         }
         return SingleObjectCacheImpl(_cacheInfo, clazz).also {
-            _cObject = it
+            _singleCache = it
         }
     }
 
     override fun <T> oo(clazz: Class<T>): Cache.MultiObjectCache<T> {
-        _cObjects?.let { cache ->
+        _multiCache?.let { cache ->
             if (cache.objectClass == clazz) {
                 @Suppress("UNCHECKED_CAST")
                 return (cache as Cache.MultiObjectCache<T>)
             }
         }
         return MultiObjectCacheImpl(_cacheInfo, clazz).also {
-            _cObjects = it
+            _multiCache = it
         }
     }
 }
