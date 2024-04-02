@@ -98,8 +98,8 @@ val cache2 = FCache.defaultGroup().limitCount("2", 100)
 
 #### CurrentGroup(当前组)
 
-`CurrentGroup`默认为空，常用于保存当前用户自己的配置信息，当用户切换的时候，可以通过`FCache.setCurrentGroup("用户ID")`来设置当前组，
-如果`CurrentGroup`为空的情况下通过`FCache.currentGroup()`获取的缓存对象调用相关Api都会失败。
+`CurrentGroup`默认为空，常用于保存当前用户自己的配置信息，当用户切换的时候，可以通过`FCache.setCurrentGroup("用户ID")`方法把用户ID设置为当前组。<br>
+注意：如果`CurrentGroup`为空的情况下，通过`FCache.currentGroup()`获取的缓存对象调用相关Api都会失败。
 
 ```kotlin
 // CurrentGroup，无限制大小的缓存
