@@ -4,7 +4,7 @@
 
 对象持久化库，可以方便的本地存取对象
 
-* 支持自定义存储格式，默认为Json格式
+* 支持自定义数据格式，默认为Json格式
 * 支持自定义底层存储，例如使用腾讯MMKV等
 * 支持单缓存和多缓存
 * 支持LRU算法的缓存个数限制
@@ -112,7 +112,7 @@ val cache1 = FCache.currentGroup().unlimited("1")
 val cache2 = FCache.currentGroup().limitCount("2", 100)
 ```
 
-# 自定义存储格式
+# 自定义数据格式
 
 默认情况下，对象采用`Json`数据格式存储，用到了`Gson`来做`Json`
 的转换：[GsonObjectConverter](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/impl/GsonObjectConverter.kt)<br>
