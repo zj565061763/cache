@@ -14,6 +14,7 @@ androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 
 google-gson = "com.google.code.gson:gson:2.10.1"
 squareup-moshi = "com.squareup.moshi:moshi-kotlin:1.14.0"
+tencent-mmkv = "com.tencent:mmkv:1.3.4"
 
 [plugins]
 
