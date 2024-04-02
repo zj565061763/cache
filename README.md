@@ -84,19 +84,27 @@ multiCache.contains("1")
 
 ```kotlin
 // DefaultGroup，无限制大小的缓存
-val defaultCache = FCache.getDefault()
+val cache = FCache.getDefault()
 
-// DefaultGroup，id为"user"的无限制大小缓存
-val userCache = FCache.defaultGroup().unlimited("user")
+// DefaultGroup，id为"1"的无限制大小缓存
+val cache1 = FCache.defaultGroup().unlimited("1")
 
-// DefaultGroup，id为"video"的限制个数的缓存
-val videoCache = FCache.defaultGroup().limitCount("video", 100)
+// DefaultGroup，id为"2"的限制个数的缓存
+val cache2 = FCache.defaultGroup().limitCount("2", 100)
 ```
 
 #### CurrentGroup(当前组)
 
-`CurrentGroup`默认为空，常用于保存当前用户自己的配置信息，当用户切换的时候，可以通过`FCache.setCurrentGroup("用户ID")`来设置当前组。
+`CurrentGroup`默认为空，常用于保存当前用户自己的配置信息，当用户切换的时候，可以通过`FCache.setCurrentGroup("用户ID")`来设置当前组，
+如果未设置的情况下通过`FCache.currentGroup()`获取的缓存对象调用相关Api都会失败。
 
 ```kotlin
+// CurrentGroup，无限制大小的缓存
+val cache = FCache.getCurrent()
 
+// CurrentGroup，id为"1"的无限制大小缓存
+val cache1 = FCache.currentGroup().unlimited("1")
+
+// CurrentGroup，id为"2"的限制个数的缓存
+val cache2 = FCache.currentGroup().limitCount("2", 100)
 ```
