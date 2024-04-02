@@ -54,8 +54,7 @@ singleCache.contains()
 
 #### 多缓存
 
-多缓存是指一个类可以持久化多个对象，例如`TestModel`类，可以根据`key`
-保存多个该类的实例到本地，常用于缓存具有唯一ID的对象，可以把唯一ID当作`key`。
+多缓存是指一个类可以持久化多个对象，例如`TestModel`类，可以根据`key`保存多个该类的实例到本地，常用于缓存具有唯一ID的对象，可以把唯一ID当作`key`。
 
 ```kotlin
 // 获取TestModel类对应的多缓存管理对象
@@ -97,10 +96,8 @@ val cache2 = FCache.defaultGroup().limitCount("2", 100)
 
 #### CurrentGroup(当前组)
 
-`CurrentGroup`
-默认为空，常用于保存当前用户自己的配置信息，当用户切换的时候，可以通过`FCache.setCurrentGroup("用户ID")`
-来设置当前组，
-如果未设置的情况下通过`FCache.currentGroup()`获取的缓存对象调用相关Api都会失败。
+`CurrentGroup`默认为空，常用于保存当前用户自己的配置信息，当用户切换的时候，可以通过`FCache.setCurrentGroup("用户ID")`来设置当前组，
+如果`CurrentGroup`为空的情况下通过`FCache.currentGroup()`获取的缓存对象调用相关Api都会失败。
 
 ```kotlin
 // CurrentGroup，无限制大小的缓存
@@ -115,15 +112,10 @@ val cache2 = FCache.currentGroup().limitCount("2", 100)
 
 # 自定义数据格式
 
-默认情况下，采用`Json`
-数据格式存储，默认实现类：[GsonObjectConverter](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/impl/GsonObjectConverter.kt)<br>
-可以实现`Cache.ObjectConverter`
-接口，自定义数据格式，例如使用[moshi](https://github.com/square/moshi)
-的实现：[MoshiObjectConverter](https://github.com/zj565061763/cache/blob/master/app/src/main/java/com/sd/demo/cache/impl/MoshiObjectConverter.kt)
+默认情况下，采用`Json`数据格式存储，默认实现类：[GsonObjectConverter](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/impl/GsonObjectConverter.kt)<br>
+可以实现`Cache.ObjectConverter`接口，自定义数据格式，例如使用[moshi](https://github.com/square/moshi)的实现：[MoshiObjectConverter](https://github.com/zj565061763/cache/blob/master/app/src/main/java/com/sd/demo/cache/impl/MoshiObjectConverter.kt)
 
 # 自定义底层存储
 
 默认情况下，底层采用文件流存取数据，默认实现类：[FileCacheStore](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/store/FileCacheStore.kt)<br>
-可以实现[CacheStore](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/store/CacheStore.kt)
-接口，自定义底层数据如何存储，例如使用[MMKV](https://github.com/Tencent/MMKV)
-的实现：[MMKVCacheStore](https://github.com/zj565061763/cache/blob/master/app/src/main/java/com/sd/demo/cache/impl/MMKVCacheStore.kt)
+可以实现[CacheStore](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/store/CacheStore.kt)接口，自定义底层数据如何存储，例如使用[MMKV](https://github.com/Tencent/MMKV)的实现：[MMKVCacheStore](https://github.com/zj565061763/cache/blob/master/app/src/main/java/com/sd/demo/cache/impl/MMKVCacheStore.kt)
