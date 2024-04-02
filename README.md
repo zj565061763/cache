@@ -5,7 +5,7 @@
 对象持久化库，可以方便的本地存取对象
 
 * 支持自定义数据格式，默认为Json格式
-* 支持自定义底层存储，例如使用腾讯[MMKV](https://github.com/Tencent/MMKV)等
+* 支持自定义底层存储，例如使用腾讯[MMKV](https://github.com/Tencent/MMKV)
 * 支持单缓存和多缓存
 * 支持LRU算法的缓存个数限制
 * 支持缓存分组，例如根据不同账号信息保存缓存
@@ -124,4 +124,4 @@ val cache2 = FCache.currentGroup().limitCount("2", 100)
 
 默认情况下，底层采用文件流存取数据，默认实现类：[FileCacheStore](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/store/FileCacheStore.kt)<br>
 可以实现[CacheStore](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/store/CacheStore.kt)
-接口，自定义底层数据如何存储。
+接口，自定义底层数据如何存储，例如使用[MMKV](https://github.com/Tencent/MMKV)的实现：[MMKVCacheStore](https://github.com/zj565061763/cache/blob/master/app/src/main/java/com/sd/demo/cache/impl/MMKVCacheStore.kt)
