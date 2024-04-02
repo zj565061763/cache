@@ -36,7 +36,7 @@ CacheConfig.init(
 
 ```kotlin
 // 获取TestModel类对应的单缓存管理对象
-val singleCache = FCache.get().single(TestModel::class.java)
+val singleCache = FCache.getDefault().single(TestModel::class.java)
 
 // 放入缓存对象
 singleCache.put(TestModel())
@@ -57,7 +57,7 @@ singleCache.contains()
 
 ```kotlin
 // 获取TestModel类对应的多缓存管理对象
-val multiCache = FCache.get().multi(TestModel::class.java)
+val multiCache = FCache.getDefault().multi(TestModel::class.java)
 
 // 根据key保存多个实例
 multiCache.put("1", TestModel())
@@ -84,7 +84,7 @@ multiCache.contains("1")
 
 ```kotlin
 // DefaultGroup，无限制大小的缓存
-val defaultCache = FCache.get()
+val defaultCache = FCache.getDefault()
 
 // DefaultGroup，id为"user"的无限制大小缓存
 val userCache = FCache.defaultGroup().unlimited("user")

@@ -3,15 +3,15 @@ package com.sd.demo.cache
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.cache.databinding.SampleCacheBinding
-import com.sd.lib.cache.fCache
+import com.sd.lib.cache.FCache
 
 class SampleCache : AppCompatActivity() {
     private val _binding by lazy { SampleCacheBinding.inflate(layoutInflater) }
 
     private val key = "key"
 
-    private val _singleCache = fCache.single(TestModel::class.java)
-    private val _multiCache = fCache.multi(TestModel::class.java)
+    private val _singleCache = FCache.getDefault().single(TestModel::class.java)
+    private val _multiCache = FCache.getDefault().multi(TestModel::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

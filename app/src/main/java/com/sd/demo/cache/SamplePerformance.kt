@@ -3,7 +3,7 @@ package com.sd.demo.cache
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.cache.databinding.SamplePerformanceBinding
-import com.sd.lib.cache.fCache
+import com.sd.lib.cache.FCache
 import kotlin.time.measureTime
 
 class SamplePerformance : AppCompatActivity() {
@@ -22,7 +22,7 @@ class SamplePerformance : AppCompatActivity() {
 }
 
 private fun testPut(repeat: Int = 100) {
-    val cache = fCache.single(TestModel::class.java)
+    val cache = FCache.getDefault().single(TestModel::class.java)
     val model = TestModel()
     measureTime {
         repeat(repeat) {
@@ -34,7 +34,7 @@ private fun testPut(repeat: Int = 100) {
 }
 
 private fun testGet(repeat: Int = 100) {
-    val cache = fCache.single(TestModel::class.java)
+    val cache = FCache.getDefault().single(TestModel::class.java)
     measureTime {
         repeat(repeat) {
             cache.get()

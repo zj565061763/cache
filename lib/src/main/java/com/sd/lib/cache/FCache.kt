@@ -10,7 +10,7 @@ object FCache {
      * 默认Group无限制缓存
      */
     @JvmStatic
-    fun get(): Cache = _defaultCache
+    fun getDefault(): Cache = _defaultCache
 
     /**
      * 当前Group
@@ -36,6 +36,3 @@ object FCache {
     @JvmStatic
     fun currentGroup(): CacheFactory = CurrentGroupCacheFactory()
 }
-
-/** [FCache.get] */
-val fCache: Cache get() = FCache.get()
