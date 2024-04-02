@@ -4,7 +4,7 @@
 
 对象持久化库，可以方便的本地存取对象
 
-* 支持自定义对象格式，默认为Json格式
+* 支持自定义存储格式，默认为Json格式
 * 支持自定义底层存储，例如使用腾讯MMKV等
 * 支持单缓存和多缓存
 * 支持LRU算法的缓存个数限制
@@ -19,13 +19,13 @@ CacheConfig.init(
     CacheConfig.Builder()
         // 设置缓存目录(可选参数)，默认为"Context.getFilesDir()/f_cache"
         .setDirectory(getExternalFilesDir("app_cache")!!)
-        
+
         // 设置异常处理(可选参数)
         .setExceptionHandler(CacheExceptionHandler())
-        
+
         // 设置对象转换器(可选参数)，默认为Gson转换器
         .setObjectConverter(MoshiObjectConverter())
-        
+
         .build(this)
 )
 ```
@@ -53,7 +53,8 @@ singleCache.contains()
 
 #### 多缓存
 
-多缓存是指一个类可以持久化多个对象，例如`TestModel`类，可以根据`key`保存多个该类的实例到本地，常用于缓存具有唯一ID的对象，可以把唯一ID当作`key`。
+多缓存是指一个类可以持久化多个对象，例如`TestModel`类，可以根据`key`
+保存多个该类的实例到本地，常用于缓存具有唯一ID的对象，可以把唯一ID当作`key`。
 
 ```kotlin
 // 获取TestModel类对应的多缓存管理对象
@@ -95,7 +96,9 @@ val cache2 = FCache.defaultGroup().limitCount("2", 100)
 
 #### CurrentGroup(当前组)
 
-`CurrentGroup`默认为空，常用于保存当前用户自己的配置信息，当用户切换的时候，可以通过`FCache.setCurrentGroup("用户ID")`来设置当前组，
+`CurrentGroup`
+默认为空，常用于保存当前用户自己的配置信息，当用户切换的时候，可以通过`FCache.setCurrentGroup("用户ID")`
+来设置当前组，
 如果未设置的情况下通过`FCache.currentGroup()`获取的缓存对象调用相关Api都会失败。
 
 ```kotlin
@@ -109,6 +112,26 @@ val cache1 = FCache.currentGroup().unlimited("1")
 val cache2 = FCache.currentGroup().limitCount("2", 100)
 ```
 
-# 自定义格式
+# 自定义存储格式
 
-默认情况下，对象采用`Json`数据格式存储，用到了`Gson`来做`Json`的转换：[GsonObjectConverter](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/impl/GsonObjectConverter.kt)
+默认情况下，对象采用`Json`数据格式存储，用到了`Gson`来做`Json`
+的转换：[GsonObjectConverter](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/impl/GsonObjectConverter.kt)<br>
+可以实现自己的对象转换器：
+
+```kotlin
+class MoshiObjectConverter : Cache.ObjectConverter {
+    private val _moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+
+    override fun <T> encode(value: T, clazz: Class<T>): ByteArray {
+        val adapter = _moshi.adapter(clazz)
+        val json = adapter.toJson(value)
+        return json.toByteArray()
+    }
+
+    override fun <T> decode(bytes: ByteArray, clazz: Class<T>): T {
+        val adapter = _moshi.adapter(clazz)
+        val json = bytes.decodeToString()
+        return adapter.fromJson(json)!!
+    }
+}
+```
