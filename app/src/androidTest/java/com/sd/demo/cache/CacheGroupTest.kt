@@ -11,7 +11,7 @@ import org.junit.runner.RunWith
 class CacheGroupTest {
     @Test
     fun testCurrentGroup() {
-        val cache = FCache.currentGroup().unlimited("testCurrentGroup")
+        val cache = FCache.getCurrent()
 
         testCacheEmptyCurrentGroup(cache)
 
