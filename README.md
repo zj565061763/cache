@@ -114,24 +114,9 @@ val cache2 = FCache.currentGroup().limitCount("2", 100)
 
 # 自定义数据格式
 
-默认情况下，对象采用`Json`数据格式存储，用到了`Gson`来做`Json`
-的转换：[GsonObjectConverter](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/impl/GsonObjectConverter.kt)<br>
-可以实现自己的对象转换器：
+默认情况下，采用`Json`
+数据格式存储，默认实现类：[GsonObjectConverter](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/impl/GsonObjectConverter.kt)<br>
+可以实现`Cache.ObjectConverter`
+接口，自定义数据格式，例如使用`Moshi`：[MoshiObjectConverter](https://github.com/zj565061763/cache/blob/master/app/src/main/java/com/sd/demo/cache/impl/MoshiObjectConverter.kt)
 
-```kotlin
-class MoshiObjectConverter : Cache.ObjectConverter {
-    private val _moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-
-    override fun <T> encode(value: T, clazz: Class<T>): ByteArray {
-        val adapter = _moshi.adapter(clazz)
-        val json = adapter.toJson(value)
-        return json.toByteArray()
-    }
-
-    override fun <T> decode(bytes: ByteArray, clazz: Class<T>): T {
-        val adapter = _moshi.adapter(clazz)
-        val json = bytes.decodeToString()
-        return adapter.fromJson(json)!!
-    }
-}
-```
+# 自定义底层存储
