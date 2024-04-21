@@ -6,7 +6,7 @@ plugins {
 
 val libGroupId = "com.sd.lib.android"
 val libArtifactId = "cache"
-val libVersionName = "2.5.1"
+val libVersion = "2.5.1"
 
 android {
     namespace = "com.sd.lib.cache"
@@ -39,7 +39,7 @@ publishing {
         create<MavenPublication>("release") {
             groupId = libGroupId
             artifactId = libArtifactId
-            version = libVersionName
+            version = libVersion
 
             afterEvaluate {
                 from(components["release"])
