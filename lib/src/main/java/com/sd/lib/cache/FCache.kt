@@ -18,6 +18,7 @@ object FCache {
     /**
      * ActiveGroup无限制缓存
      */
+    @JvmStatic
     fun getActive(): Cache = _activeCache
 
     /**
