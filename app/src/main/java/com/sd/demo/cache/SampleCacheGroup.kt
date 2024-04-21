@@ -10,21 +10,21 @@ class SampleCacheGroup : AppCompatActivity() {
 
     private val key = "key"
 
-    private val _singleCache = FCache.getCurrent().single(TestModel::class.java)
-    private val _multiCache = FCache.getCurrent().multi(TestModel::class.java)
+    private val _singleCache = FCache.getActive().single(TestModel::class.java)
+    private val _multiCache = FCache.getActive().multi(TestModel::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(_binding.root)
-        logMsg { "currentGroup:${FCache.getCurrentGroup()}" }
+        logMsg { "getActiveGroup:${FCache.getActiveGroup()}" }
 
         _binding.btnSetGroup.setOnClickListener {
-            FCache.setCurrentGroup("Tom")
-            logMsg { "currentGroup:${FCache.getCurrentGroup()}" }
+            FCache.setActiveGroup("Tom")
+            logMsg { "getActiveGroup:${FCache.getActiveGroup()}" }
         }
         _binding.btnRemoveGroup.setOnClickListener {
-            FCache.setCurrentGroup("")
-            logMsg { "currentGroup:${FCache.getCurrentGroup()}" }
+            FCache.setActiveGroup("")
+            logMsg { "getActiveGroup:${FCache.getActiveGroup()}" }
         }
 
         _binding.btnPut.setOnClickListener {
@@ -76,7 +76,7 @@ class SampleCacheGroup : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        FCache.setCurrentGroup("")
-        logMsg { "currentGroup:${FCache.getCurrentGroup()}" }
+        FCache.setActiveGroup("")
+        logMsg { "getActiveGroup:${FCache.getActiveGroup()}" }
     }
 }

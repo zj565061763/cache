@@ -10,21 +10,21 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class CacheGroupTest {
     @Test
-    fun testCurrentGroup() {
-        val cache = FCache.getCurrent()
+    fun testActiveGroup() {
+        val cache = FCache.getActive()
 
-        testCacheEmptyCurrentGroup(cache)
+        testCacheEmptyActiveGroup(cache)
 
-        FCache.setCurrentGroup("100")
+        FCache.setActiveGroup("100")
         CacheTestUtils.testCacheMultiObject(cache)
 
-        FCache.setCurrentGroup("")
-        testCacheEmptyCurrentGroup(cache)
+        FCache.setActiveGroup("")
+        testCacheEmptyActiveGroup(cache)
     }
 }
 
-private fun testCacheEmptyCurrentGroup(cache: Cache) {
-    val key = "testCacheEmptyCurrentGroup"
+private fun testCacheEmptyActiveGroup(cache: Cache) {
+    val key = "testCacheEmptyActiveGroup"
     val c = cache.multi(TestModel::class.java)
 
     // test get defaultValue

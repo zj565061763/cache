@@ -34,9 +34,9 @@ internal class DefaultGroupCacheFactory : CacheFactory {
     }
 }
 
-internal class CurrentGroupCacheFactory : CacheFactory {
+internal class ActiveGroupCacheFactory : CacheFactory {
     override fun unlimited(id: String): Cache {
-        val cacheStoreOwner = CacheManager.cacheStoreOwnerForCurrentGroup(
+        val cacheStoreOwner = CacheManager.cacheStoreOwnerForActiveGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.Unlimited,
             factory = { it.newCacheStore() },
@@ -45,7 +45,7 @@ internal class CurrentGroupCacheFactory : CacheFactory {
     }
 
     override fun limitCount(id: String, limit: Int): Cache {
-        val cacheStoreOwner = CacheManager.cacheStoreOwnerForCurrentGroup(
+        val cacheStoreOwner = CacheManager.cacheStoreOwnerForActiveGroup(
             id = id,
             cacheSizePolicy = CacheSizePolicy.LimitCount,
             factory = { it.newCacheStore().limitCount(limit) },

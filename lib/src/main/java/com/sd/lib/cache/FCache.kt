@@ -3,44 +3,44 @@ package com.sd.lib.cache
 object FCache {
     private const val DEFAULT_ID = "com.sd.lib.cache.default.id"
 
-    /** 默认Group无限制缓存 */
-    private val _defaultCache: Cache = defaultGroup().unlimited(DEFAULT_ID)
+    /** DefaultGroup无限制缓存 */
+    private val _defaultCache: Cache = defaultGroupFactory().unlimited(DEFAULT_ID)
 
-    /** 当前Group无限制缓存 */
-    private val _currentCache: Cache = currentGroup().unlimited(DEFAULT_ID)
+    /** ActiveGroup无限制缓存 */
+    private val _activeCache: Cache = activeGroupFactory().unlimited(DEFAULT_ID)
 
     /**
-     * 默认Group无限制缓存
+     * DefaultGroup无限制缓存
      */
     @JvmStatic
     fun getDefault(): Cache = _defaultCache
 
     /**
-     * 当前Group无限制缓存
+     * ActiveGroup无限制缓存
      */
-    fun getCurrent(): Cache = _currentCache
+    fun getActive(): Cache = _activeCache
 
     /**
-     * 当前Group
+     * ActiveGroup
      */
     @JvmStatic
-    fun getCurrentGroup(): String = CacheManager.getCurrentGroup()
+    fun getActiveGroup(): String = CacheManager.getActiveGroup()
 
     /**
-     * 设置当前Group
+     * 设置ActiveGroup
      */
     @JvmStatic
-    fun setCurrentGroup(group: String) = CacheManager.setCurrentGroup(group)
+    fun setActiveGroup(group: String) = CacheManager.setActiveGroup(group)
 
     /**
-     * 默认Group
+     * DefaultGroup工厂
      */
     @JvmStatic
-    fun defaultGroup(): CacheFactory = DefaultGroupCacheFactory()
+    fun defaultGroupFactory(): CacheFactory = DefaultGroupCacheFactory()
 
     /**
-     * 当前Group
+     * ActiveGroup工厂
      */
     @JvmStatic
-    fun currentGroup(): CacheFactory = CurrentGroupCacheFactory()
+    fun activeGroupFactory(): CacheFactory = ActiveGroupCacheFactory()
 }

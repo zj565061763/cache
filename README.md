@@ -79,7 +79,7 @@ multiCache.contains("1")
 
 # 缓存分组
 
-缓存支持分组，分为`DefaultGroup(默认组)`和`CurrentGroup(当前组)`。
+缓存支持分组，分为`DefaultGroup(默认组)`和`ActiveGroup(激活组)`。
 
 #### DefaultGroup(默认组)
 
@@ -90,26 +90,26 @@ multiCache.contains("1")
 val cache = FCache.getDefault()
 
 // DefaultGroup，id为"1"的无限制大小缓存
-val cache1 = FCache.defaultGroup().unlimited("1")
+val cache1 = FCache.defaultGroupFactory().unlimited("1")
 
 // DefaultGroup，id为"2"的限制个数的缓存
-val cache2 = FCache.defaultGroup().limitCount("2", 100)
+val cache2 = FCache.defaultGroupFactory().limitCount("2", 100)
 ```
 
-#### CurrentGroup(当前组)
+#### ActiveGroup(激活组)
 
-`CurrentGroup`默认为空，常用于保存当前用户自己的配置信息，当用户切换的时候，可以通过`FCache.setCurrentGroup("用户ID")`方法把用户ID设置为当前组。<br>
-注意：如果`CurrentGroup`为空的情况下，通过`FCache.currentGroup()`获取的缓存对象调用相关Api都会失败。
+`ActiveGroup`默认为空，常用于保存当前用户自己的配置信息，当用户切换的时候，可以通过`FCache.setActiveGroup("用户ID")`方法把用户ID设置为激活组。<br>
+注意：如果`ActiveGroup`为空的情况下，通过`FCache.activeGroupFactory()`创建的缓存对象调用相关Api都会失败。
 
 ```kotlin
-// CurrentGroup，无限制大小的缓存
-val cache = FCache.getCurrent()
+// ActiveGroup，无限制大小的缓存
+val cache = FCache.getActive()
 
-// CurrentGroup，id为"1"的无限制大小缓存
-val cache1 = FCache.currentGroup().unlimited("1")
+// ActiveGroup，id为"1"的无限制大小缓存
+val cache1 = FCache.activeGroupFactory().unlimited("1")
 
-// CurrentGroup，id为"2"的限制个数的缓存
-val cache2 = FCache.currentGroup().limitCount("2", 100)
+// ActiveGroup，id为"2"的限制个数的缓存
+val cache2 = FCache.activeGroupFactory().limitCount("2", 100)
 ```
 
 # 自定义数据格式

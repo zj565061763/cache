@@ -5,34 +5,34 @@ import com.sd.lib.cache.store.CacheStore
 import java.io.File
 
 internal object CacheManager {
-    /** 默认的Group */
+    /** DefaultGroup */
     private const val DEFAULT_GROUP = "com.sd.lib.cache.default.group"
 
     /** Group对应的[CacheStoreFactory] */
     private val _mapGroupFactory: MutableMap<String, CacheStoreFactory> = hashMapOf()
 
-    /** 当前Group */
-    private var _currentGroup = ""
+    /** ActiveGroup */
+    private var _activeGroup = ""
 
     /**
-     * 当前Group
+     * ActiveGroup
      */
-    fun getCurrentGroup(): String {
+    fun getActiveGroup(): String {
         synchronized(CacheLock) {
-            return _currentGroup
+            return _activeGroup
         }
     }
 
     /**
-     * 设置当前Group
+     * 设置ActiveGroup
      */
-    fun setCurrentGroup(group: String) {
+    fun setActiveGroup(group: String) {
         if (group == DEFAULT_GROUP) libError("Require not default group.")
         synchronized(CacheLock) {
-            val oldGroup = _currentGroup
+            val oldGroup = _activeGroup
             if (oldGroup == group) return
 
-            _currentGroup = group
+            _activeGroup = group
             _mapGroupFactory.remove(oldGroup)?.close()
         }
     }
@@ -51,19 +51,19 @@ internal object CacheManager {
         return CacheStoreOwner { cacheStore }
     }
 
-    fun cacheStoreOwnerForCurrentGroup(
+    fun cacheStoreOwnerForActiveGroup(
         id: String,
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStoreOwner {
         return CacheStoreOwner {
             synchronized(CacheLock) {
-                val currentGroup = _currentGroup
-                if (currentGroup.isEmpty()) {
-                    EmptyCurrentGroupCacheStore
+                val activeGroup = _activeGroup
+                if (activeGroup.isEmpty()) {
+                    EmptyActiveGroupCacheStore
                 } else {
                     getCacheStore(
-                        group = currentGroup,
+                        group = activeGroup,
                         id = id,
                         cacheSizePolicy = cacheSizePolicy,
                         factory = factory,
@@ -93,37 +93,37 @@ internal object CacheManager {
 
 internal val CacheLock: Any = CacheManager
 
-private object EmptyCurrentGroupCacheStore : CacheStore {
+private object EmptyActiveGroupCacheStore : CacheStore {
     override fun init(context: Context, directory: File, group: String, id: String) {
-        notifyException("Empty current group CacheStore.init()")
+        notifyException("Empty active group CacheStore.init()")
     }
 
     override fun putCache(key: String, value: ByteArray): Boolean {
-        notifyException("Empty current group CacheStore.putCache()")
+        notifyException("Empty active group CacheStore.putCache()")
         return false
     }
 
     override fun getCache(key: String): ByteArray? {
-        notifyException("Empty current group CacheStore.getCache()")
+        notifyException("Empty active group CacheStore.getCache()")
         return null
     }
 
     override fun removeCache(key: String) {
-        notifyException("Empty current group CacheStore.removeCache()")
+        notifyException("Empty active group CacheStore.removeCache()")
     }
 
     override fun containsCache(key: String): Boolean {
-        notifyException("Empty current group CacheStore.containsCache()")
+        notifyException("Empty active group CacheStore.containsCache()")
         return false
     }
 
     override fun keys(): Array<String>? {
-        notifyException("Empty current group CacheStore.keys()")
+        notifyException("Empty active group CacheStore.keys()")
         return null
     }
 
     override fun close() {
-        notifyException("Empty current group CacheStore.close()")
+        notifyException("Empty active group CacheStore.close()")
     }
 
     private fun notifyException(message: String) {
