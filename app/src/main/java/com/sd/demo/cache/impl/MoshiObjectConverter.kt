@@ -5,7 +5,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 class MoshiObjectConverter : Cache.ObjectConverter {
-    private val _moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    private val _moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
 
     override fun <T> encode(value: T, clazz: Class<T>): ByteArray {
         val adapter = _moshi.adapter(clazz)
