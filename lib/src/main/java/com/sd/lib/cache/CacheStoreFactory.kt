@@ -13,7 +13,7 @@ internal class CacheStoreFactory(
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStore {
-        if (_isClosed) libError("Closed.")
+        if (_isClosed) libError("Group:${group} Closed.")
         val info = _stores[id]
         return if (info != null) {
             if (info.cacheSizePolicy != cacheSizePolicy) {
