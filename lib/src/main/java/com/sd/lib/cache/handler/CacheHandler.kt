@@ -17,7 +17,7 @@ internal interface CacheHandler<T> {
 
     fun containsCache(key: String): Boolean
 
-    fun keys(transform: (String) -> String): List<String>
+    fun keys(transform: (String) -> String): Array<String>
 }
 
 internal interface CacheInfo {
@@ -118,17 +118,18 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    final override fun keys(transform: (String) -> String): List<String> {
+    final override fun keys(transform: (String) -> String): Array<String> {
         synchronized(CacheLock) {
             val keys = _cacheStore.keys()
             return if (keys.isNullOrEmpty()) {
-                emptyList()
+                emptyArray()
             } else {
                 keys.asSequence()
                     .filter { it.startsWith(_keyPrefix) }
                     .map { unpackKey(it) }
                     .map(transform)
                     .toList()
+                    .toTypedArray()
             }
         }
     }
