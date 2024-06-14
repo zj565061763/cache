@@ -3,10 +3,10 @@ package com.sd.lib.cache
 import com.sd.lib.cache.store.CacheStore
 
 internal class CacheStoreFactory(
-    private val group: String
+    private val group: String,
 ) {
     private var _isClosed = false
-    private val _stores: MutableMap<String, StoreInfo> = hashMapOf()
+    private val _stores: MutableMap<String, StoreInfo> = mutableMapOf()
 
     fun create(
         id: String,

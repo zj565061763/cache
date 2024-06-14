@@ -10,7 +10,7 @@ internal fun interface CacheStoreOwner {
 }
 
 internal class CacheImpl(
-    private val cacheStoreOwner: CacheStoreOwner
+    private val cacheStoreOwner: CacheStoreOwner,
 ) : Cache {
 
     private val _cacheInfo = object : CacheInfo {

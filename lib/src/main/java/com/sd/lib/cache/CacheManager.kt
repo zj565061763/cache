@@ -9,7 +9,7 @@ internal object CacheManager {
     private const val DEFAULT_GROUP = "com.sd.lib.cache.default.group"
 
     /** Group对应的[CacheStoreFactory] */
-    private val _mapGroupFactory: MutableMap<String, CacheStoreFactory> = hashMapOf()
+    private val _mapGroupFactory: MutableMap<String, CacheStoreFactory> = mutableMapOf()
 
     /** ActiveGroup */
     private var _activeGroup = ""
