@@ -21,7 +21,6 @@ class CacheConfig private constructor(
     internal val exceptionHandler: Cache.ExceptionHandler
 
     init {
-
         this.directory = builder.directory ?: context.filesDir.resolve("f_cache")
         this.cacheStoreClass = builder.cacheStore ?: FileCacheStore::class.java
 
