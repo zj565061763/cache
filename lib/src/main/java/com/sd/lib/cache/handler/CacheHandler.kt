@@ -9,9 +9,9 @@ import com.sd.lib.cache.store.CacheStore
  * 缓存处理接口
  */
 internal interface CacheHandler<T> {
-    fun putCache(key: String, value: T, clazz: Class<T>?): Boolean
+    fun putCache(key: String, value: T, clazz: Class<T>): Boolean
 
-    fun getCache(key: String, clazz: Class<T>?): T?
+    fun getCache(key: String, clazz: Class<T>): T?
 
     fun removeCache(key: String)
 
@@ -64,7 +64,7 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CacheHandler start ----------
 
-    final override fun putCache(key: String, value: T, clazz: Class<T>?): Boolean {
+    final override fun putCache(key: String, value: T, clazz: Class<T>): Boolean {
         @Suppress("NAME_SHADOWING")
         val key = packKey(key)
         return kotlin.runCatching {
@@ -78,7 +78,7 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    final override fun getCache(key: String, clazz: Class<T>?): T? {
+    final override fun getCache(key: String, clazz: Class<T>): T? {
         @Suppress("NAME_SHADOWING")
         val key = packKey(key)
         return kotlin.runCatching {
@@ -138,10 +138,10 @@ internal abstract class BaseCacheHandler<T>(
     /**
      * 编码
      */
-    protected abstract fun encode(value: T, clazz: Class<T>?): ByteArray
+    protected abstract fun encode(value: T, clazz: Class<T>): ByteArray
 
     /**
      * 解码
      */
-    protected abstract fun decode(bytes: ByteArray, clazz: Class<T>?): T?
+    protected abstract fun decode(bytes: ByteArray, clazz: Class<T>): T?
 }
