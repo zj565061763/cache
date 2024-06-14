@@ -10,7 +10,7 @@ internal class SingleObjectCacheImpl<T>(
     val objectClass: Class<T>,
 ) : Cache.SingleObjectCache<T> {
 
-    private val _key: String = objectClass.name
+    private val _key = objectClass.name
     private val _handler: CacheHandler<T> = ObjectHandler(cacheInfo, "o")
 
     override fun put(value: T?): Boolean {
