@@ -57,11 +57,13 @@ internal class FileCacheStore : CacheStore {
         val list = _directory.list()
         if (list.isNullOrEmpty()) return null
         return list.asSequence()
-            .map {
+            .filterNotNull()
+            .map { filename ->
                 try {
-                    it.decodeKey()
+                    filename.decodeKey()
                 } catch (e: IllegalArgumentException) {
                     e.printStackTrace()
+                    _directory.resolve(filename).deleteRecursively()
                     null
                 }
             }
