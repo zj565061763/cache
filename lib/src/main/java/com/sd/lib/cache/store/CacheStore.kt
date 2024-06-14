@@ -10,6 +10,7 @@ interface CacheStore {
     /**
      * 初始化
      */
+    @Throws(Throwable::class)
     fun init(
         context: Context,
         directory: File,
