@@ -93,7 +93,7 @@ internal object CacheManager {
     }
 }
 
-internal val CacheLock: Any = CacheManager
+internal val CacheLock: Any = FCache
 
 private object EmptyActiveGroupCacheStore : CacheStore {
     override fun init(context: Context, directory: File, group: String, id: String) {
