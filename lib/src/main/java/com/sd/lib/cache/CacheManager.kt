@@ -7,12 +7,13 @@ import java.io.File
 internal object CacheManager {
     /** DefaultGroup */
     private const val DEFAULT_GROUP = "com.sd.lib.cache.default.group"
-
-    /** Group对应的[CacheStoreFactory] */
-    private val _mapGroupFactory: MutableMap<String, CacheStoreFactory> = mutableMapOf()
+    /** DefaultGroup的[CacheStoreFactory] */
+    private val _defaultGroupCacheStoreFactory = CacheStoreFactory(DEFAULT_GROUP)
 
     /** ActiveGroup */
     private var _activeGroup = ""
+    /** ActiveGroup的[CacheStoreFactory] */
+    private var _activeGroupCacheStoreFactory: CacheStoreFactory? = null
 
     /**
      * ActiveGroup
@@ -29,11 +30,9 @@ internal object CacheManager {
     fun setActiveGroup(group: String) {
         if (group == DEFAULT_GROUP) libError("Require not default group.")
         synchronized(CacheLock) {
-            val oldGroup = _activeGroup
-            if (oldGroup == group) return
-
-            _activeGroup = group
-            _mapGroupFactory.remove(oldGroup)?.close()
+            if (_activeGroup != group) {
+                _activeGroup = group
+            }
         }
     }
 
@@ -42,12 +41,13 @@ internal object CacheManager {
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStoreOwner {
-        val cacheStore = getCacheStore(
-            group = DEFAULT_GROUP,
-            id = id,
-            cacheSizePolicy = cacheSizePolicy,
-            factory = factory,
-        )
+        val cacheStore = synchronized(CacheLock) {
+            _defaultGroupCacheStoreFactory.create(
+                id = id,
+                cacheSizePolicy = cacheSizePolicy,
+                factory = factory,
+            )
+        }
         return CacheStoreOwner { cacheStore }
     }
 
@@ -57,32 +57,34 @@ internal object CacheManager {
         factory: (CacheConfig) -> CacheStore,
     ): CacheStoreOwner {
         return CacheStoreOwner {
-            synchronized(CacheLock) {
-                val activeGroup = _activeGroup
-                if (activeGroup.isEmpty()) {
-                    EmptyActiveGroupCacheStore
-                } else {
-                    getCacheStore(
-                        group = activeGroup,
-                        id = id,
-                        cacheSizePolicy = cacheSizePolicy,
-                        factory = factory,
-                    )
-                }
-            }
+            getActiveGroupCacheStore(
+                id = id,
+                cacheSizePolicy = cacheSizePolicy,
+                factory = factory,
+            )
         }
     }
 
-    private fun getCacheStore(
-        group: String,
+    private fun getActiveGroupCacheStore(
         id: String,
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStore {
         synchronized(CacheLock) {
-            return _mapGroupFactory.getOrPut(group) {
-                CacheStoreFactory(group)
-            }.create(
+            val activeGroup = _activeGroup
+            if (activeGroup.isEmpty()) {
+                _activeGroupCacheStoreFactory?.close()
+                _activeGroupCacheStoreFactory = null
+                return EmptyActiveGroupCacheStore
+            }
+
+            val storeFactory = _activeGroupCacheStoreFactory?.takeIf { it.group == activeGroup }
+                ?: CacheStoreFactory(activeGroup).also { newFactory ->
+                    _activeGroupCacheStoreFactory?.close()
+                    _activeGroupCacheStoreFactory = newFactory
+                }
+
+            return storeFactory.create(
                 id = id,
                 cacheSizePolicy = cacheSizePolicy,
                 factory = factory,
