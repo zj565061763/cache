@@ -6,10 +6,13 @@ import com.sd.lib.cache.impl.GsonObjectConverter
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.FileCacheStore
 import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
 
-class CacheConfig private constructor(builder: Builder, context: Context) {
-    private val context: Context
+@SuppressLint("StaticFieldLeak")
+class CacheConfig private constructor(
+    builder: Builder,
+    context: Context,
+) {
+    private val context = context.applicationContext
 
     private val directory: File
     private val cacheStoreClass: Class<out CacheStore>
@@ -18,7 +21,6 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     internal val exceptionHandler: Cache.ExceptionHandler
 
     init {
-        this.context = context.applicationContext
 
         this.directory = builder.directory ?: context.filesDir.resolve("f_cache")
         this.cacheStoreClass = builder.cacheStore ?: FileCacheStore::class.java
@@ -99,9 +101,6 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
     }
 
     companion object {
-        private val sInitFlag = AtomicBoolean(false)
-
-        @SuppressLint("StaticFieldLeak")
         @Volatile
         private var sConfig: CacheConfig? = null
 
@@ -110,13 +109,19 @@ class CacheConfig private constructor(builder: Builder, context: Context) {
          */
         @JvmStatic
         fun init(config: CacheConfig) {
-            if (sInitFlag.compareAndSet(false, true)) {
-                sConfig = config
+            synchronized(this@Companion) {
+                if (sConfig == null) {
+                    sConfig = config
+                } else {
+                    error("CacheConfig has been initialized.")
+                }
             }
         }
 
         internal fun get(): CacheConfig {
-            return checkNotNull(sConfig) { "You should call init() before this." }
+            return sConfig ?: synchronized(this@Companion) {
+                checkNotNull(sConfig) { "CacheConfig.init() should be called before this." }
+            }
         }
     }
 }
