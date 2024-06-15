@@ -10,6 +10,9 @@ abstract class DirectoryCacheStore : CacheStore {
     private var _initFlag = false
     private lateinit var _directory: File
 
+    protected val directory: File
+        get() = _directory
+
     final override fun init(
         context: Context,
         directory: File,
@@ -23,23 +26,19 @@ abstract class DirectoryCacheStore : CacheStore {
     }
 
     final override fun putCache(key: String, value: ByteArray): Boolean {
-        val encodeKey = key.encodeKey()
-        return putCacheImpl(encodeKey, value, encodeKey.keyFile())
+        return putCacheImpl(fileOf(key), value)
     }
 
     final override fun getCache(key: String): ByteArray? {
-        val encodeKey = key.encodeKey()
-        return getCacheImpl(encodeKey, encodeKey.keyFile())
+        return getCacheImpl(fileOf(key))
     }
 
     final override fun removeCache(key: String) {
-        val encodeKey = key.encodeKey()
-        removeCacheImpl(encodeKey, encodeKey.keyFile())
+        removeCacheImpl(fileOf(key))
     }
 
     final override fun containsCache(key: String): Boolean {
-        val encodeKey = key.encodeKey()
-        return containsCacheImpl(encodeKey, encodeKey.keyFile())
+        return containsCacheImpl(fileOf(key))
     }
 
     final override fun keys(): Array<String>? {
@@ -63,19 +62,15 @@ abstract class DirectoryCacheStore : CacheStore {
 
     override fun close() = Unit
 
-    private fun String.keyFile(): File {
-        return _directory.resolve(this)
+    private fun fileOf(key: String): File {
+        return _directory.resolve(key.encodeKey())
     }
 
     protected open fun initImpl(context: Context, directory: File) = Unit
-
-    protected abstract fun putCacheImpl(key: String, value: ByteArray, file: File): Boolean
-
-    protected abstract fun getCacheImpl(key: String, file: File): ByteArray?
-
-    protected open fun removeCacheImpl(key: String, file: File) = file.deleteRecursively()
-
-    protected open fun containsCacheImpl(key: String, file: File): Boolean = file.isFile
+    protected abstract fun putCacheImpl(file: File, value: ByteArray): Boolean
+    protected abstract fun getCacheImpl(file: File): ByteArray?
+    protected open fun removeCacheImpl(file: File) = file.deleteRecursively()
+    protected open fun containsCacheImpl(file: File): Boolean = file.isFile
 }
 
 private fun String.encodeKey(): String {
