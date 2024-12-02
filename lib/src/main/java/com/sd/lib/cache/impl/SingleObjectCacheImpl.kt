@@ -1,17 +1,17 @@
 package com.sd.lib.cache.impl
 
 import com.sd.lib.cache.Cache
-import com.sd.lib.cache.handler.CacheHandler
-import com.sd.lib.cache.handler.CacheInfo
-import com.sd.lib.cache.handler.ObjectHandler
+import com.sd.lib.cache.CacheHandler
+import com.sd.lib.cache.CacheInfo
+import com.sd.lib.cache.newCacheHandler
 
 internal class SingleObjectCacheImpl<T>(
     cacheInfo: CacheInfo,
-    val objectClass: Class<T>,
+    private val objectClass: Class<T>,
 ) : Cache.SingleObjectCache<T> {
 
     private val _key = objectClass.name
-    private val _handler: CacheHandler<T> = ObjectHandler(cacheInfo, "o")
+    private val _handler: CacheHandler<T> = newCacheHandler(cacheInfo, "o")
 
     override fun put(value: T?): Boolean {
         if (value == null) return false

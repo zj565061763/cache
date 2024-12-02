@@ -1,10 +1,10 @@
 package com.sd.lib.cache.impl
 
 import com.sd.lib.cache.Cache.MultiObjectCache
-import com.sd.lib.cache.handler.CacheHandler
-import com.sd.lib.cache.handler.CacheInfo
-import com.sd.lib.cache.handler.ObjectHandler
+import com.sd.lib.cache.CacheHandler
+import com.sd.lib.cache.CacheInfo
 import com.sd.lib.cache.libError
+import com.sd.lib.cache.newCacheHandler
 
 internal class MultiObjectCacheImpl<T>(
     cacheInfo: CacheInfo,
@@ -12,7 +12,7 @@ internal class MultiObjectCacheImpl<T>(
 ) : MultiObjectCache<T> {
 
     private val _keyPrefix = "${objectClass.name}_"
-    private val _objectHandler: CacheHandler<T> = ObjectHandler(cacheInfo, "oo")
+    private val _objectHandler: CacheHandler<T> = newCacheHandler(cacheInfo, "oo")
 
     private fun packKey(key: String): String {
         if (key.isEmpty()) libError("key is empty")

@@ -1,8 +1,5 @@
-package com.sd.lib.cache.handler
+package com.sd.lib.cache
 
-import com.sd.lib.cache.Cache
-import com.sd.lib.cache.CacheLock
-import com.sd.lib.cache.libError
 import com.sd.lib.cache.store.CacheStore
 
 /**
@@ -16,6 +13,13 @@ internal interface CacheHandler<T> {
     fun keys(transform: (String) -> String): List<String>
 }
 
+internal fun <T> newCacheHandler(
+    cacheInfo: CacheInfo,
+    keyPrefix: String,
+): CacheHandler<T> {
+    return CacheHandlerImpl(cacheInfo, keyPrefix)
+}
+
 internal interface CacheInfo {
     /** 仓库 */
     val cacheStore: CacheStore
@@ -27,21 +31,16 @@ internal interface CacheInfo {
     val exceptionHandler: Cache.ExceptionHandler
 }
 
-/**
- * 缓存处理基类
- */
-internal abstract class BaseCacheHandler<T>(
+private class CacheHandlerImpl<T>(
     private val cacheInfo: CacheInfo,
-    handlerKey: String,
+    keyPrefix: String,
 ) : CacheHandler<T> {
 
-    private val _keyPrefix = "${handlerKey}_"
-
-    private val _cacheStore: CacheStore
-        get() = cacheInfo.cacheStore
+    private val _keyPrefix = "${keyPrefix}_"
+    private val _cacheStore: CacheStore get() = cacheInfo.cacheStore
 
     init {
-        if (handlerKey.isEmpty()) libError("handlerKey is empty")
+        if (keyPrefix.isEmpty()) libError("keyPrefix is empty")
     }
 
     private fun packKey(key: String): String {
@@ -61,10 +60,10 @@ internal abstract class BaseCacheHandler<T>(
     //---------- CacheHandler start ----------
 
     @Suppress("NAME_SHADOWING")
-    final override fun putCache(key: String, value: T, clazz: Class<T>): Boolean {
+    override fun putCache(key: String, value: T, clazz: Class<T>): Boolean {
         val key = packKey(key)
         return runCatching {
-            val data = encode(value, clazz, cacheInfo.objectConverter)
+            val data = encode(value, clazz)
             synchronized(CacheLock) {
                 _cacheStore.putCache(key, data)
             }
@@ -75,13 +74,13 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     @Suppress("NAME_SHADOWING")
-    final override fun getCache(key: String, clazz: Class<T>): T? {
+    override fun getCache(key: String, clazz: Class<T>): T? {
         val key = packKey(key)
         return runCatching {
             synchronized(CacheLock) {
                 _cacheStore.getCache(key)
             }?.let { data ->
-                decode(data, clazz, cacheInfo.objectConverter)
+                decode(data, clazz)
             }
         }.getOrElse {
             notifyException(it)
@@ -90,7 +89,7 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     @Suppress("NAME_SHADOWING")
-    final override fun removeCache(key: String) {
+    override fun removeCache(key: String) {
         val key = packKey(key)
         runCatching {
             synchronized(CacheLock) {
@@ -102,7 +101,7 @@ internal abstract class BaseCacheHandler<T>(
     }
 
     @Suppress("NAME_SHADOWING")
-    final override fun containsCache(key: String): Boolean {
+    override fun containsCache(key: String): Boolean {
         val key = packKey(key)
         return runCatching {
             synchronized(CacheLock) {
@@ -114,9 +113,14 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    final override fun keys(transform: (String) -> String): List<String> {
+    override fun keys(transform: (String) -> String): List<String> {
         synchronized(CacheLock) {
-            return _cacheStore.keys().asSequence()
+            return runCatching {
+                _cacheStore.keys()
+            }.getOrElse {
+                notifyException(it)
+                emptyList()
+            }.asSequence()
                 .filter { it.startsWith(_keyPrefix) }
                 .map { unpackKey(it) }
                 .map(transform)
@@ -126,6 +130,17 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CacheHandler end ----------
 
-    protected abstract fun encode(value: T, clazz: Class<T>, converter: Cache.ObjectConverter): ByteArray
-    protected abstract fun decode(bytes: ByteArray, clazz: Class<T>, converter: Cache.ObjectConverter): T?
+    private fun encode(value: T, clazz: Class<T>): ByteArray {
+        return cacheInfo.objectConverter.encode(value, clazz)
+            .also {
+                if (it.isEmpty()) {
+                    throw CacheException("Converter encode returns empty ${clazz.name}")
+                }
+            }
+    }
+
+    private fun decode(bytes: ByteArray, clazz: Class<T>): T? {
+        if (bytes.isEmpty()) return null
+        return cacheInfo.objectConverter.decode(bytes, clazz)
+    }
 }
