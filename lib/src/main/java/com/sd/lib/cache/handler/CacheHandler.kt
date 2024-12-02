@@ -89,10 +89,10 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
+    @Suppress("NAME_SHADOWING")
     final override fun removeCache(key: String) {
-        @Suppress("NAME_SHADOWING")
         val key = packKey(key)
-        kotlin.runCatching {
+        runCatching {
             synchronized(CacheLock) {
                 _cacheStore.removeCache(key)
             }
@@ -101,10 +101,10 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
+    @Suppress("NAME_SHADOWING")
     final override fun containsCache(key: String): Boolean {
-        @Suppress("NAME_SHADOWING")
         val key = packKey(key)
-        return kotlin.runCatching {
+        return runCatching {
             synchronized(CacheLock) {
                 _cacheStore.containsCache(key)
             }
