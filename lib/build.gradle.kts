@@ -31,7 +31,7 @@ kotlin {
 }
 
 dependencies {
-    implementation(libs.google.gson)
+    implementation(libs.sd.moshi)
 }
 
 publishing {
@@ -40,7 +40,6 @@ publishing {
             groupId = libGroupId
             artifactId = libArtifactId
             version = libVersion
-
             afterEvaluate {
                 from(components["release"])
             }

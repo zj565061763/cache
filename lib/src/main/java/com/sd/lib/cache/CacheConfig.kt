@@ -2,7 +2,7 @@ package com.sd.lib.cache
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.sd.lib.cache.impl.GsonObjectConverter
+import com.sd.lib.cache.impl.DefaultObjectConverter
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.FileCacheStore
 import java.io.File
@@ -24,7 +24,7 @@ class CacheConfig private constructor(
         this.directory = builder.directory ?: context.filesDir.resolve("f_cache")
         this.cacheStoreClass = builder.cacheStore ?: FileCacheStore::class.java
 
-        this.objectConverter = builder.objectConverter ?: GsonObjectConverter()
+        this.objectConverter = builder.objectConverter ?: DefaultObjectConverter()
         this.exceptionHandler = LibExceptionHandler(builder.exceptionHandler)
     }
 

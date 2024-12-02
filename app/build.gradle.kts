@@ -46,6 +46,6 @@ dependencies {
 
     implementation(project(":lib"))
 
-    implementation(libs.squareup.moshi)
+    implementation(libs.sd.moshi)
     implementation(libs.tencent.mmkv)
 }

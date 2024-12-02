@@ -2,18 +2,17 @@
 
 androidCompileSdk = "34"
 
-androidGradlePlugin = "8.5.0"
-kotlin = "1.9.24"
+androidGradlePlugin = "8.7.3"
+kotlin = "1.9.25"
 
 [libraries]
 
 androidx-appcompat = "androidx.appcompat:appcompat:1.7.0"
 
-androidx-test-ext-junit = "androidx.test.ext:junit:1.1.5"
-androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
+androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
+androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 
-google-gson = "com.google.code.gson:gson:2.10.1"
-squareup-moshi = "com.squareup.moshi:moshi-kotlin:1.15.1"
+sd-moshi = "com.github.zj565061763:moshi:1.0.0"
 tencent-mmkv = "com.tencent:mmkv:1.3.4"
 
 [plugins]
