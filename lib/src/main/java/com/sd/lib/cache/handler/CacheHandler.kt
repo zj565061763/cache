@@ -10,14 +10,10 @@ import com.sd.lib.cache.store.CacheStore
  */
 internal interface CacheHandler<T> {
     fun putCache(key: String, value: T, clazz: Class<T>): Boolean
-
     fun getCache(key: String, clazz: Class<T>): T?
-
     fun removeCache(key: String)
-
     fun containsCache(key: String): Boolean
-
-    fun keys(transform: (String) -> String): Array<String>
+    fun keys(transform: (String) -> String): List<String>
 }
 
 internal interface CacheInfo {
@@ -118,19 +114,13 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
-    final override fun keys(transform: (String) -> String): Array<String> {
+    final override fun keys(transform: (String) -> String): List<String> {
         synchronized(CacheLock) {
-            val keys = _cacheStore.keys()
-            return if (keys.isNullOrEmpty()) {
-                emptyArray()
-            } else {
-                keys.asSequence()
-                    .filter { it.startsWith(_keyPrefix) }
-                    .map { unpackKey(it) }
-                    .map(transform)
-                    .toList()
-                    .toTypedArray()
-            }
+            return _cacheStore.keys().asSequence()
+                .filter { it.startsWith(_keyPrefix) }
+                .map { unpackKey(it) }
+                .map(transform)
+                .toList()
         }
     }
 

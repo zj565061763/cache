@@ -53,7 +53,7 @@ internal class MultiObjectCacheImpl<T>(
         return _objectHandler.containsCache(key)
     }
 
-    override fun keys(): Array<String> {
+    override fun keys(): List<String> {
         return _objectHandler.keys { unpackKey(it) }
     }
 }
