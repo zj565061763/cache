@@ -1,7 +1,11 @@
 package com.sd.lib.cache
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager
+import android.app.Application
 import android.content.Context
+import android.os.Build
+import android.os.Process
 import com.sd.lib.cache.impl.DefaultObjectConverter
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.FileCacheStore
@@ -21,7 +25,7 @@ class CacheConfig private constructor(
     internal val exceptionHandler: Cache.ExceptionHandler
 
     init {
-        this.directory = builder.directory ?: context.filesDir.resolve("f_cache")
+        this.directory = builder.directory ?: context.defaultCacheDir()
         this.cacheStoreClass = builder.cacheStore ?: FileCacheStore::class.java
 
         this.objectConverter = builder.objectConverter ?: DefaultObjectConverter()
@@ -133,4 +137,34 @@ inline fun CacheConfig.Companion.init(
             .apply(block)
             .build(context)
     )
+}
+
+private fun Context.defaultCacheDir(): File {
+    @SuppressLint("SdCardPath")
+    val dir = (filesDir ?: File("/data/data/${packageName}/files"))
+        .resolve("sd.lib.cache")
+
+    val process = currentProcess()
+    return if (!process.isNullOrBlank() && process != packageName) {
+        dir.resolve(process)
+    } else {
+        dir
+    }
+}
+
+private fun Context.currentProcess(): String? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        Application.getProcessName()
+    } else {
+        runCatching {
+            val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val processes = manager.runningAppProcesses
+            if (processes.isNullOrEmpty()) {
+                null
+            } else {
+                val pid = Process.myPid()
+                processes.find { it.pid == pid }?.processName
+            }
+        }.getOrNull()
+    }
 }
