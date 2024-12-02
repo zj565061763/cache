@@ -123,3 +123,14 @@ class CacheConfig private constructor(
         }
     }
 }
+
+inline fun CacheConfig.Companion.init(
+    context: Context,
+    block: CacheConfig.Builder.() -> Unit = {},
+) {
+    init(
+        CacheConfig.Builder()
+            .apply(block)
+            .build(context)
+    )
+}
