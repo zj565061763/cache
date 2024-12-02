@@ -61,8 +61,8 @@ class MMKVCacheStore : CacheStore {
         return mmkv.contains(key)
     }
 
-    override fun keys(): Array<String>? {
-        return mmkv.allKeys()
+    override fun keys(): List<String> {
+        return mmkv.allKeys()?.toList() ?: emptyList()
     }
 
     override fun close() {

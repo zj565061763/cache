@@ -119,9 +119,9 @@ private object EmptyActiveGroupCacheStore : CacheStore {
         return false
     }
 
-    override fun keys(): Array<String>? {
+    override fun keys(): List<String> {
         notifyException("Empty active group CacheStore.keys()")
-        return null
+        return emptyList()
     }
 
     override fun close() {

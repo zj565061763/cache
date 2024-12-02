@@ -41,23 +41,18 @@ abstract class DirectoryCacheStore : CacheStore {
         return containsCacheImpl(fileOf(key))
     }
 
-    final override fun keys(): Array<String>? {
+    final override fun keys(): List<String> {
         val list = _directory.list()
-        if (list.isNullOrEmpty()) return null
-        return list.asSequence()
-            .filterNotNull()
-            .map { filename ->
-                try {
-                    filename.decodeKey()
-                } catch (e: IllegalArgumentException) {
-                    e.printStackTrace()
-                    _directory.resolve(filename).deleteRecursively()
-                    null
-                }
+        if (list.isNullOrEmpty()) return emptyList()
+        return list.mapNotNull { filename ->
+            try {
+                filename?.decodeKey()
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+                _directory.resolve(filename).deleteRecursively()
+                null
             }
-            .filterNotNull()
-            .toList()
-            .toTypedArray()
+        }
     }
 
     override fun close() = Unit

@@ -46,7 +46,7 @@ interface CacheStore {
     /**
      * 返回所有的Key
      */
-    fun keys(): Array<String>?
+    fun keys(): List<String>
 
     /**
      * 关闭
