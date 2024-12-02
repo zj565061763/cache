@@ -126,13 +126,6 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CacheHandler end ----------
 
-    /**
-     * 编码
-     */
     protected abstract fun encode(value: T, clazz: Class<T>): ByteArray
-
-    /**
-     * 解码
-     */
     protected abstract fun decode(bytes: ByteArray, clazz: Class<T>): T?
 }
