@@ -100,7 +100,6 @@ class CacheConfig private constructor(
     }
 
     companion object {
-        @Volatile
         private var sConfig: CacheConfig? = null
 
         /**
