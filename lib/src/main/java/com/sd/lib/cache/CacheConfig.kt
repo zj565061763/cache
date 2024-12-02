@@ -11,7 +11,6 @@ import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.FileCacheStore
 import java.io.File
 
-@SuppressLint("StaticFieldLeak")
 class CacheConfig private constructor(
     builder: Builder,
     context: Context,
@@ -104,6 +103,7 @@ class CacheConfig private constructor(
     }
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
         private var sConfig: CacheConfig? = null
 
         /**
