@@ -31,7 +31,7 @@ internal interface CacheInfo {
  * 缓存处理基类
  */
 internal abstract class BaseCacheHandler<T>(
-    val cacheInfo: CacheInfo,
+    private val cacheInfo: CacheInfo,
     handlerKey: String,
 ) : CacheHandler<T> {
 
@@ -60,11 +60,11 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CacheHandler start ----------
 
+    @Suppress("NAME_SHADOWING")
     final override fun putCache(key: String, value: T, clazz: Class<T>): Boolean {
-        @Suppress("NAME_SHADOWING")
         val key = packKey(key)
-        return kotlin.runCatching {
-            val data = encode(value, clazz)
+        return runCatching {
+            val data = encode(value, clazz, cacheInfo.objectConverter)
             synchronized(CacheLock) {
                 _cacheStore.putCache(key, data)
             }
@@ -74,14 +74,14 @@ internal abstract class BaseCacheHandler<T>(
         }
     }
 
+    @Suppress("NAME_SHADOWING")
     final override fun getCache(key: String, clazz: Class<T>): T? {
-        @Suppress("NAME_SHADOWING")
         val key = packKey(key)
-        return kotlin.runCatching {
+        return runCatching {
             synchronized(CacheLock) {
                 _cacheStore.getCache(key)
             }?.let { data ->
-                decode(data, clazz)
+                decode(data, clazz, cacheInfo.objectConverter)
             }
         }.getOrElse {
             notifyException(it)
@@ -126,6 +126,6 @@ internal abstract class BaseCacheHandler<T>(
 
     //---------- CacheHandler end ----------
 
-    protected abstract fun encode(value: T, clazz: Class<T>): ByteArray
-    protected abstract fun decode(bytes: ByteArray, clazz: Class<T>): T?
+    protected abstract fun encode(value: T, clazz: Class<T>, converter: Cache.ObjectConverter): ByteArray
+    protected abstract fun decode(bytes: ByteArray, clazz: Class<T>, converter: Cache.ObjectConverter): T?
 }
