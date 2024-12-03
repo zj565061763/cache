@@ -42,13 +42,15 @@ internal object CacheManager {
         factory: (CacheConfig) -> CacheStore,
     ): CacheStoreOwner {
         require(id.isNotEmpty()) { "id is empty" }
-        return CacheStoreOwner {
+        // 由于默认分组不会被关闭，所以放在外面创建，之后直接读取这个变量即可
+        val cacheStore = synchronized(CacheLock) {
             _defaultGroupCacheStoreFactory.create(
                 id = id,
                 cacheSizePolicy = cacheSizePolicy,
                 factory = factory,
             )
         }
+        return CacheStoreOwner { cacheStore }
     }
 
     fun cacheStoreOwnerForActiveGroup(
