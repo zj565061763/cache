@@ -8,11 +8,11 @@ import com.sd.lib.cache.newCacheHandler
 
 internal class MultiObjectCacheImpl<T>(
     cacheInfo: CacheInfo,
-    val objectClass: Class<T>,
+    private val objectClass: Class<T>,
 ) : MultiObjectCache<T> {
 
-    private val _keyPrefix = "${objectClass.name}_"
-    private val _objectHandler: CacheHandler<T> = newCacheHandler(cacheInfo, "oo")
+    private val _keyPrefix = "oo_${objectClass.name}_"
+    private val _objectHandler: CacheHandler<T> = newCacheHandler(cacheInfo)
 
     private fun packKey(key: String): String {
         if (key.isEmpty()) libError("key is empty")
@@ -27,33 +27,30 @@ internal class MultiObjectCacheImpl<T>(
     override fun put(key: String, value: T?): Boolean {
         if (key.isEmpty()) return false
         if (value == null) return false
-        @Suppress("NAME_SHADOWING")
-        val key = packKey(key)
-        return _objectHandler.putCache(key, value, objectClass)
+        return _objectHandler.putCache(packKey(key), value, objectClass)
     }
 
     override fun get(key: String): T? {
         if (key.isEmpty()) return null
-        @Suppress("NAME_SHADOWING")
-        val key = packKey(key)
-        return _objectHandler.getCache(key, objectClass)
+        return _objectHandler.getCache(packKey(key), objectClass)
     }
 
     override fun remove(key: String) {
         if (key.isEmpty()) return
-        @Suppress("NAME_SHADOWING")
-        val key = packKey(key)
-        _objectHandler.removeCache(key)
+        _objectHandler.removeCache(packKey(key))
     }
 
     override fun contains(key: String): Boolean {
         if (key.isEmpty()) return false
-        @Suppress("NAME_SHADOWING")
-        val key = packKey(key)
-        return _objectHandler.containsCache(key)
+        return _objectHandler.containsCache(packKey(key))
     }
 
     override fun keys(): List<String> {
-        return _objectHandler.keys { unpackKey(it) }
+        return _objectHandler.keys { keys ->
+            keys.asSequence()
+                .filter { it.startsWith(_keyPrefix) }
+                .map { unpackKey(it) }
+                .toList()
+        }
     }
 }
