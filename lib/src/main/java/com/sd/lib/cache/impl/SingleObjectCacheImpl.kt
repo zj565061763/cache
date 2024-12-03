@@ -10,7 +10,6 @@ internal class SingleObjectCacheImpl<T>(
     private val clazz: Class<T>,
     id: String,
 ) : Cache.SingleObjectCache<T> {
-
     private val _key = "o_${id}"
     private val _handler: CacheHandler<T> = newCacheHandler(cacheInfo)
 

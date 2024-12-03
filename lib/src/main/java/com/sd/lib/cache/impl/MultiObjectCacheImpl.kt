@@ -11,7 +11,6 @@ internal class MultiObjectCacheImpl<T>(
     private val clazz: Class<T>,
     id: String,
 ) : MultiObjectCache<T> {
-
     private val _keyPrefix = "oo_${id}_"
     private val _objectHandler: CacheHandler<T> = newCacheHandler(cacheInfo)
 
