@@ -4,14 +4,12 @@ import java.io.File
 import java.io.FileNotFoundException
 
 internal class FileCacheStore : DirectoryCacheStore() {
-    override fun putCacheImpl(file: File, value: ByteArray): Boolean {
-        return try {
+    override fun putCacheImpl(file: File, value: ByteArray) {
+        try {
             file.writeBytes(value)
-            true
         } catch (e: FileNotFoundException) {
             if (directory.fMakeDirs()) {
                 file.writeBytes(value)
-                true
             } else {
                 throw e
             }

@@ -31,9 +31,13 @@ private fun testCacheEmptyActiveGroup(cache: Cache<TestActiveModel>) {
     // test defaultValue
     assertEquals(false, cache.contains(key))
     assertEquals(null, cache.get(key))
+    assertEquals(0, cache.keys().size)
 
     // test put and get
     assertEquals(false, cache.put(key, TestActiveModel()))
     assertEquals(false, cache.contains(key))
     assertEquals(null, cache.get(key))
+    assertEquals(0, cache.keys().size)
+
+    cache.remove(key)
 }

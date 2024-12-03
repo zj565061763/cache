@@ -65,3 +65,9 @@ internal sealed interface CacheSizePolicy {
     /** 限制个数 */
     data class LimitCount(val count: Int) : CacheSizePolicy
 }
+
+internal fun Int.cacheSizePolicy(): CacheSizePolicy {
+    val count = this
+    return if (count > 0) CacheSizePolicy.LimitCount(count)
+    else CacheSizePolicy.Unlimited
+}

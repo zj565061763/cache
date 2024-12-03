@@ -39,7 +39,7 @@ private abstract class LruCacheStore(
         }
     }
 
-    final override fun init(
+    override fun init(
         context: Context,
         directory: File,
         group: String,
@@ -57,23 +57,22 @@ private abstract class LruCacheStore(
         }
     }
 
-    final override fun putCache(key: String, value: ByteArray): Boolean {
-        return store.putCache(key, value).also { result ->
-            if (result) {
-                val size = sizeOfEntry(key, value)
-                _lruCache.put(key, size)
-            }
+    override fun putCache(key: String, value: ByteArray) {
+        store.putCache(key, value).also {
+            val size = sizeOfEntry(key, value)
+            _lruCache.put(key, size)
         }
     }
 
-    final override fun getCache(key: String): ByteArray? {
-        _lruCache.get(key)
-        return store.getCache(key)
+    override fun getCache(key: String): ByteArray? {
+        return store.getCache(key).also {
+            _lruCache.get(key)
+        }
     }
 
-    final override fun removeCache(key: String) {
-        _lruCache.remove(key)
+    override fun removeCache(key: String) {
         store.removeCache(key)
+        _lruCache.remove(key)
     }
 
     protected abstract fun sizeOfEntry(key: String, value: ByteArray?): Int

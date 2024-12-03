@@ -35,6 +35,7 @@ android {
 
 dependencies {
     implementation(libs.sd.moshi)
+    compileOnly(libs.kotlinx.coroutines)
 }
 
 publishing {

@@ -13,6 +13,9 @@ androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 
 sd-moshi = "com.github.zj565061763:moshi:1.0.0"
+kotlinx-coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1"
+kotlinx-coroutines-test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1"
+cash-turbine = "app.cash.turbine:turbine:1.2.0"
 
 [plugins]
 

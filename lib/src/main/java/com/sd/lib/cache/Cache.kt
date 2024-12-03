@@ -18,13 +18,25 @@ internal class CacheImpl<T>(
     private val clazz: Class<T>,
     private val cacheStoreOwner: CacheStoreOwner,
 ) : Cache<T> {
+
+    var onChange: ((key: String, data: T?) -> Unit)? = null
+
+    fun notifyChange(key: String) {
+        cacheLock {
+            val data = get(key)
+            onChange?.invoke(key, data)
+        }
+    }
+
     override fun put(key: String, value: T?): Boolean {
         if (value == null) return false
         return runCatching {
             val data = encode(value, clazz)
-            synchronized(CacheLock) {
+            cacheLock {
                 getCacheStore().putCache(key, data)
+                onChange?.invoke(key, value)
             }
+            true
         }.getOrElse {
             libNotifyException(it)
             false
@@ -33,7 +45,7 @@ internal class CacheImpl<T>(
 
     override fun get(key: String): T? {
         return runCatching {
-            synchronized(CacheLock) {
+            cacheLock {
                 getCacheStore().getCache(key)
             }?.let { data ->
                 decode(data, clazz)
@@ -46,8 +58,9 @@ internal class CacheImpl<T>(
 
     override fun remove(key: String) {
         runCatching {
-            synchronized(CacheLock) {
+            cacheLock {
                 getCacheStore().removeCache(key)
+                onChange?.invoke(key, null)
             }
         }.onFailure {
             libNotifyException(it)
@@ -56,7 +69,7 @@ internal class CacheImpl<T>(
 
     override fun contains(key: String): Boolean {
         return runCatching {
-            synchronized(CacheLock) {
+            cacheLock {
                 getCacheStore().containsCache(key)
             }
         }.getOrElse {
@@ -67,7 +80,7 @@ internal class CacheImpl<T>(
 
     override fun keys(): List<String> {
         return runCatching {
-            synchronized(CacheLock) {
+            cacheLock {
                 getCacheStore().keys()
             }
         }.getOrElse {

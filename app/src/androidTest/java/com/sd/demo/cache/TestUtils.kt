@@ -60,9 +60,5 @@ fun <T> testCache(
     assertEquals(false, cache.contains(key2))
     assertEquals(null, cache.get(key1))
     assertEquals(null, cache.get(key2))
-
-    // test keys
-    cache.keys().also {
-        assertEquals(0, it.size)
-    }
+    assertEquals(0, cache.keys().size)
 }

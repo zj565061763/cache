@@ -20,10 +20,9 @@ interface CacheStore {
 
     /**
      * 保存缓存
-     * @return true-保存成功，false-保存失败
      */
     @Throws(Throwable::class)
-    fun putCache(key: String, value: ByteArray): Boolean
+    fun putCache(key: String, value: ByteArray)
 
     /**
      * 获取缓存

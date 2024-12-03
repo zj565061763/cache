@@ -25,7 +25,7 @@ abstract class DirectoryCacheStore : CacheStore {
         initImpl(context, _directory)
     }
 
-    final override fun putCache(key: String, value: ByteArray): Boolean {
+    final override fun putCache(key: String, value: ByteArray) {
         return putCacheImpl(fileOf(key), value)
     }
 
@@ -62,7 +62,7 @@ abstract class DirectoryCacheStore : CacheStore {
     }
 
     protected open fun initImpl(context: Context, directory: File) = Unit
-    protected abstract fun putCacheImpl(file: File, value: ByteArray): Boolean
+    protected abstract fun putCacheImpl(file: File, value: ByteArray)
     protected abstract fun getCacheImpl(file: File): ByteArray?
     protected open fun removeCacheImpl(file: File) = file.deleteRecursively()
     protected open fun containsCacheImpl(file: File): Boolean = file.isFile

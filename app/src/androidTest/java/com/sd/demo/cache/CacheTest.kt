@@ -6,13 +6,14 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * Instrumented test, which will execute on an Android device.
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 @RunWith(AndroidJUnit4::class)
 class CacheTest {
+    @Test
+    fun testCacheInstance() {
+        val cache1 = FCache.get(TestDefaultModel::class.java)
+        val cache2 = FCache.get(TestDefaultModel::class.java)
+        assertEquals(true, cache1 === cache2)
+    }
 
     @Test
     fun testCache() {

@@ -1,8 +1,7 @@
 package com.sd.lib.cache
 
-import android.content.Context
 import com.sd.lib.cache.store.CacheStore
-import java.io.File
+import com.sd.lib.cache.store.EmptyActiveGroupCacheStore
 
 object FCache {
     /** DefaultGroup */
@@ -11,65 +10,70 @@ object FCache {
     private val _defaultGroupCacheStoreFactory = CacheStoreFactory(DEFAULT_GROUP)
 
     /** ActiveGroup */
+    @Volatile
     private var _activeGroup = ""
     /** ActiveGroup的[CacheStoreFactory] */
     private var _activeGroupCacheStoreFactory: CacheStoreFactory? = null
 
-    /**
-     * 获取[clazz]对应的[Cache]
-     */
+    /** 缓存所有的[Cache] */
+    private val _caches = mutableMapOf<Class<*>, Cache<*>>()
+
     @JvmStatic
     fun <T> get(clazz: Class<T>): Cache<T> {
-        val defaultType = clazz.getAnnotation(DefaultGroupCache::class.java)
-        val activeType = clazz.getAnnotation(ActiveGroupCache::class.java)
+        return cacheLock {
+            val cache = _caches.getOrPut(clazz) { newCache(clazz) }
+            @Suppress("UNCHECKED_CAST")
+            cache as Cache<T>
+        }
+    }
+
+    @JvmStatic
+    fun getActiveGroup(): String {
+        return _activeGroup
+    }
+
+    @JvmStatic
+    fun setActiveGroup(group: String) {
+        require(group != DEFAULT_GROUP) { "Require not default group" }
+        cacheLock { _activeGroup = group }
+    }
+
+    private fun <T> newCache(clazz: Class<T>): Cache<T> {
+        val defaultGroupCache = clazz.getAnnotation(DefaultGroupCache::class.java)
+        val activeGroupCache = clazz.getAnnotation(ActiveGroupCache::class.java)
 
         when {
-            defaultType == null && activeType == null -> {
+            defaultGroupCache == null && activeGroupCache == null -> {
                 throw IllegalArgumentException("Annotation ${DefaultGroupCache::class.java.simpleName} or ${ActiveGroupCache::class.java.simpleName} was not found in $clazz")
             }
-            defaultType != null && activeType != null -> {
+            defaultGroupCache != null && activeGroupCache != null -> {
                 throw IllegalArgumentException("Can not use both ${DefaultGroupCache::class.java.simpleName} and ${ActiveGroupCache::class.java.simpleName} in $clazz")
             }
         }
 
-        defaultType?.also { type ->
+        defaultGroupCache?.also {
             return CacheImpl(
                 clazz = clazz,
                 cacheStoreOwner = cacheStoreOwnerForDefaultGroup(
-                    id = type.id,
-                    cacheSizePolicy = type.limitCount.cacheSizePolicy(),
+                    id = it.id,
+                    cacheSizePolicy = it.limitCount.cacheSizePolicy(),
                     clazz = clazz,
                 )
             )
         }
 
-        activeType?.also { type ->
+        activeGroupCache?.also {
             return CacheImpl(
                 clazz = clazz,
                 cacheStoreOwner = cacheStoreOwnerForActiveGroup(
-                    id = type.id,
-                    cacheSizePolicy = type.limitCount.cacheSizePolicy(),
+                    id = it.id,
+                    cacheSizePolicy = it.limitCount.cacheSizePolicy(),
                     clazz = clazz,
                 )
             )
         }
 
         error("This should not happen")
-    }
-
-    @JvmStatic
-    fun getActiveGroup(): String {
-        synchronized(CacheLock) {
-            return _activeGroup
-        }
-    }
-
-    @JvmStatic
-    fun setActiveGroup(group: String) {
-        require(group != DEFAULT_GROUP) { "Require not default group" }
-        synchronized(CacheLock) {
-            _activeGroup = group
-        }
     }
 
     private fun cacheStoreOwnerForDefaultGroup(
@@ -128,48 +132,9 @@ object FCache {
     }
 }
 
-internal val CacheLock: Any = FCache
-
-private fun Int.cacheSizePolicy(): CacheSizePolicy {
-    val count = this
-    return if (count > 0) CacheSizePolicy.LimitCount(count)
-    else CacheSizePolicy.Unlimited
-}
-
-private object EmptyActiveGroupCacheStore : CacheStore {
-    override fun init(context: Context, directory: File, group: String, id: String) {
-        notifyException("Empty active group CacheStore.init()")
-    }
-
-    override fun putCache(key: String, value: ByteArray): Boolean {
-        notifyException("Empty active group CacheStore.putCache()")
-        return false
-    }
-
-    override fun getCache(key: String): ByteArray? {
-        notifyException("Empty active group CacheStore.getCache()")
-        return null
-    }
-
-    override fun removeCache(key: String) {
-        notifyException("Empty active group CacheStore.removeCache()")
-    }
-
-    override fun containsCache(key: String): Boolean {
-        notifyException("Empty active group CacheStore.containsCache()")
-        return false
-    }
-
-    override fun keys(): List<String> {
-        notifyException("Empty active group CacheStore.keys()")
-        return emptyList()
-    }
-
-    override fun close() {
-        notifyException("Empty active group CacheStore.close()")
-    }
-
-    private fun notifyException(message: String) {
-        libNotifyException(CacheException(message))
-    }
+internal fun <R> cacheLock(block: () -> R): R {
+    return synchronized(
+        lock = FCache,
+        block = block,
+    )
 }
