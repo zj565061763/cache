@@ -5,7 +5,7 @@ import org.junit.Assert.assertEquals
 
 object TestUtils {
     fun testCacheObject(cache: Cache) {
-        val model = TestModel()
+        val model = TestModel(name = "testCacheObject")
         val c = cache.single(TestModel::class.java)
 
         // test get defaultValue
