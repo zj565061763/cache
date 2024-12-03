@@ -41,14 +41,14 @@ internal object CacheManager {
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStoreOwner {
-        val cacheStore = synchronized(CacheLock) {
+        require(id.isNotEmpty()) { "id is empty" }
+        return CacheStoreOwner {
             _defaultGroupCacheStoreFactory.create(
                 id = id,
                 cacheSizePolicy = cacheSizePolicy,
                 factory = factory,
             )
         }
-        return CacheStoreOwner { cacheStore }
     }
 
     fun cacheStoreOwnerForActiveGroup(
@@ -56,6 +56,7 @@ internal object CacheManager {
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStoreOwner {
+        require(id.isNotEmpty()) { "id is empty" }
         return CacheStoreOwner {
             getActiveGroupCacheStore(
                 id = id,
@@ -70,26 +71,24 @@ internal object CacheManager {
         cacheSizePolicy: CacheSizePolicy,
         factory: (CacheConfig) -> CacheStore,
     ): CacheStore {
-        synchronized(CacheLock) {
-            val activeGroup = _activeGroup
-            if (activeGroup.isEmpty()) {
+        val activeGroup = _activeGroup
+        if (activeGroup.isEmpty()) {
+            _activeGroupCacheStoreFactory?.close()
+            _activeGroupCacheStoreFactory = null
+            return EmptyActiveGroupCacheStore
+        }
+
+        val storeFactory = _activeGroupCacheStoreFactory?.takeIf { it.group == activeGroup }
+            ?: CacheStoreFactory(activeGroup).also { newFactory ->
                 _activeGroupCacheStoreFactory?.close()
-                _activeGroupCacheStoreFactory = null
-                return EmptyActiveGroupCacheStore
+                _activeGroupCacheStoreFactory = newFactory
             }
 
-            val storeFactory = _activeGroupCacheStoreFactory?.takeIf { it.group == activeGroup }
-                ?: CacheStoreFactory(activeGroup).also { newFactory ->
-                    _activeGroupCacheStoreFactory?.close()
-                    _activeGroupCacheStoreFactory = newFactory
-                }
-
-            return storeFactory.create(
-                id = id,
-                cacheSizePolicy = cacheSizePolicy,
-                factory = factory,
-            )
-        }
+        return storeFactory.create(
+            id = id,
+            cacheSizePolicy = cacheSizePolicy,
+            factory = factory,
+        )
     }
 }
 

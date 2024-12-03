@@ -24,14 +24,11 @@ private class CacheHandlerImpl<T>(
     private val cacheInfo: CacheInfo,
 ) : CacheHandler<T> {
 
-    private val _cacheStore: CacheStore
-        get() = cacheInfo.cacheStore
-
     override fun putCache(key: String, value: T, clazz: Class<T>): Boolean {
         return runCatching {
             val data = encode(value, clazz)
             synchronized(CacheLock) {
-                _cacheStore.putCache(key, data)
+                getCacheStore().putCache(key, data)
             }
         }.getOrElse {
             notifyException(it)
@@ -42,7 +39,7 @@ private class CacheHandlerImpl<T>(
     override fun getCache(key: String, clazz: Class<T>): T? {
         return runCatching {
             synchronized(CacheLock) {
-                _cacheStore.getCache(key)
+                getCacheStore().getCache(key)
             }?.let { data ->
                 decode(data, clazz)
             }
@@ -55,7 +52,7 @@ private class CacheHandlerImpl<T>(
     override fun removeCache(key: String) {
         runCatching {
             synchronized(CacheLock) {
-                _cacheStore.removeCache(key)
+                getCacheStore().removeCache(key)
             }
         }.onFailure {
             notifyException(it)
@@ -65,7 +62,7 @@ private class CacheHandlerImpl<T>(
     override fun containsCache(key: String): Boolean {
         return runCatching {
             synchronized(CacheLock) {
-                _cacheStore.containsCache(key)
+                getCacheStore().containsCache(key)
             }
         }.getOrElse {
             notifyException(it)
@@ -76,7 +73,7 @@ private class CacheHandlerImpl<T>(
     override fun keys(transform: (List<String>) -> List<String>): List<String> {
         return runCatching {
             synchronized(CacheLock) {
-                val keys = _cacheStore.keys()
+                val keys = getCacheStore().keys()
                 transform(keys)
             }
         }.getOrElse {
@@ -84,6 +81,8 @@ private class CacheHandlerImpl<T>(
             emptyList()
         }
     }
+
+    private fun getCacheStore(): CacheStore = cacheInfo.cacheStore
 
     private fun notifyException(error: Throwable) {
         cacheInfo.exceptionHandler.onException(error)

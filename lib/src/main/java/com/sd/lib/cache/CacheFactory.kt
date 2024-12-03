@@ -16,40 +16,44 @@ interface CacheFactory {
 
 internal class DefaultGroupCacheFactory : CacheFactory {
     override fun unlimited(id: String): Cache {
-        val cacheStoreOwner = CacheManager.cacheStoreOwnerForDefaultGroup(
-            id = id,
-            cacheSizePolicy = CacheSizePolicy.Unlimited,
-            factory = { it.newCacheStore() },
+        return CacheImpl(
+            CacheManager.cacheStoreOwnerForDefaultGroup(
+                id = id,
+                cacheSizePolicy = CacheSizePolicy.Unlimited,
+                factory = { it.newCacheStore() },
+            )
         )
-        return CacheImpl(cacheStoreOwner)
     }
 
     override fun limitCount(id: String, limit: Int): Cache {
-        val cacheStoreOwner = CacheManager.cacheStoreOwnerForDefaultGroup(
-            id = id,
-            cacheSizePolicy = CacheSizePolicy.LimitCount,
-            factory = { it.newCacheStore().limitCount(limit) },
+        return CacheImpl(
+            CacheManager.cacheStoreOwnerForDefaultGroup(
+                id = id,
+                cacheSizePolicy = CacheSizePolicy.LimitCount,
+                factory = { it.newCacheStore().limitCount(limit) },
+            )
         )
-        return CacheImpl(cacheStoreOwner)
     }
 }
 
 internal class ActiveGroupCacheFactory : CacheFactory {
     override fun unlimited(id: String): Cache {
-        val cacheStoreOwner = CacheManager.cacheStoreOwnerForActiveGroup(
-            id = id,
-            cacheSizePolicy = CacheSizePolicy.Unlimited,
-            factory = { it.newCacheStore() },
+        return CacheImpl(
+            CacheManager.cacheStoreOwnerForActiveGroup(
+                id = id,
+                cacheSizePolicy = CacheSizePolicy.Unlimited,
+                factory = { it.newCacheStore() },
+            )
         )
-        return CacheImpl(cacheStoreOwner)
     }
 
     override fun limitCount(id: String, limit: Int): Cache {
-        val cacheStoreOwner = CacheManager.cacheStoreOwnerForActiveGroup(
-            id = id,
-            cacheSizePolicy = CacheSizePolicy.LimitCount,
-            factory = { it.newCacheStore().limitCount(limit) },
+        return CacheImpl(
+            CacheManager.cacheStoreOwnerForActiveGroup(
+                id = id,
+                cacheSizePolicy = CacheSizePolicy.LimitCount,
+                factory = { it.newCacheStore().limitCount(limit) },
+            )
         )
-        return CacheImpl(cacheStoreOwner)
     }
 }
