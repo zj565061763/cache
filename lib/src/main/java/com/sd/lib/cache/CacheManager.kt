@@ -15,18 +15,12 @@ internal object CacheManager {
     /** ActiveGroup的[CacheStoreFactory] */
     private var _activeGroupCacheStoreFactory: CacheStoreFactory? = null
 
-    /**
-     * ActiveGroup
-     */
     fun getActiveGroup(): String {
         synchronized(CacheLock) {
             return _activeGroup
         }
     }
 
-    /**
-     * 设置ActiveGroup
-     */
     fun setActiveGroup(group: String) {
         require(group != DEFAULT_GROUP) { "Require not default group" }
         synchronized(CacheLock) {
