@@ -25,23 +25,19 @@ internal class MultiObjectCacheImpl<T>(
     }
 
     override fun put(key: String, value: T?): Boolean {
-        if (key.isEmpty()) return false
         if (value == null) return false
         return _objectHandler.putCache(packKey(key), value, objectClass)
     }
 
     override fun get(key: String): T? {
-        if (key.isEmpty()) return null
         return _objectHandler.getCache(packKey(key), objectClass)
     }
 
     override fun remove(key: String) {
-        if (key.isEmpty()) return
         _objectHandler.removeCache(packKey(key))
     }
 
     override fun contains(key: String): Boolean {
-        if (key.isEmpty()) return false
         return _objectHandler.containsCache(packKey(key))
     }
 
