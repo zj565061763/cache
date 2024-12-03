@@ -2,6 +2,7 @@ package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sd.lib.cache.FCache
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -15,18 +16,29 @@ class CacheTest {
 
     @Test
     fun testCacheObject() {
-        CacheTestUtils.testCacheObject(FCache.getDefault())
+        TestUtils.testCacheObject(FCache.getDefault())
     }
 
     @Test
     fun testCacheMultiObject() {
-        CacheTestUtils.testCacheMultiObject(FCache.getDefault())
+        TestUtils.testCacheMultiObject(FCache.getDefault())
     }
 
     @Test
     fun testLimitCount() {
-        val limit = 10
-        val cache = FCache.defaultGroupFactory().limitCount("testLimitCount", limit)
-        CacheTestUtils.testLimitCount(cache, limit)
+        val cache = FCache.defaultGroupFactory().limitCount("testLimitCount", 2)
+
+        val multi = cache.multi(TestModel::class.java)
+        assertEquals(true, multi.keys().isEmpty())
+
+        multi.put("1", TestModel(name = "1"))
+        multi.put("2", TestModel(name = "2"))
+        assertEquals(true, multi.contains("1"))
+        assertEquals(true, multi.contains("2"))
+
+        multi.put("3", TestModel(name = "3"))
+        assertEquals(false, multi.contains("1"))
+        assertEquals(true, multi.contains("2"))
+        assertEquals(true, multi.contains("3"))
     }
 }

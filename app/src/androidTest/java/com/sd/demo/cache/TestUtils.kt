@@ -3,8 +3,7 @@ package com.sd.demo.cache
 import com.sd.lib.cache.Cache
 import org.junit.Assert.assertEquals
 
-object CacheTestUtils {
-
+object TestUtils {
     fun testCacheObject(cache: Cache) {
         val model = TestModel()
         val c = cache.single(TestModel::class.java)
@@ -69,37 +68,6 @@ object CacheTestUtils {
         // test keys
         c.keys().also {
             assertEquals(0, it.size)
-        }
-    }
-
-    fun testLimitCount(cache: Cache, limit: Int) {
-        val c = cache.multi(TestModel::class.java)
-
-        repeat(limit) { index ->
-            val key = index.toString()
-            val value = TestModel(index.toString())
-            assertEquals(true, c.put(key, value))
-            assertEquals(value, c.get(key))
-        }
-
-        fun testOverLimit(index: Int) {
-            val key = index.toString()
-            val value = TestModel(index.toString())
-
-            assertEquals(false, c.contains(key))
-            assertEquals(null, c.get(key))
-
-            assertEquals(true, c.put(key, value))
-            assertEquals(true, c.contains(key))
-            assertEquals(value, c.get(key))
-
-            val removedKey = (limit - index).toString()
-            assertEquals(false, c.contains(removedKey))
-            assertEquals(null, c.get(removedKey))
-        }
-
-        repeat(limit) { index ->
-            testOverLimit(limit + index)
         }
     }
 }
