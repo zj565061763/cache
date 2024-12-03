@@ -129,5 +129,5 @@ val cache2 = FCache.activeGroupFactory().limitCount("2", 100)
 
 # 自定义底层存储
 
-可以实现[CacheStore](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/store/CacheStore.kt)接口，自定义底层数据如何存储。<br>
+可以实现`CacheStore`接口，自定义底层数据如何存储。<br>
 默认实现类：[FileCacheStore](https://github.com/zj565061763/cache/blob/main/lib/src/main/java/com/sd/lib/cache/store/FileCacheStore.kt)<br>
