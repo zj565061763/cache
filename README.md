@@ -17,24 +17,35 @@
 ```kotlin
 CacheConfig.init(
     CacheConfig.Builder()
-        // 设置缓存目录(可选参数)，默认为"Context.getFilesDir()/f_cache"
+        // 设置缓存目录(可选参数)
         .setDirectory(getExternalFilesDir("app_cache")!!)
 
         // 设置异常处理(可选参数)
-        .setExceptionHandler(CacheExceptionHandler())
+        .setExceptionHandler(AppExceptionHandler())
 
-        // 设置对象转换器(可选参数)，默认为Gson转换器
-        .setObjectConverter(MoshiObjectConverter())
+        // 设置对象转换器(可选参数)
+        .setObjectConverter(AppObjectConverter())
 
         // Context
         .build(this)
 )
 ```
 
+#### 缓存对象
+
+```kotlin
+@CacheType("TestModel")
+data class TestModel(
+    val name: String = "tom",
+)
+```
+
+缓存对象需要加`CacheType`注解，并指定`id`，在同一个分组中，`id`不能重复。<br>
+关于分组，可以看下面的介绍。
+
 #### 单缓存
 
-单缓存是指一个类只能持久化一个对象，例如`TestModel`类，只能存一个该类的实例到本地，常用于保存App配置信息等。<br>
-注意：库内部采用类的全类名做为缓存的`key`，所以修改类的名称或者包名后缓存会失效。
+单缓存是指一个类只能持久化一个对象，例如`TestModel`类，只能保存一个该类的实例到本地，常用于保存App配置信息等。<br>
 
 ```kotlin
 // 获取TestModel类对应的单缓存管理对象
@@ -56,7 +67,6 @@ singleCache.contains()
 #### 多缓存
 
 多缓存是指一个类可以持久化多个对象，例如`TestModel`类，可以根据`key`保存多个该类的实例到本地，常用于缓存具有唯一ID的对象，可以把唯一ID当作`key`。<br>
-注意：库内部采用类的全类名计算缓存的`key`，所以修改类的名称或者包名后缓存会失效。
 
 ```kotlin
 // 获取TestModel类对应的多缓存管理对象
@@ -114,10 +124,10 @@ val cache2 = FCache.activeGroupFactory().limitCount("2", 100)
 
 # 自定义数据格式
 
-默认情况下，采用`Json`数据格式存储，默认实现类：[GsonObjectConverter](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/impl/GsonObjectConverter.kt)<br>
-可以实现`Cache.ObjectConverter`接口，自定义数据格式，例如使用[moshi](https://github.com/square/moshi)的实现：[MoshiObjectConverter](https://github.com/zj565061763/cache/blob/master/app/src/main/java/com/sd/demo/cache/impl/MoshiObjectConverter.kt)
+默认情况下，采用`Json`数据格式存储，默认实现类：[DefaultObjectConverter](https://github.com/zj565061763/cache/blob/main/lib/src/main/java/com/sd/lib/cache/impl/DefaultObjectConverter.kt)<br>
+可以实现`Cache.ObjectConverter`接口，自定义数据格式。
 
 # 自定义底层存储
 
-默认情况下，底层采用文件流存取数据，默认实现类：[FileCacheStore](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/store/FileCacheStore.kt)<br>
-可以实现[CacheStore](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/store/CacheStore.kt)接口，自定义底层数据如何存储，例如使用[MMKV](https://github.com/Tencent/MMKV)的实现：[MMKVCacheStore](https://github.com/zj565061763/cache/blob/master/app/src/main/java/com/sd/demo/cache/impl/MMKVCacheStore.kt)
+默认情况下，底层采用文件流存取数据，默认实现类：[FileCacheStore](https://github.com/zj565061763/cache/blob/main/lib/src/main/java/com/sd/lib/cache/store/FileCacheStore.kt)<br>
+可以实现[CacheStore](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/store/CacheStore.kt)接口，自定义底层数据如何存储，例如使用[MMKV](https://github.com/Tencent/MMKV)的实现：[MMKVCacheStore](https://github.com/zj565061763/cache/blob/main/app/src/main/java/com/sd/demo/cache/impl/MMKVCacheStore.kt)
