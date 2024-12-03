@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -41,13 +41,11 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.appcompat)
+    implementation(project(":lib"))
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 
-    implementation(project(":lib"))
-
+    implementation(libs.androidx.appcompat)
     implementation(libs.sd.moshi)
-    implementation(libs.tencent.mmkv)
 }
