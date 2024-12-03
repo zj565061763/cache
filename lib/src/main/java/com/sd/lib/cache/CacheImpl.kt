@@ -10,19 +10,36 @@ internal fun interface CacheStoreOwner {
 
 internal class CacheImpl(
     private val cacheStoreOwner: CacheStoreOwner,
-) : Cache {
-
-    private val _cacheInfo = object : CacheInfo {
-        override val cacheStore: CacheStore get() = cacheStoreOwner.getCacheStore()
-        override val objectConverter: Cache.ObjectConverter get() = CacheConfig.get().objectConverter
-        override val exceptionHandler: Cache.ExceptionHandler get() = CacheConfig.get().exceptionHandler
-    }
+) : Cache, CacheInfo {
+    override val cacheStore: CacheStore get() = cacheStoreOwner.getCacheStore()
+    override val objectConverter: Cache.ObjectConverter get() = CacheConfig.get().objectConverter
+    override val exceptionHandler: Cache.ExceptionHandler get() = CacheConfig.get().exceptionHandler
 
     override fun <T> single(clazz: Class<T>): Cache.SingleObjectCache<T> {
-        return SingleObjectCacheImpl(_cacheInfo, clazz)
+        val cacheType = clazz.requireCacheType()
+        return SingleObjectCacheImpl(
+            cacheInfo = this@CacheImpl,
+            clazz = clazz,
+            id = cacheType.id,
+        )
     }
 
     override fun <T> multi(clazz: Class<T>): Cache.MultiObjectCache<T> {
-        return MultiObjectCacheImpl(_cacheInfo, clazz)
+        val cacheType = clazz.requireCacheType()
+        return MultiObjectCacheImpl(
+            cacheInfo = this@CacheImpl,
+            clazz = clazz,
+            id = cacheType.id,
+        )
+    }
+}
+
+private fun Class<*>.requireCacheType(): CacheType {
+    return requireNotNull(getAnnotation(CacheType::class.java)) {
+        "Annotation ${CacheType::class.java.simpleName} was not found in $name"
+    }.also {
+        require(it.id.isNotEmpty()) {
+            "CacheType.id is empty in $name"
+        }
     }
 }

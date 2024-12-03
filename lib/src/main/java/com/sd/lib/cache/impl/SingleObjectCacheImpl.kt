@@ -7,19 +7,20 @@ import com.sd.lib.cache.newCacheHandler
 
 internal class SingleObjectCacheImpl<T>(
     cacheInfo: CacheInfo,
-    private val objectClass: Class<T>,
+    private val clazz: Class<T>,
+    id: String,
 ) : Cache.SingleObjectCache<T> {
 
-    private val _key = "o_${objectClass.name}"
+    private val _key = "o_${id}"
     private val _handler: CacheHandler<T> = newCacheHandler(cacheInfo)
 
     override fun put(value: T?): Boolean {
         if (value == null) return false
-        return _handler.putCache(_key, value, objectClass)
+        return _handler.putCache(_key, value, clazz)
     }
 
     override fun get(): T? {
-        return _handler.getCache(_key, objectClass)
+        return _handler.getCache(_key, clazz)
     }
 
     override fun remove() {

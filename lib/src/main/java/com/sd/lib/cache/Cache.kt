@@ -1,8 +1,20 @@
 package com.sd.lib.cache
 
-interface Cache {
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.CLASS)
+annotation class CacheType(
+    val id: String,
+)
 
+interface Cache {
+    /**
+     * 获取[SingleObjectCache]，[clazz]必须标注注解[CacheType]
+     */
     fun <T> single(clazz: Class<T>): SingleObjectCache<T>
+
+    /**
+     * 获取[MultiObjectCache]，[clazz]必须标注注解[CacheType]
+     */
     fun <T> multi(clazz: Class<T>): MultiObjectCache<T>
 
     /**

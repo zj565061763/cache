@@ -1,0 +1,2 @@
+-keep @interface com.sd.lib.cache.CacheType
+-keep @com.sd.lib.cache.CacheType class * {*;}

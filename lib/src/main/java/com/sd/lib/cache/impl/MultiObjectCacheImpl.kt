@@ -8,10 +8,11 @@ import com.sd.lib.cache.newCacheHandler
 
 internal class MultiObjectCacheImpl<T>(
     cacheInfo: CacheInfo,
-    private val objectClass: Class<T>,
+    private val clazz: Class<T>,
+    id: String,
 ) : MultiObjectCache<T> {
 
-    private val _keyPrefix = "oo_${objectClass.name}_"
+    private val _keyPrefix = "oo_${id}_"
     private val _objectHandler: CacheHandler<T> = newCacheHandler(cacheInfo)
 
     private fun packKey(key: String): String {
@@ -26,11 +27,11 @@ internal class MultiObjectCacheImpl<T>(
 
     override fun put(key: String, value: T?): Boolean {
         if (value == null) return false
-        return _objectHandler.putCache(packKey(key), value, objectClass)
+        return _objectHandler.putCache(packKey(key), value, clazz)
     }
 
     override fun get(key: String): T? {
-        return _objectHandler.getCache(packKey(key), objectClass)
+        return _objectHandler.getCache(packKey(key), clazz)
     }
 
     override fun remove(key: String) {
