@@ -16,6 +16,7 @@ class CacheGroupTest {
         testCacheEmptyActiveGroup(cache)
 
         FCache.setActiveGroup("100")
+        CacheTestUtils.testCacheObject(cache)
         CacheTestUtils.testCacheMultiObject(cache)
 
         FCache.setActiveGroup("")
