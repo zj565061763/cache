@@ -124,10 +124,10 @@ val cache2 = FCache.activeGroupFactory().limitCount("2", 100)
 
 # 自定义数据格式
 
-默认情况下，采用`Json`数据格式存储，默认实现类：[DefaultObjectConverter](https://github.com/zj565061763/cache/blob/main/lib/src/main/java/com/sd/lib/cache/impl/DefaultObjectConverter.kt)<br>
-可以实现`Cache.ObjectConverter`接口，自定义数据格式。
+可以实现`Cache.ObjectConverter`接口，自定义数据格式。<br>
+默认实现类：[DefaultObjectConverter](https://github.com/zj565061763/cache/blob/main/lib/src/main/java/com/sd/lib/cache/impl/DefaultObjectConverter.kt)
 
 # 自定义底层存储
 
-默认情况下，底层采用文件流存取数据，默认实现类：[FileCacheStore](https://github.com/zj565061763/cache/blob/main/lib/src/main/java/com/sd/lib/cache/store/FileCacheStore.kt)<br>
-可以实现[CacheStore](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/store/CacheStore.kt)接口，自定义底层数据如何存储，例如使用[MMKV](https://github.com/Tencent/MMKV)的实现：[MMKVCacheStore](https://github.com/zj565061763/cache/blob/main/app/src/main/java/com/sd/demo/cache/impl/MMKVCacheStore.kt)
+可以实现[CacheStore](https://github.com/zj565061763/cache/blob/master/lib/src/main/java/com/sd/lib/cache/store/CacheStore.kt)接口，自定义底层数据如何存储。<br>
+默认实现类：[FileCacheStore](https://github.com/zj565061763/cache/blob/main/lib/src/main/java/com/sd/lib/cache/store/FileCacheStore.kt)<br>
