@@ -1,9 +1,8 @@
 package com.sd.lib.cache
 
-import com.sd.lib.cache.Cache.ObjectConverter
 import com.sd.lib.moshi.fMoshi
 
-internal class DefaultObjectConverter : ObjectConverter {
+internal class DefaultObjectConverter : CacheConfig.ObjectConverter {
     override fun <T> encode(value: T, clazz: Class<T>): ByteArray {
         return fMoshi.adapter(clazz).toJson(value).toByteArray()
     }

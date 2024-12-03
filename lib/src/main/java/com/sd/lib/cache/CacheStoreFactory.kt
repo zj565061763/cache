@@ -32,7 +32,7 @@ internal class CacheStoreFactory(
             is CacheSizePolicy.Unlimited -> config.newCacheStore()
             is CacheSizePolicy.LimitCount -> config.newCacheStore().limitCount(cacheSizePolicy.count)
         }.also { cacheStore ->
-            _stores[id] = StoreInfo(cacheStore, clazz)
+            _stores[id] = StoreInfo(clazz, cacheStore)
             config.initCacheStore(cacheStore, group = group, id = id)
         }
     }
@@ -53,8 +53,8 @@ internal class CacheStoreFactory(
     }
 
     private class StoreInfo(
-        val cacheStore: CacheStore,
         val clazz: Class<*>,
+        val cacheStore: CacheStore,
     )
 }
 

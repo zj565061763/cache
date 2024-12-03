@@ -19,8 +19,8 @@ class CacheConfig private constructor(
     private val directory: File
     private val cacheStoreClass: Class<out CacheStore>
 
-    internal val objectConverter: Cache.ObjectConverter
-    internal val exceptionHandler: Cache.ExceptionHandler
+    internal val objectConverter: ObjectConverter
+    internal val exceptionHandler: ExceptionHandler
 
     init {
         this.directory = builder.directory ?: context.defaultCacheDir()
@@ -53,6 +53,26 @@ class CacheConfig private constructor(
         }
     }
 
+    /**
+     * 对象转换器
+     */
+    interface ObjectConverter {
+        /** 编码 */
+        @Throws(Throwable::class)
+        fun <T> encode(value: T, clazz: Class<T>): ByteArray
+
+        /** 解码 */
+        @Throws(Throwable::class)
+        fun <T> decode(bytes: ByteArray, clazz: Class<T>): T
+    }
+
+    /**
+     * 异常处理类
+     */
+    fun interface ExceptionHandler {
+        fun onException(error: Throwable)
+    }
+
     class Builder {
         internal var directory: File? = null
             private set
@@ -60,10 +80,10 @@ class CacheConfig private constructor(
         internal var cacheStore: Class<out CacheStore>? = null
             private set
 
-        internal var objectConverter: Cache.ObjectConverter? = null
+        internal var objectConverter: ObjectConverter? = null
             private set
 
-        internal var exceptionHandler: Cache.ExceptionHandler? = null
+        internal var exceptionHandler: ExceptionHandler? = null
             private set
 
         /**
@@ -83,14 +103,14 @@ class CacheConfig private constructor(
         /**
          * 对象转换
          */
-        fun setObjectConverter(converter: Cache.ObjectConverter) = apply {
+        fun setObjectConverter(converter: ObjectConverter) = apply {
             this.objectConverter = converter
         }
 
         /**
          * 异常处理
          */
-        fun setExceptionHandler(handler: Cache.ExceptionHandler) = apply {
+        fun setExceptionHandler(handler: ExceptionHandler) = apply {
             this.exceptionHandler = handler
         }
 
