@@ -8,25 +8,25 @@ import java.io.File
  * 限制个数的LRU算法仓库
  */
 internal fun CacheStore.limitCount(limit: Int): CacheStore {
-    return if (this is LimitCountStore) this
-    else LimitCountStore(limit, this)
+    val store = this
+    return if (store is LimitCountStore) store
+    else LimitCountStore(store = store, limit = limit)
 }
 
 /**
  * 限制个数的LRU算法仓库
  */
 private class LimitCountStore(
-    limit: Int,
     store: CacheStore,
-) : LruCacheStore(limit, store) {
+    limit: Int,
+) : LruCacheStore(store, limit) {
     override fun sizeOfEntry(key: String, value: ByteArray?): Int = 1
 }
 
 private abstract class LruCacheStore(
-    limit: Int,
     private val store: CacheStore,
+    limit: Int,
 ) : CacheStore by store {
-
     private val _lruCache = object : LruCache<String, Int>(limit) {
         override fun sizeOf(key: String, value: Int): Int {
             return value
@@ -51,7 +51,7 @@ private abstract class LruCacheStore(
             group = group,
             id = id,
         )
-        keys()?.forEach { key ->
+        keys().forEach { key ->
             val size = sizeOfEntry(key, null)
             _lruCache.put(key, size)
         }
