@@ -28,20 +28,20 @@ class CacheTest {
     fun testLimitCount() {
         val cache = FCache.defaultGroupFactory().limitCount("testLimitCount", 2)
 
-        val multi = cache.multi(TestModel::class.java)
+        val multi = cache.multi(DefaultModel::class.java)
         assertEquals(true, multi.keys().isEmpty())
 
-        multi.put("1", TestModel())
-        multi.put("2", TestModel())
+        multi.put("1", DefaultModel())
+        multi.put("2", DefaultModel())
         assertEquals(true, multi.contains("1"))
         assertEquals(true, multi.contains("2"))
 
-        multi.put("3", TestModel())
+        multi.put("3", DefaultModel())
         assertEquals(false, multi.contains("1"))
         assertEquals(true, multi.contains("2"))
         assertEquals(true, multi.contains("3"))
 
-        multi.put("4", TestModel())
+        multi.put("4", DefaultModel())
         assertEquals(false, multi.contains("1"))
         assertEquals(false, multi.contains("2"))
         assertEquals(true, multi.contains("3"))

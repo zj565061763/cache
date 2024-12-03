@@ -1,6 +1,7 @@
 package com.sd.lib.cache
 
 import com.sd.lib.cache.store.CacheStore
+import com.sd.lib.cache.store.limitCount
 
 internal class CacheStoreFactory(
     val group: String,
@@ -15,18 +16,23 @@ internal class CacheStoreFactory(
     fun create(
         id: String,
         cacheSizePolicy: CacheSizePolicy,
-        factory: (CacheConfig) -> CacheStore,
+        clazz: Class<*>,
     ): CacheStore {
         if (_isClosed) libError("Group:${group} Closed")
 
         _stores[id]?.also { info ->
-            if (info.cacheSizePolicy != cacheSizePolicy) libError("ID (${id}) exist with ${cacheSizePolicy.name}")
+            if (info.clazz != clazz) {
+                libError("id:${id} has bound to ${info.clazz.name} when bind ${clazz.name}")
+            }
             return info.cacheStore
         }
 
         val config = CacheConfig.get()
-        return factory(config).also { cacheStore ->
-            _stores[id] = StoreInfo(cacheStore, cacheSizePolicy)
+        return when (cacheSizePolicy) {
+            is CacheSizePolicy.Unlimited -> config.newCacheStore()
+            is CacheSizePolicy.LimitCount -> config.newCacheStore().limitCount(cacheSizePolicy.count)
+        }.also { cacheStore ->
+            _stores[id] = StoreInfo(cacheStore, clazz)
             config.initCacheStore(cacheStore, group = group, id = id)
         }
     }
@@ -48,14 +54,14 @@ internal class CacheStoreFactory(
 
     private class StoreInfo(
         val cacheStore: CacheStore,
-        val cacheSizePolicy: CacheSizePolicy,
+        val clazz: Class<*>,
     )
 }
 
-internal enum class CacheSizePolicy {
-    /** 不限制 */
-    Unlimited,
+internal sealed interface CacheSizePolicy {
+    /** 不限制大小 */
+    data object Unlimited : CacheSizePolicy
 
     /** 限制个数 */
-    LimitCount
+    data class LimitCount(val count: Int) : CacheSizePolicy
 }

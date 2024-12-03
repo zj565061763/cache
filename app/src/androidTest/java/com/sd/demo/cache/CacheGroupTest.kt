@@ -27,7 +27,7 @@ class CacheGroupTest {
 private fun testCacheEmptyActiveGroup(cache: Cache) {
     val key = "testCacheEmptyActiveGroup"
 
-    val c = cache.multi(TestModel::class.java)
+    val c = cache.multi(DefaultModel::class.java)
     c.remove(key)
 
     // test get defaultValue
@@ -35,7 +35,7 @@ private fun testCacheEmptyActiveGroup(cache: Cache) {
     assertEquals(null, c.get(key))
 
     // test put and get
-    assertEquals(false, c.put(key, TestModel()))
+    assertEquals(false, c.put(key, DefaultModel()))
     assertEquals(false, c.contains(key))
     assertEquals(null, c.get(key))
 }

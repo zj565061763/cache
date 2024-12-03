@@ -14,10 +14,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(_binding.root)
 
         _binding.btnSampleCache.setOnClickListener {
-            startActivity(Intent(this, SampleCache::class.java))
+            startActivity(Intent(this, SampleDefaultGroup::class.java))
         }
         _binding.btnSampleCacheGroup.setOnClickListener {
-            startActivity(Intent(this, SampleCacheGroup::class.java))
+            startActivity(Intent(this, SampleActiveGroup::class.java))
         }
         _binding.btnSamplePerformance.setOnClickListener {
             startActivity(Intent(this, SamplePerformance::class.java))

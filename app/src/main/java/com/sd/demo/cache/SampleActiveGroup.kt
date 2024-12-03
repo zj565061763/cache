@@ -2,16 +2,14 @@ package com.sd.demo.cache
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.sd.demo.cache.databinding.SampleCacheGroupBinding
+import com.sd.demo.cache.databinding.SampleActiveGroupBinding
 import com.sd.lib.cache.FCache
 
-class SampleCacheGroup : AppCompatActivity() {
-    private val _binding by lazy { SampleCacheGroupBinding.inflate(layoutInflater) }
+class SampleActiveGroup : AppCompatActivity() {
+    private val _binding by lazy { SampleActiveGroupBinding.inflate(layoutInflater) }
 
     private val key = "key"
-
-    private val _singleCache = FCache.getActive().single(TestModel::class.java)
-    private val _multiCache = FCache.getActive().multi(TestModel::class.java)
+    private val _cache = FCache.get(ActiveModel::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +17,7 @@ class SampleCacheGroup : AppCompatActivity() {
         logMsg { "getActiveGroup:${FCache.getActiveGroup()}" }
 
         _binding.btnSetGroup.setOnClickListener {
-            FCache.setActiveGroup("Tom")
+            FCache.setActiveGroup("1000")
             logMsg { "getActiveGroup:${FCache.getActiveGroup()}" }
         }
         _binding.btnRemoveGroup.setOnClickListener {
@@ -42,35 +40,27 @@ class SampleCacheGroup : AppCompatActivity() {
     }
 
     private fun putData() {
-        val model = TestModel()
-        _singleCache.put(model).also { logMsg { "single:$it" } }
-
-        _multiCache.put(key, model).also { logMsg { "multi:$it" } }
-        _multiCache.put(key + key, model).also { logMsg { "multi:$it" } }
+        val model = ActiveModel()
+        _cache.put(key, model).also { logMsg { "put1:$it" } }
+        _cache.put(key + key, model).also { logMsg { "put2:$it" } }
     }
 
     private fun getData() {
-        _singleCache.get().also { logMsg { "single:$it" } }
-
-        _multiCache.get(key).also { logMsg { "multi:$it" } }
-        _multiCache.get(key + key).also { logMsg { "multi:$it" } }
-        _multiCache.keys().also { keys ->
-            logMsg { "objectMulti keys:" + keys.joinToString(prefix = "[", postfix = "]", separator = ",") }
+        _cache.get(key).also { logMsg { "get1:$it" } }
+        _cache.get(key + key).also { logMsg { "get2:$it" } }
+        _cache.keys().also { keys ->
+            logMsg { "keys:" + keys.joinToString(prefix = "[", postfix = "]", separator = ",") }
         }
     }
 
     private fun containsData() {
-        _singleCache.contains().also { logMsg { "single:$it" } }
-
-        _multiCache.contains(key).also { logMsg { "multi:$it" } }
-        _multiCache.contains(key + key).also { logMsg { "multi:$it" } }
+        _cache.contains(key).also { logMsg { "contains1:$it" } }
+        _cache.contains(key + key).also { logMsg { "contains2:$it" } }
     }
 
     private fun removeData() {
-        _singleCache.remove()
-
-        _multiCache.remove(key)
-        _multiCache.remove(key + key)
+        _cache.remove(key)
+        _cache.remove(key + key)
         logMsg { "removeData" }
     }
 

@@ -1,44 +1,86 @@
 package com.sd.lib.cache
 
-import com.sd.lib.cache.impl.MultiObjectCacheImpl
-import com.sd.lib.cache.impl.SingleObjectCacheImpl
 import com.sd.lib.cache.store.CacheStore
 
 internal fun interface CacheStoreOwner {
     fun getCacheStore(): CacheStore
 }
 
-internal class CacheImpl(
+internal class CacheImpl<T>(
+    private val clazz: Class<T>,
     private val cacheStoreOwner: CacheStoreOwner,
-) : Cache, CacheInfo {
-    override val cacheStore: CacheStore get() = cacheStoreOwner.getCacheStore()
-    override val objectConverter: Cache.ObjectConverter get() = CacheConfig.get().objectConverter
-
-    override fun <T> single(clazz: Class<T>): Cache.SingleObjectCache<T> {
-        val cacheType = clazz.requireCacheType()
-        return SingleObjectCacheImpl(
-            cacheInfo = this@CacheImpl,
-            clazz = clazz,
-            id = cacheType.id,
-        )
-    }
-
-    override fun <T> multi(clazz: Class<T>): Cache.MultiObjectCache<T> {
-        val cacheType = clazz.requireCacheType()
-        return MultiObjectCacheImpl(
-            cacheInfo = this@CacheImpl,
-            clazz = clazz,
-            id = cacheType.id,
-        )
-    }
-}
-
-private fun Class<*>.requireCacheType(): CacheType {
-    return requireNotNull(getAnnotation(CacheType::class.java)) {
-        "Annotation ${CacheType::class.java.simpleName} was not found in $name"
-    }.also {
-        require(it.id.isNotEmpty()) {
-            "CacheType.id is empty in $name"
+) : Cache<T> {
+    override fun put(key: String, value: T?): Boolean {
+        if (value == null) return false
+        return runCatching {
+            val data = encode(value, clazz)
+            synchronized(CacheLock) {
+                getCacheStore().putCache(key, data)
+            }
+        }.getOrElse {
+            libNotifyException(it)
+            false
         }
     }
+
+    override fun get(key: String): T? {
+        return runCatching {
+            synchronized(CacheLock) {
+                getCacheStore().getCache(key)
+            }?.let { data ->
+                decode(data, clazz)
+            }
+        }.getOrElse {
+            libNotifyException(it)
+            null
+        }
+    }
+
+    override fun remove(key: String) {
+        runCatching {
+            synchronized(CacheLock) {
+                getCacheStore().removeCache(key)
+            }
+        }.onFailure {
+            libNotifyException(it)
+        }
+    }
+
+    override fun contains(key: String): Boolean {
+        return runCatching {
+            synchronized(CacheLock) {
+                getCacheStore().containsCache(key)
+            }
+        }.getOrElse {
+            libNotifyException(it)
+            false
+        }
+    }
+
+    override fun keys(): List<String> {
+        return runCatching {
+            synchronized(CacheLock) {
+                getCacheStore().keys()
+            }
+        }.getOrElse {
+            libNotifyException(it)
+            emptyList()
+        }
+    }
+
+    private fun encode(value: T, clazz: Class<T>): ByteArray {
+        return getObjectConverter().encode(value, clazz).also {
+            if (it.isEmpty()) {
+                throw CacheException("Converter encode returns empty ${clazz.name}")
+            }
+        }
+    }
+
+    private fun decode(bytes: ByteArray, clazz: Class<T>): T? {
+        if (bytes.isEmpty()) return null
+        return getObjectConverter().decode(bytes, clazz)
+    }
+
+    private fun getCacheStore(): CacheStore = cacheStoreOwner.getCacheStore()
+    private fun getObjectConverter(): Cache.ObjectConverter = CacheConfig.get().objectConverter
 }

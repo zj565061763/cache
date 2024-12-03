@@ -22,11 +22,12 @@ class SamplePerformance : AppCompatActivity() {
 }
 
 private fun testPut(repeat: Int = 100) {
-    val cache = FCache.getDefault().single(TestModel::class.java)
-    val model = TestModel()
+    val cache = FCache.get(DefaultModel::class.java)
+    val key = "key"
+    val model = DefaultModel()
     measureTime {
         repeat(repeat) {
-            cache.put(model)
+            cache.put(key, model)
         }
     }.also {
         logMsg { "put time:${it.inWholeMilliseconds}" }
@@ -34,10 +35,11 @@ private fun testPut(repeat: Int = 100) {
 }
 
 private fun testGet(repeat: Int = 100) {
-    val cache = FCache.getDefault().single(TestModel::class.java)
+    val cache = FCache.get(DefaultModel::class.java)
+    val key = "key"
     measureTime {
         repeat(repeat) {
-            cache.get()
+            cache.get(key)
         }
     }.also {
         logMsg { "get time:${it.inWholeMilliseconds}" }

@@ -5,8 +5,8 @@ import org.junit.Assert.assertEquals
 
 object TestUtils {
     fun testCacheObject(cache: Cache) {
-        val model = TestModel(name = "testCacheObject")
-        val c = cache.single(TestModel::class.java)
+        val model = DefaultModel(name = "testCacheObject")
+        val c = cache.single(DefaultModel::class.java)
 
         // test get defaultValue
         c.remove()
@@ -28,10 +28,10 @@ object TestUtils {
         val key1 = "TestKey1"
         val key2 = "TestKey2"
 
-        val model1 = TestModel("TestModel1")
-        val model2 = TestModel("TestModel2")
+        val model1 = DefaultModel("TestModel1")
+        val model2 = DefaultModel("TestModel2")
 
-        val c = cache.multi(TestModel::class.java).apply {
+        val c = cache.multi(DefaultModel::class.java).apply {
             remove(key1)
             remove(key2)
         }

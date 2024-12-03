@@ -6,7 +6,6 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.Process
-import com.sd.lib.cache.impl.DefaultObjectConverter
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.FileCacheStore
 import java.io.File

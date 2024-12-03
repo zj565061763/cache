@@ -1,4 +1,4 @@
-package com.sd.lib.cache.impl
+package com.sd.lib.cache
 
 import com.sd.lib.cache.Cache.ObjectConverter
 import com.sd.lib.moshi.fMoshi

@@ -7,10 +7,10 @@ import java.io.File
 /**
  * 限制个数的LRU算法仓库
  */
-internal fun CacheStore.limitCount(limit: Int): CacheStore {
+internal fun CacheStore.limitCount(count: Int): CacheStore {
     val store = this
     return if (store is LimitCountStore) store
-    else LimitCountStore(store = store, limit = limit)
+    else LimitCountStore(store = store, limit = count)
 }
 
 /**

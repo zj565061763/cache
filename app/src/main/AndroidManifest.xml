@@ -23,8 +23,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SampleCache" />
-        <activity android:name=".SampleCacheGroup" />
+        <activity android:name=".SampleDefaultGroup" />
+        <activity android:name=".SampleActiveGroup" />
         <activity android:name=".SamplePerformance" />
 
     </application>
