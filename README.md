@@ -45,7 +45,7 @@ CacheConfig.init(
 
 ```kotlin
 /**
- * DefaultGroup缓存
+ * DefaultGroup(默认组)缓存
  */
 @DefaultGroupCache("DefaultModel")
 data class DefaultModel(
@@ -53,7 +53,7 @@ data class DefaultModel(
 )
 
 /**
- * ActiveGroup缓存
+ * ActiveGroup(激活组)缓存
  */
 @ActiveGroupCache("ActiveModel")
 data class ActiveModel(
