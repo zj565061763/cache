@@ -28,7 +28,7 @@ internal object CacheManager {
      * 设置ActiveGroup
      */
     fun setActiveGroup(group: String) {
-        if (group == DEFAULT_GROUP) libError("Require not default group.")
+        require(group != DEFAULT_GROUP) { "Require not default group" }
         synchronized(CacheLock) {
             if (_activeGroup != group) {
                 _activeGroup = group

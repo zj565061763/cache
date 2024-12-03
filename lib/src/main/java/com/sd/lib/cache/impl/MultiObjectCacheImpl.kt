@@ -3,7 +3,6 @@ package com.sd.lib.cache.impl
 import com.sd.lib.cache.Cache.MultiObjectCache
 import com.sd.lib.cache.CacheHandler
 import com.sd.lib.cache.CacheInfo
-import com.sd.lib.cache.libError
 import com.sd.lib.cache.newCacheHandler
 
 internal class MultiObjectCacheImpl<T>(
@@ -15,12 +14,12 @@ internal class MultiObjectCacheImpl<T>(
     private val _objectHandler: CacheHandler<T> = newCacheHandler(cacheInfo)
 
     private fun packKey(key: String): String {
-        if (key.isEmpty()) libError("key is empty")
+        require(key.isNotEmpty()) { "key is empty" }
         return _keyPrefix + key
     }
 
     private fun unpackKey(key: String): String {
-        if (key.isEmpty()) libError("key is empty")
+        require(key.isNotEmpty()) { "key is empty" }
         return key.removePrefix(_keyPrefix)
     }
 
