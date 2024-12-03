@@ -28,7 +28,7 @@ private fun testPut(repeat: Int = 100) {
         repeat(repeat) {
             cache.put(model)
         }
-    }.let {
+    }.also {
         logMsg { "put time:${it.inWholeMilliseconds}" }
     }
 }
@@ -39,7 +39,7 @@ private fun testGet(repeat: Int = 100) {
         repeat(repeat) {
             cache.get()
         }
-    }.let {
+    }.also {
         logMsg { "get time:${it.inWholeMilliseconds}" }
     }
 }

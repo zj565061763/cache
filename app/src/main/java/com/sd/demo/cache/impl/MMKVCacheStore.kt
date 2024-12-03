@@ -22,7 +22,7 @@ class MMKVCacheStore : CacheStore {
 
     private val mmkv: MMKV
         get() {
-            _mmkv?.let { return it }
+            _mmkv?.also { return it }
             val uid = fMd5("group:${_group}_id:${_id}")
             val groupDir = _directory.resolve(fMd5(_group)).absolutePath
             return MMKV.mmkvWithID(uid, groupDir).also { _mmkv = it }

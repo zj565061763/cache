@@ -32,13 +32,12 @@ object CacheTestUtils {
         val model1 = TestModel("TestModel1")
         val model2 = TestModel("TestModel2")
 
-        val c = cache.multi(TestModel::class.java)
+        val c = cache.multi(TestModel::class.java).apply {
+            remove(key1)
+            remove(key2)
+        }
 
         // test get defaultValue
-        c.let {
-            it.remove(key1)
-            it.remove(key2)
-        }
         assertEquals(false, c.contains(key1))
         assertEquals(false, c.contains(key2))
         assertEquals(null, c.get(key1))
@@ -53,7 +52,7 @@ object CacheTestUtils {
         assertEquals(model2, c.get(key2))
 
         // test keys
-        c.keys().let {
+        c.keys().also {
             assertEquals(2, it.size)
             assertEquals(true, it.contains(key1))
             assertEquals(true, it.contains(key2))
@@ -68,7 +67,7 @@ object CacheTestUtils {
         assertEquals(null, c.get(key2))
 
         // test keys
-        c.keys().let {
+        c.keys().also {
             assertEquals(0, it.size)
         }
     }
