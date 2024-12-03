@@ -12,11 +12,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(_binding.root)
-
-        _binding.btnSampleCache.setOnClickListener {
+        _binding.btnSampleDefaultGroup.setOnClickListener {
             startActivity(Intent(this, SampleDefaultGroup::class.java))
         }
-        _binding.btnSampleCacheGroup.setOnClickListener {
+        _binding.btnSampleActiveGroup.setOnClickListener {
             startActivity(Intent(this, SampleActiveGroup::class.java))
         }
         _binding.btnSamplePerformance.setOnClickListener {
