@@ -17,7 +17,6 @@ internal fun <T> newCacheHandler(cacheInfo: CacheInfo): CacheHandler<T> {
 internal interface CacheInfo {
     val cacheStore: CacheStore
     val objectConverter: Cache.ObjectConverter
-    val exceptionHandler: Cache.ExceptionHandler
 }
 
 private class CacheHandlerImpl<T>(
@@ -31,7 +30,7 @@ private class CacheHandlerImpl<T>(
                 getCacheStore().putCache(key, data)
             }
         }.getOrElse {
-            notifyException(it)
+            libNotifyException(it)
             false
         }
     }
@@ -44,7 +43,7 @@ private class CacheHandlerImpl<T>(
                 decode(data, clazz)
             }
         }.getOrElse {
-            notifyException(it)
+            libNotifyException(it)
             null
         }
     }
@@ -55,7 +54,7 @@ private class CacheHandlerImpl<T>(
                 getCacheStore().removeCache(key)
             }
         }.onFailure {
-            notifyException(it)
+            libNotifyException(it)
         }
     }
 
@@ -65,7 +64,7 @@ private class CacheHandlerImpl<T>(
                 getCacheStore().containsCache(key)
             }
         }.getOrElse {
-            notifyException(it)
+            libNotifyException(it)
             false
         }
     }
@@ -77,16 +76,12 @@ private class CacheHandlerImpl<T>(
                 transform(keys)
             }
         }.getOrElse {
-            notifyException(it)
+            libNotifyException(it)
             emptyList()
         }
     }
 
     private fun getCacheStore(): CacheStore = cacheInfo.cacheStore
-
-    private fun notifyException(error: Throwable) {
-        cacheInfo.exceptionHandler.onException(error)
-    }
 
     private fun encode(value: T, clazz: Class<T>): ByteArray {
         return cacheInfo.objectConverter.encode(value, clazz)

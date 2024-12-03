@@ -13,7 +13,6 @@ internal class CacheImpl(
 ) : Cache, CacheInfo {
     override val cacheStore: CacheStore get() = cacheStoreOwner.getCacheStore()
     override val objectConverter: Cache.ObjectConverter get() = CacheConfig.get().objectConverter
-    override val exceptionHandler: Cache.ExceptionHandler get() = CacheConfig.get().exceptionHandler
 
     override fun <T> single(clazz: Class<T>): Cache.SingleObjectCache<T> {
         val cacheType = clazz.requireCacheType()
