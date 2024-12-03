@@ -47,7 +47,7 @@ CacheConfig.init(
 /**
  * DefaultGroup(默认组)缓存
  */
-@DefaultGroupCache("DefaultModel")
+@DefaultGroupCache(id = "DefaultModel")
 data class DefaultModel(
     val name: String = "tom",
 )
@@ -55,14 +55,14 @@ data class DefaultModel(
 /**
  * ActiveGroup(激活组)缓存
  */
-@ActiveGroupCache("ActiveModel")
+@ActiveGroupCache(id = "ActiveModel")
 data class ActiveModel(
     val name: String = "tom",
 )
 ```
 
 缓存对象需要加`DefaultGroupCache`或者`ActiveGroupCache`注解，并指定`id`，在同一个分组中，`id`不能重复。<br>
-这两个注解中都有`limitCount`可以限制缓存个数，小于等于0表示不限制，默认不限制个数。
+这两个注解中都有`limitCount`用于限制缓存个数，小于等于0表示不限制，默认不限制个数。
 
 #### 获取缓存
 
