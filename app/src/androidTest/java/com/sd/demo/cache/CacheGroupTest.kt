@@ -11,31 +11,29 @@ import org.junit.runner.RunWith
 class CacheGroupTest {
     @Test
     fun testActiveGroup() {
-        val cache = FCache.getActive()
-
+        val cache = FCache.get(TestActiveModel::class.java)
         testCacheEmptyActiveGroup(cache)
 
-        FCache.setActiveGroup("100")
-        TestUtils.testCacheObject(cache)
-        TestUtils.testCacheMultiObject(cache)
+        FCache.setActiveGroup("test")
+        testCache(
+            clazz = TestActiveModel::class.java,
+            factory = { TestActiveModel(name = it) },
+        )
 
         FCache.setActiveGroup("")
         testCacheEmptyActiveGroup(cache)
     }
 }
 
-private fun testCacheEmptyActiveGroup(cache: Cache) {
+private fun testCacheEmptyActiveGroup(cache: Cache<TestActiveModel>) {
     val key = "testCacheEmptyActiveGroup"
 
-    val c = cache.multi(DefaultModel::class.java)
-    c.remove(key)
-
-    // test get defaultValue
-    assertEquals(false, c.contains(key))
-    assertEquals(null, c.get(key))
+    // test defaultValue
+    assertEquals(false, cache.contains(key))
+    assertEquals(null, cache.get(key))
 
     // test put and get
-    assertEquals(false, c.put(key, DefaultModel()))
-    assertEquals(false, c.contains(key))
-    assertEquals(null, c.get(key))
+    assertEquals(false, cache.put(key, TestActiveModel()))
+    assertEquals(false, cache.contains(key))
+    assertEquals(null, cache.get(key))
 }

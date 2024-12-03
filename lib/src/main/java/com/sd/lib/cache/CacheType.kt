@@ -2,14 +2,14 @@ package com.sd.lib.cache
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class DefaultGroupCacheType(
+annotation class DefaultGroupCache(
     val id: String,
     val limitCount: Int = 0,
 )
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class ActiveGroupCacheType(
+annotation class ActiveGroupCache(
     val id: String,
     val limitCount: Int = 0,
 )

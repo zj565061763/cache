@@ -20,15 +20,15 @@ object FCache {
      */
     @JvmStatic
     fun <T> get(clazz: Class<T>): Cache<T> {
-        val defaultType = clazz.getAnnotation(DefaultGroupCacheType::class.java)
-        val activeType = clazz.getAnnotation(ActiveGroupCacheType::class.java)
+        val defaultType = clazz.getAnnotation(DefaultGroupCache::class.java)
+        val activeType = clazz.getAnnotation(ActiveGroupCache::class.java)
 
         when {
             defaultType == null && activeType == null -> {
-                throw IllegalArgumentException("Annotation ${DefaultGroupCacheType::class.java.simpleName} or ${ActiveGroupCacheType::class.java.simpleName} was not found in $clazz")
+                throw IllegalArgumentException("Annotation ${DefaultGroupCache::class.java.simpleName} or ${ActiveGroupCache::class.java.simpleName} was not found in $clazz")
             }
             defaultType != null && activeType != null -> {
-                throw IllegalArgumentException("Can not use both ${DefaultGroupCacheType::class.java.simpleName} and ${ActiveGroupCacheType::class.java.simpleName} in $clazz")
+                throw IllegalArgumentException("Can not use both ${DefaultGroupCache::class.java.simpleName} and ${ActiveGroupCache::class.java.simpleName} in $clazz")
             }
         }
 
