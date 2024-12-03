@@ -37,9 +37,9 @@ CacheConfig.init(
 
 缓存支持分组，分为`DefaultGroup(默认组)`和`ActiveGroup(激活组)`。
 
-`DefaultGroup`一直处于可用状态，可用于保存公用的配置信息，即各个用户账号共享的信息。
+`DefaultGroup`一直处于可用状态，可用于保存公共的配置信息。
 
-`ActiveGroup`默认为空，处于不可用状态，可用于保存用户的配置信息，当用户切换的时候，可以通过`FCache.setActiveGroup("用户ID")`方法把用户ID设置为激活组。
+`ActiveGroup`默认为空，处于不可用状态，可用于保存指定用户的配置信息。例如：当用户切换时，通过`FCache.setActiveGroup("用户ID")`方法把用户ID设置为激活组。
 
 #### 缓存对象
 
