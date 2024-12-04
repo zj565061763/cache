@@ -51,7 +51,7 @@ private abstract class LruCacheStore(
             group = group,
             id = id,
         )
-        keys().forEach { key ->
+        store.keys().forEach { key ->
             val size = sizeOfEntry(key, null)
             _lruCache.put(key, size)
         }
