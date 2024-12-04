@@ -24,8 +24,8 @@ internal class CacheImpl<T>(
     override fun put(key: String, value: T?): Boolean {
         if (value == null) return false
         return runCatching {
-            val data = encode(value, clazz)
             cacheLock {
+                val data = encode(value, clazz)
                 getCacheStore().putCache(key, data)
                 onChange?.invoke(key, value)
             }
@@ -39,9 +39,9 @@ internal class CacheImpl<T>(
     override fun get(key: String): T? {
         return runCatching {
             cacheLock {
-                getCacheStore().getCache(key)
-            }?.let { data ->
-                decode(data, clazz)
+                getCacheStore().getCache(key)?.let { data ->
+                    decode(data, clazz)
+                }
             }
         }.getOrElse {
             libNotifyException(it)
