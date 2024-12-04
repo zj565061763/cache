@@ -96,16 +96,11 @@ private class CacheCallbacks<T>(
         }
     }
 
-    private fun getCallbacks(key: String): Set<suspend (T?) -> Unit>? {
-        return cacheLock {
-            _callbacks[key]
-        }
-    }
-
     init {
         check(cacheImpl.onChange == null)
         cacheImpl.onChange = { key, data ->
-            val callbacks = getCallbacks(key)
+            // onChange已经在同步块中执行，所以这里访问_callbacks不需要同步
+            val callbacks = _callbacks[key]
             if (!callbacks.isNullOrEmpty()) {
                 CacheScope.launch {
                     callbacks.forEach {
