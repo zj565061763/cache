@@ -21,13 +21,6 @@ internal class CacheImpl<T>(
 
     var onChange: ((key: String, data: T?) -> Unit)? = null
 
-    fun notifyChange(key: String) {
-        cacheLock {
-            val data = get(key)
-            onChange?.invoke(key, data)
-        }
-    }
-
     override fun put(key: String, value: T?): Boolean {
         if (value == null) return false
         return runCatching {

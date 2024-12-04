@@ -6,6 +6,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -57,11 +58,11 @@ private class CacheKtxImpl<T>(
             val callback: suspend (T?) -> Unit = { send(it) }
             _callbacks.addCallback(key, callback)
             awaitClose { _callbacks.removeCallback(key, callback) }
-        }.distinctUntilChanged()
+        }.conflate().distinctUntilChanged()
     }
 
     override suspend fun <R> edit(block: suspend Cache<T>.() -> R): R {
-        return withCacheContext {
+        return withCacheLock {
             block(cache)
         }
     }
@@ -74,18 +75,18 @@ private class CacheCallbacks<T>(
     private val _callbacks = mutableMapOf<String, Set<suspend (T?) -> Unit>>()
 
     suspend fun addCallback(key: String, callback: suspend (T?) -> Unit) {
-        synchronized(this@CacheCallbacks) {
+        withCacheLock {
             val set = _callbacks.getOrPut(key) { emptySet() }
             _callbacks[key] = set + callback
-        }
-        withCacheContext {
-            cacheImpl.notifyChange(key)
+
+            val data = cacheImpl.get(key)
+            callback(data)
         }
     }
 
     fun removeCallback(key: String, callback: suspend (T?) -> Unit) {
-        synchronized(this@CacheCallbacks) {
-            val set = _callbacks[key] ?: return
+        cacheLock {
+            val set = _callbacks[key] ?: return@cacheLock
             val newSet = set - callback
             if (newSet.isEmpty()) {
                 _callbacks.remove(key)
@@ -96,7 +97,7 @@ private class CacheCallbacks<T>(
     }
 
     private fun getCallbacks(key: String): Set<suspend (T?) -> Unit>? {
-        return synchronized(this@CacheCallbacks) {
+        return cacheLock {
             _callbacks[key]
         }
     }
@@ -118,7 +119,7 @@ private class CacheCallbacks<T>(
 
 private val CacheScope = MainScope() + CoroutineName("FCacheScope")
 
-private suspend fun <R> withCacheContext(block: suspend () -> R): R {
+private suspend fun <R> withCacheLock(block: suspend () -> R): R {
     return withContext(Dispatchers.IO) {
         cacheLock {
             runBlocking {
