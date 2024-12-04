@@ -52,58 +52,36 @@ object FCache {
         }
 
         defaultGroupCache?.also {
+            val id = it.id.ifEmpty { throw IllegalArgumentException("${DefaultGroupCache::class.java.simpleName}.id is empty") }
+            val cacheSizePolicy = it.limitCount.cacheSizePolicy()
             return CacheImpl(
                 clazz = clazz,
-                cacheStoreOwner = cacheStoreOwnerForDefaultGroup(
-                    id = it.id,
-                    cacheSizePolicy = it.limitCount.cacheSizePolicy(),
-                    clazz = clazz,
-                )
+                cacheStoreOwner = {
+                    _defaultGroupCacheStoreFactory.create(
+                        id = id,
+                        cacheSizePolicy = cacheSizePolicy,
+                        clazz = clazz,
+                    )
+                },
             )
         }
 
         activeGroupCache?.also {
+            val id = it.id.ifEmpty { throw IllegalArgumentException("${ActiveGroupCache::class.java.simpleName}.id is empty") }
+            val cacheSizePolicy = it.limitCount.cacheSizePolicy()
             return CacheImpl(
                 clazz = clazz,
-                cacheStoreOwner = cacheStoreOwnerForActiveGroup(
-                    id = it.id,
-                    cacheSizePolicy = it.limitCount.cacheSizePolicy(),
-                    clazz = clazz,
-                )
+                cacheStoreOwner = {
+                    getActiveGroupCacheStore(
+                        id = id,
+                        cacheSizePolicy = cacheSizePolicy,
+                        clazz = clazz,
+                    )
+                },
             )
         }
 
         error("This should not happen")
-    }
-
-    private fun cacheStoreOwnerForDefaultGroup(
-        id: String,
-        cacheSizePolicy: CacheSizePolicy,
-        clazz: Class<*>,
-    ): CacheStoreOwner {
-        require(id.isNotEmpty()) { "id is empty" }
-        return CacheStoreOwner {
-            _defaultGroupCacheStoreFactory.create(
-                id = id,
-                cacheSizePolicy = cacheSizePolicy,
-                clazz = clazz,
-            )
-        }
-    }
-
-    private fun cacheStoreOwnerForActiveGroup(
-        id: String,
-        cacheSizePolicy: CacheSizePolicy,
-        clazz: Class<*>,
-    ): CacheStoreOwner {
-        require(id.isNotEmpty()) { "id is empty" }
-        return CacheStoreOwner {
-            getActiveGroupCacheStore(
-                id = id,
-                cacheSizePolicy = cacheSizePolicy,
-                clazz = clazz,
-            )
-        }
     }
 
     private fun getActiveGroupCacheStore(
