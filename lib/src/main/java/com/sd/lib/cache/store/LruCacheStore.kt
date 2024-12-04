@@ -8,9 +8,13 @@ import java.io.File
  * 限制个数的LRU算法仓库
  */
 internal fun CacheStore.limitCount(count: Int): CacheStore {
+    require(count > 0)
     val store = this
-    return if (store is LimitCountStore) store
-    else LimitCountStore(store = store, limit = count)
+    return if (store is LimitCountStore) {
+        store.also { it.setMaxSize(count) }
+    } else {
+        LimitCountStore(store = store, maxSize = count)
+    }
 }
 
 /**
@@ -18,16 +22,16 @@ internal fun CacheStore.limitCount(count: Int): CacheStore {
  */
 private class LimitCountStore(
     store: CacheStore,
-    limit: Int,
-) : LruCacheStore(store, limit) {
+    maxSize: Int,
+) : LruCacheStore(store, maxSize) {
     override fun sizeOfEntry(key: String, value: ByteArray?): Int = 1
 }
 
 private abstract class LruCacheStore(
     private val store: CacheStore,
-    limit: Int,
+    maxSize: Int,
 ) : CacheStore by store {
-    private val _lruCache = object : LruCache<String, Int>(limit) {
+    private val _lruCache = object : LruCache<String, Int>(maxSize) {
         override fun sizeOf(key: String, value: Int): Int {
             return value
         }
@@ -36,6 +40,12 @@ private abstract class LruCacheStore(
             if (evicted) {
                 store.removeCache(key)
             }
+        }
+    }
+
+    fun setMaxSize(maxSize: Int) {
+        if (_lruCache.maxSize() != maxSize) {
+            _lruCache.resize(maxSize)
         }
     }
 
