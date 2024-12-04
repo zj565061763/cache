@@ -65,14 +65,19 @@ private abstract class LruCacheStore(
     }
 
     override fun getCache(key: String): ByteArray? {
-        return store.getCache(key).also {
+        try {
+            return store.getCache(key)
+        } finally {
             _lruCache.get(key)
         }
     }
 
     override fun removeCache(key: String) {
-        store.removeCache(key)
-        _lruCache.remove(key)
+        try {
+            store.removeCache(key)
+        } finally {
+            _lruCache.remove(key)
+        }
     }
 
     protected abstract fun sizeOfEntry(key: String, value: ByteArray?): Int
