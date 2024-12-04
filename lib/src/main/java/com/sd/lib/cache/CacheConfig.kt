@@ -15,41 +15,38 @@ class CacheConfig private constructor(
     context: Context,
 ) {
     private val context = context.applicationContext
-
     private val directory: File
-    private val cacheStoreClass: Class<out CacheStore>
+    private val cacheStore: Class<out CacheStore>
 
     internal val objectConverter: ObjectConverter
     internal val exceptionHandler: ExceptionHandler
 
     init {
         this.directory = builder.directory ?: context.defaultCacheDir()
-        this.cacheStoreClass = builder.cacheStore ?: FileCacheStore::class.java
+        this.cacheStore = builder.cacheStore ?: FileCacheStore::class.java
 
         this.objectConverter = builder.objectConverter ?: DefaultObjectConverter()
         this.exceptionHandler = LibExceptionHandler(builder.exceptionHandler)
     }
 
-    /**
-     * 创建仓库
-     */
+    /** 创建仓库 */
     internal fun newCacheStore(): CacheStore {
-        return cacheStoreClass.getDeclaredConstructor().newInstance()
+        return cacheStore.getDeclaredConstructor().newInstance()
     }
 
-    /**
-     * 初始化仓库
-     */
-    internal fun initCacheStore(cacheStore: CacheStore, group: String, id: String) {
-        try {
+    /** 初始化仓库 */
+    internal fun initCacheStore(cacheStore: CacheStore, group: String, id: String): Boolean {
+        return try {
             cacheStore.init(
                 context = context,
                 directory = directory,
                 group = group,
                 id = id,
             )
+            true
         } catch (e: Throwable) {
             libNotifyException(e)
+            false
         }
     }
 
