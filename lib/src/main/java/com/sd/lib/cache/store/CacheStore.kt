@@ -45,6 +45,7 @@ interface CacheStore {
     /**
      * 返回所有的Key
      */
+    @Throws(Throwable::class)
     fun keys(): List<String>
 
     /**

@@ -49,7 +49,11 @@ abstract class DirectoryCacheStore : CacheStore {
                 filename?.decodeKey()
             } catch (e: IllegalArgumentException) {
                 e.printStackTrace()
-                _directory.resolve(filename).deleteRecursively()
+                try {
+                    _directory.resolve(filename).deleteRecursively()
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
                 null
             }
         }
