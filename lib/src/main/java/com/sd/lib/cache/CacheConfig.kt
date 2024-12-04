@@ -155,8 +155,8 @@ inline fun CacheConfig.Companion.init(
 
 private fun Context.defaultCacheDir(): File {
     @SuppressLint("SdCardPath")
-    val dir = (filesDir ?: File("/data/data/${packageName}/files"))
-        .resolve("sd.lib.cache")
+    val filesDir = filesDir ?: File("/data/data/${packageName}/files")
+    val dir = filesDir.resolve("sd.lib.cache")
 
     val process = currentProcess()
     return if (!process.isNullOrBlank() && process != packageName) {
