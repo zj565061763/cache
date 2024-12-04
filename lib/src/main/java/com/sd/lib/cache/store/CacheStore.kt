@@ -19,7 +19,7 @@ interface CacheStore {
     )
 
     /**
-     * 保存缓存
+     * 设置缓存
      */
     @Throws(Throwable::class)
     fun putCache(key: String, value: ByteArray)

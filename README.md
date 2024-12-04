@@ -7,7 +7,7 @@
 * 支持自定义数据格式，默认为Json格式
 * 支持自定义底层存储，例如使用腾讯[MMKV](https://github.com/Tencent/MMKV)
 * 支持LRU算法的缓存个数限制
-* 支持缓存分组，例如根据不同账号信息保存缓存
+* 支持缓存分组，例如根据不同账号设置缓存
 
 # Sample
 
@@ -74,15 +74,15 @@ data class ActiveModel(
 // 获取DefaultModel缓存
 val cache = FCache.get(DefaultModel::class.java)
 
-// 保存缓存对象
+// 设置缓存
 cache.put("key", DefaultModel())
 
-// 获取缓存对象
+// 获取缓存
 cache.get("key")
 
-// 移除缓存对象
+// 移除缓存
 cache.remove("key")
 
-// 是否有缓存对象
+// 是否有缓存
 cache.contains("key")
 ```
