@@ -17,10 +17,11 @@ internal class CacheStoreFactory(
     if (_isClosed) libError("Group:${group} Closed")
 
     _stores[id]?.also { info ->
-      if (info.clazz != clazz) {
+      if (info.clazz == clazz) {
+        return info.cacheStore
+      } else {
         libError("id:${id} has bound to ${info.clazz.name} when bind ${clazz.name}")
       }
-      return info.cacheStore
     }
 
     val config = CacheConfig.get()

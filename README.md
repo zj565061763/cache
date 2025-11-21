@@ -15,21 +15,21 @@
 
 ```kotlin
 CacheConfig.init(
-    CacheConfig.Builder()
-        // 设置缓存目录(可选)
-        .setDirectory(getExternalFilesDir("app_cache")!!)
+  CacheConfig.Builder()
+    // 设置缓存目录(可选)
+    .setDirectory(getExternalFilesDir("app_cache")!!)
 
-        // 设置对象转换器(可选)
-        .setObjectConverter(AppObjectConverter())
+    // 设置对象转换器(可选)
+    .setObjectConverter(AppObjectConverter())
 
-        // 设置异常处理(可选)
-        .setExceptionHandler(AppExceptionHandler())
+    // 设置异常处理(可选)
+    .setExceptionHandler(AppExceptionHandler())
 
-        // 设置缓存仓库(可选)
-        .setExceptionHandler(AppCacheStore::class.java)
+    // 设置缓存仓库(可选)
+    .setExceptionHandler(AppCacheStore::class.java)
 
-        // Context
-        .build(this)
+    // Context
+    .build(this)
 )
 ```
 
@@ -53,7 +53,7 @@ CacheConfig.init(
  */
 @DefaultGroupCache(id = "DefaultModel")
 data class DefaultModel(
-    val name: String = "tom",
+  val name: String = "tom",
 )
 
 /**
@@ -61,7 +61,7 @@ data class DefaultModel(
  */
 @ActiveGroupCache(id = "ActiveModel")
 data class ActiveModel(
-    val name: String = "tom",
+  val name: String = "tom",
 )
 ```
 
