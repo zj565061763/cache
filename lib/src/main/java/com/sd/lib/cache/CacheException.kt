@@ -8,7 +8,7 @@ open class CacheException(
 internal fun libException(
   message: String,
   cause: Throwable? = null,
-) {
+): Nothing {
   throw CacheException(message, cause)
 }
 
