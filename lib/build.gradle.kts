@@ -1,12 +1,10 @@
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+
 plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.kotlin.android)
-  `maven-publish`
+  alias(libs.plugins.mavenPublish)
 }
-
-val libGroupId = "com.sd.lib.android"
-val libArtifactId = "cache"
-val libVersion = "3.0.0-alpha02"
 
 android {
   namespace = "com.sd.lib.cache"
@@ -23,13 +21,6 @@ android {
 
   kotlinOptions {
     jvmTarget = "1.8"
-    freeCompilerArgs += "-module-name=$libGroupId.$libArtifactId"
-  }
-
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
-    }
   }
 }
 
@@ -38,15 +29,12 @@ dependencies {
   compileOnly(libs.kotlinx.coroutines)
 }
 
-publishing {
-  publications {
-    create<MavenPublication>("release") {
-      groupId = libGroupId
-      artifactId = libArtifactId
-      version = libVersion
-      afterEvaluate {
-        from(components["release"])
-      }
-    }
-  }
+mavenPublishing {
+  configure(
+    AndroidSingleVariantLibrary(
+      variant = "release",
+      sourcesJar = true,
+      publishJavadocJar = true,
+    )
+  )
 }
