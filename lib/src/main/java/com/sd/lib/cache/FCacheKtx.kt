@@ -23,12 +23,17 @@ suspend fun <T> CacheKtx<T>.update(key: String, block: suspend (T) -> T) {
   edit {
     val data = get(key)
     if (data != null) {
-      val newData = block(data)
-      if (newData != data) {
-        put(key, newData)
-      }
+      put(key, block(data))
     }
   }
+}
+
+suspend fun <T> CacheKtx<T>.get(key: String): T? {
+  return edit { get(key) }
+}
+
+suspend fun <T> CacheKtx<T>.contains(key: String): Boolean {
+  return edit { contains(key) }
 }
 
 object FCacheKtx {
