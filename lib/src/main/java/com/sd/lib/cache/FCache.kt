@@ -90,7 +90,7 @@ object FCache {
     clazz: Class<*>,
   ): CacheStore {
     val activeGroup = _activeGroup
-    if (activeGroup.isEmpty()) {
+    if (activeGroup.isBlank()) {
       _activeGroupCacheStoreFactory?.close()
       _activeGroupCacheStoreFactory = null
       return EmptyActiveGroupCacheStore

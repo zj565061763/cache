@@ -9,10 +9,6 @@ internal class CacheStoreFactory(
   private var _isClosed = false
   private val _stores = mutableMapOf<String, StoreInfo>()
 
-  init {
-    require(group.isNotEmpty()) { "group is empty" }
-  }
-
   fun create(
     id: String,
     cacheSizePolicy: CacheSizePolicy,
