@@ -1,16 +1,12 @@
 package com.sd.lib.cache
 
-import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
@@ -22,9 +18,7 @@ interface CacheKtx<T> {
   suspend fun <R> edit(block: suspend Cache<T>.() -> R): R
 }
 
-/**
- * 如果[key]对应的缓存存在，则调用[block]，并把[block]的返回值设置为缓存
- */
+/** 如果[key]对应的缓存存在，则调用[block]，并把[block]的返回值设置为缓存 */
 suspend fun <T> CacheKtx<T>.update(key: String, block: suspend (T) -> T) {
   edit {
     val data = get(key)
@@ -56,11 +50,11 @@ private class CacheKtxImpl<T>(
 
   override fun flowOf(key: String): Flow<T?> {
     return callbackFlow {
-      val callback: suspend (T?) -> Unit = { send(it) }
+      val callback: (T?) -> Unit = { trySend(it) }
       _callbacks.addCallback(key, callback)
 
       val first = cache.get(key)
-      send(first)
+      trySend(first)
 
       awaitClose { _callbacks.removeCallback(key, callback) }
     }.conflate()
@@ -69,29 +63,31 @@ private class CacheKtxImpl<T>(
   }
 
   override suspend fun <R> edit(block: suspend Cache<T>.() -> R): R {
-    return withCacheLock {
-      block(cache)
+    return withContext(Dispatchers.IO) {
+      cacheLock {
+        runBlocking {
+          block(cache)
+        }
+      }
     }
   }
 }
 
-private class CacheCallbacks<T>(
-  cache: Cache<T>,
-) {
-  private val cacheImpl = cache as CacheImpl<T>
-  private val _callbacks = mutableMapOf<String, Set<suspend (T?) -> Unit>>()
+private class CacheCallbacks<T>(cache: Cache<T>) {
+  private val _cache = cache as CacheImpl<T>
+  private val _callbacks = mutableMapOf<String, Set<(T?) -> Unit>>()
 
-  fun addCallback(key: String, callback: suspend (T?) -> Unit) {
+  fun addCallback(key: String, callback: (T?) -> Unit) {
     synchronized(_callbacks) {
       val set = _callbacks.getOrPut(key) { emptySet() }
       _callbacks[key] = set + callback
     }
   }
 
-  fun removeCallback(key: String, callback: suspend (T?) -> Unit) {
+  fun removeCallback(key: String, callback: (T?) -> Unit) {
     synchronized(_callbacks) {
-      val oldSet = _callbacks[key] ?: return@synchronized
-      val newSet = oldSet - callback
+      val set = _callbacks[key] ?: return@synchronized
+      val newSet = set - callback
       if (newSet.isEmpty()) {
         _callbacks.remove(key)
       } else {
@@ -100,30 +96,16 @@ private class CacheCallbacks<T>(
     }
   }
 
-  init {
-    check(cacheImpl.onChange == null)
-    cacheImpl.onChange = { key, data ->
-      // onChange已经在同步块中执行，所以这里访问_callbacks不需要同步
-      val callbacks = _callbacks[key]
-      if (!callbacks.isNullOrEmpty()) {
-        CacheScope.launch {
-          callbacks.forEach {
-            it.invoke(data)
-          }
-        }
-      }
+  private fun getCallbacks(key: String): Set<(T?) -> Unit>? {
+    synchronized(_callbacks) {
+      return _callbacks[key]
     }
   }
-}
 
-private val CacheScope = MainScope() + CoroutineName("FCacheScope")
-
-private suspend fun <R> withCacheLock(block: suspend () -> R): R {
-  return withContext(Dispatchers.IO) {
-    cacheLock {
-      runBlocking {
-        block()
-      }
+  init {
+    check(_cache.onChange == null)
+    _cache.onChange = { key, data ->
+      getCallbacks(key)?.forEach { it.invoke(data) }
     }
   }
 }

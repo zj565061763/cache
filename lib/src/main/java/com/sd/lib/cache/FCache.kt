@@ -86,7 +86,7 @@ object FCache {
   }
 }
 
-internal fun <R> cacheLock(block: () -> R): R {
+internal inline fun <R> cacheLock(block: () -> R): R {
   return synchronized(
     lock = FCache,
     block = block,
