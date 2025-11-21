@@ -51,9 +51,9 @@ object FCache {
       }
     }
 
-    defaultGroupCache?.also {
-      val id = it.id.ifEmpty { throw IllegalArgumentException("${DefaultGroupCache::class.java.simpleName}.id is empty") }
-      val cacheSizePolicy = it.limitCount.cacheSizePolicy()
+    defaultGroupCache?.also { cache ->
+      val id = cache.id.ifEmpty { throw IllegalArgumentException("${DefaultGroupCache::class.java.simpleName}.id is empty") }
+      val cacheSizePolicy = cache.limitCount.cacheSizePolicy()
       return CacheImpl(
         clazz = clazz,
         cacheStoreOwner = {
@@ -66,9 +66,9 @@ object FCache {
       )
     }
 
-    activeGroupCache?.also {
-      val id = it.id.ifEmpty { throw IllegalArgumentException("${ActiveGroupCache::class.java.simpleName}.id is empty") }
-      val cacheSizePolicy = it.limitCount.cacheSizePolicy()
+    activeGroupCache?.also { cache ->
+      val id = cache.id.ifEmpty { throw IllegalArgumentException("${ActiveGroupCache::class.java.simpleName}.id is empty") }
+      val cacheSizePolicy = cache.limitCount.cacheSizePolicy()
       return CacheImpl(
         clazz = clazz,
         cacheStoreOwner = {
