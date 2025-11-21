@@ -1,6 +1,5 @@
 package com.sd.lib.cache
 
-import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
@@ -83,30 +82,22 @@ class CacheConfig private constructor(
     internal var exceptionHandler: ExceptionHandler? = null
       private set
 
-    /**
-     * 缓存目录
-     */
+    /** 缓存目录 */
     fun setDirectory(directory: File) = apply {
       this.directory = directory
     }
 
-    /**
-     * 缓存仓库，[store]必须有无参构造方法用于反射创建对象
-     */
+    /** 缓存仓库，[store]必须有无参构造方法用于反射创建对象 */
     fun setCacheStore(store: Class<out CacheStore>) = apply {
       this.cacheStore = store
     }
 
-    /**
-     * 对象转换
-     */
+    /** 对象转换 */
     fun setObjectConverter(converter: ObjectConverter) = apply {
       this.objectConverter = converter
     }
 
-    /**
-     * 异常处理
-     */
+    /** 异常处理 */
     fun setExceptionHandler(handler: ExceptionHandler) = apply {
       this.exceptionHandler = handler
     }
@@ -117,12 +108,9 @@ class CacheConfig private constructor(
   }
 
   companion object {
-    @SuppressLint("StaticFieldLeak")
     private var sConfig: CacheConfig? = null
 
-    /**
-     * 初始化
-     */
+    /** 初始化 */
     @JvmStatic
     fun init(config: CacheConfig) {
       synchronized(this@Companion) {
@@ -154,12 +142,9 @@ inline fun CacheConfig.Companion.init(
 }
 
 private fun Context.defaultCacheDir(): File {
-  @SuppressLint("SdCardPath")
-  val filesDir = filesDir ?: File("/data/data/${packageName}/files")
   val dir = filesDir.resolve("sd.lib.cache")
-
   val process = currentProcess()
-  return if (!process.isNullOrBlank() && process != packageName) {
+  return if (process != packageName && !process.isNullOrBlank()) {
     dir.resolve(process)
   } else {
     dir
@@ -170,15 +155,10 @@ private fun Context.currentProcess(): String? {
   return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
     Application.getProcessName()
   } else {
-    runCatching {
-      val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-      val processes = manager.runningAppProcesses
-      if (processes.isNullOrEmpty()) {
-        null
-      } else {
-        val pid = Process.myPid()
-        processes.find { it.pid == pid }?.processName
-      }
-    }.getOrNull()
+    val pid = Process.myPid()
+    (getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager)
+      ?.runningAppProcesses
+      ?.firstOrNull { it.pid == pid }
+      ?.processName
   }
 }

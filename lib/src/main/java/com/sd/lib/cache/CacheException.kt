@@ -5,8 +5,6 @@ open class CacheException(
   cause: Throwable? = null,
 ) : Exception(message, cause)
 
-class CacheError(message: String) : CacheException(message)
-
 internal fun libNotifyException(error: Throwable) {
   CacheConfig.get().exceptionHandler.onException(error)
 }
@@ -23,3 +21,6 @@ internal class LibExceptionHandler(
     handler?.onException(error)
   }
 }
+
+/** 缓存错误，此异常不会被捕获 */
+private class CacheError(message: String) : CacheException(message)
