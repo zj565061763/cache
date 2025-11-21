@@ -4,32 +4,32 @@ import android.content.Context
 import com.sd.lib.cache.libException
 import java.io.File
 
-internal object EmptyActiveGroupCacheStore : CacheStore {
+internal object EmptyCacheStore : CacheStore {
   override fun init(context: Context, directory: File, group: String, id: String) {
-    libException("Empty active group CacheStore.init()")
+    libException("EmptyCacheStore.init()")
   }
 
   override fun putCache(key: String, value: ByteArray) {
-    libException("Empty active group CacheStore.putCache()")
+    libException("EmptyCacheStore.putCache()")
   }
 
   override fun getCache(key: String): ByteArray? {
-    libException("Empty active group CacheStore.getCache()")
+    libException("EmptyCacheStore.getCache()")
   }
 
   override fun removeCache(key: String) {
-    libException("Empty active group CacheStore.removeCache()")
+    libException("EmptyCacheStore.removeCache()")
   }
 
   override fun containsCache(key: String): Boolean {
-    libException("Empty active group CacheStore.containsCache()")
+    libException("EmptyCacheStore.containsCache()")
   }
 
   override fun keys(): List<String> {
-    libException("Empty active group CacheStore.keys()")
+    libException("EmptyCacheStore.keys()")
   }
 
   override fun close() {
-    libException("Empty active group CacheStore.close()")
+    libException("EmptyCacheStore.close()")
   }
 }

@@ -10,11 +10,6 @@ data class TestDefaultModel(
   val name: String = "tom",
 )
 
-@DefaultGroupCache("TestDefaultModelLimitCount", limitCount = 2)
-data class TestDefaultModelLimitCount(
-  val name: String = "tom",
-)
-
 @ActiveGroupCache("TestActiveModel")
 data class TestActiveModel(
   val name: String = "tom",

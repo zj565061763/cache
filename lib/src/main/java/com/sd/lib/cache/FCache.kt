@@ -1,7 +1,7 @@
 package com.sd.lib.cache
 
 import com.sd.lib.cache.store.CacheStore
-import com.sd.lib.cache.store.EmptyActiveGroupCacheStore
+import com.sd.lib.cache.store.EmptyCacheStore
 
 object FCache {
   /** DefaultGroup */
@@ -53,41 +53,27 @@ object FCache {
 
     defaultGroupCache?.also { cache ->
       val id = cache.id.ifBlank { throw IllegalArgumentException("${DefaultGroupCache::class.java.simpleName}.id is blank") }
-      val cacheSizePolicy = cache.limitCount.cacheSizePolicy()
       return CacheImpl(clazz) {
-        _defaultGroupCacheStoreFactory.create(
-          id = id,
-          cacheSizePolicy = cacheSizePolicy,
-          clazz = clazz,
-        )
+        _defaultGroupCacheStoreFactory.create(id = id, clazz = clazz)
       }
     }
 
     activeGroupCache?.also { cache ->
       val id = cache.id.ifBlank { throw IllegalArgumentException("${ActiveGroupCache::class.java.simpleName}.id is blank") }
-      val cacheSizePolicy = cache.limitCount.cacheSizePolicy()
       return CacheImpl(clazz) {
-        getActiveGroupCacheStore(
-          id = id,
-          cacheSizePolicy = cacheSizePolicy,
-          clazz = clazz,
-        )
+        getActiveGroupCacheStore(id = id, clazz = clazz)
       }
     }
 
     error("This should not happen")
   }
 
-  private fun getActiveGroupCacheStore(
-    id: String,
-    cacheSizePolicy: CacheSizePolicy,
-    clazz: Class<*>,
-  ): CacheStore {
+  private fun getActiveGroupCacheStore(id: String, clazz: Class<*>): CacheStore {
     val activeGroup = _activeGroup
     if (activeGroup.isBlank()) {
       _activeGroupCacheStoreFactory?.close()
       _activeGroupCacheStoreFactory = null
-      return EmptyActiveGroupCacheStore
+      return EmptyCacheStore
     }
 
     val storeFactory = _activeGroupCacheStoreFactory?.takeIf { it.group == activeGroup }
@@ -96,11 +82,7 @@ object FCache {
         _activeGroupCacheStoreFactory = newFactory
       }
 
-    return storeFactory.create(
-      id = id,
-      cacheSizePolicy = cacheSizePolicy,
-      clazz = clazz,
-    )
+    return storeFactory.create(id = id, clazz = clazz)
   }
 }
 

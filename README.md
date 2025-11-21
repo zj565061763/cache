@@ -66,7 +66,6 @@ data class ActiveModel(
 ```
 
 缓存对象需要加`DefaultGroupCache`或者`ActiveGroupCache`注解，并指定`id`，在同一个分组中，`id`不能重复。<br>
-这两个注解中都有`limitCount`用于限制缓存个数，小于等于0表示不限制，默认不限制个数。
 
 #### 获取缓存
 

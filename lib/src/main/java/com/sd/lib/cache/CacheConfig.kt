@@ -25,21 +25,17 @@ class CacheConfig private constructor(
   }
 
   /** 创建仓库 */
-  internal fun newCacheStore(): CacheStore {
-    return cacheStoreFactory()
-  }
-
-  /** 初始化仓库 */
-  internal fun initCacheStore(cacheStore: CacheStore, group: String, id: String): Boolean {
+  internal fun newCacheStore(group: String, id: String): CacheStore? {
     return libRunCatching {
-      cacheStore.init(
-        context = context,
-        directory = directory,
-        group = group,
-        id = id,
-      )
-      true
-    }.getOrElse { false }
+      cacheStoreFactory().also { cacheStore ->
+        cacheStore.init(
+          context = context,
+          directory = directory,
+          group = group,
+          id = id,
+        )
+      }
+    }.getOrNull()
   }
 
   /**
