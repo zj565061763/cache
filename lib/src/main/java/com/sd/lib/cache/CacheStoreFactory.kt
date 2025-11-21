@@ -29,14 +29,9 @@ internal class CacheStoreFactory(
       is CacheSizePolicy.Unlimited -> config.newCacheStore()
       is CacheSizePolicy.LimitCount -> config.newCacheStore().limitCount(cacheSizePolicy.count)
     }.also { cacheStore ->
-      config.initCacheStore(
-        cacheStore = cacheStore,
-        group = group,
-        id = id
-      ).also { initCacheStore ->
-        if (initCacheStore) {
-          _stores[id] = StoreInfo(clazz, cacheStore)
-        }
+      val init = config.initCacheStore(cacheStore = cacheStore, group = group, id = id)
+      if (init) {
+        _stores[id] = StoreInfo(clazz, cacheStore)
       }
     }
   }
