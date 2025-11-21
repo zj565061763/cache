@@ -28,12 +28,29 @@ suspend fun <T> CacheKtx<T>.update(key: String, block: suspend (T) -> T) {
   }
 }
 
+/** [Cache.put] */
+suspend fun <T> CacheKtx<T>.put(key: String, value: T?): Boolean {
+  return edit { put(key, value) }
+}
+
+/** [Cache.get] */
 suspend fun <T> CacheKtx<T>.get(key: String): T? {
   return edit { get(key) }
 }
 
+/** [Cache.remove] */
+suspend fun <T> CacheKtx<T>.remove(key: String) {
+  return edit { remove(key) }
+}
+
+/** [Cache.contains] */
 suspend fun <T> CacheKtx<T>.contains(key: String): Boolean {
   return edit { contains(key) }
+}
+
+/** [Cache.keys] */
+suspend fun <T> CacheKtx<T>.keys(): List<String> {
+  return edit { keys() }
 }
 
 object FCacheKtx {
