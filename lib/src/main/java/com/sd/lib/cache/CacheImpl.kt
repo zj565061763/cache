@@ -15,69 +15,55 @@ internal class CacheImpl<T>(
 
   override fun put(key: String, value: T?): Boolean {
     if (value == null) return false
-    return runCatching {
+    return libRunCatching {
+      val data = encode(value, clazz)
       cacheLock {
-        val data = encode(value, clazz)
         getCacheStore().putCache(key, data)
         onChange?.invoke(key, value)
+        true
       }
-      true
-    }.getOrElse {
-      libNotifyException(it)
-      false
-    }
+    }.getOrElse { false }
   }
 
   override fun get(key: String): T? {
-    return runCatching {
+    return libRunCatching {
       cacheLock {
-        getCacheStore().getCache(key)?.let { data ->
-          decode(data, clazz)
-        }
+        getCacheStore().getCache(key)
+      }?.let { data ->
+        decode(data, clazz)
       }
-    }.getOrElse {
-      libNotifyException(it)
-      null
-    }
+    }.getOrNull()
   }
 
   override fun remove(key: String) {
-    runCatching {
+    libRunCatching {
       cacheLock {
         getCacheStore().removeCache(key)
         onChange?.invoke(key, null)
       }
-    }.onFailure {
-      libNotifyException(it)
     }
   }
 
   override fun contains(key: String): Boolean {
-    return runCatching {
+    return libRunCatching {
       cacheLock {
         getCacheStore().containsCache(key)
       }
-    }.getOrElse {
-      libNotifyException(it)
-      false
-    }
+    }.getOrElse { false }
   }
 
   override fun keys(): List<String> {
-    return runCatching {
+    return libRunCatching {
       cacheLock {
         getCacheStore().keys()
       }
-    }.getOrElse {
-      libNotifyException(it)
-      emptyList()
-    }
+    }.getOrElse { emptyList() }
   }
 
   private fun encode(value: T, clazz: Class<T>): ByteArray {
     return getObjectConverter().encode(value, clazz).also {
       if (it.isEmpty()) {
-        throw CacheException("Converter encode returns empty ${clazz.name}")
+        libException("Converter encode returns empty ${clazz.name}")
       }
     }
   }

@@ -49,11 +49,7 @@ internal class CacheStoreFactory(
     while (_stores.isNotEmpty()) {
       _stores.keys.toTypedArray().forEach { key ->
         _stores.remove(key)?.cacheStore?.also {
-          try {
-            it.close()
-          } catch (e: Throwable) {
-            libNotifyException(e)
-          }
+          libRunCatching { it.close() }
         }
       }
     }

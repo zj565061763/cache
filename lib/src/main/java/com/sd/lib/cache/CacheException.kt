@@ -5,12 +5,20 @@ open class CacheException(
   cause: Throwable? = null,
 ) : Exception(message, cause)
 
-internal fun libNotifyException(error: Throwable) {
-  CacheConfig.get().exceptionHandler.onException(error)
+internal fun libException(
+  message: String,
+  cause: Throwable? = null,
+) {
+  throw CacheException(message, cause)
 }
 
 internal fun libError(message: String): Nothing {
   throw CacheError(message)
+}
+
+internal inline fun <R> libRunCatching(block: () -> R): Result<R> {
+  return runCatching(block)
+    .onFailure { CacheConfig.get().exceptionHandler.onException(it) }
 }
 
 internal class LibExceptionHandler(
@@ -22,5 +30,4 @@ internal class LibExceptionHandler(
   }
 }
 
-/** 缓存错误，此异常不会被捕获 */
 private class CacheError(message: String) : CacheException(message)

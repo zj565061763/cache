@@ -31,7 +31,7 @@ class CacheConfig private constructor(
 
   /** 初始化仓库 */
   internal fun initCacheStore(cacheStore: CacheStore, group: String, id: String): Boolean {
-    return try {
+    return libRunCatching {
       cacheStore.init(
         context = context,
         directory = directory,
@@ -39,14 +39,11 @@ class CacheConfig private constructor(
         id = id,
       )
       true
-    } catch (e: Throwable) {
-      libNotifyException(e)
-      false
-    }
+    }.getOrElse { false }
   }
 
   /**
-   * 对象转换器
+   * 对象转换器，[encode]和[decode]可能存在并发，注意线程安全
    */
   interface ObjectConverter {
     /** 编码 */
