@@ -54,31 +54,25 @@ object FCache {
     defaultGroupCache?.also { cache ->
       val id = cache.id.ifBlank { throw IllegalArgumentException("${DefaultGroupCache::class.java.simpleName}.id is blank") }
       val cacheSizePolicy = cache.limitCount.cacheSizePolicy()
-      return CacheImpl(
-        clazz = clazz,
-        cacheStoreOwner = {
-          _defaultGroupCacheStoreFactory.create(
-            id = id,
-            cacheSizePolicy = cacheSizePolicy,
-            clazz = clazz,
-          )
-        },
-      )
+      return CacheImpl(clazz) {
+        _defaultGroupCacheStoreFactory.create(
+          id = id,
+          cacheSizePolicy = cacheSizePolicy,
+          clazz = clazz,
+        )
+      }
     }
 
     activeGroupCache?.also { cache ->
       val id = cache.id.ifBlank { throw IllegalArgumentException("${ActiveGroupCache::class.java.simpleName}.id is blank") }
       val cacheSizePolicy = cache.limitCount.cacheSizePolicy()
-      return CacheImpl(
-        clazz = clazz,
-        cacheStoreOwner = {
-          getActiveGroupCacheStore(
-            id = id,
-            cacheSizePolicy = cacheSizePolicy,
-            clazz = clazz,
-          )
-        },
-      )
+      return CacheImpl(clazz) {
+        getActiveGroupCacheStore(
+          id = id,
+          cacheSizePolicy = cacheSizePolicy,
+          clazz = clazz,
+        )
+      }
     }
 
     error("This should not happen")

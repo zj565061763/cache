@@ -2,13 +2,9 @@ package com.sd.lib.cache
 
 import com.sd.lib.cache.store.CacheStore
 
-internal fun interface CacheStoreOwner {
-  fun getCacheStore(): CacheStore
-}
-
 internal class CacheImpl<T>(
   private val clazz: Class<T>,
-  private val cacheStoreOwner: CacheStoreOwner,
+  private val getCacheStore: () -> CacheStore,
 ) : Cache<T> {
 
   var onChange: ((key: String, data: T?) -> Unit)? = null
@@ -73,6 +69,5 @@ internal class CacheImpl<T>(
     return getObjectConverter().decode(bytes, clazz)
   }
 
-  private fun getCacheStore(): CacheStore = cacheStoreOwner.getCacheStore()
   private fun getObjectConverter(): CacheConfig.ObjectConverter = CacheConfig.get().objectConverter
 }
