@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
@@ -57,8 +58,14 @@ private class CacheKtxImpl<T>(
     return callbackFlow {
       val callback: suspend (T?) -> Unit = { send(it) }
       _callbacks.addCallback(key, callback)
+
+      val first = cache.get(key)
+      send(first)
+
       awaitClose { _callbacks.removeCallback(key, callback) }
-    }.conflate().distinctUntilChanged()
+    }.conflate()
+      .distinctUntilChanged()
+      .flowOn(Dispatchers.IO)
   }
 
   override suspend fun <R> edit(block: suspend Cache<T>.() -> R): R {
@@ -74,20 +81,17 @@ private class CacheCallbacks<T>(
   private val cacheImpl = cache as CacheImpl<T>
   private val _callbacks = mutableMapOf<String, Set<suspend (T?) -> Unit>>()
 
-  suspend fun addCallback(key: String, callback: suspend (T?) -> Unit) {
-    withCacheLock {
+  fun addCallback(key: String, callback: suspend (T?) -> Unit) {
+    synchronized(_callbacks) {
       val set = _callbacks.getOrPut(key) { emptySet() }
       _callbacks[key] = set + callback
-
-      val data = cacheImpl.get(key)
-      callback(data)
     }
   }
 
   fun removeCallback(key: String, callback: suspend (T?) -> Unit) {
-    cacheLock {
-      val set = _callbacks[key] ?: return@cacheLock
-      val newSet = set - callback
+    synchronized(_callbacks) {
+      val oldSet = _callbacks[key] ?: return@synchronized
+      val newSet = oldSet - callback
       if (newSet.isEmpty()) {
         _callbacks.remove(key)
       } else {
