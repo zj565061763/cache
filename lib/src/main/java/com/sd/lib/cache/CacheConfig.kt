@@ -11,14 +11,14 @@ class CacheConfig private constructor(
 ) {
   private val context = context.applicationContext
   private val directory: File
-  private val cacheStore: Class<out CacheStore>
+  private val cacheStoreFactory: () -> CacheStore
 
   internal val objectConverter: ObjectConverter
   internal val exceptionHandler: ExceptionHandler
 
   init {
     this.directory = builder.directory ?: context.defaultCacheDir()
-    this.cacheStore = builder.cacheStore ?: FileCacheStore::class.java
+    this.cacheStoreFactory = builder.cacheStoreFactory ?: { FileCacheStore() }
 
     this.objectConverter = builder.objectConverter ?: DefaultObjectConverter()
     this.exceptionHandler = LibExceptionHandler(builder.exceptionHandler)
@@ -26,7 +26,7 @@ class CacheConfig private constructor(
 
   /** 创建仓库 */
   internal fun newCacheStore(): CacheStore {
-    return cacheStore.getDeclaredConstructor().newInstance()
+    return cacheStoreFactory()
   }
 
   /** 初始化仓库 */
@@ -66,7 +66,7 @@ class CacheConfig private constructor(
     internal var directory: File? = null
       private set
 
-    internal var cacheStore: Class<out CacheStore>? = null
+    internal var cacheStoreFactory: (() -> CacheStore)? = null
       private set
 
     internal var objectConverter: ObjectConverter? = null
@@ -80,9 +80,9 @@ class CacheConfig private constructor(
       this.directory = directory
     }
 
-    /** 缓存仓库，[store]必须有无参构造方法用于反射创建对象 */
-    fun setCacheStore(store: Class<out CacheStore>) = apply {
-      this.cacheStore = store
+    /** 缓存仓库工厂 */
+    fun setCacheStoreFactory(factory: (() -> CacheStore)?) = apply {
+      this.cacheStoreFactory = factory
     }
 
     /** 对象转换 */
