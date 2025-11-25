@@ -13,19 +13,15 @@ internal class CacheImpl<T>(
     if (value == null) return false
     return libRunCatching {
       val data = encode(value, clazz)
-      cacheLock {
-        getCacheStore().putCache(key, data)
-        onChange?.invoke(key, value)
-        true
-      }
+      getCacheStore().putCache(key, data)
+      onChange?.invoke(key, value)
+      true
     }.getOrElse { false }
   }
 
   override fun get(key: String): T? {
     return libRunCatching {
-      cacheLock {
-        getCacheStore().getCache(key)
-      }?.let { data ->
+      getCacheStore().getCache(key)?.let { data ->
         decode(data, clazz)
       }
     }.getOrNull()
@@ -33,26 +29,20 @@ internal class CacheImpl<T>(
 
   override fun remove(key: String) {
     libRunCatching {
-      cacheLock {
-        getCacheStore().removeCache(key)
-        onChange?.invoke(key, null)
-      }
+      getCacheStore().removeCache(key)
+      onChange?.invoke(key, null)
     }
   }
 
   override fun contains(key: String): Boolean {
     return libRunCatching {
-      cacheLock {
-        getCacheStore().containsCache(key)
-      }
+      getCacheStore().containsCache(key)
     }.getOrElse { false }
   }
 
   override fun keys(): List<String> {
     return libRunCatching {
-      cacheLock {
-        getCacheStore().keys()
-      }
+      getCacheStore().keys()
     }.getOrElse { emptyList() }
   }
 

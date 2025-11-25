@@ -20,7 +20,7 @@ object FCache {
 
   @JvmStatic
   fun <T> get(clazz: Class<T>): Cache<T> {
-    return cacheLock {
+    return synchronized(FCache) {
       val cache = _caches.getOrPut(clazz) { newCache(clazz) }
       @Suppress("UNCHECKED_CAST")
       cache as Cache<T>
@@ -35,7 +35,7 @@ object FCache {
   @JvmStatic
   fun setActiveGroup(group: String) {
     require(group != DEFAULT_GROUP) { "Require not default group" }
-    cacheLock { _activeGroup = group }
+    synchronized(FCache) { _activeGroup = group }
   }
 
   private fun <T> newCache(clazz: Class<T>): Cache<T> {
@@ -54,14 +54,18 @@ object FCache {
     defaultGroupCache?.also { cache ->
       val id = cache.id.ifBlank { throw IllegalArgumentException("${DefaultGroupCache::class.java.simpleName}.id is blank") }
       return CacheImpl(clazz) {
-        _defaultGroupCacheStoreFactory.create(id = id, clazz = clazz)
+        synchronized(FCache) {
+          _defaultGroupCacheStoreFactory.create(id = id, clazz = clazz)
+        }
       }
     }
 
     activeGroupCache?.also { cache ->
       val id = cache.id.ifBlank { throw IllegalArgumentException("${ActiveGroupCache::class.java.simpleName}.id is blank") }
       return CacheImpl(clazz) {
-        getActiveGroupCacheStore(id = id, clazz = clazz)
+        synchronized(FCache) {
+          getActiveGroupCacheStore(id = id, clazz = clazz)
+        }
       }
     }
 
@@ -84,11 +88,4 @@ object FCache {
 
     return storeFactory.create(id = id, clazz = clazz)
   }
-}
-
-internal inline fun <R> cacheLock(block: () -> R): R {
-  return synchronized(
-    lock = FCache,
-    block = block,
-  )
 }

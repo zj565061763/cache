@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 interface CacheKtx<T> {
@@ -57,7 +56,7 @@ object FCacheKtx {
   private val _caches = mutableMapOf<Class<*>, CacheKtx<*>>()
 
   fun <T> get(clazz: Class<T>): CacheKtx<T> {
-    return cacheLock {
+    return synchronized(FCache) {
       val cache = _caches.getOrPut(clazz) { CacheKtxImpl(FCache.get(clazz)) }
       @Suppress("UNCHECKED_CAST")
       cache as CacheKtx<T>
@@ -86,11 +85,8 @@ private class CacheKtxImpl<T>(
 
   override suspend fun <R> edit(block: suspend Cache<T>.() -> R): R {
     return withContext(Dispatchers.IO) {
-      cacheLock {
-        runBlocking {
-          block(cache)
-        }
-      }
+      // TODO file lock
+      block(cache)
     }
   }
 }
@@ -108,12 +104,14 @@ private class CacheCallbacks<T>(cache: Cache<T>) {
 
   fun removeCallback(key: String, callback: (T?) -> Unit) {
     synchronized(_callbacks) {
-      val set = _callbacks[key] ?: return@synchronized
-      val newSet = set - callback
-      if (newSet.isEmpty()) {
-        _callbacks.remove(key)
-      } else {
-        _callbacks[key] = newSet
+      val set = _callbacks[key]
+      if (set != null) {
+        val newSet = set - callback
+        if (newSet.isEmpty()) {
+          _callbacks.remove(key)
+        } else {
+          _callbacks[key] = newSet
+        }
       }
     }
   }
