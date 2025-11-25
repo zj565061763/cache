@@ -129,3 +129,8 @@ inline fun CacheConfig.Companion.init(
       .build(context)
   )
 }
+
+/** 默认缓存目录 */
+private fun Context.defaultCacheDir(): File {
+  return filesDir.resolve("sd.lib.cache")
+}
