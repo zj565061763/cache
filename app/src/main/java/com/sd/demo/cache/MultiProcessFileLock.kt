@@ -39,7 +39,7 @@ internal class MultiProcessFileLock(
       // 失败
       when (val exception = checkNotNull(result.exceptionOrNull())) {
         is OverlappingFileLockException -> {
-          // 当前进程已经获得文件锁
+          /** 当前进程已经获得文件锁，直接执行[block] */
           return block()
         }
         else -> {
