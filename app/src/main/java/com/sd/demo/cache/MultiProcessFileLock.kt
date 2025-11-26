@@ -17,7 +17,7 @@ internal class MultiProcessFileLock(
   /** 当前进程锁 */
   private val currentProcessLock: Any,
 ) {
-  private var _lockFileChannel: FileChannel? = null
+  private var _rf: RandomAccessFile? = null
 
   @Throws(Throwable::class)
   fun lock(block: () -> Unit) {
@@ -46,7 +46,7 @@ internal class MultiProcessFileLock(
 
   /** 其他进程已经获得文件锁 */
   private fun handleLockByOtherProcess(block: () -> Unit) {
-    val channel = getChannel()
+    val channel = getRF().channel
     runCatching {
       channel.lock()
     }.onSuccess { lock ->
@@ -62,7 +62,7 @@ internal class MultiProcessFileLock(
           throw e
         }
         else -> {
-          closeChannelQuietly()
+          closeRFQuietly()
           throw e
         }
       }
@@ -86,13 +86,13 @@ internal class MultiProcessFileLock(
     runCatching {
       lock.release()
     }.onFailure {
-      closeChannelQuietly()
+      closeRFQuietly()
     }
   }
 
   /** 获得文件锁 */
   private fun tryLockFile(): LockFileResult {
-    val channel = getChannel()
+    val channel = getRF().channel
     return runCatching {
       val lock = channel.tryLock()
       LockFileResult.Lock(lock)
@@ -102,24 +102,24 @@ internal class MultiProcessFileLock(
           LockFileResult.Overlapping(e)
         }
         else -> {
-          closeChannelQuietly()
+          closeRFQuietly()
           LockFileResult.Other(e)
         }
       }
     }
   }
 
-  private fun getChannel(): FileChannel {
-    return _lockFileChannel ?: run {
+  private fun getRF(): RandomAccessFile {
+    return _rf ?: run {
       lockFile.fCreateFile()
-      RandomAccessFile(lockFile, "rw").channel
-    }.also { _lockFileChannel = it }
+      RandomAccessFile(lockFile, "rw")
+    }.also { _rf = it }
   }
 
-  private fun closeChannelQuietly() {
-    _lockFileChannel?.also { channel ->
-      _lockFileChannel = null
-      runCatching { channel.close() }
+  private fun closeRFQuietly() {
+    _rf?.also { file ->
+      _rf = null
+      runCatching { file.close() }
     }
   }
 }
