@@ -79,10 +79,7 @@ internal class MultiProcessFileLock(
   }
 
   /** 当前进程获得文件锁 */
-  private fun <T> handleLockByCurrentProcess(
-    lock: FileLock,
-    block: () -> T,
-  ): T {
+  private fun <T> handleLockByCurrentProcess(lock: FileLock, block: () -> T): T {
     return try {
       block()
     } finally {
