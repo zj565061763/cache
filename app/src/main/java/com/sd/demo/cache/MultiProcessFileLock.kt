@@ -101,12 +101,6 @@ internal class MultiProcessFileLock(
   }
 }
 
-sealed interface LockFileResult {
-  data class Lock(val lock: FileLock?) : LockFileResult
-  data class Overlapping(val e: OverlappingFileLockException) : LockFileResult
-  data class Other(val e: Throwable) : LockFileResult
-}
-
 private fun File.fCreateFile(): Boolean {
   if (isFile) return true
   if (isDirectory) deleteRecursively()
