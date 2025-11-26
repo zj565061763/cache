@@ -22,29 +22,34 @@ internal class MultiProcessFileLock(
   @Throws(Throwable::class)
   fun lock(block: () -> Unit) {
     synchronized(currentProcessLock) {
-      when (val result = tryLockFile()) {
-        is LockFileResult.Lock -> {
-          val lock = result.lock
-          if (lock != null) {
-            // 当前进程获得文件锁
-            handleLockByCurrentProcess(lock, block)
-          } else {
-            // 其他进程获得文件锁
-            handleLockByOtherProcess(block)
+      val channel = getRF().channel
+      runCatching {
+        channel.tryLock()
+      }.onSuccess { lock ->
+        if (lock != null) {
+          // 当前进程获得文件锁
+          handleLockByCurrentProcess(lock, block)
+        } else {
+          // 其他进程获得文件锁
+          handleLockByOtherProcess(block)
+        }
+      }.onFailure { e ->
+        when (e) {
+          is OverlappingFileLockException -> {
+            // 当前进程已经获得文件锁
+            block()
           }
-        }
-        is LockFileResult.Overlapping -> {
-          // 当前进程已经获得文件锁
-          block()
-        }
-        is LockFileResult.Other -> {
-          throw result.e
+          else -> {
+            closeRFQuietly()
+            throw e
+          }
         }
       }
     }
   }
 
   /** 其他进程已经获得文件锁 */
+  @Throws(Throwable::class)
   private fun handleLockByOtherProcess(block: () -> Unit) {
     val channel = getRF().channel
     runCatching {
@@ -58,7 +63,7 @@ internal class MultiProcessFileLock(
           throw CancellationException()
         }
         is OverlappingFileLockException -> {
-          /** 理论上这里不会发生，因为[lock]被[currentProcessLock]锁住了，且[tryLockFile]已经检查过了 */
+          /** 理论上这里不会发生，因为[lock]已经检查过了 */
           throw e
         }
         else -> {
@@ -77,35 +82,7 @@ internal class MultiProcessFileLock(
     try {
       block()
     } finally {
-      releaseLock(lock)
-    }
-  }
-
-  /** 释放文件锁 */
-  private fun releaseLock(lock: FileLock) {
-    runCatching {
-      lock.release()
-    }.onFailure {
-      closeRFQuietly()
-    }
-  }
-
-  /** 获得文件锁 */
-  private fun tryLockFile(): LockFileResult {
-    val channel = getRF().channel
-    return runCatching {
-      val lock = channel.tryLock()
-      LockFileResult.Lock(lock)
-    }.getOrElse { e ->
-      when (e) {
-        is OverlappingFileLockException -> {
-          LockFileResult.Overlapping(e)
-        }
-        else -> {
-          closeRFQuietly()
-          LockFileResult.Other(e)
-        }
-      }
+      runCatching { lock.release() }.onFailure { closeRFQuietly() }
     }
   }
 
