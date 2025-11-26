@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 interface CacheKtx<T> {
@@ -85,8 +86,11 @@ private class CacheKtxImpl<T>(
 
   override suspend fun <R> edit(block: suspend Cache<T>.() -> R): R {
     return withContext(Dispatchers.IO) {
-      // TODO file lock
-      block(cache)
+      multiProcessLock {
+        runBlocking {
+          block(cache)
+        }
+      }
     }
   }
 }

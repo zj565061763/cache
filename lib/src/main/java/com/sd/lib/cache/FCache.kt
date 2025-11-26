@@ -21,7 +21,7 @@ object FCache {
   /** 多进程锁 */
   internal val multiProcessLock by lazy {
     val lockFile = CacheConfig.get().directory.resolve("cache.lock")
-    MultiProcessLock(lockFile)
+    MultiProcessLock(lockFile = lockFile, currentProcessLock = FCache)
   }
 
   @JvmStatic
@@ -94,9 +94,5 @@ object FCache {
 
 /** 多进程锁 */
 internal fun <T> multiProcessLock(block: () -> T): T {
-  return FCache.multiProcessLock.lock {
-    synchronized(FCache) {
-      block()
-    }
-  }
+  return FCache.multiProcessLock.lock(block)
 }

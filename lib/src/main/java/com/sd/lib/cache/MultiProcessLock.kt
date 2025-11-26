@@ -14,34 +14,38 @@ import java.nio.channels.OverlappingFileLockException
 internal class MultiProcessLock(
   /** 要锁的文件 */
   private val lockFile: File,
+  /** 当前进程锁 */
+  private val currentProcessLock: Any,
 ) {
   private var _rf: RandomAccessFile? = null
 
   @Throws(Throwable::class)
   fun <T> lock(block: () -> T): T {
-    val channel = getRF().channel
-    val result = runCatching { channel.tryLock() }
+    synchronized(currentProcessLock) {
+      val channel = getRF().channel
+      val result = runCatching { channel.tryLock() }
 
-    // 成功
-    result.onSuccess { lock ->
-      return if (lock != null) {
-        // 当前进程获得文件锁
-        handleLockByCurrentProcess(lock, block)
-      } else {
-        // 其他进程获得文件锁
-        handleLockByOtherProcess(block)
+      // 成功
+      result.onSuccess { lock ->
+        return if (lock != null) {
+          // 当前进程获得文件锁
+          handleLockByCurrentProcess(lock, block)
+        } else {
+          // 其他进程获得文件锁
+          handleLockByOtherProcess(block)
+        }
       }
-    }
 
-    // 失败
-    when (val exception = checkNotNull(result.exceptionOrNull())) {
-      is OverlappingFileLockException -> {
-        // 当前进程已经获得文件锁
-        return block()
-      }
-      else -> {
-        closeRFQuietly()
-        throw exception
+      // 失败
+      when (val exception = checkNotNull(result.exceptionOrNull())) {
+        is OverlappingFileLockException -> {
+          // 当前进程已经获得文件锁
+          return block()
+        }
+        else -> {
+          closeRFQuietly()
+          throw exception
+        }
       }
     }
   }
@@ -83,7 +87,6 @@ internal class MultiProcessLock(
     }
   }
 
-  @Synchronized
   private fun getRF(): RandomAccessFile {
     return _rf ?: run {
       lockFile.fCreateFile()
@@ -91,7 +94,6 @@ internal class MultiProcessLock(
     }
   }
 
-  @Synchronized
   private fun closeRFQuietly() {
     _rf?.also { file ->
       _rf = null
