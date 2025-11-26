@@ -16,19 +16,15 @@
 ```kotlin
 CacheConfig.init(
   CacheConfig.Builder()
-    // 设置缓存目录(可选)
-    .setDirectory(getExternalFilesDir("app_cache")!!)
-
-    // 设置对象转换器(可选)
+    // 对象转换器(可选)
     .setObjectConverter(AppObjectConverter())
 
-    // 设置异常处理(可选)
+    // 异常处理(可选)
     .setExceptionHandler(AppExceptionHandler())
 
-    // 设置缓存仓库(可选)
-    .setExceptionHandler(AppCacheStore::class.java)
+    // 缓存仓库工厂(可选)
+    .setCacheStoreFactory { AppCacheStore() }
 
-    // Context
     .build(this)
 )
 ```
