@@ -10,9 +10,8 @@ class CacheConfig private constructor(
   context: Context,
 ) {
   private val context = context.applicationContext
-  private val directory: File = context.defaultCacheDir()
   private val cacheStoreFactory: () -> CacheStore
-
+  internal val directory: File = context.defaultCacheDir()
   internal val objectConverter: ObjectConverter
   internal val exceptionHandler: ExceptionHandler
 

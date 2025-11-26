@@ -18,6 +18,12 @@ object FCache {
   /** 缓存所有的[Cache] */
   private val _caches = mutableMapOf<Class<*>, Cache<*>>()
 
+  /** 多进程锁 */
+  internal val multiProcessLock by lazy {
+    val lockFile = CacheConfig.get().directory.resolve("cache.lock")
+    MultiProcessLock(lockFile)
+  }
+
   @JvmStatic
   fun <T> get(clazz: Class<T>): Cache<T> {
     return synchronized(FCache) {
@@ -54,18 +60,14 @@ object FCache {
     defaultGroupCache?.also { cache ->
       val id = cache.id.ifBlank { throw IllegalArgumentException("${DefaultGroupCache::class.java.simpleName}.id is blank") }
       return CacheImpl(clazz) {
-        synchronized(FCache) {
-          _defaultGroupCacheStoreFactory.create(id = id, clazz = clazz)
-        }
+        _defaultGroupCacheStoreFactory.create(id = id, clazz = clazz)
       }
     }
 
     activeGroupCache?.also { cache ->
       val id = cache.id.ifBlank { throw IllegalArgumentException("${ActiveGroupCache::class.java.simpleName}.id is blank") }
       return CacheImpl(clazz) {
-        synchronized(FCache) {
-          getActiveGroupCacheStore(id = id, clazz = clazz)
-        }
+        getActiveGroupCacheStore(id = id, clazz = clazz)
       }
     }
 
@@ -87,5 +89,14 @@ object FCache {
       }
 
     return storeFactory.create(id = id, clazz = clazz)
+  }
+}
+
+/** 多进程锁 */
+internal fun <T> multiProcessLock(block: () -> T): T {
+  return FCache.multiProcessLock.lock {
+    synchronized(FCache) {
+      block()
+    }
   }
 }
