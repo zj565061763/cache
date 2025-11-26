@@ -14,8 +14,6 @@ import java.nio.channels.OverlappingFileLockException
 internal class MultiProcessLock(
   /** 要锁的文件 */
   private val lockFile: File,
-  /** 当前进程锁 */
-  private val currentProcessLock: Any,
 ) {
   private var _rf: RandomAccessFile? = null
 
@@ -39,7 +37,7 @@ internal class MultiProcessLock(
     when (val exception = checkNotNull(result.exceptionOrNull())) {
       is OverlappingFileLockException -> {
         // 当前进程已经获得文件锁
-        return runCurrentProcessBlock(block)
+        return block()
       }
       else -> {
         closeRFQuietly()
@@ -63,7 +61,7 @@ internal class MultiProcessLock(
     when (val exception = checkNotNull(result.exceptionOrNull())) {
       is OverlappingFileLockException -> {
         // 当前进程已经获得文件锁
-        return runCurrentProcessBlock(block)
+        return block()
       }
       is FileLockInterruptionException -> {
         /** 当前线程在[FileChannel.lock]阻塞期间被取消，转为[CancellationException]异常 */
@@ -79,15 +77,9 @@ internal class MultiProcessLock(
   /** 当前进程获得文件锁 */
   private fun <T> handleLockByCurrentProcess(lock: FileLock, block: () -> T): T {
     return try {
-      runCurrentProcessBlock(block)
+      block()
     } finally {
       runCatching { lock.release() }.onFailure { closeRFQuietly() }
-    }
-  }
-
-  private fun <T> runCurrentProcessBlock(block: () -> T): T {
-    synchronized(currentProcessLock) {
-      return block()
     }
   }
 
