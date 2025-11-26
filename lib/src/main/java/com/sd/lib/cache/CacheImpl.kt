@@ -24,9 +24,9 @@ internal class CacheImpl<T>(
   override fun get(key: String): T? {
     return libRunCatching {
       multiProcessLock {
-        getCacheStore().getCache(key)?.let { data ->
-          decode(data, clazz)
-        }
+        getCacheStore().getCache(key)
+      }?.let { data ->
+        decode(data, clazz)
       }
     }.getOrNull()
   }
