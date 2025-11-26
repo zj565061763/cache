@@ -25,5 +25,5 @@ class MainActivity : AppCompatActivity() {
 }
 
 inline fun logMsg(block: () -> String) {
-  Log.i("cache-demo", block())
+  Log.i("sd-demo", block())
 }
