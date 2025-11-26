@@ -20,66 +20,70 @@ internal class MultiProcessFileLock(
   private var _rf: RandomAccessFile? = null
 
   @Throws(Throwable::class)
-  fun lock(block: () -> Unit) {
+  fun <T> lock(block: () -> T): T {
     synchronized(currentProcessLock) {
       val channel = getRF().channel
-      runCatching {
-        channel.tryLock()
-      }.onSuccess { lock ->
-        if (lock != null) {
+      val result = runCatching { channel.tryLock() }
+
+      // 成功
+      result.onSuccess { lock ->
+        return if (lock != null) {
           // 当前进程获得文件锁
           handleLockByCurrentProcess(lock, block)
         } else {
           // 其他进程获得文件锁
           handleLockByOtherProcess(block)
         }
-      }.onFailure { e ->
-        when (e) {
-          is OverlappingFileLockException -> {
-            // 当前进程已经获得文件锁
-            block()
-          }
-          else -> {
-            closeRFQuietly()
-            throw e
-          }
+      }
+
+      // 失败
+      when (val exception = checkNotNull(result.exceptionOrNull())) {
+        is OverlappingFileLockException -> {
+          // 当前进程已经获得文件锁
+          return block()
+        }
+        else -> {
+          closeRFQuietly()
+          throw exception
         }
       }
     }
   }
 
-  /** 其他进程已经获得文件锁 */
+  /** 其他进程已经获得文件锁，阻塞当前线程等待文件锁 */
   @Throws(Throwable::class)
-  private fun handleLockByOtherProcess(block: () -> Unit) {
+  private fun <T> handleLockByOtherProcess(block: () -> T): T {
     val channel = getRF().channel
-    runCatching {
-      channel.lock()
-    }.onSuccess { lock ->
-      handleLockByCurrentProcess(lock, block)
-    }.onFailure { e ->
-      when (e) {
-        is FileLockInterruptionException -> {
-          /** 当前线程在[FileChannel.lock]阻塞期间被取消，转为[CancellationException]异常 */
-          throw CancellationException()
-        }
-        is OverlappingFileLockException -> {
-          /** 理论上这里不会发生，因为[lock]已经检查过了 */
-          throw e
-        }
-        else -> {
-          closeRFQuietly()
-          throw e
-        }
+    val result = runCatching { channel.lock() }
+
+    // 成功
+    result.onSuccess { lock ->
+      return handleLockByCurrentProcess(lock, block)
+    }
+
+    // 失败
+    when (val exception = checkNotNull(result.exceptionOrNull())) {
+      is FileLockInterruptionException -> {
+        /** 当前线程在[FileChannel.lock]阻塞期间被取消，转为[CancellationException]异常 */
+        throw CancellationException()
+      }
+      is OverlappingFileLockException -> {
+        /** 理论上这里不会发生，因为[lock]已经检查过了 */
+        throw exception
+      }
+      else -> {
+        closeRFQuietly()
+        throw exception
       }
     }
   }
 
   /** 当前进程获得文件锁 */
-  private fun handleLockByCurrentProcess(
+  private fun <T> handleLockByCurrentProcess(
     lock: FileLock,
-    block: () -> Unit,
-  ) {
-    try {
+    block: () -> T,
+  ): T {
+    return try {
       block()
     } finally {
       runCatching { lock.release() }.onFailure { closeRFQuietly() }
