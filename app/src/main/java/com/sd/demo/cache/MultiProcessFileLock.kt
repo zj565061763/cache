@@ -89,8 +89,8 @@ internal class MultiProcessFileLock(
   private fun getRF(): RandomAccessFile {
     return _rf ?: run {
       lockFile.fCreateFile()
-      RandomAccessFile(lockFile, "rw")
-    }.also { _rf = it }
+      RandomAccessFile(lockFile, "rw").also { _rf = it }
+    }
   }
 
   private fun closeRFQuietly() {
