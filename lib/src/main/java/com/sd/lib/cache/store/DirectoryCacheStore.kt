@@ -11,6 +11,7 @@ abstract class DirectoryCacheStore : CacheStore {
     get() = _directory
 
   final override fun init(context: Context, directory: File) {
+    if (::_directory.isInitialized) return
     _directory = directory
     initImpl(context, _directory)
   }
