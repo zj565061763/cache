@@ -3,10 +3,13 @@ package com.sd.lib.cache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
@@ -71,14 +74,21 @@ private class CacheKtxImpl<T>(
   private val _callbacks = CacheCallbacks(cache)
 
   override fun flowOf(key: String): Flow<T?> {
+    val notifyFlow = MutableStateFlow(0L)
     return callbackFlow {
-      val callback: (T?) -> Unit = { trySend(it) }
+      val callback = { notifyFlow.update { it + 1 } }
       _callbacks.addCallback(key, callback)
 
-      val first = cache.get(key)
-      trySend(first)
+      val notifyJob = launch {
+        notifyFlow.collect {
+          trySend(cache.get(key))
+        }
+      }
 
-      awaitClose { _callbacks.removeCallback(key, callback) }
+      awaitClose {
+        _callbacks.removeCallback(key, callback)
+        notifyJob.cancel()
+      }
     }.conflate()
       .distinctUntilChanged()
       .flowOn(Dispatchers.IO)
@@ -97,16 +107,16 @@ private class CacheKtxImpl<T>(
 
 private class CacheCallbacks<T>(cache: Cache<T>) {
   private val _cache = cache as CacheImpl<T>
-  private val _callbacks = mutableMapOf<String, Set<(T?) -> Unit>>()
+  private val _callbacks = mutableMapOf<String, Set<() -> Unit>>()
 
-  fun addCallback(key: String, callback: (T?) -> Unit) {
+  fun addCallback(key: String, callback: () -> Unit) {
     synchronized(_callbacks) {
       val set = _callbacks.getOrPut(key) { emptySet() }
       _callbacks[key] = set + callback
     }
   }
 
-  fun removeCallback(key: String, callback: (T?) -> Unit) {
+  fun removeCallback(key: String, callback: () -> Unit) {
     synchronized(_callbacks) {
       val set = _callbacks[key]
       if (set != null) {
@@ -120,7 +130,7 @@ private class CacheCallbacks<T>(cache: Cache<T>) {
     }
   }
 
-  private fun getCallbacks(key: String): Set<(T?) -> Unit>? {
+  private fun getCallbacks(key: String): Set<() -> Unit>? {
     synchronized(_callbacks) {
       return _callbacks[key]
     }
@@ -128,8 +138,8 @@ private class CacheCallbacks<T>(cache: Cache<T>) {
 
   init {
     check(_cache.onChange == null)
-    _cache.onChange = { key, data ->
-      getCallbacks(key)?.forEach { it.invoke(data) }
+    _cache.onChange = { key ->
+      getCallbacks(key)?.forEach { it.invoke() }
     }
   }
 }

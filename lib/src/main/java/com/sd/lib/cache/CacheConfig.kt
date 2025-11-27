@@ -26,8 +26,10 @@ class CacheConfig private constructor(
   internal fun newCacheStore(group: String, id: String): CacheStore? {
     return libRunCatching {
       cacheStoreFactory().also { cacheStore ->
-        val targetDir = directory.resolve(md5(group)).resolve(md5(id))
-        cacheStore.init(context = context, directory = targetDir)
+        cacheStore.init(
+          context = context,
+          directory = directory.resolve(md5(group)).resolve(md5(id)),
+        )
       }
     }.getOrNull()
   }

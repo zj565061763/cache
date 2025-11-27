@@ -34,4 +34,11 @@ interface CacheStore {
   /** 关闭 */
   @Throws(Throwable::class)
   fun close()
+
+  fun setCacheChangeCallback(callback: CacheChangeCallback)
+
+  interface CacheChangeCallback {
+    fun onModify(key: String)
+    fun onRemove(key: String)
+  }
 }

@@ -7,16 +7,15 @@ internal class CacheImpl<T>(
   private val getCacheStore: () -> CacheStore,
 ) : Cache<T> {
 
-  var onChange: ((key: String, data: T?) -> Unit)? = null
+  var onChange: ((key: String) -> Unit)? = null
 
   override fun put(key: String, value: T?): Boolean {
     if (value == null) return false
     return libRunCatching {
       val data = encode(value, clazz)
       multiProcessLock {
-        getCacheStore().putCache(key, data)
+        getCacheStoreInternal().putCache(key, data)
       }
-      onChange?.invoke(key, value)
       true
     }.getOrElse { false }
   }
@@ -24,7 +23,7 @@ internal class CacheImpl<T>(
   override fun get(key: String): T? {
     return libRunCatching {
       multiProcessLock {
-        getCacheStore().getCache(key)
+        getCacheStoreInternal().getCache(key)
       }?.let { data ->
         decode(data, clazz)
       }
@@ -34,16 +33,15 @@ internal class CacheImpl<T>(
   override fun remove(key: String) {
     libRunCatching {
       multiProcessLock {
-        getCacheStore().removeCache(key)
+        getCacheStoreInternal().removeCache(key)
       }
-      onChange?.invoke(key, null)
     }
   }
 
   override fun contains(key: String): Boolean {
     return libRunCatching {
       multiProcessLock {
-        getCacheStore().containsCache(key)
+        getCacheStoreInternal().containsCache(key)
       }
     }.getOrElse { false }
   }
@@ -51,9 +49,15 @@ internal class CacheImpl<T>(
   override fun keys(): List<String> {
     return libRunCatching {
       multiProcessLock {
-        getCacheStore().keys()
+        getCacheStoreInternal().keys()
       }
     }.getOrElse { emptyList() }
+  }
+
+  private fun getCacheStoreInternal(): CacheStore {
+    return getCacheStore().also {
+      it.setCacheChangeCallback(_cacheChangeCallback)
+    }
   }
 
   private fun encode(value: T, clazz: Class<T>): ByteArray {
@@ -70,4 +74,18 @@ internal class CacheImpl<T>(
   }
 
   private fun getObjectConverter(): CacheConfig.ObjectConverter = CacheConfig.get().objectConverter
+
+  private val _cacheChangeCallback = object : CacheStore.CacheChangeCallback {
+    override fun onModify(key: String) {
+      onChange?.invoke(key)
+    }
+
+    override fun onRemove(key: String) {
+      onChange?.invoke(key)
+    }
+  }
+
+  init {
+    getCacheStoreInternal()
+  }
 }

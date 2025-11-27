@@ -32,4 +32,8 @@ internal object EmptyCacheStore : CacheStore {
   override fun close() {
     libException("EmptyCacheStore.close()")
   }
+
+  override fun setCacheChangeCallback(callback: CacheStore.CacheChangeCallback) {
+    libException("EmptyCacheStore.setCacheChangeCallback()")
+  }
 }

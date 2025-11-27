@@ -1,11 +1,13 @@
 package com.sd.lib.cache.store
 
 import android.content.Context
+import android.os.FileObserver
 import android.util.Base64
 import java.io.File
 
 abstract class DirectoryCacheStore : CacheStore {
   private lateinit var _directory: File
+  private var _cacheChangeCallback: CacheStore.CacheChangeCallback? = null
 
   protected val directory: File
     get() = _directory
@@ -13,6 +15,7 @@ abstract class DirectoryCacheStore : CacheStore {
   final override fun init(context: Context, directory: File) {
     if (::_directory.isInitialized) return
     _directory = directory
+    _fileObserver.startWatching()
     initImpl(context, _directory)
   }
 
@@ -35,27 +38,57 @@ abstract class DirectoryCacheStore : CacheStore {
   final override fun keys(): List<String> {
     val list = _directory.list()
     if (list.isNullOrEmpty()) return emptyList()
-    return list.mapNotNull { filename ->
-      try {
-        filename?.decodeKey()
-      } catch (e: IllegalArgumentException) {
-        runCatching { _directory.resolve(filename).deleteRecursively() }
-        null
-      }
-    }
+    return list.mapNotNull { filenameToKey(it) }
   }
 
-  override fun close() = Unit
+  final override fun close() {
+    _fileObserver.stopWatching()
+    closeImpl()
+  }
+
+  final override fun setCacheChangeCallback(callback: CacheStore.CacheChangeCallback) {
+    _cacheChangeCallback = callback
+  }
 
   private fun fileOf(key: String): File {
     return _directory.resolve(key.encodeKey())
   }
 
+  private fun filenameToKey(filename: String): String? {
+    return try {
+      filename.decodeKey()
+    } catch (e: IllegalArgumentException) {
+      runCatching { _directory.resolve(filename).deleteRecursively() }
+      null
+    }
+  }
+
   protected open fun initImpl(context: Context, directory: File) = Unit
+  protected open fun closeImpl() = Unit
+
   protected abstract fun putCacheImpl(file: File, value: ByteArray)
   protected abstract fun getCacheImpl(file: File): ByteArray?
   protected open fun removeCacheImpl(file: File) = file.deleteRecursively()
   protected open fun containsCacheImpl(file: File): Boolean = file.isFile
+
+  private val _fileObserver by lazy {
+    object : FileObserver(_directory) {
+      override fun onEvent(event: Int, path: String?) {
+        val callback = _cacheChangeCallback
+        if (callback != null && path != null) {
+          when (event) {
+            MODIFY -> {
+              filenameToKey(path)?.also { key -> callback.onModify(key) }
+            }
+            DELETE -> {
+              filenameToKey(path)?.also { key -> callback.onRemove(key) }
+            }
+            else -> {}
+          }
+        }
+      }
+    }
+  }
 }
 
 private fun String.encodeKey(): String {
