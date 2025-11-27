@@ -5,7 +5,7 @@ import com.sd.lib.cache.libException
 import java.io.File
 
 internal object EmptyCacheStore : CacheStore {
-  override fun init(context: Context, directory: File, group: String, id: String) {
+  override fun init(context: Context, directory: File) {
     libException("EmptyCacheStore.init()")
   }
 

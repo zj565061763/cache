@@ -9,12 +9,7 @@ import java.io.File
 interface CacheStore {
   /** 初始化 */
   @Throws(Throwable::class)
-  fun init(
-    context: Context,
-    directory: File,
-    group: String,
-    id: String,
-  )
+  fun init(context: Context, directory: File)
 
   /** 设置缓存 */
   @Throws(Throwable::class)

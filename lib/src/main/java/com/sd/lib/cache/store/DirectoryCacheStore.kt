@@ -2,26 +2,16 @@ package com.sd.lib.cache.store
 
 import android.content.Context
 import android.util.Base64
-import com.sd.lib.cache.libError
 import java.io.File
-import java.security.MessageDigest
 
 abstract class DirectoryCacheStore : CacheStore {
-  private var _initFlag = false
   private lateinit var _directory: File
 
   protected val directory: File
     get() = _directory
 
-  final override fun init(
-    context: Context,
-    directory: File,
-    group: String,
-    id: String,
-  ) {
-    if (_initFlag) libError("CacheStore (${group}) (${id}) has already been initialized.")
-    _directory = directory.resolve(fMd5(group)).resolve(fMd5(id))
-    _initFlag = true
+  final override fun init(context: Context, directory: File) {
+    _directory = directory
     initImpl(context, _directory)
   }
 
@@ -48,12 +38,7 @@ abstract class DirectoryCacheStore : CacheStore {
       try {
         filename?.decodeKey()
       } catch (e: IllegalArgumentException) {
-        e.printStackTrace()
-        try {
-          _directory.resolve(filename).deleteRecursively()
-        } catch (e: Throwable) {
-          e.printStackTrace()
-        }
+        runCatching { _directory.resolve(filename).deleteRecursively() }
         null
       }
     }
@@ -83,15 +68,4 @@ private fun String.decodeKey(): String {
   val input = this.toByteArray()
   val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
   return Base64.decode(input, flag).decodeToString()
-}
-
-private fun fMd5(input: String): String {
-  val md5Bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray())
-  return buildString {
-    for (byte in md5Bytes) {
-      val hex = (0xff and byte.toInt()).toString(16)
-      if (hex.length == 1) append("0")
-      append(hex)
-    }
-  }
 }

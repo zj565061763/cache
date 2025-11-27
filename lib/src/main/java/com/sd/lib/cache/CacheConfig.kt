@@ -4,6 +4,7 @@ import android.content.Context
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.FileCacheStore
 import java.io.File
+import java.security.MessageDigest
 
 class CacheConfig private constructor(
   builder: Builder,
@@ -25,12 +26,8 @@ class CacheConfig private constructor(
   internal fun newCacheStore(group: String, id: String): CacheStore? {
     return libRunCatching {
       cacheStoreFactory().also { cacheStore ->
-        cacheStore.init(
-          context = context,
-          directory = directory,
-          group = group,
-          id = id,
-        )
+        val targetDir = directory.resolve(md5(group)).resolve(md5(id))
+        cacheStore.init(context = context, directory = targetDir)
       }
     }.getOrNull()
   }
@@ -122,4 +119,15 @@ inline fun CacheConfig.Companion.init(
 /** 默认缓存目录 */
 private fun Context.defaultCacheDir(): File {
   return filesDir.resolve("sd.lib.cache")
+}
+
+private fun md5(input: String): String {
+  val md5Bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray())
+  return buildString {
+    for (byte in md5Bytes) {
+      val hex = (0xff and byte.toInt()).toString(16)
+      if (hex.length == 1) append("0")
+      append(hex)
+    }
+  }
 }
