@@ -40,13 +40,13 @@ interface CacheStore {
 
   /** 缓存变化回调 */
   interface CacheChangeCallback {
-    /** [cacheKey]对应的缓存被创建 */
-    fun onCreate(cacheKey: String)
+    /** [key]对应的缓存被创建 */
+    fun onCreate(key: String)
 
-    /** [cacheKey]对应的缓存被修改 */
-    fun onModify(cacheKey: String)
+    /** [key]对应的缓存被修改 */
+    fun onModify(key: String)
 
-    /** [cacheKey]对应的缓存被删除 */
-    fun onRemove(cacheKey: String)
+    /** [key]对应的缓存被删除 */
+    fun onRemove(key: String)
   }
 }
