@@ -2,7 +2,10 @@ package com.sd.demo.cache
 
 import android.app.Application
 import com.sd.lib.cache.CacheConfig
+import com.sd.lib.cache.FCacheKtx
 import com.sd.lib.cache.init
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class App : Application() {
   override fun onCreate() {
@@ -12,6 +15,14 @@ class App : Application() {
       setExceptionHandler { error ->
         logMsg { "error:${error}" }
       }
+    }
+
+    GlobalScope.launch {
+      FCacheKtx.get(DefaultModel::class.java)
+        .flowOfKeys()
+        .collect { keys ->
+          logMsg { "App keys:$keys" }
+        }
     }
   }
 }
