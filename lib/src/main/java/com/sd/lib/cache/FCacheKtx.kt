@@ -2,13 +2,16 @@ package com.sd.lib.cache
 
 import com.sd.lib.cache.store.CacheStore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -17,11 +20,14 @@ import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 
 interface CacheKtx<T> {
-  /** [key]对应的数据流 */
+  /** [key]对应的缓存 */
   fun flowOf(key: String): Flow<T?>
 
   /** 监听所有key变化 */
   fun flowOfKeys(): Flow<List<String>>
+
+  /** 监听创建缓存 */
+  fun flowOfCreate(): Flow<Pair<String, T>>
 
   /** 编辑缓存，[block]在[Dispatchers.IO]上面执行 */
   suspend fun <R> edit(block: suspend Cache<T>.() -> R): R
@@ -103,7 +109,7 @@ private class CacheKtxImpl<T>(
   override fun flowOfKeys(): Flow<List<String>> {
     val notifyFlow = MutableStateFlow(0L)
     return callbackFlow {
-      val callback = newKeysChangeCallback { notifyFlow.update { it + 1 } }
+      val callback = newCacheKeysChangeCallback { notifyFlow.update { it + 1 } }
       _callbacks.addCallback(callback)
 
       val notifyJob = launch {
@@ -118,6 +124,16 @@ private class CacheKtxImpl<T>(
       }
     }.conflate()
       .distinctUntilChanged()
+      .flowOn(Dispatchers.IO)
+  }
+
+  override fun flowOfCreate(): Flow<Pair<String, T>> {
+    return callbackFlow {
+      val callback = newCreateCacheCallback { trySend(it) }
+      _callbacks.addCallback(callback)
+      awaitClose { _callbacks.removeCallback(callback) }
+    }.buffer(Channel.UNLIMITED)
+      .mapNotNull { key -> cache.get(key)?.let { cache -> key to cache } }
       .flowOn(Dispatchers.IO)
   }
 
@@ -187,7 +203,7 @@ private fun newTargetCacheChangeCallback(
   }
 }
 
-private fun newKeysChangeCallback(
+private fun newCacheKeysChangeCallback(
   onChange: () -> Unit,
 ): CacheStore.CacheChangeCallback {
   return object : CacheStore.CacheChangeCallback {
@@ -200,6 +216,22 @@ private fun newKeysChangeCallback(
 
     override fun onRemove(cacheKey: String) {
       onChange()
+    }
+  }
+}
+
+private fun newCreateCacheCallback(
+  onChange: (String) -> Unit,
+): CacheStore.CacheChangeCallback {
+  return object : CacheStore.CacheChangeCallback {
+    override fun onCreate(cacheKey: String) {
+      onChange(cacheKey)
+    }
+
+    override fun onModify(cacheKey: String) {
+    }
+
+    override fun onRemove(cacheKey: String) {
     }
   }
 }
