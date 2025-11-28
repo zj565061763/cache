@@ -1,6 +1,7 @@
 package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.cash.turbine.test
 import com.sd.lib.cache.DefaultGroupCache
 import com.sd.lib.cache.FCacheKtx
 import com.sd.lib.cache.contains
@@ -8,6 +9,7 @@ import com.sd.lib.cache.get
 import com.sd.lib.cache.keys
 import com.sd.lib.cache.put
 import com.sd.lib.cache.remove
+import com.sd.lib.cache.update
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -63,26 +65,26 @@ class CacheKtxTest {
     assertEquals(0, cache.keys().size)
   }
 
-  /*  @Test
-    fun testFlow() = runTest {
-      val cache = FCacheKtx.get(TestKtxModel::class.java)
-      val key = "key"
-      cache.flowOf(key).test {
-        assertEquals(null, awaitItem())
+  @Test
+  fun testFlow() = runTest {
+    val cache = FCacheKtx.get(TestKtxModel::class.java)
+    val key = "key"
+    cache.flowOf(key).test {
+      assertEquals(null, awaitItem())
 
-        cache.edit {
-          put(key, TestKtxModel())
-          put(key, TestKtxModel())
-        }
-        assertEquals(TestKtxModel(), awaitItem())
-
-        cache.update(key) { it.copy(name = "update") }
-        assertEquals("update", awaitItem()!!.name)
-
-        cache.remove(key)
-        assertEquals(null, awaitItem())
+      cache.edit {
+        put(key, TestKtxModel())
+        put(key, TestKtxModel())
       }
-    }*/
+      assertEquals(TestKtxModel(), awaitItem())
+
+      cache.update(key) { it.copy(name = "update") }
+      assertEquals("update", awaitItem()!!.name)
+
+      cache.remove(key)
+      assertEquals(null, awaitItem())
+    }
+  }
 }
 
 @DefaultGroupCache("TestKtxModel")

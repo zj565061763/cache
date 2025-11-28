@@ -8,7 +8,7 @@ internal class FileCacheStore : DirectoryCacheStore() {
     try {
       file.writeBytes(value)
     } catch (e: FileNotFoundException) {
-      if (directory.fMakeDirs()) {
+      if (checkDirectoryExist()) {
         file.writeBytes(value)
       } else {
         throw e
@@ -23,10 +23,4 @@ internal class FileCacheStore : DirectoryCacheStore() {
       null
     }
   }
-}
-
-private fun File.fMakeDirs(): Boolean {
-  if (isDirectory) return true
-  if (isFile) delete()
-  return mkdirs()
 }

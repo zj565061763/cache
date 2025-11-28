@@ -9,12 +9,10 @@ abstract class DirectoryCacheStore : CacheStore {
   private lateinit var _directory: File
   private var _cacheChangeCallback: CacheStore.CacheChangeCallback? = null
 
-  protected val directory: File
-    get() = _directory
-
   final override fun init(context: Context, directory: File) {
     if (::_directory.isInitialized) return
     _directory = directory
+    checkDirectoryExist()
     _fileObserver.startWatching()
     initImpl(context, _directory)
   }
@@ -50,6 +48,25 @@ abstract class DirectoryCacheStore : CacheStore {
     _cacheChangeCallback = callback
   }
 
+  private val _fileObserver by lazy {
+    object : FileObserver(_directory) {
+      override fun onEvent(event: Int, path: String?) {
+        val callback = _cacheChangeCallback
+        if (callback != null && path != null) {
+          when (event) {
+            MODIFY -> {
+              filenameToKey(path)?.also { key -> callback.onModify(key) }
+            }
+            DELETE -> {
+              filenameToKey(path)?.also { key -> callback.onRemove(key) }
+            }
+            else -> {}
+          }
+        }
+      }
+    }
+  }
+
   private fun fileOf(key: String): File {
     return _directory.resolve(key.encodeKey())
   }
@@ -71,23 +88,11 @@ abstract class DirectoryCacheStore : CacheStore {
   protected open fun removeCacheImpl(file: File) = file.deleteRecursively()
   protected open fun containsCacheImpl(file: File): Boolean = file.isFile
 
-  private val _fileObserver by lazy {
-    object : FileObserver(_directory) {
-      override fun onEvent(event: Int, path: String?) {
-        val callback = _cacheChangeCallback
-        if (callback != null && path != null) {
-          when (event) {
-            MODIFY -> {
-              filenameToKey(path)?.also { key -> callback.onModify(key) }
-            }
-            DELETE -> {
-              filenameToKey(path)?.also { key -> callback.onRemove(key) }
-            }
-            else -> {}
-          }
-        }
-      }
-    }
+  protected fun checkDirectoryExist(): Boolean {
+    val dir = _directory
+    if (dir.isDirectory) return true
+    if (dir.isFile) dir.delete()
+    return dir.mkdirs()
   }
 }
 
