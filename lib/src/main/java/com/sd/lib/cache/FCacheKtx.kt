@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -107,22 +108,13 @@ private class CacheKtxImpl<T>(
   }
 
   override fun flowOfKeys(): Flow<List<String>> {
-    val notifyFlow = MutableStateFlow(0L)
     return callbackFlow {
-      val callback = newCacheKeysChangeCallback { notifyFlow.update { it + 1 } }
+      val callback = newCacheKeysChangeCallback { trySend(Unit) }
       _callbacks.addCallback(callback)
-
-      val notifyJob = launch {
-        notifyFlow.collect {
-          trySend(cache.keys())
-        }
-      }
-
-      awaitClose {
-        _callbacks.removeCallback(callback)
-        notifyJob.cancel()
-      }
+      trySend(Unit)
+      awaitClose { _callbacks.removeCallback(callback) }
     }.conflate()
+      .map { cache.keys() }
       .distinctUntilChanged()
       .flowOn(Dispatchers.IO)
   }
