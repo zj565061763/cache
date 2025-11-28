@@ -21,6 +21,9 @@ class MainActivity : AppCompatActivity() {
     _binding.btnSamplePerformance.setOnClickListener {
       startActivity(Intent(this, SamplePerformance::class.java))
     }
+    _binding.btnSampleKtx.setOnClickListener {
+      startActivity(Intent(this, SampleKtx::class.java))
+    }
   }
 }
 

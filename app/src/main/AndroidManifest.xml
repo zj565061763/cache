@@ -25,6 +25,7 @@
 
         <activity android:name=".SampleDefaultGroup" />
         <activity android:name=".SampleActiveGroup" />
+        <activity android:name=".SampleKtx" />
         <activity android:name=".SamplePerformance" />
 
     </application>
