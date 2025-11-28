@@ -35,10 +35,15 @@ interface CacheStore {
   @Throws(Throwable::class)
   fun close()
 
+  /** 缓存变化回调 */
   fun setCacheChangeCallback(callback: CacheChangeCallback)
 
+  /** 缓存变化回调 */
   interface CacheChangeCallback {
+    /** [key]对应的缓存被修改 */
     fun onModify(key: String)
+
+    /** [key]对应的缓存被删除 */
     fun onRemove(key: String)
   }
 }

@@ -1,7 +1,6 @@
 package com.sd.lib.cache
 
 import com.sd.lib.cache.store.CacheStore
-import com.sd.lib.cache.store.EmptyCacheStore
 
 internal class CacheImpl<T>(
   private val clazz: Class<T>,
@@ -57,9 +56,7 @@ internal class CacheImpl<T>(
 
   private fun getCacheStoreInternal(): CacheStore {
     return getCacheStore().also { cacheStore ->
-      if (cacheStore != EmptyCacheStore) {
-        cacheStore.setCacheChangeCallback(_cacheChangeCallback)
-      }
+      cacheStore.setCacheChangeCallback(_cacheChangeCallback)
     }
   }
 
