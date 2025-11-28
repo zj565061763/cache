@@ -64,7 +64,7 @@ internal class MultiProcessLock(
     // 失败
     when (val exception = checkNotNull(result.exceptionOrNull())) {
       is OverlappingFileLockException -> {
-        // 当前进程已经获得文件锁
+        /** 理论上这里不会发生，因为[lock]已经同步了[currentProcessLock] */
         return block()
       }
       is FileLockInterruptionException -> {
