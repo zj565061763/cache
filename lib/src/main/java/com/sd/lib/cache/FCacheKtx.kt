@@ -13,10 +13,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.util.Collections
+import java.util.concurrent.ConcurrentHashMap
 
 interface CacheKtx<T> {
   /** [key]对应的数据流 */
   fun flowOf(key: String): Flow<T?>
+
+  /** 监听所有key变化 */
+  fun flowOfKeys(): Flow<List<String>>
 
   /** 编辑缓存，[block]在[Dispatchers.IO]上面执行 */
   suspend fun <R> edit(block: suspend Cache<T>.() -> R): R
@@ -77,20 +82,11 @@ private class CacheKtxImpl<T>(
   override fun flowOf(key: String): Flow<T?> {
     val notifyFlow = MutableStateFlow(0L)
     return callbackFlow {
-      val callback = object : CacheStore.CacheChangeCallback {
-        override fun onCreate(key: String) {
-          notifyFlow.update { it + 1 }
-        }
-
-        override fun onModify(key: String) {
-          notifyFlow.update { it + 1 }
-        }
-
-        override fun onRemove(key: String) {
-          notifyFlow.update { it + 1 }
-        }
-      }
-      _callbacks.addCallback(key, callback)
+      val callback = targetCacheChangeCallback(
+        targetKey = key,
+        onChange = { notifyFlow.update { it + 1 } },
+      )
+      _callbacks.addCallback(callback)
 
       val notifyJob = launch {
         notifyFlow.collect {
@@ -99,7 +95,39 @@ private class CacheKtxImpl<T>(
       }
 
       awaitClose {
-        _callbacks.removeCallback(key, callback)
+        _callbacks.removeCallback(callback)
+        notifyJob.cancel()
+      }
+    }.conflate()
+      .distinctUntilChanged()
+      .flowOn(Dispatchers.IO)
+  }
+
+  override fun flowOfKeys(): Flow<List<String>> {
+    val notifyFlow = MutableStateFlow(0L)
+    return callbackFlow {
+      val callback = object : CacheStore.CacheChangeCallback {
+        override fun onCreate(cacheKey: String) {
+          notifyFlow.update { it + 1 }
+        }
+
+        override fun onModify(cacheKey: String) {
+        }
+
+        override fun onRemove(cacheKey: String) {
+          notifyFlow.update { it + 1 }
+        }
+      }
+      _callbacks.addCallback(callback)
+
+      val notifyJob = launch {
+        notifyFlow.collect {
+          trySend(cache.keys())
+        }
+      }
+
+      awaitClose {
+        _callbacks.removeCallback(callback)
         notifyJob.cancel()
       }
     }.conflate()
@@ -120,48 +148,54 @@ private class CacheKtxImpl<T>(
 
 private class CacheCallbacks<T>(cache: Cache<T>) {
   private val _cache = cache as CacheImpl<T>
-  private val _callbacks = mutableMapOf<String, Set<CacheStore.CacheChangeCallback>>()
+  private val _callbacks = Collections.newSetFromMap<CacheStore.CacheChangeCallback>(ConcurrentHashMap())
 
-  fun addCallback(key: String, callback: CacheStore.CacheChangeCallback) {
-    synchronized(_callbacks) {
-      val set = _callbacks.getOrPut(key) { emptySet() }
-      _callbacks[key] = set + callback
-    }
+  fun addCallback(callback: CacheStore.CacheChangeCallback) {
+    _callbacks.add(callback)
   }
 
-  fun removeCallback(key: String, callback: CacheStore.CacheChangeCallback) {
-    synchronized(_callbacks) {
-      val set = _callbacks[key]
-      if (set != null) {
-        val newSet = set - callback
-        if (newSet.isEmpty()) {
-          _callbacks.remove(key)
-        } else {
-          _callbacks[key] = newSet
-        }
-      }
-    }
-  }
-
-  private fun getCallbacks(key: String): Set<CacheStore.CacheChangeCallback>? {
-    synchronized(_callbacks) {
-      return _callbacks[key]
-    }
+  fun removeCallback(callback: CacheStore.CacheChangeCallback) {
+    _callbacks.remove(callback)
   }
 
   init {
     check(_cache.cacheChangeCallback == null)
     _cache.cacheChangeCallback = object : CacheStore.CacheChangeCallback {
-      override fun onCreate(key: String) {
-        getCallbacks(key)?.forEach { it.onCreate(key) }
+      override fun onCreate(cacheKey: String) {
+        _callbacks.forEach { it.onCreate(cacheKey) }
       }
 
-      override fun onModify(key: String) {
-        getCallbacks(key)?.forEach { it.onModify(key) }
+      override fun onModify(cacheKey: String) {
+        _callbacks.forEach { it.onModify(cacheKey) }
       }
 
-      override fun onRemove(key: String) {
-        getCallbacks(key)?.forEach { it.onRemove(key) }
+      override fun onRemove(cacheKey: String) {
+        _callbacks.forEach { it.onRemove(cacheKey) }
+      }
+    }
+  }
+}
+
+private fun targetCacheChangeCallback(
+  targetKey: String,
+  onChange: () -> Unit,
+): CacheStore.CacheChangeCallback {
+  return object : CacheStore.CacheChangeCallback {
+    override fun onCreate(cacheKey: String) {
+      if (cacheKey == targetKey) {
+        onChange()
+      }
+    }
+
+    override fun onModify(cacheKey: String) {
+      if (cacheKey == targetKey) {
+        onChange()
+      }
+    }
+
+    override fun onRemove(cacheKey: String) {
+      if (cacheKey == targetKey) {
+        onChange()
       }
     }
   }

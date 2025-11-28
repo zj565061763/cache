@@ -47,5 +47,11 @@ class SampleKtx : AppCompatActivity() {
         logMsg { "collect key2 $data" }
       }
     }
+
+    lifecycleScope.launch {
+      _cache.flowOfKeys().collect { keys ->
+        logMsg { "collect keys $keys" }
+      }
+    }
   }
 }
