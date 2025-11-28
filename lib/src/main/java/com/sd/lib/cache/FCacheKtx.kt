@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -111,9 +112,9 @@ private class CacheKtxImpl<T>(
     return callbackFlow {
       val callback = newCacheKeysChangeCallback { trySend(Unit) }
       _callbacks.addCallback(callback)
-      trySend(Unit)
       awaitClose { _callbacks.removeCallback(callback) }
     }.conflate()
+      .onStart { emit(Unit) }
       .map { cache.keys() }
       .distinctUntilChanged()
       .flowOn(Dispatchers.IO)
