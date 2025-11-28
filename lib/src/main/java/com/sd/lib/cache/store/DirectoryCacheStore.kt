@@ -84,7 +84,8 @@ abstract class DirectoryCacheStore : CacheStore {
 
   /** [key]对应的[File] */
   private fun fileOf(key: String): File {
-    return _directory.resolve(keyToFilename(key))
+    val filename = keyToFilename(key)
+    return _directory.resolve(filename)
   }
 
   protected open fun initImpl(context: Context, directory: File) = Unit
