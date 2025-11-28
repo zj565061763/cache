@@ -18,11 +18,11 @@ class MainActivity : AppCompatActivity() {
     _binding.btnSampleActiveGroup.setOnClickListener {
       startActivity(Intent(this, SampleActiveGroup::class.java))
     }
-    _binding.btnSamplePerformance.setOnClickListener {
-      startActivity(Intent(this, SamplePerformance::class.java))
-    }
     _binding.btnSampleKtx.setOnClickListener {
       startActivity(Intent(this, SampleKtx::class.java))
+    }
+    _binding.btnSamplePerformance.setOnClickListener {
+      startActivity(Intent(this, SamplePerformance::class.java))
     }
   }
 }
