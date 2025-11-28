@@ -24,8 +24,15 @@
         </activity>
 
         <activity android:name=".SampleDefaultGroup" />
+
+        <activity
+            android:name=".SampleDefaultGroupOtherProcess"
+            android:process=":other" />
+
         <activity android:name=".SampleActiveGroup" />
+
         <activity android:name=".SampleKtx" />
+
         <activity android:name=".SamplePerformance" />
 
     </application>

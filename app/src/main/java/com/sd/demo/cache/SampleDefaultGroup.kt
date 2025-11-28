@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.cache.databinding.SampleDefaultGroupBinding
 import com.sd.lib.cache.FCache
 
-class SampleDefaultGroup : AppCompatActivity() {
+open class SampleDefaultGroup : AppCompatActivity() {
   private val _binding by lazy { SampleDefaultGroupBinding.inflate(layoutInflater) }
 
   private val key = "key"

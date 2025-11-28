@@ -15,6 +15,9 @@ class MainActivity : AppCompatActivity() {
     _binding.btnSampleDefaultGroup.setOnClickListener {
       startActivity(Intent(this, SampleDefaultGroup::class.java))
     }
+    _binding.btnSampleDefaultGroupOtherProcess.setOnClickListener {
+      startActivity(Intent(this, SampleDefaultGroupOtherProcess::class.java))
+    }
     _binding.btnSampleActiveGroup.setOnClickListener {
       startActivity(Intent(this, SampleActiveGroup::class.java))
     }
