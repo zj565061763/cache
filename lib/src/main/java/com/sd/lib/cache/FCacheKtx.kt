@@ -32,8 +32,11 @@ interface CacheKtx<T> {
   suspend fun <R> edit(block: suspend Cache<T>.() -> R): R
 }
 
-/** 如果[key]对应的缓存存在，则调用[block]，并把[block]的返回值设置为缓存 */
-suspend fun <T> CacheKtx<T>.update(key: String, block: suspend (T) -> T) {
+/**
+ * 如果[key]对应的缓存存在，则调用[block]，并把[block]的返回值设置为缓存。
+ * 注意：如果[block]返回null，则本次调用不修改缓存。
+ */
+suspend fun <T> CacheKtx<T>.update(key: String, block: suspend (T) -> T?) {
   edit {
     val data = get(key)
     if (data != null) {
