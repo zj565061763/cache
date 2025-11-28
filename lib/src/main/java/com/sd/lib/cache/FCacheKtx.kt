@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
@@ -14,8 +13,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.Collections
@@ -88,22 +85,13 @@ private class CacheKtxImpl<T>(
   private val _callbacks = CacheCallbacks(cache)
 
   override fun flowOf(key: String): Flow<T?> {
-    val notifyFlow = MutableStateFlow(0L)
     return callbackFlow {
-      val callback = newTargetCacheChangeCallback(key) { notifyFlow.update { it + 1 } }
+      val callback = newTargetCacheChangeCallback(key) { trySend(Unit) }
       _callbacks.addCallback(callback)
-
-      val notifyJob = launch {
-        notifyFlow.collect {
-          trySend(cache.get(key))
-        }
-      }
-
-      awaitClose {
-        _callbacks.removeCallback(callback)
-        notifyJob.cancel()
-      }
+      awaitClose { _callbacks.removeCallback(callback) }
     }.conflate()
+      .onStart { emit(Unit) }
+      .map { cache.get(key) }
       .distinctUntilChanged()
       .flowOn(Dispatchers.IO)
   }
