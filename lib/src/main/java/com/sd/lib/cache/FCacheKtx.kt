@@ -86,7 +86,7 @@ private class CacheKtxImpl<T>(
   override fun flowOf(key: String): Flow<T?> {
     val notifyFlow = MutableStateFlow(0L)
     return callbackFlow {
-      val callback = targetCacheChangeCallback(
+      val callback = newTargetCacheChangeCallback(
         targetKey = key,
         onChange = { notifyFlow.update { it + 1 } },
       )
@@ -187,7 +187,7 @@ private class CacheCallbacks<T>(cache: Cache<T>) {
   }
 }
 
-private fun targetCacheChangeCallback(
+private fun newTargetCacheChangeCallback(
   targetKey: String,
   onChange: () -> Unit,
 ): CacheStore.CacheChangeCallback {
