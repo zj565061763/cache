@@ -40,6 +40,9 @@ interface CacheStore {
 
   /** 缓存变化回调 */
   interface CacheChangeCallback {
+    /** [key]对应的缓存被创建 */
+    fun onCreate(key: String)
+
     /** [key]对应的缓存被修改 */
     fun onModify(key: String)
 

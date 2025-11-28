@@ -76,6 +76,10 @@ internal class CacheImpl<T>(
   private fun getObjectConverter(): CacheConfig.ObjectConverter = CacheConfig.get().objectConverter
 
   private val _cacheChangeCallback = object : CacheStore.CacheChangeCallback {
+    override fun onCreate(key: String) {
+      onChange?.invoke(key)
+    }
+
     override fun onModify(key: String) {
       onChange?.invoke(key)
     }

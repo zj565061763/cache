@@ -54,11 +54,20 @@ abstract class DirectoryCacheStore : CacheStore {
         val callback = _cacheChangeCallback
         if (callback != null && path != null) {
           when (event) {
+            CREATE -> {
+              filenameToKey(path)?.also { key ->
+                callback.onCreate(key)
+              }
+            }
             MODIFY -> {
-              filenameToKey(path)?.also { key -> callback.onModify(key) }
+              filenameToKey(path)?.also { key ->
+                callback.onModify(key)
+              }
             }
             DELETE -> {
-              filenameToKey(path)?.also { key -> callback.onRemove(key) }
+              filenameToKey(path)?.also { key ->
+                callback.onRemove(key)
+              }
             }
             else -> {}
           }
