@@ -64,8 +64,8 @@ internal class CacheImpl<T>(
   }
 
   private fun encode(value: T, clazz: Class<T>): ByteArray {
-    return getObjectConverter().encode(value, clazz).also {
-      if (it.isEmpty()) {
+    return getObjectConverter().encode(value, clazz).also { bytes ->
+      if (bytes.isEmpty()) {
         libException("ObjectConverter.encode returns empty ${clazz.name}")
       }
     }
