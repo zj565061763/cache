@@ -1,12 +1,13 @@
 package com.sd.lib.cache.store
 
 import android.content.Context
+import com.sd.lib.cache.libError
 import com.sd.lib.cache.libException
 import java.io.File
 
 internal object EmptyCacheStore : CacheStore {
   override fun init(context: Context, directory: File) {
-    libException("EmptyCacheStore.init()")
+    libError("EmptyCacheStore.init()")
   }
 
   override fun putCache(key: String, value: ByteArray) {
@@ -30,7 +31,7 @@ internal object EmptyCacheStore : CacheStore {
   }
 
   override fun close() {
-    libException("EmptyCacheStore.close()")
+    libError("EmptyCacheStore.close()")
   }
 
   override fun setCacheChangeCallback(callback: CacheStore.CacheChangeCallback) = Unit
