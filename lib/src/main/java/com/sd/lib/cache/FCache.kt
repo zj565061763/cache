@@ -19,10 +19,7 @@ object FCache {
   private val _caches = mutableMapOf<Class<*>, Cache<*>>()
 
   /** 多进程锁 */
-  internal val multiProcessLock by lazy {
-    val lockFile = CacheConfig.get().directory.resolve("cache.lock")
-    MultiProcessLock(lockFile = lockFile, currentProcessLock = FCache)
-  }
+  internal val multiProcessLock = MultiProcessLock(FCache)
 
   /** 获取[clazz]对应的[Cache] */
   @JvmStatic
