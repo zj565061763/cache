@@ -82,16 +82,9 @@ abstract class DirectoryCacheStore : CacheStore {
     }
   }
 
+  /** [key]对应的[File] */
   private fun fileOf(key: String): File {
-    return _directory.resolve(key.encodeKey())
-  }
-
-  private fun filenameToKey(filename: String): String? {
-    return try {
-      filename.decodeKey()
-    } catch (e: IllegalArgumentException) {
-      null
-    }
+    return _directory.resolve(keyToFilename(key))
   }
 
   protected open fun initImpl(context: Context, directory: File) = Unit
@@ -102,6 +95,7 @@ abstract class DirectoryCacheStore : CacheStore {
   protected open fun removeCacheImpl(file: File) = file.deleteRecursively()
   protected open fun containsCacheImpl(file: File): Boolean = file.isFile
 
+  /** 检查目录是否存在，如果不存在则创建 */
   protected fun checkDirectoryExist(): Boolean {
     val dir = _directory
     if (dir.isDirectory) return true
@@ -110,15 +104,18 @@ abstract class DirectoryCacheStore : CacheStore {
   }
 }
 
-private fun String.encodeKey(): String {
-  val input = this.toByteArray()
+/** 把[key]转为文件名 */
+private fun keyToFilename(key: String): String {
+  val input = key.toByteArray()
   val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
   return Base64.encode(input, flag).decodeToString()
 }
 
-@Throws(IllegalArgumentException::class)
-private fun String.decodeKey(): String {
-  val input = this.toByteArray()
-  val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
-  return Base64.decode(input, flag).decodeToString()
+/** 把[filename]转为key */
+private fun filenameToKey(filename: String): String? {
+  return runCatching {
+    val input = filename.toByteArray()
+    val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
+    Base64.decode(input, flag).decodeToString()
+  }.getOrNull()
 }
