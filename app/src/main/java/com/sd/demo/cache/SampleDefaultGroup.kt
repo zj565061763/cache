@@ -8,49 +8,51 @@ import com.sd.lib.cache.FCache
 open class SampleDefaultGroup : AppCompatActivity() {
   private val _binding by lazy { SampleDefaultGroupBinding.inflate(layoutInflater) }
 
-  private val key = "key"
   private val _cache = FCache.get(DefaultModel::class.java)
+
+  private val key1 = "key1"
+  private val key2 = "key2"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(_binding.root)
     _binding.btnPut.setOnClickListener {
-      putData()
+      putCache()
     }
     _binding.btnGet.setOnClickListener {
-      getData()
+      getCache()
     }
     _binding.btnContains.setOnClickListener {
-      containsData()
+      containsCache()
     }
     _binding.btnRemove.setOnClickListener {
-      removeData()
+      removeCache()
     }
   }
 
-  private fun putData() {
+  private fun putCache() {
     val model = DefaultModel()
-    _cache.put(key, model).also { logMsg { "put1:$it" } }
-    _cache.put(key + key, model).also { logMsg { "put2:$it" } }
+    _cache.put(key1, model).also { logMsg { "put key1:$it" } }
+    _cache.put(key2, model).also { logMsg { "put key2:$it" } }
   }
 
-  private fun getData() {
-    _cache.get(key).also { logMsg { "get1:$it" } }
-    _cache.get(key + key).also { logMsg { "get2:$it" } }
+  private fun getCache() {
+    _cache.get(key1).also { logMsg { "get key1:$it" } }
+    _cache.get(key2).also { logMsg { "get key2:$it" } }
     _cache.keys().also { keys ->
       logMsg { "keys:" + keys.joinToString(prefix = "[", postfix = "]", separator = ",") }
     }
   }
 
-  private fun containsData() {
-    _cache.contains(key).also { logMsg { "contains1:$it" } }
-    _cache.contains(key + key).also { logMsg { "contains2:$it" } }
+  private fun containsCache() {
+    _cache.contains(key1).also { logMsg { "contains key1:$it" } }
+    _cache.contains(key2).also { logMsg { "contains key2:$it" } }
   }
 
-  private fun removeData() {
-    _cache.remove(key)
-    _cache.remove(key + key)
-    logMsg { "removeData" }
+  private fun removeCache() {
+    logMsg { "removeCache" }
+    _cache.remove(key1)
+    _cache.remove(key2)
   }
 }
 
