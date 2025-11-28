@@ -27,7 +27,7 @@ interface CacheStore {
   @Throws(Throwable::class)
   fun containsCache(key: String): Boolean
 
-  /** 返回所有的Key */
+  /** 所有缓存key */
   @Throws(Throwable::class)
   fun keys(): List<String>
 
