@@ -53,3 +53,5 @@ open class SampleDefaultGroup : AppCompatActivity() {
     logMsg { "removeData" }
   }
 }
+
+class SampleDefaultGroupOtherProcess : SampleDefaultGroup()
