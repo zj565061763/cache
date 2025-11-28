@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -20,9 +19,6 @@ import java.util.concurrent.ConcurrentHashMap
 interface CacheKtx<T> {
   /** [key]对应的数据流 */
   fun flowOf(key: String): Flow<T?>
-
-  /** 监听所有缓存 */
-  fun flowOfAll(): Flow<List<T>>
 
   /** 监听所有key变化 */
   fun flowOfKeys(): Flow<List<String>>
@@ -86,10 +82,7 @@ private class CacheKtxImpl<T>(
   override fun flowOf(key: String): Flow<T?> {
     val notifyFlow = MutableStateFlow(0L)
     return callbackFlow {
-      val callback = newTargetCacheChangeCallback(
-        targetKey = key,
-        onChange = { notifyFlow.update { it + 1 } },
-      )
+      val callback = newTargetCacheChangeCallback(key) { notifyFlow.update { it + 1 } }
       _callbacks.addCallback(callback)
 
       val notifyJob = launch {
@@ -107,28 +100,10 @@ private class CacheKtxImpl<T>(
       .flowOn(Dispatchers.IO)
   }
 
-  override fun flowOfAll(): Flow<List<T>> {
-    return flowOfKeys()
-      .map { keys -> keys.mapNotNull { key -> cache.get(key) } }
-      .distinctUntilChanged()
-      .flowOn(Dispatchers.IO)
-  }
-
   override fun flowOfKeys(): Flow<List<String>> {
     val notifyFlow = MutableStateFlow(0L)
     return callbackFlow {
-      val callback = object : CacheStore.CacheChangeCallback {
-        override fun onCreate(cacheKey: String) {
-          notifyFlow.update { it + 1 }
-        }
-
-        override fun onModify(cacheKey: String) {
-        }
-
-        override fun onRemove(cacheKey: String) {
-          notifyFlow.update { it + 1 }
-        }
-      }
+      val callback = newKeysChangeCallback { notifyFlow.update { it + 1 } }
       _callbacks.addCallback(callback)
 
       val notifyJob = launch {
@@ -208,6 +183,23 @@ private fun newTargetCacheChangeCallback(
       if (cacheKey == targetKey) {
         onChange()
       }
+    }
+  }
+}
+
+private fun newKeysChangeCallback(
+  onChange: () -> Unit,
+): CacheStore.CacheChangeCallback {
+  return object : CacheStore.CacheChangeCallback {
+    override fun onCreate(cacheKey: String) {
+      onChange()
+    }
+
+    override fun onModify(cacheKey: String) {
+    }
+
+    override fun onRemove(cacheKey: String) {
+      onChange()
     }
   }
 }
