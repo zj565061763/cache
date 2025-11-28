@@ -57,7 +57,7 @@ abstract class DirectoryCacheStore : CacheStore {
   }
 
   private val _fileObserver by lazy {
-    object : FileObserver(_directory) {
+    object : FileObserver(_directory.absolutePath) {
       override fun onEvent(event: Int, path: String?) {
         val callback = _cacheChangeCallback
         if (callback != null && path != null) {
