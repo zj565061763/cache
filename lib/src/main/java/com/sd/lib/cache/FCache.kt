@@ -24,6 +24,7 @@ object FCache {
     MultiProcessLock(lockFile = lockFile, currentProcessLock = FCache)
   }
 
+  /** 获取[clazz]对应的[Cache] */
   @JvmStatic
   fun <T> get(clazz: Class<T>): Cache<T> {
     return synchronized(FCache) {
