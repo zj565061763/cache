@@ -7,7 +7,7 @@ internal class CacheImpl<T>(
   private val getCacheStore: () -> CacheStore,
 ) : Cache<T> {
 
-  var onChange: ((key: String) -> Unit)? = null
+  var cacheChangeCallback: CacheStore.CacheChangeCallback? = null
 
   override fun put(key: String, value: T?): Boolean {
     if (value == null) return false
@@ -77,15 +77,15 @@ internal class CacheImpl<T>(
 
   private val _cacheChangeCallback = object : CacheStore.CacheChangeCallback {
     override fun onCreate(key: String) {
-      onChange?.invoke(key)
+      cacheChangeCallback?.onCreate(key)
     }
 
     override fun onModify(key: String) {
-      onChange?.invoke(key)
+      cacheChangeCallback?.onModify(key)
     }
 
     override fun onRemove(key: String) {
-      onChange?.invoke(key)
+      cacheChangeCallback?.onRemove(key)
     }
   }
 
