@@ -7,6 +7,8 @@ import java.io.File
 
 abstract class DirectoryCacheStore : CacheStore {
   private lateinit var _directory: File
+
+  @Volatile
   private var _cacheChangeCallback: CacheStore.CacheChangeCallback? = null
 
   final override fun init(context: Context, directory: File) {
