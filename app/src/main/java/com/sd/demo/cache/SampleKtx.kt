@@ -12,7 +12,9 @@ import kotlinx.coroutines.launch
 class SampleKtx : AppCompatActivity() {
   private val _binding by lazy { SampleKtxBinding.inflate(layoutInflater) }
 
-  private val key = "key"
+  private val key1 = "key1"
+  private val key2 = "key2"
+
   private val _cache = FCacheKtx.get(DefaultModel::class.java)
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,19 +23,28 @@ class SampleKtx : AppCompatActivity() {
 
     _binding.btnPut.setOnClickListener {
       lifecycleScope.launch {
-        _cache.put(key, DefaultModel(name = System.currentTimeMillis().toString()))
+        val model = DefaultModel(name = System.currentTimeMillis().toString())
+        _cache.put(key1, model)
+        _cache.put(key2, model)
       }
     }
 
     _binding.btnRemove.setOnClickListener {
       lifecycleScope.launch {
-        _cache.remove(key)
+        _cache.remove(key1)
+        _cache.remove(key2)
       }
     }
 
     lifecycleScope.launch {
-      _cache.flowOf(key).collect { data ->
-        logMsg { "collect:$data" }
+      _cache.flowOf(key1).collect { data ->
+        logMsg { "collect key1 $data" }
+      }
+    }
+
+    lifecycleScope.launch {
+      _cache.flowOf(key2).collect { data ->
+        logMsg { "collect key2 $data" }
       }
     }
   }
