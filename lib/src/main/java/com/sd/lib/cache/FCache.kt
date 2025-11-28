@@ -5,7 +5,7 @@ import com.sd.lib.cache.store.EmptyCacheStore
 
 object FCache {
   /** DefaultGroup */
-  private const val DEFAULT_GROUP = "com.sd.lib.cache.default.group"
+  private const val DEFAULT_GROUP = "com.sd.lib.cache.group.default"
   /** DefaultGroup的[CacheStoreFactory] */
   private val _defaultGroupCacheStoreFactory = CacheStoreFactory(DEFAULT_GROUP)
 
