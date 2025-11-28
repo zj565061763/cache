@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -19,6 +20,9 @@ import java.util.concurrent.ConcurrentHashMap
 interface CacheKtx<T> {
   /** [key]对应的数据流 */
   fun flowOf(key: String): Flow<T?>
+
+  /** 监听所有缓存 */
+  fun flowOfAll(): Flow<List<T>>
 
   /** 监听所有key变化 */
   fun flowOfKeys(): Flow<List<String>>
@@ -99,6 +103,13 @@ private class CacheKtxImpl<T>(
         notifyJob.cancel()
       }
     }.conflate()
+      .distinctUntilChanged()
+      .flowOn(Dispatchers.IO)
+  }
+
+  override fun flowOfAll(): Flow<List<T>> {
+    return flowOfKeys()
+      .map { keys -> keys.mapNotNull { key -> cache.get(key) } }
       .distinctUntilChanged()
       .flowOn(Dispatchers.IO)
   }
