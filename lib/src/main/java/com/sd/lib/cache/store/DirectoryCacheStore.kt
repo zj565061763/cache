@@ -36,7 +36,13 @@ abstract class DirectoryCacheStore : CacheStore {
   final override fun keys(): List<String> {
     val list = _directory.list()
     if (list.isNullOrEmpty()) return emptyList()
-    return list.mapNotNull { filenameToKey(it) }
+    return list.mapNotNull { filename ->
+      filenameToKey(filename).also { key ->
+        if (key == null) {
+          runCatching { _directory.resolve(filename).deleteRecursively() }
+        }
+      }
+    }
   }
 
   final override fun close() {
@@ -84,7 +90,6 @@ abstract class DirectoryCacheStore : CacheStore {
     return try {
       filename.decodeKey()
     } catch (e: IllegalArgumentException) {
-      runCatching { _directory.resolve(filename).deleteRecursively() }
       null
     }
   }
