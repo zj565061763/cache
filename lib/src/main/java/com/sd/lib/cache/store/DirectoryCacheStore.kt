@@ -36,14 +36,11 @@ abstract class DirectoryCacheStore : CacheStore {
   }
 
   final override fun keys(): List<String> {
-    val list = _directory.list()
-    if (list.isNullOrEmpty()) return emptyList()
-    return list.mapNotNull { filename ->
-      filenameToKey(filename).also { key ->
-        if (key == null) {
-          runCatching { _directory.resolve(filename).deleteRecursively() }
-        }
-      }
+    val listFile = _directory.listFiles { it.isFile && it.name.endsWith(CACHE_SUFFIX_WITH_DOT) }
+    if (listFile.isNullOrEmpty()) return emptyList()
+    return listFile.mapNotNull { file ->
+      val filename = file.name.removeSuffix(CACHE_SUFFIX_WITH_DOT)
+      filenameToKey(filename)
     }
   }
 
@@ -59,12 +56,14 @@ abstract class DirectoryCacheStore : CacheStore {
   private val _fileObserver by lazy {
     object : FileObserver(_directory.absolutePath) {
       override fun onEvent(event: Int, path: String?) {
-        val callback = _cacheChangeCallback
-        if (callback != null && path != null) {
+        val callback = _cacheChangeCallback ?: return
+        if (path.isNullOrEmpty()) return
+        if (path.endsWith(CACHE_SUFFIX_WITH_DOT)) {
+          val filename = path.removeSuffix(CACHE_SUFFIX_WITH_DOT)
           when {
-            (event and CREATE) != 0 -> filenameToKey(path)?.also { key -> callback.onCreate(key) }
-            (event and DELETE) != 0 -> filenameToKey(path)?.also { key -> callback.onRemove(key) }
-            (event and MODIFY) != 0 -> filenameToKey(path)?.also { key -> callback.onModify(key) }
+            (event and CREATE) != 0 -> filenameToKey(filename)?.also { key -> callback.onCreate(key) }
+            (event and DELETE) != 0 -> filenameToKey(filename)?.also { key -> callback.onRemove(key) }
+            (event and MODIFY) != 0 -> filenameToKey(filename)?.also { key -> callback.onModify(key) }
             else -> {}
           }
         }
@@ -75,7 +74,7 @@ abstract class DirectoryCacheStore : CacheStore {
   /** [key]对应的[File] */
   private fun fileOf(key: String): File {
     val filename = keyToFilename(key)
-    return _directory.resolve(filename)
+    return _directory.resolve(filename + CACHE_SUFFIX_WITH_DOT)
   }
 
   protected open fun initImpl(context: Context, directory: File) = Unit
@@ -94,6 +93,9 @@ abstract class DirectoryCacheStore : CacheStore {
     return dir.mkdirs()
   }
 }
+
+/** 缓存文件后缀 */
+private const val CACHE_SUFFIX_WITH_DOT = ".cache"
 
 /** 把[key]转为文件名 */
 private fun keyToFilename(key: String): String {
