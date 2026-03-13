@@ -60,7 +60,6 @@ internal abstract class FileCacheStore : CacheStore {
         if (path.endsWith(CACHE_SUFFIX_WITH_DOT)) {
           val filename = path.removeSuffix(CACHE_SUFFIX_WITH_DOT)
           when {
-            (event and CREATE) != 0 -> filenameToKey(filename)?.also { key -> callback.onCreate(key) }
             (event and DELETE) != 0 -> filenameToKey(filename)?.also { key -> callback.onRemove(key) }
             (event and CLOSE_WRITE) != 0 -> filenameToKey(filename)?.also { key -> callback.onModify(key) }
             else -> {}

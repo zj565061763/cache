@@ -2,16 +2,13 @@ package com.sd.lib.cache
 
 import com.sd.lib.cache.store.CacheStore
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -24,9 +21,6 @@ interface CacheKtx<T> {
 
   /** 监听所有key变化 */
   fun flowOfKeys(): Flow<List<String>>
-
-  /** 监听创建缓存 */
-  fun flowOfCreate(): Flow<Pair<String, T>>
 
   /** 编辑缓存，[block]在[Dispatchers.IO]上面执行 */
   suspend fun <R> edit(block: suspend Cache<T>.() -> R): R
@@ -89,7 +83,7 @@ private class CacheKtxImpl<T>(
 
   override fun flowOf(key: String): Flow<T?> {
     return callbackFlow {
-      val callback = newTargetCacheChangeCallback(key) { trySend(Unit) }
+      val callback = callbackForTargetKeyCacheChange(targetKey = key) { trySend(Unit) }
       _callbacks.addCallback(callback)
       awaitClose { _callbacks.removeCallback(callback) }
     }.conflate()
@@ -101,7 +95,7 @@ private class CacheKtxImpl<T>(
 
   override fun flowOfKeys(): Flow<List<String>> {
     return callbackFlow {
-      val callback = newCacheKeysChangeCallback { trySend(Unit) }
+      val callback = callbackForTargetKeyCacheChange(targetKey = null) { trySend(Unit) }
       _callbacks.addCallback(callback)
       awaitClose { _callbacks.removeCallback(callback) }
     }.conflate()
@@ -111,22 +105,10 @@ private class CacheKtxImpl<T>(
       .flowOn(Dispatchers.IO)
   }
 
-  override fun flowOfCreate(): Flow<Pair<String, T>> {
-    return callbackFlow {
-      val callback = newCreateCacheCallback { trySend(it) }
-      _callbacks.addCallback(callback)
-      awaitClose { _callbacks.removeCallback(callback) }
-    }.buffer(Channel.UNLIMITED)
-      .mapNotNull { key -> cache.get(key)?.let { cache -> key to cache } }
-      .flowOn(Dispatchers.IO)
-  }
-
   override suspend fun <R> edit(block: suspend Cache<T>.() -> R): R {
     return withContext(Dispatchers.IO) {
       libLock {
-        runBlocking {
-          block(cache)
-        }
+        runBlocking { block(cache) }
       }
     }
   }
@@ -147,10 +129,6 @@ private class CacheCallbacks<T>(cache: Cache<T>) {
   init {
     check(_cache.cacheChangeCallback == null)
     _cache.cacheChangeCallback = object : CacheStore.CacheChangeCallback {
-      override fun onCreate(key: String) {
-        _callbacks.forEach { it.onCreate(key) }
-      }
-
       override fun onRemove(key: String) {
         _callbacks.forEach { it.onRemove(key) }
       }
@@ -162,47 +140,21 @@ private class CacheCallbacks<T>(cache: Cache<T>) {
   }
 }
 
-private fun newTargetCacheChangeCallback(
-  targetKey: String,
+private fun callbackForTargetKeyCacheChange(
+  targetKey: String?,
   onChange: () -> Unit,
 ): CacheStore.CacheChangeCallback {
   return object : CacheStore.CacheChangeCallback {
-    override fun onCreate(key: String) {
-      if (key == targetKey) {
-        onChange()
-      }
-    }
-
     override fun onRemove(key: String) {
-      if (key == targetKey) {
+      if (targetKey == null || targetKey == key) {
         onChange()
       }
     }
 
     override fun onModify(key: String) {
-      if (key == targetKey) {
+      if (targetKey == null || targetKey == key) {
         onChange()
       }
     }
-  }
-}
-
-private fun newCacheKeysChangeCallback(
-  onChange: () -> Unit,
-): CacheStore.CacheChangeCallback {
-  return object : CacheStore.CacheChangeCallback {
-    override fun onCreate(key: String) = onChange()
-    override fun onRemove(key: String) = onChange()
-    override fun onModify(key: String) = Unit
-  }
-}
-
-private fun newCreateCacheCallback(
-  onChange: (String) -> Unit,
-): CacheStore.CacheChangeCallback {
-  return object : CacheStore.CacheChangeCallback {
-    override fun onCreate(key: String) = onChange(key)
-    override fun onRemove(key: String) = Unit
-    override fun onModify(key: String) = Unit
   }
 }

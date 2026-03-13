@@ -53,11 +53,5 @@ class SampleKtx : AppCompatActivity() {
         logMsg { "collect keys $keys" }
       }
     }
-
-    lifecycleScope.launch {
-      _cache.flowOfCreate().collect { pair ->
-        logMsg { "collect create ${pair.first} -> ${pair.second}" }
-      }
-    }
   }
 }
