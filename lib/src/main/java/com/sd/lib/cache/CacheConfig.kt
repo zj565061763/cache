@@ -20,7 +20,7 @@ class CacheConfig private constructor(
   internal val multiProcessEnabled: Boolean
 
   init {
-    this.cacheStoreFactory = builder.cacheStoreFactory ?: CacheStoreFactory { FileCacheStore() }
+    this.cacheStoreFactory = builder.cacheStoreFactory ?: CacheStoreFactory { FileCacheStore.create() }
     this.objectConverter = builder.objectConverter ?: DefaultObjectConverter()
     this.exceptionHandler = LibExceptionHandler(builder.exceptionHandler)
     this.multiProcessEnabled = builder.multiProcessEnabled
