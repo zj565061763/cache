@@ -13,44 +13,33 @@ internal class CacheImpl<T>(
     if (value == null) return false
     return libRunCatching {
       val data = encode(value, clazz)
-      multiProcessLock {
-        getCacheStore().putCache(key, data)
-      }
+      multiProcessLock { getCacheStore().putCache(key, data) }
       true
     }.getOrElse { false }
   }
 
   override fun get(key: String): T? {
     return libRunCatching {
-      multiProcessLock {
-        getCacheStore().getCache(key)
-      }?.let { data ->
-        decode(data, clazz)
-      }
+      multiProcessLock { getCacheStore().getCache(key) }
+        ?.let { data -> decode(data, clazz) }
     }.getOrNull()
   }
 
   override fun remove(key: String) {
     libRunCatching {
-      multiProcessLock {
-        getCacheStore().removeCache(key)
-      }
+      multiProcessLock { getCacheStore().removeCache(key) }
     }
   }
 
   override fun contains(key: String): Boolean {
     return libRunCatching {
-      multiProcessLock {
-        getCacheStore().containsCache(key)
-      }
+      multiProcessLock { getCacheStore().containsCache(key) }
     }.getOrElse { false }
   }
 
   override fun keys(): List<String> {
     return libRunCatching {
-      multiProcessLock {
-        getCacheStore().keys()
-      }
+      multiProcessLock { getCacheStore().keys() }
     }.getOrElse { emptyList() }
   }
 
