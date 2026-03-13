@@ -19,7 +19,7 @@ internal class FileCacheStore : DirectoryCacheStore() {
   override fun getCacheImpl(file: File): ByteArray? {
     return try {
       file.readBytes()
-    } catch (e: FileNotFoundException) {
+    } catch (_: FileNotFoundException) {
       null
     }
   }
