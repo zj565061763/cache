@@ -29,9 +29,7 @@ internal class GroupCacheStoreFactory(
     _isClosed = true
     while (_stores.isNotEmpty()) {
       _stores.keys.toTypedArray().forEach { key ->
-        _stores.remove(key)?.cacheStore?.also {
-          libRunCatching { it.close() }
-        }
+        _stores.remove(key)?.cacheStore?.also { libRunCatching { it.close() } }
       }
     }
   }
