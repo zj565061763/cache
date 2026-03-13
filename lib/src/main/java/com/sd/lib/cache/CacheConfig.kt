@@ -13,7 +13,7 @@ class CacheConfig private constructor(
 ) {
   private val context = context.applicationContext
   private val cacheStoreFactory: CacheStoreFactory
-  internal val directory: File = context.defaultCacheDir()
+  internal val directory: File by lazy { context.filesDir.resolve("sd.lib.cache") }
   internal val objectConverter: ObjectConverter
   internal val exceptionHandler: ExceptionHandler
 
@@ -125,11 +125,6 @@ inline fun CacheConfig.Companion.init(
       .apply(block)
       .build(context)
   )
-}
-
-/** 默认缓存目录 */
-private fun Context.defaultCacheDir(): File {
-  return filesDir.resolve("sd.lib.cache")
 }
 
 private fun md5(input: String): String {
