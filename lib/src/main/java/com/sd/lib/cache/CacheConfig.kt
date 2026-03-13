@@ -1,5 +1,6 @@
 package com.sd.lib.cache
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.FileCacheStore
@@ -85,6 +86,7 @@ class CacheConfig private constructor(
   }
 
   companion object {
+    @SuppressLint("StaticFieldLeak")
     private var sConfig: CacheConfig? = null
 
     /** 初始化 */
