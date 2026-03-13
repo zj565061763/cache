@@ -36,7 +36,7 @@ abstract class DirectoryCacheStore : CacheStore {
   }
 
   final override fun keys(): List<String> {
-    val listFile = _directory.listFiles { it.isFile && it.name.endsWith(CACHE_SUFFIX_WITH_DOT) }
+    val listFile = _directory.listFiles { file -> file.isFile && file.name.endsWith(CACHE_SUFFIX_WITH_DOT) }
     if (listFile.isNullOrEmpty()) return emptyList()
     return listFile.mapNotNull { file ->
       val filename = file.name.removeSuffix(CACHE_SUFFIX_WITH_DOT)
@@ -63,7 +63,7 @@ abstract class DirectoryCacheStore : CacheStore {
           when {
             (event and CREATE) != 0 -> filenameToKey(filename)?.also { key -> callback.onCreate(key) }
             (event and DELETE) != 0 -> filenameToKey(filename)?.also { key -> callback.onRemove(key) }
-            (event and MODIFY) != 0 -> filenameToKey(filename)?.also { key -> callback.onModify(key) }
+            (event and CLOSE_WRITE) != 0 -> filenameToKey(filename)?.also { key -> callback.onModify(key) }
             else -> {}
           }
         }
