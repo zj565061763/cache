@@ -72,12 +72,12 @@ internal class CacheImpl<T>(
       cacheChangeCallback?.onCreate(key)
     }
 
-    override fun onModify(key: String) {
-      cacheChangeCallback?.onModify(key)
-    }
-
     override fun onRemove(key: String) {
       cacheChangeCallback?.onRemove(key)
+    }
+
+    override fun onModify(key: String) {
+      cacheChangeCallback?.onModify(key)
     }
   }
 

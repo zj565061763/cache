@@ -151,12 +151,12 @@ private class CacheCallbacks<T>(cache: Cache<T>) {
         _callbacks.forEach { it.onCreate(key) }
       }
 
-      override fun onModify(key: String) {
-        _callbacks.forEach { it.onModify(key) }
-      }
-
       override fun onRemove(key: String) {
         _callbacks.forEach { it.onRemove(key) }
+      }
+
+      override fun onModify(key: String) {
+        _callbacks.forEach { it.onModify(key) }
       }
     }
   }
@@ -173,13 +173,13 @@ private fun newTargetCacheChangeCallback(
       }
     }
 
-    override fun onModify(key: String) {
+    override fun onRemove(key: String) {
       if (key == targetKey) {
         onChange()
       }
     }
 
-    override fun onRemove(key: String) {
+    override fun onModify(key: String) {
       if (key == targetKey) {
         onChange()
       }
@@ -191,16 +191,9 @@ private fun newCacheKeysChangeCallback(
   onChange: () -> Unit,
 ): CacheStore.CacheChangeCallback {
   return object : CacheStore.CacheChangeCallback {
-    override fun onCreate(key: String) {
-      onChange()
-    }
-
-    override fun onModify(key: String) {
-    }
-
-    override fun onRemove(key: String) {
-      onChange()
-    }
+    override fun onCreate(key: String) = onChange()
+    override fun onRemove(key: String) = onChange()
+    override fun onModify(key: String) = Unit
   }
 }
 
@@ -208,14 +201,8 @@ private fun newCreateCacheCallback(
   onChange: (String) -> Unit,
 ): CacheStore.CacheChangeCallback {
   return object : CacheStore.CacheChangeCallback {
-    override fun onCreate(key: String) {
-      onChange(key)
-    }
-
-    override fun onModify(key: String) {
-    }
-
-    override fun onRemove(key: String) {
-    }
+    override fun onCreate(key: String) = onChange(key)
+    override fun onRemove(key: String) = Unit
+    override fun onModify(key: String) = Unit
   }
 }
