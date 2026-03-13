@@ -4,7 +4,7 @@ import com.sd.lib.cache.store.CacheStore
 
 internal class CacheImpl<T>(
   private val clazz: Class<T>,
-  private val getCacheStore: () -> CacheStore,
+  private val cacheStoreProvider: () -> CacheStore,
 ) : Cache<T> {
 
   var cacheChangeCallback: CacheStore.CacheChangeCallback? = null
@@ -14,7 +14,7 @@ internal class CacheImpl<T>(
     return libRunCatching {
       val data = encode(value, clazz)
       multiProcessLock {
-        getCacheStoreInternal().putCache(key, data)
+        getCacheStore().putCache(key, data)
       }
       true
     }.getOrElse { false }
@@ -23,7 +23,7 @@ internal class CacheImpl<T>(
   override fun get(key: String): T? {
     return libRunCatching {
       multiProcessLock {
-        getCacheStoreInternal().getCache(key)
+        getCacheStore().getCache(key)
       }?.let { data ->
         decode(data, clazz)
       }
@@ -33,7 +33,7 @@ internal class CacheImpl<T>(
   override fun remove(key: String) {
     libRunCatching {
       multiProcessLock {
-        getCacheStoreInternal().removeCache(key)
+        getCacheStore().removeCache(key)
       }
     }
   }
@@ -41,7 +41,7 @@ internal class CacheImpl<T>(
   override fun contains(key: String): Boolean {
     return libRunCatching {
       multiProcessLock {
-        getCacheStoreInternal().containsCache(key)
+        getCacheStore().containsCache(key)
       }
     }.getOrElse { false }
   }
@@ -49,13 +49,13 @@ internal class CacheImpl<T>(
   override fun keys(): List<String> {
     return libRunCatching {
       multiProcessLock {
-        getCacheStoreInternal().keys()
+        getCacheStore().keys()
       }
     }.getOrElse { emptyList() }
   }
 
-  private fun getCacheStoreInternal(): CacheStore {
-    return getCacheStore().also { cacheStore ->
+  private fun getCacheStore(): CacheStore {
+    return cacheStoreProvider().also { cacheStore ->
       cacheStore.setCacheChangeCallback(_cacheChangeCallback)
     }
   }
@@ -90,6 +90,6 @@ internal class CacheImpl<T>(
   }
 
   init {
-    getCacheStoreInternal()
+    getCacheStore()
   }
 }
