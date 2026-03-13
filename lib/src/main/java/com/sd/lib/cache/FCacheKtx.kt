@@ -30,39 +30,27 @@ interface CacheKtx<T> {
  * 如果[key]对应的缓存存在，则调用[block]，并把[block]的返回值设置为缓存。
  * 注意：如果[block]返回null，则本次调用不修改缓存。
  */
-suspend fun <T> CacheKtx<T>.update(key: String, block: suspend (T) -> T?) {
-  edit {
-    val data = get(key)
-    if (data != null) {
-      put(key, block(data))
-    }
+suspend fun <T> CacheKtx<T>.update(key: String, block: suspend (T) -> T?) = edit {
+  val data = get(key)
+  if (data != null) {
+    put(key, block(data))
   }
 }
 
 /** [Cache.put] */
-suspend fun <T> CacheKtx<T>.put(key: String, value: T?): Boolean {
-  return edit { put(key, value) }
-}
+suspend fun <T> CacheKtx<T>.put(key: String, value: T?): Boolean = edit { put(key, value) }
 
 /** [Cache.get] */
-suspend fun <T> CacheKtx<T>.get(key: String): T? {
-  return edit { get(key) }
-}
+suspend fun <T> CacheKtx<T>.get(key: String): T? = edit { get(key) }
 
 /** [Cache.remove] */
-suspend fun <T> CacheKtx<T>.remove(key: String) {
-  return edit { remove(key) }
-}
+suspend fun <T> CacheKtx<T>.remove(key: String) = edit { remove(key) }
 
 /** [Cache.contains] */
-suspend fun <T> CacheKtx<T>.contains(key: String): Boolean {
-  return edit { contains(key) }
-}
+suspend fun <T> CacheKtx<T>.contains(key: String): Boolean = edit { contains(key) }
 
 /** [Cache.keys] */
-suspend fun <T> CacheKtx<T>.keys(): List<String> {
-  return edit { keys() }
-}
+suspend fun <T> CacheKtx<T>.keys(): List<String> = edit { keys() }
 
 object FCacheKtx {
   private val _caches = mutableMapOf<Class<*>, CacheKtx<*>>()
