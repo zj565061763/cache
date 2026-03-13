@@ -3,23 +3,18 @@ package com.sd.lib.cache
 import java.io.File
 import java.io.RandomAccessFile
 
-/** 多进程锁 */
-internal fun <T> multiProcessLock(block: () -> T): T {
-  return multiProcessLock.lock(block)
+internal fun <T> libLock(block: () -> T): T {
+  return fileProcessLock.lock(block)
 }
 
-/** 多进程锁 */
-private val multiProcessLock by lazy {
-  FileMultiProcessLock(
+private val fileProcessLock by lazy {
+  FileProcessLock(
     lockFile = CacheConfig.get().directory.resolve("cache.lock"),
     currentProcessLock = FCache,
   )
 }
 
-/**
- * 基于文件锁实现的多进程锁
- */
-private class FileMultiProcessLock(
+private class FileProcessLock(
   private val lockFile: File,
   private val currentProcessLock: Any,
 ) {
