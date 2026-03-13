@@ -4,7 +4,11 @@ import java.io.File
 import java.io.RandomAccessFile
 
 internal fun <T> libLock(block: () -> T): T {
-  return fileProcessLock.lock(block)
+  return if (CacheConfig.get().multiProcessEnabled) {
+    fileProcessLock.lock(block)
+  } else {
+    synchronized(FCache) { block() }
+  }
 }
 
 private val fileProcessLock by lazy {
