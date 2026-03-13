@@ -20,9 +20,8 @@ internal class GroupCacheStoreFactory(
       }
     }
 
-    return CacheConfig.get().newCacheStore(group = group, id = id).also {
-      _stores[id] = StoreInfo(clazz, it)
-    }
+    return CacheConfig.get().newCacheStore(group = group, id = id)
+      .also { cacheStore -> _stores[id] = StoreInfo(clazz, cacheStore) }
   }
 
   fun close() {
