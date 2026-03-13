@@ -12,13 +12,13 @@ class CacheConfig private constructor(
   context: Context,
 ) {
   private val context = context.applicationContext
-  private val cacheStoreFactory: () -> CacheStore
+  private val cacheStoreFactory: CacheStoreFactory
   internal val directory: File = context.defaultCacheDir()
   internal val objectConverter: ObjectConverter
   internal val exceptionHandler: ExceptionHandler
 
   init {
-    this.cacheStoreFactory = builder.cacheStoreFactory ?: { FileCacheStore() }
+    this.cacheStoreFactory = builder.cacheStoreFactory ?: CacheStoreFactory { FileCacheStore() }
     this.objectConverter = builder.objectConverter ?: DefaultObjectConverter()
     this.exceptionHandler = LibExceptionHandler(builder.exceptionHandler)
   }
@@ -26,13 +26,20 @@ class CacheConfig private constructor(
   /** 创建仓库 */
   internal fun newCacheStore(group: String, id: String): CacheStore? {
     return libRunCatching {
-      cacheStoreFactory().also { cacheStore ->
+      cacheStoreFactory.create().also { cacheStore ->
         cacheStore.init(
           context = context,
           directory = directory.resolve(md5(group)).resolve(md5(id)),
         )
       }
     }.getOrNull()
+  }
+
+  /**
+   * 缓存仓库工厂
+   */
+  fun interface CacheStoreFactory {
+    fun create(): CacheStore
   }
 
   /**
@@ -56,7 +63,7 @@ class CacheConfig private constructor(
   }
 
   class Builder {
-    internal var cacheStoreFactory: (() -> CacheStore)? = null
+    internal var cacheStoreFactory: CacheStoreFactory? = null
       private set
 
     internal var objectConverter: ObjectConverter? = null
@@ -66,7 +73,7 @@ class CacheConfig private constructor(
       private set
 
     /** 缓存仓库工厂 */
-    fun setCacheStoreFactory(factory: (() -> CacheStore)?) = apply {
+    fun setCacheStoreFactory(factory: CacheStoreFactory?) = apply {
       this.cacheStoreFactory = factory
     }
 
