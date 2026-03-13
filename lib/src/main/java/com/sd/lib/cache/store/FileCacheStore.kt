@@ -17,7 +17,6 @@ internal abstract class FileCacheStore : CacheStore {
     _directory = directory
     checkDirectoryExist()
     _fileObserver.startWatching()
-    initImpl(context, _directory)
   }
 
   final override fun putCache(key: String, value: ByteArray) {
@@ -29,11 +28,11 @@ internal abstract class FileCacheStore : CacheStore {
   }
 
   final override fun removeCache(key: String) {
-    removeCacheImpl(fileOf(key))
+    fileOf(key).deleteRecursively()
   }
 
   final override fun containsCache(key: String): Boolean {
-    return containsCacheImpl(fileOf(key))
+    return fileOf(key).isFile
   }
 
   final override fun keys(): List<String> {
@@ -47,7 +46,6 @@ internal abstract class FileCacheStore : CacheStore {
 
   final override fun destroy() {
     _fileObserver.stopWatching()
-    destroyImpl()
   }
 
   final override fun setCacheChangeCallback(callback: CacheStore.CacheChangeCallback) {
@@ -78,13 +76,8 @@ internal abstract class FileCacheStore : CacheStore {
     return _directory.resolve(filename + CACHE_SUFFIX_WITH_DOT)
   }
 
-  protected open fun initImpl(context: Context, directory: File) = Unit
-  protected open fun destroyImpl() = Unit
-
   protected abstract fun putCacheImpl(file: File, value: ByteArray)
   protected abstract fun getCacheImpl(file: File): ByteArray?
-  protected open fun removeCacheImpl(file: File) = file.deleteRecursively()
-  protected open fun containsCacheImpl(file: File): Boolean = file.isFile
 
   /** 检查目录是否存在，如果不存在则创建 */
   protected fun checkDirectoryExist(): Boolean {
