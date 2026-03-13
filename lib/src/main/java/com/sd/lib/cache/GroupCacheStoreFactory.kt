@@ -3,7 +3,7 @@ package com.sd.lib.cache
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.EmptyCacheStore
 
-internal class CacheStoreFactory(
+internal class GroupCacheStoreFactory(
   val group: String,
 ) {
   private var _isClosed = false

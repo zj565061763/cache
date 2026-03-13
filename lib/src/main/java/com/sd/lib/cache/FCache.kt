@@ -6,14 +6,14 @@ import com.sd.lib.cache.store.EmptyCacheStore
 object FCache {
   /** DefaultGroup */
   private const val DEFAULT_GROUP = "com.sd.lib.cache.group.default"
-  /** DefaultGroup的[CacheStoreFactory] */
-  private val _defaultGroupCacheStoreFactory = CacheStoreFactory(DEFAULT_GROUP)
+  /** DefaultGroup的[GroupCacheStoreFactory] */
+  private val _defaultGroupCacheStoreFactory = GroupCacheStoreFactory(DEFAULT_GROUP)
 
   /** ActiveGroup */
   @Volatile
   private var _activeGroup = ""
-  /** ActiveGroup的[CacheStoreFactory] */
-  private var _activeGroupCacheStoreFactory: CacheStoreFactory? = null
+  /** ActiveGroup的[GroupCacheStoreFactory] */
+  private var _activeGroupCacheStoreFactory: GroupCacheStoreFactory? = null
 
   /** 缓存所有的[Cache] */
   private val _caches = mutableMapOf<Class<*>, Cache<*>>()
@@ -81,7 +81,7 @@ object FCache {
     }
 
     val storeFactory = _activeGroupCacheStoreFactory?.takeIf { it.group == activeGroup }
-      ?: CacheStoreFactory(activeGroup).also { newFactory ->
+      ?: GroupCacheStoreFactory(activeGroup).also { newFactory ->
         _activeGroupCacheStoreFactory?.close()
         _activeGroupCacheStoreFactory = newFactory
       }
