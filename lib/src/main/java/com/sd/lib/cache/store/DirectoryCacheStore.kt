@@ -61,10 +61,10 @@ abstract class DirectoryCacheStore : CacheStore {
       override fun onEvent(event: Int, path: String?) {
         val callback = _cacheChangeCallback
         if (callback != null && path != null) {
-          when (event) {
-            CREATE -> filenameToKey(path)?.also { key -> callback.onCreate(key) }
-            MODIFY -> filenameToKey(path)?.also { key -> callback.onModify(key) }
-            DELETE -> filenameToKey(path)?.also { key -> callback.onRemove(key) }
+          when {
+            (event and CREATE) != 0 -> filenameToKey(path)?.also { key -> callback.onCreate(key) }
+            (event and DELETE) != 0 -> filenameToKey(path)?.also { key -> callback.onRemove(key) }
+            (event and MODIFY) != 0 -> filenameToKey(path)?.also { key -> callback.onModify(key) }
             else -> {}
           }
         }
