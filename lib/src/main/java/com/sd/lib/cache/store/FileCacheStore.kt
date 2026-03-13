@@ -6,36 +6,50 @@ import android.util.Base64
 import java.io.File
 import java.io.FileNotFoundException
 
-internal abstract class FileCacheStore : CacheStore {
+internal class FileCacheStore : CacheStore {
   private lateinit var _directory: File
 
   @Volatile
   private var _cacheChangeCallback: CacheStore.CacheChangeCallback? = null
 
-  final override fun init(context: Context, directory: File) {
+  override fun init(context: Context, directory: File) {
     if (::_directory.isInitialized) return
     _directory = directory
     checkDirectoryExist()
     _fileObserver.startWatching()
   }
 
-  final override fun putCache(key: String, value: ByteArray) {
-    return putCacheImpl(fileOf(key), value)
+  override fun putCache(key: String, value: ByteArray) {
+    fileOf(key).apply {
+      try {
+        writeBytes(value)
+      } catch (e: FileNotFoundException) {
+        if (checkDirectoryExist()) {
+          writeBytes(value)
+        } else {
+          throw e
+        }
+      }
+    }
   }
 
-  final override fun getCache(key: String): ByteArray? {
-    return getCacheImpl(fileOf(key))
+  override fun getCache(key: String): ByteArray? {
+    return try {
+      fileOf(key).readBytes()
+    } catch (_: FileNotFoundException) {
+      null
+    }
   }
 
-  final override fun removeCache(key: String) {
+  override fun removeCache(key: String) {
     fileOf(key).deleteRecursively()
   }
 
-  final override fun containsCache(key: String): Boolean {
+  override fun containsCache(key: String): Boolean {
     return fileOf(key).isFile
   }
 
-  final override fun keys(): List<String> {
+  override fun keys(): List<String> {
     val listFile = _directory.listFiles { file -> file.isFile && file.name.endsWith(CACHE_SUFFIX_WITH_DOT) }
     if (listFile.isNullOrEmpty()) return emptyList()
     return listFile.mapNotNull { file ->
@@ -44,11 +58,11 @@ internal abstract class FileCacheStore : CacheStore {
     }
   }
 
-  final override fun destroy() {
+  override fun destroy() {
     _fileObserver.stopWatching()
   }
 
-  final override fun setCacheChangeCallback(callback: CacheStore.CacheChangeCallback) {
+  override fun setCacheChangeCallback(callback: CacheStore.CacheChangeCallback) {
     _cacheChangeCallback = callback
   }
 
@@ -75,48 +89,17 @@ internal abstract class FileCacheStore : CacheStore {
     return _directory.resolve(filename + CACHE_SUFFIX_WITH_DOT)
   }
 
-  protected abstract fun putCacheImpl(file: File, value: ByteArray)
-  protected abstract fun getCacheImpl(file: File): ByteArray?
-
   /** 检查目录是否存在，如果不存在则创建 */
-  protected fun checkDirectoryExist(): Boolean {
+  private fun checkDirectoryExist(): Boolean {
     val dir = _directory
     if (dir.isDirectory) return true
     if (dir.isFile) dir.delete()
     return dir.mkdirs()
   }
-
-  companion object {
-    /** 缓存文件后缀 */
-    private const val CACHE_SUFFIX_WITH_DOT = ".cache"
-
-    fun create(): CacheStore {
-      return FileCacheStoreImpl()
-    }
-  }
 }
 
-private class FileCacheStoreImpl : FileCacheStore() {
-  override fun putCacheImpl(file: File, value: ByteArray) {
-    try {
-      file.writeBytes(value)
-    } catch (e: FileNotFoundException) {
-      if (checkDirectoryExist()) {
-        file.writeBytes(value)
-      } else {
-        throw e
-      }
-    }
-  }
-
-  override fun getCacheImpl(file: File): ByteArray? {
-    return try {
-      file.readBytes()
-    } catch (_: FileNotFoundException) {
-      null
-    }
-  }
-}
+/** 缓存文件后缀 */
+private const val CACHE_SUFFIX_WITH_DOT = ".cache"
 
 /** 把[key]转为文件名 */
 private fun keyToFilename(key: String): String {
