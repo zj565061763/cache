@@ -69,14 +69,14 @@ object FCache {
   private fun getActiveGroupCacheStore(id: String, clazz: Class<*>): CacheStore {
     val activeGroup = _activeGroup
     if (activeGroup.isBlank()) {
-      _activeGroupCacheStoreFactory?.close()
+      _activeGroupCacheStoreFactory?.destroy()
       _activeGroupCacheStoreFactory = null
       return EmptyCacheStore
     }
 
     val storeFactory = _activeGroupCacheStoreFactory?.takeIf { it.group == activeGroup }
       ?: GroupCacheStoreFactory(activeGroup).also { newFactory ->
-        _activeGroupCacheStoreFactory?.close()
+        _activeGroupCacheStoreFactory?.destroy()
         _activeGroupCacheStoreFactory = newFactory
       }
 

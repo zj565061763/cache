@@ -47,9 +47,9 @@ abstract class DirectoryCacheStore : CacheStore {
     }
   }
 
-  final override fun close() {
+  final override fun destroy() {
     _fileObserver.stopWatching()
-    closeImpl()
+    destroyImpl()
   }
 
   final override fun setCacheChangeCallback(callback: CacheStore.CacheChangeCallback) {
@@ -79,7 +79,7 @@ abstract class DirectoryCacheStore : CacheStore {
   }
 
   protected open fun initImpl(context: Context, directory: File) = Unit
-  protected open fun closeImpl() = Unit
+  protected open fun destroyImpl() = Unit
 
   protected abstract fun putCacheImpl(file: File, value: ByteArray)
   protected abstract fun getCacheImpl(file: File): ByteArray?

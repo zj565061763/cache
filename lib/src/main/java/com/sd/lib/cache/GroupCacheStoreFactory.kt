@@ -5,12 +5,12 @@ import com.sd.lib.cache.store.CacheStore
 internal class GroupCacheStoreFactory(
   val group: String,
 ) {
-  private var _isClosed = false
+  private var _destroyed = false
   private val _stores = mutableMapOf<String, StoreInfo>()
 
   @Throws(Throwable::class)
   fun create(id: String, clazz: Class<*>): CacheStore {
-    if (_isClosed) libError("Group:${group} Closed")
+    if (_destroyed) libError("Group:${group} has been destroyed")
 
     _stores[id]?.also { info ->
       if (info.clazz == clazz) {
@@ -24,9 +24,9 @@ internal class GroupCacheStoreFactory(
       .also { cacheStore -> _stores[id] = StoreInfo(clazz, cacheStore) }
   }
 
-  fun close() {
-    _isClosed = true
-    _stores.values.forEach { it.cacheStore.closeQuietly() }
+  fun destroy() {
+    _destroyed = true
+    _stores.values.forEach { it.cacheStore.destroyQuietly() }
     _stores.clear()
   }
 
@@ -36,4 +36,4 @@ internal class GroupCacheStoreFactory(
   )
 }
 
-private fun CacheStore.closeQuietly() = libRunCatching { close() }
+private fun CacheStore.destroyQuietly() = libRunCatching { destroy() }
