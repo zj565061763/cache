@@ -25,21 +25,21 @@ class CacheConfig private constructor(
   }
 
   /** 创建仓库 */
-  internal fun newCacheStore(group: String, id: String): CacheStore? {
-    return libRunCatching {
-      cacheStoreFactory.create().also { cacheStore ->
-        cacheStore.init(
-          context = context,
-          directory = directory.resolve(md5(group)).resolve(md5(id)),
-        )
-      }
-    }.getOrNull()
+  @Throws(Throwable::class)
+  internal fun newCacheStore(group: String, id: String): CacheStore {
+    return cacheStoreFactory.create().also { cacheStore ->
+      cacheStore.init(
+        context = context,
+        directory = directory.resolve(md5(group)).resolve(md5(id)),
+      )
+    }
   }
 
   /**
    * 缓存仓库工厂
    */
   fun interface CacheStoreFactory {
+    @Throws(Throwable::class)
     fun create(): CacheStore
   }
 

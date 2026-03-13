@@ -1,7 +1,6 @@
 package com.sd.lib.cache
 
 import com.sd.lib.cache.store.CacheStore
-import com.sd.lib.cache.store.EmptyCacheStore
 
 internal class GroupCacheStoreFactory(
   val group: String,
@@ -9,6 +8,7 @@ internal class GroupCacheStoreFactory(
   private var _isClosed = false
   private val _stores = mutableMapOf<String, StoreInfo>()
 
+  @Throws(Throwable::class)
   fun create(id: String, clazz: Class<*>): CacheStore {
     if (_isClosed) libError("Group:${group} Closed")
 
@@ -20,9 +20,9 @@ internal class GroupCacheStoreFactory(
       }
     }
 
-    return CacheConfig.get().newCacheStore(group = group, id = id)
-      ?.also { _stores[id] = StoreInfo(clazz, it) }
-      ?: EmptyCacheStore
+    return CacheConfig.get().newCacheStore(group = group, id = id).also {
+      _stores[id] = StoreInfo(clazz, it)
+    }
   }
 
   fun close() {

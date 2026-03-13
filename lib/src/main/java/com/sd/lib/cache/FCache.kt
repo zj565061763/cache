@@ -72,6 +72,7 @@ object FCache {
     error("This should not happen")
   }
 
+  @Throws(Throwable::class)
   private fun getActiveGroupCacheStore(id: String, clazz: Class<*>): CacheStore {
     val activeGroup = _activeGroup
     if (activeGroup.isBlank()) {

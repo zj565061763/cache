@@ -54,12 +54,14 @@ internal class CacheImpl<T>(
     }.getOrElse { emptyList() }
   }
 
+  @Throws(Throwable::class)
   private fun getCacheStore(): CacheStore {
     return cacheStoreProvider().also { cacheStore ->
       cacheStore.setCacheChangeCallback(_cacheChangeCallback)
     }
   }
 
+  @Throws(Throwable::class)
   private fun encode(value: T, clazz: Class<T>): ByteArray {
     return getObjectConverter().encode(value, clazz).also { bytes ->
       if (bytes.isEmpty()) {
@@ -68,6 +70,7 @@ internal class CacheImpl<T>(
     }
   }
 
+  @Throws(Throwable::class)
   private fun decode(bytes: ByteArray, clazz: Class<T>): T? {
     if (bytes.isEmpty()) return null
     return getObjectConverter().decode(bytes, clazz)
