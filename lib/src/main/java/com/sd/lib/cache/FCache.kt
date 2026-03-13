@@ -18,9 +18,6 @@ object FCache {
   /** 缓存所有的[Cache] */
   private val _caches = mutableMapOf<Class<*>, Cache<*>>()
 
-  /** 多进程锁 */
-  internal val multiProcessLock = MultiProcessLock(FCache)
-
   /** 获取[clazz]对应的[Cache] */
   @JvmStatic
   fun <T> get(clazz: Class<T>): Cache<T> {
@@ -85,9 +82,4 @@ object FCache {
 
     return storeFactory.create(id = id, clazz = clazz)
   }
-}
-
-/** 多进程锁 */
-internal fun <T> multiProcessLock(block: () -> T): T {
-  return FCache.multiProcessLock.lock(block)
 }
