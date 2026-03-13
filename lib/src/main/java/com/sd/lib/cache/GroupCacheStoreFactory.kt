@@ -27,11 +27,8 @@ internal class GroupCacheStoreFactory(
 
   fun close() {
     _isClosed = true
-    while (_stores.isNotEmpty()) {
-      _stores.keys.toTypedArray().forEach { key ->
-        _stores.remove(key)?.cacheStore?.also { libRunCatching { it.close() } }
-      }
-    }
+    _stores.values.forEach { it.cacheStore.closeQuietly() }
+    _stores.clear()
   }
 
   private class StoreInfo(
@@ -39,3 +36,5 @@ internal class GroupCacheStoreFactory(
     val cacheStore: CacheStore,
   )
 }
+
+private fun CacheStore.closeQuietly() = libRunCatching { close() }
