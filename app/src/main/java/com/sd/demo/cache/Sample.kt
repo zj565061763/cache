@@ -2,11 +2,11 @@ package com.sd.demo.cache
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.sd.demo.cache.databinding.SampleDefaultGroupBinding
+import com.sd.demo.cache.databinding.SampleBinding
 import com.sd.lib.cache.FCache
 
-open class SampleDefaultGroup : AppCompatActivity() {
-  private val _binding by lazy { SampleDefaultGroupBinding.inflate(layoutInflater) }
+open class Sample : AppCompatActivity() {
+  private val _binding by lazy { SampleBinding.inflate(layoutInflater) }
 
   private val _cache = FCache.get(DefaultModel::class.java)
 
@@ -56,4 +56,4 @@ open class SampleDefaultGroup : AppCompatActivity() {
   }
 }
 
-class SampleDefaultGroupOtherProcess : SampleDefaultGroup()
+class SampleOtherProcess : Sample()

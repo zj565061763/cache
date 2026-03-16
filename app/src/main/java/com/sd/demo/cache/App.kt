@@ -2,6 +2,7 @@ package com.sd.demo.cache
 
 import android.app.Application
 import com.sd.lib.cache.CacheConfig
+import com.sd.lib.cache.DefaultGroupCache
 import com.sd.lib.cache.FCacheKtx
 import com.sd.lib.cache.init
 import kotlinx.coroutines.GlobalScope
@@ -26,3 +27,8 @@ class App : Application() {
     }
   }
 }
+
+@DefaultGroupCache("DefaultModel")
+data class DefaultModel(
+  val name: String = "tom",
+)

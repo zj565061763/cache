@@ -7,35 +7,28 @@
     android:padding="32dp">
 
     <Button
-        android:id="@+id/btn_SampleDefaultGroup"
+        android:id="@+id/btnSample"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SampleDefaultGroup"
+        android:text="Sample"
         android:textAllCaps="false" />
 
     <Button
-        android:id="@+id/btn_SampleDefaultGroupOtherProcess"
+        android:id="@+id/btnSampleOtherProcess"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SampleDefaultGroupOtherProcess"
+        android:text="SampleOtherProcess"
         android:textAllCaps="false" />
 
     <Button
-        android:id="@+id/btn_SampleActiveGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SampleActiveGroup"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/btn_SampleKtx"
+        android:id="@+id/btnSampleKtx"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SampleKtx"
         android:textAllCaps="false" />
 
     <Button
-        android:id="@+id/btn_SamplePerformance"
+        android:id="@+id/btnSamplePerformance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SamplePerformance"

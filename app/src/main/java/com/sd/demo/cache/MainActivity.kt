@@ -12,14 +12,11 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(_binding.root)
-    _binding.btnSampleDefaultGroup.setOnClickListener {
-      startActivity(Intent(this, SampleDefaultGroup::class.java))
+    _binding.btnSample.setOnClickListener {
+      startActivity(Intent(this, Sample::class.java))
     }
-    _binding.btnSampleDefaultGroupOtherProcess.setOnClickListener {
-      startActivity(Intent(this, SampleDefaultGroupOtherProcess::class.java))
-    }
-    _binding.btnSampleActiveGroup.setOnClickListener {
-      startActivity(Intent(this, SampleActiveGroup::class.java))
+    _binding.btnSampleOtherProcess.setOnClickListener {
+      startActivity(Intent(this, SampleOtherProcess::class.java))
     }
     _binding.btnSampleKtx.setOnClickListener {
       startActivity(Intent(this, SampleKtx::class.java))
