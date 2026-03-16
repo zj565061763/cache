@@ -1,6 +1,7 @@
 package com.sd.lib.cache
 
 import com.sd.lib.cache.store.CacheStore
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -96,7 +97,11 @@ private class CacheKtxImpl<T>(
   override suspend fun <R> edit(block: suspend Cache<T>.() -> R): R {
     return withContext(Dispatchers.IO) {
       libLock {
-        runBlocking(coroutineContext) { block(cache) }
+        try {
+          runBlocking { block(cache) }
+        } catch (e: InterruptedException) {
+          throw CancellationException().initCause(e)
+        }
       }
     }
   }
