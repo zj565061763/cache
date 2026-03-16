@@ -12,7 +12,7 @@ class CacheConfig private constructor(
   builder: Builder,
   context: Context,
 ) {
-  private val context = context.applicationContext
+  internal val context = context.applicationContext
   private val cacheStoreFactory: CacheStoreFactory
   internal val directory: File by lazy { context.filesDir.resolve("sd.lib.cache") }
   internal val objectConverter: ObjectConverter
