@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SingleCacheKtx<T> {
   /** 缓存 */
-  fun flowOf(): Flow<T?>
+  fun flow(): Flow<T?>
 
   /** 编辑缓存，[block]在[Dispatchers.IO]上面执行 */
   suspend fun <R> edit(block: suspend SingleCache<T>.() -> R): R
@@ -25,7 +25,7 @@ fun <T> CacheKtx<T>.asSingleCacheKtx(
 ): SingleCacheKtx<T> {
   require(this is CacheKtxImpl<T>)
   return object : SingleCacheKtx<T> {
-    override fun flowOf(): Flow<T?> {
+    override fun flow(): Flow<T?> {
       return flowOf(key)
     }
 
