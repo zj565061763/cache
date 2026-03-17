@@ -7,38 +7,24 @@
     android:padding="32dp">
 
     <Button
-        android:id="@+id/btnSample"
+        android:id="@+id/btnPut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sample"
+        android:text="put"
         android:textAllCaps="false" />
 
     <Button
-        android:id="@+id/btnSampleOtherProcess"
+        android:id="@+id/btnUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SampleOtherProcess"
+        android:text="update"
         android:textAllCaps="false" />
 
     <Button
-        android:id="@+id/btnSampleKtx"
+        android:id="@+id/btnRemove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SampleKtx"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/btnSampleSingleCacheKtx"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SampleSingleCacheKtx"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/btnSamplePerformance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SamplePerformance"
+        android:text="remove"
         android:textAllCaps="false" />
 
 </LinearLayout>

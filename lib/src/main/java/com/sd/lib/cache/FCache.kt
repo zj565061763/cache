@@ -18,6 +18,9 @@ object FCache {
   /** 缓存所有的[Cache] */
   private val _caches = mutableMapOf<Class<*>, Cache<*>>()
 
+  /** 默认的单缓存key */
+  internal const val DEFAULT_SINGLE_CACHE_KEY = "com.sd.lib.cache.key.singlecache"
+
   /** 获取[clazz]对应的[Cache] */
   @JvmStatic
   fun <T> get(clazz: Class<T>): Cache<T> {
@@ -50,5 +53,3 @@ object FCacheKtx {
     }
   }
 }
-
-internal const val DEFAULT_SINGLE_CACHE_KEY = "com.sd.lib.cache.key.singlecache"

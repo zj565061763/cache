@@ -40,7 +40,6 @@ internal class CacheKtxImpl<T>(
   private val cache: Cache<T>,
 ) : CacheKtx<T> {
   private val _callbacks = CacheCallbacks(cache)
-  internal val singleCache: SingleCache<T> by lazy { cache.asSingleCache() }
 
   override fun flowOf(key: String): Flow<T?> {
     return callbackFlow {
