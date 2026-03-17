@@ -4,11 +4,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.sd.lib.cache.DefaultGroupCache
 import com.sd.lib.cache.FCacheKtx
-import com.sd.lib.cache.contains
-import com.sd.lib.cache.get
-import com.sd.lib.cache.keys
-import com.sd.lib.cache.put
-import com.sd.lib.cache.remove
 import com.sd.lib.cache.update
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -34,21 +29,21 @@ class CacheKtxTest {
     val model2 = TestKtxModel(name = "name2")
 
     // test default value
-    assertEquals(false, cache.contains(key1))
-    assertEquals(false, cache.contains(key2))
-    assertEquals(null, cache.get(key1))
-    assertEquals(null, cache.get(key2))
+    assertEquals(false, cache.edit { contains(key1) })
+    assertEquals(false, cache.edit { contains(key2) })
+    assertEquals(null, cache.edit { get(key1) })
+    assertEquals(null, cache.edit { get(key2) })
 
     // test put and get
-    assertEquals(true, cache.put(key1, model1))
-    assertEquals(true, cache.put(key2, model2))
-    assertEquals(true, cache.contains(key1))
-    assertEquals(true, cache.contains(key2))
-    assertEquals(model1, cache.get(key1))
-    assertEquals(model2, cache.get(key2))
+    assertEquals(true, cache.edit { put(key1, model1) })
+    assertEquals(true, cache.edit { put(key2, model2) })
+    assertEquals(true, cache.edit { contains(key1) })
+    assertEquals(true, cache.edit { contains(key2) })
+    assertEquals(model1, cache.edit { get(key1) })
+    assertEquals(model2, cache.edit { get(key2) })
 
     // test keys
-    cache.keys().also {
+    cache.edit { keys() }.also {
       println(it)
       assertEquals(2, it.size)
       assertEquals(true, it.contains(key1))
@@ -56,13 +51,13 @@ class CacheKtxTest {
     }
 
     // test remove and get
-    cache.remove(key1)
-    cache.remove(key2)
-    assertEquals(false, cache.contains(key1))
-    assertEquals(false, cache.contains(key2))
-    assertEquals(null, cache.get(key1))
-    assertEquals(null, cache.get(key2))
-    assertEquals(0, cache.keys().size)
+    cache.edit { remove(key1) }
+    cache.edit { remove(key2) }
+    assertEquals(false, cache.edit { contains(key1) })
+    assertEquals(false, cache.edit { contains(key2) })
+    assertEquals(null, cache.edit { get(key1) })
+    assertEquals(null, cache.edit { get(key2) })
+    assertEquals(0, cache.edit { keys() }.size)
   }
 
   @Test
@@ -81,7 +76,7 @@ class CacheKtxTest {
       cache.update(key) { it.copy(name = "update") }
       assertEquals("update", awaitItem()!!.name)
 
-      cache.remove(key)
+      cache.edit { remove(key) }
       assertEquals(null, awaitItem())
     }
   }

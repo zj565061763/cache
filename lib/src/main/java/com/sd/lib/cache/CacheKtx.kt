@@ -33,42 +33,14 @@ interface CacheKtx<T> {
  */
 suspend fun <T> CacheKtx<T>.update(key: String, block: suspend (T) -> T?) = edit {
   val data = get(key)
-  if (data != null) {
-    put(key, block(data))
-  }
+  if (data != null) put(key, block(data))
 }
 
-/** [Cache.put] */
-suspend fun <T> CacheKtx<T>.put(key: String, value: T?): Boolean = edit { put(key, value) }
-
-/** [Cache.get] */
-suspend fun <T> CacheKtx<T>.get(key: String): T? = edit { get(key) }
-
-/** [Cache.remove] */
-suspend fun <T> CacheKtx<T>.remove(key: String) = edit { remove(key) }
-
-/** [Cache.contains] */
-suspend fun <T> CacheKtx<T>.contains(key: String): Boolean = edit { contains(key) }
-
-/** [Cache.keys] */
-suspend fun <T> CacheKtx<T>.keys(): List<String> = edit { keys() }
-
-object FCacheKtx {
-  private val _caches = mutableMapOf<Class<*>, CacheKtx<*>>()
-
-  fun <T> get(clazz: Class<T>): CacheKtx<T> {
-    return synchronized(FCache) {
-      val cache = _caches.getOrPut(clazz) { CacheKtxImpl(FCache.get(clazz)) }
-      @Suppress("UNCHECKED_CAST")
-      cache as CacheKtx<T>
-    }
-  }
-}
-
-private class CacheKtxImpl<T>(
+internal class CacheKtxImpl<T>(
   private val cache: Cache<T>,
 ) : CacheKtx<T> {
   private val _callbacks = CacheCallbacks(cache)
+  internal val singleCache: SingleCache<T> by lazy { cache.asSingleCache() }
 
   override fun flowOf(key: String): Flow<T?> {
     return callbackFlow {

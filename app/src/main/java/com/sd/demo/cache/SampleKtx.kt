@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.sd.demo.cache.databinding.SampleKtxBinding
 import com.sd.lib.cache.FCacheKtx
-import com.sd.lib.cache.put
-import com.sd.lib.cache.remove
 import kotlinx.coroutines.launch
 
 class SampleKtx : AppCompatActivity() {
@@ -24,15 +22,19 @@ class SampleKtx : AppCompatActivity() {
     _binding.btnPut.setOnClickListener {
       lifecycleScope.launch {
         val model = DefaultModel(name = System.currentTimeMillis().toString())
-        _cache.put(key1, model)
-        _cache.put(key2, model)
+        _cache.edit {
+          put(key1, model)
+          put(key2, model)
+        }
       }
     }
 
     _binding.btnRemove.setOnClickListener {
       lifecycleScope.launch {
-        _cache.remove(key1)
-        _cache.remove(key2)
+        _cache.edit {
+          remove(key1)
+          remove(key2)
+        }
       }
     }
 
