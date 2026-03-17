@@ -37,7 +37,7 @@ suspend fun <T> CacheKtx<T>.update(key: String, block: suspend (T) -> T?) = edit
 }
 
 internal class CacheKtxImpl<T>(
-  private val cache: Cache<T>,
+  val cache: Cache<T>,
 ) : CacheKtx<T> {
   private val _callbacks = CacheCallbacks(cache)
 

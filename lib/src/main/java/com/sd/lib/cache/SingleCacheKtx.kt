@@ -23,6 +23,8 @@ suspend fun <T> SingleCacheKtx<T>.update(block: suspend (T) -> T?) = edit {
 fun <T> CacheKtx<T>.asSingleCacheKtx(
   key: String = FCache.DEFAULT_SINGLE_CACHE_KEY,
 ): SingleCacheKtx<T> {
+  require(this is CacheKtxImpl<T>)
+  val singleCache = cache.asSingleCache(key)
   return object : SingleCacheKtx<T> {
     override fun flow(): Flow<T?> {
       return this@asSingleCacheKtx.flowOf(key)
@@ -30,7 +32,7 @@ fun <T> CacheKtx<T>.asSingleCacheKtx(
 
     override suspend fun <R> edit(block: suspend SingleCache<T>.() -> R): R {
       return this@asSingleCacheKtx.edit {
-        with(asSingleCache(key = key)) { block() }
+        block(singleCache)
       }
     }
   }
