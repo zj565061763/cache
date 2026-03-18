@@ -32,8 +32,7 @@ interface CacheKtx<T> {
  * 注意：如果[block]返回null，则本次调用不修改缓存。
  */
 suspend fun <T> CacheKtx<T>.update(key: String, block: suspend (T) -> T?) = edit {
-  val data = get(key)
-  if (data != null) put(key, block(data))
+  get(key)?.let { block(it) }?.also { put(key, it) }
 }
 
 internal class CacheKtxImpl<T>(
