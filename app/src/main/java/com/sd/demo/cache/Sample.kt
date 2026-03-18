@@ -22,9 +22,6 @@ open class Sample : AppCompatActivity() {
     _binding.btnGet.setOnClickListener {
       getCache()
     }
-    _binding.btnContains.setOnClickListener {
-      containsCache()
-    }
     _binding.btnRemove.setOnClickListener {
       removeCache()
     }
@@ -42,11 +39,6 @@ open class Sample : AppCompatActivity() {
     _cache.keys().also { keys ->
       logMsg { "keys:" + keys.joinToString(prefix = "[", postfix = "]", separator = ",") }
     }
-  }
-
-  private fun containsCache() {
-    _cache.contains(_key1).also { logMsg { "contains key1:$it" } }
-    _cache.contains(_key2).also { logMsg { "contains key2:$it" } }
   }
 
   private fun removeCache() {

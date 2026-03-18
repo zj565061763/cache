@@ -23,10 +23,6 @@ interface CacheStore {
   @Throws(Throwable::class)
   fun removeCache(key: String)
 
-  /** 是否有[key]对应的缓存 */
-  @Throws(Throwable::class)
-  fun containsCache(key: String): Boolean
-
   /** 所有缓存key */
   @Throws(Throwable::class)
   fun keys(): List<String>

@@ -29,16 +29,12 @@ class CacheKtxTest {
     val model2 = TestKtxModel(name = "name2")
 
     // test default value
-    assertEquals(false, cache.edit { contains(key1) })
-    assertEquals(false, cache.edit { contains(key2) })
     assertEquals(null, cache.edit { get(key1) })
     assertEquals(null, cache.edit { get(key2) })
 
     // test put and get
     assertEquals(true, cache.edit { put(key1, model1) })
     assertEquals(true, cache.edit { put(key2, model2) })
-    assertEquals(true, cache.edit { contains(key1) })
-    assertEquals(true, cache.edit { contains(key2) })
     assertEquals(model1, cache.edit { get(key1) })
     assertEquals(model2, cache.edit { get(key2) })
 
@@ -53,8 +49,6 @@ class CacheKtxTest {
     // test remove and get
     cache.edit { remove(key1) }
     cache.edit { remove(key2) }
-    assertEquals(false, cache.edit { contains(key1) })
-    assertEquals(false, cache.edit { contains(key2) })
     assertEquals(null, cache.edit { get(key1) })
     assertEquals(null, cache.edit { get(key2) })
     assertEquals(0, cache.edit { keys() }.size)

@@ -9,9 +9,6 @@ interface SingleCache<T> {
 
   /** 删除缓存 */
   fun remove()
-
-  /** 是否有缓存 */
-  fun contains(): Boolean
 }
 
 fun <T> Cache<T>.asSingleCache(
@@ -21,6 +18,5 @@ fun <T> Cache<T>.asSingleCache(
     override fun put(value: T?): Boolean = this@asSingleCache.put(key, value)
     override fun get(): T? = this@asSingleCache.get(key)
     override fun remove() = this@asSingleCache.remove(key)
-    override fun contains(): Boolean = this@asSingleCache.contains(key)
   }
 }

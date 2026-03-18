@@ -12,9 +12,6 @@ interface Cache<T> {
   /** 删除缓存 */
   fun remove(key: String)
 
-  /** 是否有[key]对应的缓存 */
-  fun contains(key: String): Boolean
-
   /** 所有缓存key */
   fun keys(): List<String>
 }
@@ -46,12 +43,6 @@ internal class CacheImpl<T>(
     libRunCatching {
       libLock { getCacheStore().removeCache(key) }
     }
-  }
-
-  override fun contains(key: String): Boolean {
-    return libRunCatching {
-      libLock { getCacheStore().containsCache(key) }
-    }.getOrElse { false }
   }
 
   override fun keys(): List<String> {

@@ -45,10 +45,6 @@ internal class FileCacheStore : CacheStore {
     fileOf(key).deleteRecursively()
   }
 
-  override fun containsCache(key: String): Boolean {
-    return fileOf(key).isFile
-  }
-
   override fun keys(): List<String> {
     val listFile = _directory.listFiles { file -> file.isFile && file.name.endsWith(CACHE_SUFFIX_WITH_DOT) }
     if (listFile.isNullOrEmpty()) return emptyList()

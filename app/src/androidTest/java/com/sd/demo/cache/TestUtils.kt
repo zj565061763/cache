@@ -22,16 +22,12 @@ fun <T> testCache(
   val model2 = factory(key2)
 
   // test default value
-  assertEquals(false, cache.contains(key1))
-  assertEquals(false, cache.contains(key2))
   assertEquals(null, cache.get(key1))
   assertEquals(null, cache.get(key2))
 
   // test put and get
   assertEquals(true, cache.put(key1, model1))
   assertEquals(true, cache.put(key2, model2))
-  assertEquals(true, cache.contains(key1))
-  assertEquals(true, cache.contains(key2))
   assertEquals(model1, cache.get(key1))
   assertEquals(model2, cache.get(key2))
 
@@ -45,8 +41,6 @@ fun <T> testCache(
   // test remove and get
   cache.remove(key1)
   cache.remove(key2)
-  assertEquals(false, cache.contains(key1))
-  assertEquals(false, cache.contains(key2))
   assertEquals(null, cache.get(key1))
   assertEquals(null, cache.get(key2))
   assertEquals(0, cache.keys().size)
