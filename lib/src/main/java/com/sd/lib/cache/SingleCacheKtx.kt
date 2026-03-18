@@ -16,8 +16,7 @@ interface SingleCacheKtx<T> {
  * 注意：如果[block]返回null，则本次调用不修改缓存。
  */
 suspend fun <T> SingleCacheKtx<T>.update(block: suspend (T) -> T?) = edit {
-  val data = get()
-  if (data != null) put(block(data))
+  get()?.let { block(it) }?.also { put(it) }
 }
 
 fun <T> CacheKtx<T>.asSingleCacheKtx(
