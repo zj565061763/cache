@@ -14,6 +14,13 @@
         android:textAllCaps="false" />
 
     <Button
+        android:id="@+id/btnUpdateWithTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="update with time"
+        android:textAllCaps="false" />
+
+    <Button
         android:id="@+id/btnRemove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

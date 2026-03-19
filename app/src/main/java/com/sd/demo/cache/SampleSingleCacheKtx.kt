@@ -22,6 +22,12 @@ class SampleSingleCacheKtx : AppCompatActivity() {
       }
     }
 
+    _binding.btnUpdateWithTime.setOnClickListener {
+      lifecycleScope.launch {
+        _cache.update { it.copy(name = "update:${System.currentTimeMillis()}") }
+      }
+    }
+
     _binding.btnRemove.setOnClickListener {
       lifecycleScope.launch {
         // 返回null，会删除缓存，还原为默认缓存
