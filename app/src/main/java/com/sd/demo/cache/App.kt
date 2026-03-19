@@ -30,5 +30,5 @@ class App : Application() {
 
 @DefaultGroupCache("DefaultModel")
 data class DefaultModel(
-  val name: String = "tom",
+  val name: String = "default",
 )

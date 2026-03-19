@@ -6,23 +6,15 @@ import androidx.lifecycle.lifecycleScope
 import com.sd.demo.cache.databinding.SampleSingleCacheKtxBinding
 import com.sd.lib.cache.FCacheKtx
 import com.sd.lib.cache.asSingleCacheKtx
-import com.sd.lib.cache.update
 import kotlinx.coroutines.launch
 
 class SampleSingleCacheKtx : AppCompatActivity() {
   private val _binding by lazy { SampleSingleCacheKtxBinding.inflate(layoutInflater) }
-  private val _cache = FCacheKtx.get(DefaultModel::class.java).asSingleCacheKtx()
+  private val _cache = FCacheKtx.get(DefaultModel::class.java).asSingleCacheKtx { DefaultModel() }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(_binding.root)
-
-    _binding.btnPut.setOnClickListener {
-      lifecycleScope.launch {
-        val model = DefaultModel(name = System.currentTimeMillis().toString())
-        _cache.edit { put(model) }
-      }
-    }
 
     _binding.btnUpdate.setOnClickListener {
       lifecycleScope.launch {
@@ -32,7 +24,8 @@ class SampleSingleCacheKtx : AppCompatActivity() {
 
     _binding.btnRemove.setOnClickListener {
       lifecycleScope.launch {
-        _cache.edit { remove() }
+        // 返回null，会删除缓存，还原为默认缓存
+        _cache.update { null }
       }
     }
 

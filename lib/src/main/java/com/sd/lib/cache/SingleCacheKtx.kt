@@ -1,37 +1,84 @@
 package com.sd.lib.cache
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 interface SingleCacheKtx<T> {
   /** 缓存 */
-  fun flow(): Flow<T?>
+  fun flow(): Flow<T>
 
-  /** 编辑缓存，[block]在[Dispatchers.IO]上面执行 */
-  suspend fun <R> edit(block: suspend SingleCache<T>.() -> R): R
-}
-
-/**
- * 如果缓存存在，则调用[block]，并把[block]的返回值设置为缓存。
- * 注意：如果[block]返回null，则本次调用不修改缓存。
- */
-suspend fun <T> SingleCacheKtx<T>.update(block: suspend (T) -> T?) = edit {
-  get()?.let { block(it) }?.also { put(it) }
+  /** 更新缓存，[block]在[Dispatchers.IO]上面执行，如果[block]返回null则删除缓存 */
+  suspend fun update(block: suspend (T) -> T?)
 }
 
 fun <T> CacheKtx<T>.asSingleCacheKtx(
+  /** 缓存key */
   key: String = FCache.DEFAULT_SINGLE_CACHE_KEY,
+  /** 不支持内存缓存 */
+  enableMemoryCache: Boolean = true,
+  /** 默认缓存，在[Dispatchers.IO]上面执行 */
+  defaultCache: () -> T,
 ): SingleCacheKtx<T> {
-  require(this is CacheKtxImpl<T>)
-  val singleCache = cache.asSingleCache(key)
-  return object : SingleCacheKtx<T> {
-    override fun flow(): Flow<T?> {
-      return this@asSingleCacheKtx.flowOf(key)
-    }
+  return if (enableMemoryCache) {
+    SingleCacheKtxMemoryImpl(cache = this, key = key, defaultCache = defaultCache)
+  } else {
+    SingleCacheKtxImpl(cache = this, key = key, defaultCache = defaultCache)
+  }
+}
 
-    override suspend fun <R> edit(block: suspend SingleCache<T>.() -> R): R {
-      return this@asSingleCacheKtx.edit {
-        block(singleCache)
+private class SingleCacheKtxMemoryImpl<T>(
+  private val cache: CacheKtx<T>,
+  private val key: String,
+  private val defaultCache: () -> T,
+) : SingleCacheKtx<T> {
+  private val _flow = cache.flowOf(key)
+    .map { it ?: defaultCache() }
+    .stateIn(scope = MainScope(), started = SharingStarted.Lazily, initialValue = null)
+    .filterNotNull()
+
+  override fun flow(): Flow<T> = _flow
+
+  override suspend fun update(block: suspend (T) -> T?) {
+    cache.edit {
+      val oldCache = _flow.first()
+      val newCache = block(oldCache)
+      if (newCache != null) {
+        put(key, newCache)
+      } else {
+        remove(key)
+      }
+    }
+  }
+}
+
+private class SingleCacheKtxImpl<T>(
+  private val cache: CacheKtx<T>,
+  private val key: String,
+  private val defaultCache: () -> T,
+) : SingleCacheKtx<T> {
+  private val _flow = cache.flowOf(key)
+    .map { it ?: defaultCache() }
+    .distinctUntilChanged()
+    .flowOn(Dispatchers.IO)
+
+  override fun flow(): Flow<T> = _flow
+
+  override suspend fun update(block: suspend (T) -> T?) {
+    cache.edit {
+      val oldCache = get(key) ?: defaultCache()
+      val newCache = block(oldCache)
+      if (newCache != null) {
+        put(key, newCache)
+      } else {
+        remove(key)
       }
     }
   }
