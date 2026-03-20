@@ -88,8 +88,4 @@ internal class CacheImpl<T>(
       cacheChangeCallback?.onModify(key)
     }
   }
-
-  init {
-    getCacheStore()
-  }
 }
