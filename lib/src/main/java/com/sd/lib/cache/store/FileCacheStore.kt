@@ -34,6 +34,7 @@ internal class FileCacheStore : CacheStore {
     }
 
     try {
+      file.createNewFile()
       writeWithTempFile()
     } catch (e: FileNotFoundException) {
       if (checkDirectoryExist()) {
@@ -78,13 +79,17 @@ internal class FileCacheStore : CacheStore {
   private val _fileObserver by lazy {
     object : FileObserver(_directory.absolutePath) {
       override fun onEvent(event: Int, path: String?) {
-        val callback = _cacheChangeCallback ?: return
         if (path.isNullOrEmpty()) return
-        if (path.endsWith(CACHE_SUFFIX_WITH_DOT)) {
-          val filename = path.removeSuffix(CACHE_SUFFIX_WITH_DOT)
+
+        val filename = path.removeSuffix(CACHE_SUFFIX_WITH_DOT)
+        if (filename.length == path.length) return
+
+        val key = filenameToKey(filename)
+        if (key != null) {
           when {
-            (event and DELETE) != 0 -> filenameToKey(filename)?.also { key -> callback.onRemove(key) }
-            (event and MOVED_TO) != 0 -> filenameToKey(filename)?.also { key -> callback.onModify(key) }
+            (event and DELETE) != 0 -> _cacheChangeCallback?.onRemove(key)
+            (event and CREATE) != 0 -> _cacheChangeCallback?.onCreate(key)
+            (event and (MOVED_TO or CLOSE_WRITE)) != 0 -> _cacheChangeCallback?.onModify(key)
             else -> {}
           }
         }

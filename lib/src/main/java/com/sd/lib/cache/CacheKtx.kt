@@ -54,7 +54,7 @@ internal class CacheKtxImpl<T>(
 
   override fun flowOfKeys(): Flow<List<String>> {
     return callbackFlow {
-      val callback = callbackForTargetKeyCacheChange(targetKey = null) { trySend(Unit) }
+      val callback = callbackForKeysChange { trySend(Unit) }
       _callbacks.addCallback(callback)
       awaitClose { _callbacks.removeCallback(callback) }
     }.conflate()
@@ -96,6 +96,10 @@ private class CacheCallbacks<T>(cache: Cache<T>) {
         _callbacks.forEach { it.onRemove(key) }
       }
 
+      override fun onCreate(key: String) {
+        _callbacks.forEach { it.onCreate(key) }
+      }
+
       override fun onModify(key: String) {
         _callbacks.forEach { it.onModify(key) }
       }
@@ -104,20 +108,30 @@ private class CacheCallbacks<T>(cache: Cache<T>) {
 }
 
 private fun callbackForTargetKeyCacheChange(
-  targetKey: String?,
+  targetKey: String,
   onChange: () -> Unit,
 ): CacheStore.CacheChangeCallback {
   return object : CacheStore.CacheChangeCallback {
     override fun onRemove(key: String) {
-      if (targetKey == null || targetKey == key) {
-        onChange()
-      }
+      if (key == targetKey) onChange()
+    }
+
+    override fun onCreate(key: String) {
+      if (key == targetKey) onChange()
     }
 
     override fun onModify(key: String) {
-      if (targetKey == null || targetKey == key) {
-        onChange()
-      }
+      if (key == targetKey) onChange()
     }
+  }
+}
+
+private fun callbackForKeysChange(
+  onChange: () -> Unit,
+): CacheStore.CacheChangeCallback {
+  return object : CacheStore.CacheChangeCallback {
+    override fun onRemove(key: String) = onChange()
+    override fun onCreate(key: String) = onChange()
+    override fun onModify(key: String) = Unit
   }
 }
