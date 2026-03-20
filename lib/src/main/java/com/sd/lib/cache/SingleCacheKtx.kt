@@ -50,7 +50,6 @@ private class SingleCacheKtxImpl<T>(
         put(key, newCache)
       } else {
         remove(key)
-        true
       }
     }
   }

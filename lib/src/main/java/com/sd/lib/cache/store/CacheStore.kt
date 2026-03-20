@@ -21,7 +21,7 @@ interface CacheStore {
 
   /** 删除缓存 */
   @Throws(Throwable::class)
-  fun removeCache(key: String)
+  fun removeCache(key: String): Boolean
 
   /** 所有缓存key */
   @Throws(Throwable::class)

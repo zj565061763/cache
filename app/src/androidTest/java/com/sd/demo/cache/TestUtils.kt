@@ -39,8 +39,9 @@ fun <T> testCache(
   }
 
   // test remove and get
-  cache.remove(key1)
-  cache.remove(key2)
+  assertEquals(true, cache.remove(key1))
+  assertEquals(true, cache.remove(key2))
+
   assertEquals(null, cache.get(key1))
   assertEquals(null, cache.get(key2))
   assertEquals(0, cache.keys().size)

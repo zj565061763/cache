@@ -10,7 +10,7 @@ interface Cache<T> {
   fun get(key: String): T?
 
   /** 删除缓存 */
-  fun remove(key: String)
+  fun remove(key: String): Boolean
 
   /** 所有缓存key */
   fun keys(): List<String>
@@ -40,10 +40,10 @@ internal class CacheImpl<T>(
     }.getOrNull()
   }
 
-  override fun remove(key: String) {
-    libRunCatching {
+  override fun remove(key: String): Boolean {
+    return libRunCatching {
       libLock(multiProcess) { getCacheStore().removeCache(key) }
-    }
+    }.getOrElse { false }
   }
 
   override fun keys(): List<String> {

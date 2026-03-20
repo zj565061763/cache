@@ -58,8 +58,8 @@ internal class FileCacheStore : CacheStore {
     }
   }
 
-  override fun removeCache(key: String) {
-    fileOf(key).deleteRecursively()
+  override fun removeCache(key: String): Boolean {
+    return fileOf(key).let { !it.exists() || it.delete() }
   }
 
   override fun keys(): List<String> {
