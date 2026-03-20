@@ -20,7 +20,7 @@ internal class FileCacheStore : CacheStore {
       deleteTempFile()
       _fileObserver.startWatching()
     } else {
-      throw IOException("mkdirs failure:$directory")
+      throw IOException("CacheStore mkdirs failure:$directory")
     }
   }
 
@@ -33,7 +33,7 @@ internal class FileCacheStore : CacheStore {
       if (tempFile.renameTo(file)) {
         // 重命名成功
       } else {
-        throw IOException("Rename failed from $tempFile to $file")
+        throw IOException("CacheStore.putCache rename failed from $tempFile to $file")
       }
     }
 
