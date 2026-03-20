@@ -17,13 +17,11 @@ class CacheConfig private constructor(
   internal val directory: File by lazy { context.filesDir.resolve("sd.lib.cache") }
   internal val objectConverter: ObjectConverter
   internal val exceptionHandler: ExceptionHandler
-  internal val multiProcessEnabled: Boolean
 
   init {
     this.cacheStoreFactory = builder.cacheStoreFactory ?: CacheStoreFactory { FileCacheStore() }
     this.objectConverter = builder.objectConverter ?: DefaultObjectConverter()
     this.exceptionHandler = LibExceptionHandler(builder.exceptionHandler)
-    this.multiProcessEnabled = builder.multiProcessEnabled
   }
 
   /** 创建仓库 */
@@ -75,8 +73,6 @@ class CacheConfig private constructor(
     internal var exceptionHandler: ExceptionHandler? = null
       private set
 
-    internal var multiProcessEnabled: Boolean = false
-
     /** 缓存仓库工厂 */
     fun setCacheStoreFactory(factory: CacheStoreFactory?) = apply {
       this.cacheStoreFactory = factory
@@ -90,11 +86,6 @@ class CacheConfig private constructor(
     /** 异常处理 */
     fun setExceptionHandler(handler: ExceptionHandler) = apply {
       this.exceptionHandler = handler
-    }
-
-    /** 是否支持多进程 */
-    fun setMultiProcessEnabled(enabled: Boolean) = apply {
-      this.multiProcessEnabled = enabled
     }
 
     fun build(context: Context): CacheConfig {

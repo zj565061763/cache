@@ -3,8 +3,11 @@ package com.sd.lib.cache
 import android.net.LocalServerSocket
 import java.io.IOException
 
-internal fun <T> libLock(block: () -> T): T {
-  return if (CacheConfig.get().multiProcessEnabled) {
+internal fun <T> libLock(
+  multiProcess: Boolean,
+  block: () -> T,
+): T {
+  return if (multiProcess) {
     socketProcessLock.lock(block)
   } else {
     synchronized(FCache) { block() }

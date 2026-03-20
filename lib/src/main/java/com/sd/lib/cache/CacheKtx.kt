@@ -25,7 +25,7 @@ interface CacheKtx<T> {
 }
 
 internal class CacheKtxImpl<T>(
-  val cache: Cache<T>,
+  val cache: CacheImpl<T>,
 ) : CacheKtx<T> {
   private val _callbacks = CacheCallbacks(cache)
 
@@ -43,7 +43,7 @@ internal class CacheKtxImpl<T>(
 
   override suspend fun <R> edit(block: suspend Cache<T>.() -> R): R {
     return withContext(Dispatchers.IO) {
-      libLock {
+      libLock(cache.multiProcess) {
         try {
           runBlocking { block(cache) }
         } catch (e: InterruptedException) {
@@ -54,8 +54,7 @@ internal class CacheKtxImpl<T>(
   }
 }
 
-private class CacheCallbacks<T>(cache: Cache<T>) {
-  private val _cache = cache as CacheImpl<T>
+private class CacheCallbacks<T>(cache: CacheImpl<T>) {
   private val _callbacks = Collections.newSetFromMap<CacheStore.CacheChangeCallback>(ConcurrentHashMap())
 
   fun addCallback(callback: CacheStore.CacheChangeCallback) {
@@ -67,8 +66,8 @@ private class CacheCallbacks<T>(cache: Cache<T>) {
   }
 
   init {
-    check(_cache.cacheChangeCallback == null)
-    _cache.cacheChangeCallback = object : CacheStore.CacheChangeCallback {
+    check(cache.cacheChangeCallback == null)
+    cache.cacheChangeCallback = object : CacheStore.CacheChangeCallback {
       override fun onRemove(key: String) {
         _callbacks.forEach { it.onRemove(key) }
       }
