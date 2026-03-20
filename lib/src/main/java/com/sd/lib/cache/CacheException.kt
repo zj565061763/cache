@@ -26,6 +26,7 @@ internal class LibExceptionHandler(
 ) : CacheConfig.ExceptionHandler {
   override fun onException(error: Throwable) {
     if (error is CacheError) throw error
+    if (error is Error) throw error
     handler?.onException(error)
   }
 }
