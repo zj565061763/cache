@@ -20,9 +20,6 @@ interface CacheKtx<T> {
   /** [key]对应的缓存 */
   fun flowOf(key: String): Flow<T?>
 
-  /** 监听所有key变化 */
-  fun flowOfKeys(): Flow<List<String>>
-
   /** 编辑缓存，[block]在[Dispatchers.IO]上面执行 */
   suspend fun <R> edit(block: suspend Cache<T>.() -> R): R
 }
@@ -40,18 +37,6 @@ internal class CacheKtxImpl<T>(
     }.conflate()
       .onStart { emit(Unit) }
       .map { cache.get(key) }
-      .distinctUntilChanged()
-      .flowOn(Dispatchers.IO)
-  }
-
-  override fun flowOfKeys(): Flow<List<String>> {
-    return callbackFlow {
-      val callback = callbackForKeysChange { trySend(Unit) }
-      _callbacks.addCallback(callback)
-      awaitClose { _callbacks.removeCallback(callback) }
-    }.conflate()
-      .onStart { emit(Unit) }
-      .map { cache.keys() }
       .distinctUntilChanged()
       .flowOn(Dispatchers.IO)
   }
@@ -88,10 +73,6 @@ private class CacheCallbacks<T>(cache: Cache<T>) {
         _callbacks.forEach { it.onRemove(key) }
       }
 
-      override fun onCreate(key: String) {
-        _callbacks.forEach { it.onCreate(key) }
-      }
-
       override fun onModify(key: String) {
         _callbacks.forEach { it.onModify(key) }
       }
@@ -108,22 +89,8 @@ private fun callbackForTargetKeyCacheChange(
       if (key == targetKey) onChange()
     }
 
-    override fun onCreate(key: String) {
-      if (key == targetKey) onChange()
-    }
-
     override fun onModify(key: String) {
       if (key == targetKey) onChange()
     }
-  }
-}
-
-private fun callbackForKeysChange(
-  onChange: () -> Unit,
-): CacheStore.CacheChangeCallback {
-  return object : CacheStore.CacheChangeCallback {
-    override fun onRemove(key: String) = onChange()
-    override fun onCreate(key: String) = onChange()
-    override fun onModify(key: String) = Unit
   }
 }

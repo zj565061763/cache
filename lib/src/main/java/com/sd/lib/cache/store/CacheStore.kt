@@ -39,9 +39,6 @@ interface CacheStore {
     /** [key]对应的缓存被删除 */
     fun onRemove(key: String)
 
-    /** [key]对应的缓存被创建 */
-    fun onCreate(key: String)
-
     /** [key]对应的缓存被写入 */
     fun onModify(key: String)
   }

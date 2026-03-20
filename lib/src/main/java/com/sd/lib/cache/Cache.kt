@@ -80,10 +80,6 @@ internal class CacheImpl<T>(
       cacheChangeCallback?.onRemove(key)
     }
 
-    override fun onCreate(key: String) {
-      cacheChangeCallback?.onCreate(key)
-    }
-
     override fun onModify(key: String) {
       cacheChangeCallback?.onModify(key)
     }
