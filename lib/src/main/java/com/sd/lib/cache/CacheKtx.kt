@@ -1,7 +1,6 @@
 package com.sd.lib.cache
 
 import com.sd.lib.cache.store.CacheStore
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +10,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
@@ -24,15 +22,7 @@ interface CacheKtx<T> {
   fun flowOfKeys(): Flow<List<String>>
 
   /** 编辑缓存，[block]在[Dispatchers.IO]上面执行 */
-  suspend fun <R> edit(block: suspend Cache<T>.() -> R): R
-}
-
-/**
- * 如果[key]对应的缓存存在，则调用[block]，并把[block]的返回值设置为缓存。
- * 注意：如果[block]返回null，则本次调用不修改缓存。
- */
-suspend fun <T> CacheKtx<T>.update(key: String, block: suspend (T) -> T?) = edit {
-  get(key)?.let { block(it) }?.also { put(key, it) }
+  suspend fun <R> edit(block: Cache<T>.() -> R): R
 }
 
 internal class CacheKtxImpl<T>(
@@ -64,15 +54,9 @@ internal class CacheKtxImpl<T>(
       .flowOn(Dispatchers.IO)
   }
 
-  override suspend fun <R> edit(block: suspend Cache<T>.() -> R): R {
+  override suspend fun <R> edit(block: Cache<T>.() -> R): R {
     return withContext(Dispatchers.IO) {
-      libLock {
-        try {
-          runBlocking { block(cache) }
-        } catch (e: InterruptedException) {
-          throw CancellationException().initCause(e)
-        }
-      }
+      libLock { block(cache) }
     }
   }
 }

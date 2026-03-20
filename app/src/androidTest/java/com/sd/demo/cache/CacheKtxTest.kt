@@ -4,7 +4,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.sd.lib.cache.DefaultGroupCache
 import com.sd.lib.cache.FCacheKtx
-import com.sd.lib.cache.update
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -67,7 +66,10 @@ class CacheKtxTest {
       }
       assertEquals(TestKtxModel(), awaitItem())
 
-      cache.update(key) { it.copy(name = "update") }
+      cache.edit {
+        val model = checkNotNull(get(key))
+        put(key, model.copy(name = "update"))
+      }
       assertEquals("update", awaitItem()!!.name)
 
       cache.edit { remove(key) }
