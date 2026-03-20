@@ -28,7 +28,7 @@ open class Sample : AppCompatActivity() {
   }
 
   private fun putCache() {
-    val model = DefaultModel()
+    val model = DefaultModel(name = System.currentTimeMillis().toString())
     _cache.put(_key1, model).also { logMsg { "put key1:$it" } }
     _cache.put(_key2, model).also { logMsg { "put key2:$it" } }
   }
@@ -36,9 +36,6 @@ open class Sample : AppCompatActivity() {
   private fun getCache() {
     _cache.get(_key1).also { logMsg { "get key1:$it" } }
     _cache.get(_key2).also { logMsg { "get key2:$it" } }
-    _cache.keys().also { keys ->
-      logMsg { "keys:" + keys.joinToString(prefix = "[", postfix = "]", separator = ",") }
-    }
   }
 
   private fun removeCache() {
