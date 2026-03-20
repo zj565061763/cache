@@ -16,9 +16,12 @@ internal class FileCacheStore : CacheStore {
   override fun init(context: Context, directory: File) {
     if (::_directory.isInitialized) return
     _directory = directory
-    checkDirectoryExist()
-    deleteTempFile()
-    _fileObserver.startWatching()
+    if (checkDirectoryExist()) {
+      deleteTempFile()
+      _fileObserver.startWatching()
+    } else {
+      throw IOException("mkdirs failure:$directory")
+    }
   }
 
   override fun putCache(key: String, value: ByteArray) {
