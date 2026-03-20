@@ -17,12 +17,13 @@ internal class FileCacheStore : CacheStore {
     if (::_directory.isInitialized) return
     _directory = directory
     checkDirectoryExist()
+    deleteTempFile()
     _fileObserver.startWatching()
   }
 
   override fun putCache(key: String, value: ByteArray) {
     val file = fileOf(key)
-    val tempFile = file.resolveSibling("${file.name}.tmp")
+    val tempFile = file.resolveSibling("${file.name}${TEMP_SUFFIX_WITH_DOT}")
 
     fun writeWithTempFile() {
       tempFile.writeBytes(value)
@@ -108,10 +109,17 @@ internal class FileCacheStore : CacheStore {
     if (dir.isFile) dir.delete()
     return dir.mkdirs()
   }
+
+  /** 删除临时文件 */
+  private fun deleteTempFile() {
+    _directory.listFiles { file -> file.name.endsWith(TEMP_SUFFIX_WITH_DOT) }?.forEach { it.delete() }
+  }
 }
 
 /** 缓存文件后缀 */
 private const val CACHE_SUFFIX_WITH_DOT = ".cache"
+/** 临时文件后缀 */
+private const val TEMP_SUFFIX_WITH_DOT = ".tmp"
 
 /** 把[key]转为文件名 */
 private fun keyToFilename(key: String): String {
