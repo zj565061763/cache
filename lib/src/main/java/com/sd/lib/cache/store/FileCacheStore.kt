@@ -60,7 +60,7 @@ internal class FileCacheStore : CacheStore {
   }
 
   override fun keys(): List<String> {
-    val listFile = _directory.listFiles { file -> file.isFile && file.name.endsWith(CACHE_SUFFIX_WITH_DOT) }
+    val listFile = _directory.listFiles { file -> file.name.endsWith(CACHE_SUFFIX_WITH_DOT) && file.length() > 0 }
     if (listFile.isNullOrEmpty()) return emptyList()
     return listFile.mapNotNull { file ->
       val filename = file.name.removeSuffix(CACHE_SUFFIX_WITH_DOT)
