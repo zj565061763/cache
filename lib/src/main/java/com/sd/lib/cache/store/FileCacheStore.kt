@@ -5,6 +5,7 @@ import android.os.FileObserver
 import android.util.Base64
 import java.io.File
 import java.io.FileNotFoundException
+import java.io.IOException
 
 internal class FileCacheStore : CacheStore {
   private lateinit var _directory: File
@@ -20,16 +21,28 @@ internal class FileCacheStore : CacheStore {
   }
 
   override fun putCache(key: String, value: ByteArray) {
-    fileOf(key).apply {
-      try {
-        writeBytes(value)
-      } catch (e: FileNotFoundException) {
-        if (checkDirectoryExist()) {
-          writeBytes(value)
-        } else {
-          throw e
-        }
+    val file = fileOf(key)
+    val tempFile = file.resolveSibling("${file.name}.tmp")
+
+    fun writeWithTempFile() {
+      tempFile.writeBytes(value)
+      if (tempFile.renameTo(file)) {
+        // 重命名成功
+      } else {
+        throw IOException("Rename failed from $tempFile to $file")
       }
+    }
+
+    try {
+      writeWithTempFile()
+    } catch (e: FileNotFoundException) {
+      if (checkDirectoryExist()) {
+        writeWithTempFile()
+      } else {
+        throw e
+      }
+    } finally {
+      tempFile.delete()
     }
   }
 
@@ -71,7 +84,7 @@ internal class FileCacheStore : CacheStore {
           val filename = path.removeSuffix(CACHE_SUFFIX_WITH_DOT)
           when {
             (event and DELETE) != 0 -> filenameToKey(filename)?.also { key -> callback.onRemove(key) }
-            (event and CLOSE_WRITE) != 0 -> filenameToKey(filename)?.also { key -> callback.onModify(key) }
+            (event and MOVED_TO) != 0 -> filenameToKey(filename)?.also { key -> callback.onModify(key) }
             else -> {}
           }
         }
