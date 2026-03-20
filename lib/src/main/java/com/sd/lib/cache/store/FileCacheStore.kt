@@ -34,7 +34,6 @@ internal class FileCacheStore : CacheStore {
     }
 
     try {
-      file.createNewFile()
       writeWithTempFile()
     } catch (e: FileNotFoundException) {
       if (checkDirectoryExist()) {
