@@ -104,6 +104,7 @@ class CacheConfig private constructor(
 
   companion object {
     @SuppressLint("StaticFieldLeak")
+    @Volatile
     private var sConfig: CacheConfig? = null
 
     /** 初始化 */
