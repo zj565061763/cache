@@ -24,6 +24,11 @@ interface CacheKtx<T> {
   suspend fun <R> edit(block: suspend Cache<T>.() -> R): R
 }
 
+suspend fun <T> CacheKtx<T>.put(key: String, value: T?) = edit { put(key, value) }
+suspend fun <T> CacheKtx<T>.get(key: String) = edit { get(key) }
+suspend fun <T> CacheKtx<T>.remove(key: String) = edit { remove(key) }
+suspend fun <T> CacheKtx<T>.keys() = edit { keys() }
+
 internal class CacheKtxImpl<T>(
   val cache: CacheImpl<T>,
 ) : CacheKtx<T> {
