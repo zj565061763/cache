@@ -18,38 +18,36 @@ interface Cache<T> {
 
 internal class CacheImpl<T>(
   private val clazz: Class<T>,
-  val lockLevel: CacheLockLevel,
-  val groupLock: Any,
+  val lock: Any,
   private val cacheStoreProvider: () -> CacheStore,
 ) : Cache<T> {
-
   var cacheChangeCallback: CacheStore.CacheChangeCallback? = null
 
   override fun put(key: String, value: T?): Boolean {
     if (value == null) return false
     return libRunCatching {
       val data = encode(value, clazz)
-      lockCache(this@CacheImpl) { getCacheStore().putCache(key, data) }
+      lockCache { getCacheStore().putCache(key, data) }
       true
     }.getOrElse { false }
   }
 
   override fun get(key: String): T? {
     return libRunCatching {
-      lockCache(this@CacheImpl) { getCacheStore().getCache(key) }
+      lockCache { getCacheStore().getCache(key) }
         ?.let { data -> decode(data, clazz) }
     }.getOrNull()
   }
 
   override fun remove(key: String): Boolean {
     return libRunCatching {
-      lockCache(this@CacheImpl) { getCacheStore().removeCache(key) }
+      lockCache { getCacheStore().removeCache(key) }
     }.getOrElse { false }
   }
 
   override fun keys(): List<String> {
     return libRunCatching {
-      lockCache(this@CacheImpl) { getCacheStore().keys() }
+      lockCache { getCacheStore().keys() }
     }.getOrElse { emptyList() }
   }
 

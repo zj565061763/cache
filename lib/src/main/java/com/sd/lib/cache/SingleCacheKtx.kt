@@ -19,7 +19,7 @@ interface SingleCacheKtx<T> {
 
 fun <T> CacheKtx<T>.asSingleCacheKtx(
   /** 缓存key */
-  key: String = FCache.DEFAULT_SINGLE_CACHE_KEY,
+  key: String = DEFAULT_SINGLE_CACHE_KEY,
   /** 获取默认缓存，在[Dispatchers.IO]上面执行 */
   getDefault: () -> T,
 ): SingleCacheKtx<T> {
@@ -54,3 +54,6 @@ private class SingleCacheKtxImpl<T>(
     }
   }
 }
+
+/** 默认的单缓存key */
+private const val DEFAULT_SINGLE_CACHE_KEY = "com.sd.lib.cache.key.singlecache"
