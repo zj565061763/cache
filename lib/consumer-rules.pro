@@ -1,2 +1,2 @@
--keep @interface com.sd.lib.cache.DefaultGroupCache
--keep @com.sd.lib.cache.DefaultGroupCache class * {*;}
+-keep @interface com.sd.lib.cache.CacheEntity
+-keep @com.sd.lib.cache.CacheEntity class * {*;}

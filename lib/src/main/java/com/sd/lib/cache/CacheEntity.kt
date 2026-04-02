@@ -2,7 +2,7 @@ package com.sd.lib.cache
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class GroupCache(
+annotation class CacheEntity(
   /** 缓存id，在该组中不能重复 */
   val id: String,
   /** 缓存组 */

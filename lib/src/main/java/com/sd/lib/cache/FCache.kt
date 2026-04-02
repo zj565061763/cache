@@ -19,14 +19,14 @@ object FCache {
   }
 
   private fun <T> newCache(clazz: Class<T>): Cache<T> {
-    val annotation = clazz.getAnnotation(GroupCache::class.java)
-    require(annotation != null) { "Annotation ${GroupCache::class.java.simpleName} was not found in $clazz" }
+    val annotation = clazz.getAnnotation(CacheEntity::class.java)
+    require(annotation != null) { "Annotation ${CacheEntity::class.java.simpleName} was not found in $clazz" }
 
     val id = annotation.id
-    require(id.isNotBlank()) { "${GroupCache::class.java.simpleName}.id is blank in $clazz" }
+    require(id.isNotBlank()) { "${CacheEntity::class.java.simpleName}.id is blank in $clazz" }
 
     val group = annotation.group
-    require(group.isNotBlank()) { "${GroupCache::class.java.simpleName}.group is blank in $clazz" }
+    require(group.isNotBlank()) { "${CacheEntity::class.java.simpleName}.group is blank in $clazz" }
 
     val groupCacheStoreFactory = _mapGroupCacheStoreFactory.getOrPut(group) { GroupCacheStoreFactory(group) }
 
