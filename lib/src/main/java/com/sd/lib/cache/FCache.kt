@@ -23,11 +23,11 @@ object FCache {
     val annotation = clazz.getAnnotation(GroupCache::class.java)
     require(annotation != null) { "Annotation ${GroupCache::class.java.simpleName} was not found in $clazz" }
 
-    val group = annotation.group
-    require(group.isNotBlank()) { "${GroupCache::class.java.simpleName}.group is blank in $clazz" }
-
     val id = annotation.id
     require(id.isNotBlank()) { "${GroupCache::class.java.simpleName}.id is blank in $clazz" }
+
+    val group = annotation.group
+    require(group.isNotBlank()) { "${GroupCache::class.java.simpleName}.group is blank in $clazz" }
 
     val groupCacheStoreFactory = _mapGroupCacheStoreFactory.getOrPut(group) { GroupCacheStoreFactory(group) }
     return CacheImpl(
