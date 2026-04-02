@@ -1,10 +1,10 @@
 package com.sd.demo.cache
 
-import com.sd.lib.cache.DefaultGroupCache
+import com.sd.lib.cache.GroupCache
 import com.sd.lib.cache.FCache
 import org.junit.Assert.assertEquals
 
-@DefaultGroupCache("TestDefaultModel")
+@GroupCache("TestDefaultModel")
 data class TestDefaultModel(
   val name: String = "tom",
 )

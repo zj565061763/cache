@@ -1,10 +1,7 @@
 package com.sd.lib.cache
 
 object FCache {
-  /** DefaultGroup */
-  private const val DEFAULT_GROUP = "com.sd.lib.cache.group.default"
-  /** DefaultGroup的[GroupCacheStoreFactory] */
-  private val _defaultGroupCacheStoreFactory = GroupCacheStoreFactory(DEFAULT_GROUP)
+  private val _mapGroupCacheStoreFactory = mutableMapOf<String, GroupCacheStoreFactory>()
 
   /** 缓存所有的[Cache] */
   private val _caches = mutableMapOf<Class<*>, Cache<*>>()
@@ -23,13 +20,17 @@ object FCache {
   }
 
   private fun <T> newCache(clazz: Class<T>): Cache<T> {
-    val annotation = clazz.getAnnotation(DefaultGroupCache::class.java)
-    require(annotation != null) { "Annotation ${DefaultGroupCache::class.java.simpleName} was not found in $clazz" }
+    val annotation = clazz.getAnnotation(GroupCache::class.java)
+    require(annotation != null) { "Annotation ${GroupCache::class.java.simpleName} was not found in $clazz" }
+
+    val group = annotation.group
+    require(group.isNotBlank()) { "${GroupCache::class.java.simpleName}.group is blank in $clazz" }
 
     val id = annotation.id
-    require(id.isNotBlank()) { "${DefaultGroupCache::class.java.simpleName}.id is blank in $clazz" }
+    require(id.isNotBlank()) { "${GroupCache::class.java.simpleName}.id is blank in $clazz" }
 
-    return CacheImpl(clazz, annotation.lockLevel) { _defaultGroupCacheStoreFactory.create(id = id, clazz = clazz) }
+    val groupCacheStoreFactory = _mapGroupCacheStoreFactory.getOrPut(group) { GroupCacheStoreFactory(group) }
+    return CacheImpl(clazz, annotation.lockLevel) { groupCacheStoreFactory.create(id = id, clazz = clazz) }
   }
 }
 

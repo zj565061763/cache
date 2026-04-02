@@ -2,7 +2,7 @@ package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
-import com.sd.lib.cache.DefaultGroupCache
+import com.sd.lib.cache.GroupCache
 import com.sd.lib.cache.FCacheKtx
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -78,7 +78,7 @@ class CacheKtxTest {
   }
 }
 
-@DefaultGroupCache("TestKtxModel")
+@GroupCache("TestKtxModel")
 data class TestKtxModel(
   val name: String = "tom",
 )

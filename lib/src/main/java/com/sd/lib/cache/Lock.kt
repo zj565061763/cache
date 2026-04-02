@@ -3,21 +3,7 @@ package com.sd.lib.cache
 import android.net.LocalServerSocket
 import java.io.IOException
 
-/**
- * 缓存锁等级
- */
-enum class CacheLockLevel {
-  /** 当前进程当前缓存 */
-  CurrentProcessCurrentCache,
-
-  /** 当前进程 */
-  CurrentProcess,
-
-  /** 多进程 */
-  MultiProcess,
-}
-
-internal fun <T> libLock(
+internal fun <T> lockCache(
   cache: CacheImpl<*>,
   block: () -> T,
 ): T {

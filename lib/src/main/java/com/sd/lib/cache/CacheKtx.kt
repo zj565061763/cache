@@ -48,7 +48,7 @@ internal class CacheKtxImpl<T>(
 
   override suspend fun <R> edit(block: suspend Cache<T>.() -> R): R {
     return withContext(Dispatchers.IO) {
-      libLock(cache) {
+      lockCache(cache) {
         try {
           runBlocking { block(cache) }
         } catch (e: InterruptedException) {
