@@ -18,7 +18,7 @@ interface Cache<T> {
 
 internal class CacheImpl<T>(
   private val clazz: Class<T>,
-  val multiProcess: Boolean,
+  val lockLevel: CacheLockLevel,
   private val cacheStoreProvider: () -> CacheStore,
 ) : Cache<T> {
 
@@ -28,27 +28,27 @@ internal class CacheImpl<T>(
     if (value == null) return false
     return libRunCatching {
       val data = encode(value, clazz)
-      libLock(multiProcess) { getCacheStore().putCache(key, data) }
+      libLock(this@CacheImpl) { getCacheStore().putCache(key, data) }
       true
     }.getOrElse { false }
   }
 
   override fun get(key: String): T? {
     return libRunCatching {
-      libLock(multiProcess) { getCacheStore().getCache(key) }
+      libLock(this@CacheImpl) { getCacheStore().getCache(key) }
         ?.let { data -> decode(data, clazz) }
     }.getOrNull()
   }
 
   override fun remove(key: String): Boolean {
     return libRunCatching {
-      libLock(multiProcess) { getCacheStore().removeCache(key) }
+      libLock(this@CacheImpl) { getCacheStore().removeCache(key) }
     }.getOrElse { false }
   }
 
   override fun keys(): List<String> {
     return libRunCatching {
-      libLock(multiProcess) { getCacheStore().keys() }
+      libLock(this@CacheImpl) { getCacheStore().keys() }
     }.getOrElse { emptyList() }
   }
 

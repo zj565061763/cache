@@ -29,7 +29,7 @@ object FCache {
     val id = annotation.id
     require(id.isNotBlank()) { "${DefaultGroupCache::class.java.simpleName}.id is blank in $clazz" }
 
-    return CacheImpl(clazz, annotation.multiProcess) { _defaultGroupCacheStoreFactory.create(id = id, clazz = clazz) }
+    return CacheImpl(clazz, annotation.lockLevel) { _defaultGroupCacheStoreFactory.create(id = id, clazz = clazz) }
   }
 }
 

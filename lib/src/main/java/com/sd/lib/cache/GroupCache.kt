@@ -10,4 +10,6 @@ annotation class DefaultGroupCache(
   val id: String,
   /** 是否支持多进程 */
   val multiProcess: Boolean = false,
+  /** 锁等级 */
+  val lockLevel: CacheLockLevel = CacheLockLevel.CurrentProcessCurrentCache,
 )

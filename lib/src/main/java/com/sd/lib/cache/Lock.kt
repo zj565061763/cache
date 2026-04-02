@@ -3,21 +3,39 @@ package com.sd.lib.cache
 import android.net.LocalServerSocket
 import java.io.IOException
 
+/**
+ * 缓存锁等级
+ */
+enum class CacheLockLevel {
+  /** 当前进程当前缓存 */
+  CurrentProcessCurrentCache,
+
+  /** 当前进程 */
+  CurrentProcess,
+
+  /** 多进程 */
+  MultiProcess,
+}
+
 internal fun <T> libLock(
-  multiProcess: Boolean,
+  cache: CacheImpl<*>,
   block: () -> T,
 ): T {
-  return if (multiProcess) {
-    socketProcessLock.lock(block)
-  } else {
-    synchronized(FCache) { block() }
+  return when (cache.lockLevel) {
+    CacheLockLevel.CurrentProcessCurrentCache -> synchronized(cache) { block() }
+    CacheLockLevel.CurrentProcess -> synchronized(CurrentProcessLock) { block() }
+    CacheLockLevel.MultiProcess -> MultiProcessLock.lock(block)
   }
 }
 
-private val socketProcessLock by lazy {
+/** 当前进程锁 */
+private val CurrentProcessLock = Any()
+
+/** 多进程锁 */
+private val MultiProcessLock by lazy {
   SocketProcessLock(
     name = "com.sd.lib.cache:${CacheConfig.get().context.packageName}",
-    currentProcessLock = FCache,
+    currentProcessLock = CurrentProcessLock,
   )
 }
 
