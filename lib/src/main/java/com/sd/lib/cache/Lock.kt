@@ -11,7 +11,10 @@ internal fun <T> lockCache(
     CacheLockLevel.CurrentProcessCurrentCache -> synchronized(cache) { block() }
     CacheLockLevel.CurrentProcessCurrentGroup -> synchronized(cache.groupLock) { block() }
     CacheLockLevel.CurrentProcess -> synchronized(CurrentProcessLock) { block() }
-    CacheLockLevel.MultiProcess -> MultiProcessLock.lock(block)
+    CacheLockLevel.MultiProcess -> MultiProcessLock.lock(
+      id = "com.sd.lib.cache:${CacheConfig.get().context.packageName}",
+      block = block,
+    )
   }
 }
 
@@ -19,23 +22,13 @@ internal fun <T> lockCache(
 private val CurrentProcessLock = Any()
 
 /** 多进程锁 */
-private val MultiProcessLock by lazy {
-  SocketProcessLock(
-    name = "com.sd.lib.cache:${CacheConfig.get().context.packageName}",
-    currentProcessLock = CurrentProcessLock,
-  )
-}
-
-private class SocketProcessLock(
-  private val name: String,
-  private val currentProcessLock: Any,
-) {
+private object MultiProcessLock {
   private var _socket: LocalServerSocket? = null
 
-  fun <T> lock(block: () -> T): T {
-    synchronized(currentProcessLock) {
+  fun <T> lock(id: String, block: () -> T): T {
+    synchronized(this@MultiProcessLock) {
       if (_socket == null) {
-        val socket = realLock()
+        val socket = realLock(id)
         return try {
           _socket = socket
           block()
@@ -49,7 +42,7 @@ private class SocketProcessLock(
     }
   }
 
-  private fun realLock(): LocalServerSocket {
+  private fun realLock(name: String): LocalServerSocket {
     var retryCount = 0
     while (true) {
       try {
