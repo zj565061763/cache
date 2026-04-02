@@ -10,3 +10,17 @@ annotation class GroupCache(
   /** 锁等级 */
   val lockLevel: CacheLockLevel = CacheLockLevel.CurrentProcessCurrentCache,
 )
+
+/**
+ * 缓存锁等级
+ */
+enum class CacheLockLevel {
+  /** 当前进程当前缓存 */
+  CurrentProcessCurrentCache,
+
+  /** 当前进程当前组 */
+  CurrentProcessCurrentGroup,
+
+  /** 当前进程 */
+  CurrentProcess,
+}

@@ -18,7 +18,7 @@ interface Cache<T> {
 
 internal class CacheImpl<T>(
   private val clazz: Class<T>,
-  val lock: Any,
+  private val lock: Any,
   private val cacheStoreProvider: () -> CacheStore,
 ) : Cache<T> {
   @Volatile
@@ -51,6 +51,8 @@ internal class CacheImpl<T>(
       lockCache { getCacheStore().keys() }
     }.getOrElse { emptyList() }
   }
+
+  fun <R> lockCache(block: () -> R): R = synchronized(lock) { block() }
 
   @Throws(Throwable::class)
   private fun getCacheStore(): CacheStore {
