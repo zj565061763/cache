@@ -21,6 +21,7 @@ internal class CacheImpl<T>(
   val lock: Any,
   private val cacheStoreProvider: () -> CacheStore,
 ) : Cache<T> {
+  @Volatile
   var cacheChangeCallback: CacheStore.CacheChangeCallback? = null
 
   override fun put(key: String, value: T?): Boolean {
