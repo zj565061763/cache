@@ -18,6 +18,9 @@ enum class CacheLockLevel {
   /** 当前进程当前缓存 */
   CurrentProcessCurrentCache,
 
+  /** 当前进程当前组 */
+  CurrentProcessCurrentGroup,
+
   /** 当前进程 */
   CurrentProcess,
 

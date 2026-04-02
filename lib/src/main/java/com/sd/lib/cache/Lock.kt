@@ -9,6 +9,7 @@ internal fun <T> lockCache(
 ): T {
   return when (cache.lockLevel) {
     CacheLockLevel.CurrentProcessCurrentCache -> synchronized(cache) { block() }
+    CacheLockLevel.CurrentProcessCurrentGroup -> synchronized(cache.groupLock) { block() }
     CacheLockLevel.CurrentProcess -> synchronized(CurrentProcessLock) { block() }
     CacheLockLevel.MultiProcess -> MultiProcessLock.lock(block)
   }

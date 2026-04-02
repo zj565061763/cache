@@ -30,7 +30,12 @@ object FCache {
     require(id.isNotBlank()) { "${GroupCache::class.java.simpleName}.id is blank in $clazz" }
 
     val groupCacheStoreFactory = _mapGroupCacheStoreFactory.getOrPut(group) { GroupCacheStoreFactory(group) }
-    return CacheImpl(clazz, annotation.lockLevel) { groupCacheStoreFactory.create(id = id, clazz = clazz) }
+    return CacheImpl(
+      clazz = clazz,
+      lockLevel = annotation.lockLevel,
+      groupLock = groupCacheStoreFactory,
+      cacheStoreProvider = { groupCacheStoreFactory.create(id = id, clazz = clazz) },
+    )
   }
 }
 

@@ -19,6 +19,7 @@ interface Cache<T> {
 internal class CacheImpl<T>(
   private val clazz: Class<T>,
   val lockLevel: CacheLockLevel,
+  val groupLock: Any,
   private val cacheStoreProvider: () -> CacheStore,
 ) : Cache<T> {
 
