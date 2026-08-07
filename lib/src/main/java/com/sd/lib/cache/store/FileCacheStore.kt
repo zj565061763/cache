@@ -91,10 +91,6 @@ internal class FileCacheStore : CacheStore {
     }
   }
 
-  override fun destroy() {
-    stopWatching()
-  }
-
   override fun setCacheChangeCallback(callback: CacheStore.CacheChangeCallback) {
     _cacheChangeCallback = callback
   }
@@ -165,11 +161,6 @@ internal class FileCacheStore : CacheStore {
     _fileObserver.stopWatching()
     _fileObserver.startWatching()
     _watchValid = true
-  }
-
-  private fun stopWatching() {
-    _watchValid = false
-    _fileObserver.stopWatching()
   }
 
   /** 删除临时文件 */

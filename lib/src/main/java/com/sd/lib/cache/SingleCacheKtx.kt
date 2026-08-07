@@ -1,9 +1,8 @@
 package com.sd.lib.cache
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -11,7 +10,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 interface SingleCacheKtx<T> {
@@ -26,30 +24,34 @@ interface SingleCacheKtx<T> {
 }
 
 /**
- * 注意：如果[coroutineScope]不为null，说明启用了内存缓存，则App中同类型的缓存[T]，应该使用同一个[SingleCacheKtx]对象。
+ * 注意：如果启用了内存缓存（[memoryCache]为true），则App中同类型的缓存[T]，应该使用同一个[SingleCacheKtx]对象。
  * 否者可能造成[SingleCacheKtx.flow]延迟，例如：
  * A对象调用[SingleCacheKtx.update]后，B对象立即从[SingleCacheKtx.flow]获取的值可能还是旧的。
+ *
+ * 另外启用内存缓存后，内部会在[GlobalScope]上常驻一个协程收集缓存变化，它不会被取消，
+ * 所以不要为同一份缓存重复创建[SingleCacheKtx]对象，例如放在Activity的字段上。
  */
 fun <T> CacheKtx<T>.asSingleCacheKtx(
   /** 缓存key */
   key: String = DEFAULT_SINGLE_CACHE_KEY,
-  /** 如果不为null，则[SingleCacheKtx.flow]方法返回的是热流，并缓存最近的一个值在内存中 */
-  coroutineScope: CoroutineScope? = null,
+  /** 是否启用内存缓存，启用后[SingleCacheKtx.flow]方法返回的是热流，并缓存最近的一个值在内存中 */
+  memoryCache: Boolean = false,
   /** 获取默认缓存，在[Dispatchers.IO]上面执行 */
   getDefault: () -> T,
 ): SingleCacheKtx<T> {
   return SingleCacheKtxImpl(
     cache = this,
     key = key,
-    coroutineScope = coroutineScope,
+    memoryCache = memoryCache,
     getDefault = getDefault,
   )
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 private class SingleCacheKtxImpl<T>(
   private val cache: CacheKtx<T>,
   private val key: String,
-  private val coroutineScope: CoroutineScope?,
+  memoryCache: Boolean,
   private val getDefault: () -> T,
 ) : SingleCacheKtx<T> {
 
@@ -58,7 +60,7 @@ private class SingleCacheKtxImpl<T>(
     .distinctUntilChanged()
     .flowOn(Dispatchers.IO)
 
-  private val _sharedFlow: MutableSharedFlow<T>? = if (coroutineScope != null) {
+  private val _sharedFlow: MutableSharedFlow<T>? = if (memoryCache) {
     MutableSharedFlow(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
   } else {
     null
@@ -66,13 +68,7 @@ private class SingleCacheKtxImpl<T>(
 
   private val _hotFlow: Flow<T>? = _sharedFlow?.distinctUntilChanged()
 
-  override fun flow(): Flow<T> {
-    return if (coroutineScope?.isActive == true) {
-      checkNotNull(_hotFlow)
-    } else {
-      _flow
-    }
-  }
+  override fun flow(): Flow<T> = _hotFlow ?: _flow
 
   override suspend fun update(block: (T) -> T?): Boolean {
     return cache.edit {
@@ -91,15 +87,9 @@ private class SingleCacheKtxImpl<T>(
   }
 
   init {
-    coroutineScope?.launch {
-      val sharedFlow = checkNotNull(_sharedFlow)
-      try {
-        sharedFlow.emitAll(_flow)
-      } catch (e: CancellationException) {
-        @OptIn(ExperimentalCoroutinesApi::class)
-        sharedFlow.resetReplayCache()
-        throw e
-      }
+    val sharedFlow = _sharedFlow
+    if (sharedFlow != null) {
+      GlobalScope.launch { sharedFlow.emitAll(_flow) }
     }
   }
 }

@@ -27,10 +27,6 @@ interface CacheStore {
   @Throws(Throwable::class)
   fun keys(): List<String>
 
-  /** 销毁 */
-  @Throws(Throwable::class)
-  fun destroy()
-
   /** 缓存变化回调 */
   fun setCacheChangeCallback(callback: CacheChangeCallback)
 

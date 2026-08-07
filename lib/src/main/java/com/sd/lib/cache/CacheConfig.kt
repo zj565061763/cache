@@ -12,9 +12,9 @@ class CacheConfig private constructor(
   builder: Builder,
   context: Context,
 ) {
-  internal val context = context.applicationContext
+  internal val appContext = context.applicationContext
   private val cacheStoreFactory: CacheStoreFactory
-  internal val directory: File by lazy { context.filesDir.resolve("sd.lib.cache") }
+  internal val directory: File by lazy { appContext.filesDir.resolve("sd.lib.cache") }
   internal val objectConverter: ObjectConverter
   internal val exceptionHandler: ExceptionHandler
 
@@ -29,7 +29,7 @@ class CacheConfig private constructor(
   internal fun newCacheStore(group: String, id: String): CacheStore {
     return cacheStoreFactory.create().also { cacheStore ->
       cacheStore.init(
-        context = context,
+        context = appContext,
         directory = directory.resolve(md5(group)).resolve(md5(id)),
       )
     }
