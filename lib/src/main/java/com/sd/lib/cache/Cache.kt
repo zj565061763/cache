@@ -4,7 +4,7 @@ import com.sd.lib.cache.store.CacheStore
 
 interface Cache<T> {
   /** 设置缓存 */
-  fun put(key: String, value: T?): Boolean
+  fun put(key: String, value: T): Boolean
 
   /** 获取缓存 */
   fun get(key: String): T?
@@ -24,8 +24,7 @@ internal class CacheImpl<T>(
   @Volatile
   var cacheChangeCallback: CacheStore.CacheChangeCallback? = null
 
-  override fun put(key: String, value: T?): Boolean {
-    if (value == null) return false
+  override fun put(key: String, value: T): Boolean {
     return libRunCatching {
       val data = encode(value, clazz)
       lockCache { getCacheStore().putCache(key, data) }

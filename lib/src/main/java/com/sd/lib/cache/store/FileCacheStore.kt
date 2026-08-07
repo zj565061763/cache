@@ -3,6 +3,7 @@ package com.sd.lib.cache.store
 import android.content.Context
 import android.os.FileObserver
 import android.util.Base64
+import com.sd.lib.cache.libException
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -124,6 +125,11 @@ internal class FileCacheStore : CacheStore {
   /** [key]对应的[File] */
   private fun fileOf(key: String): File {
     val filename = keyToFilename(key)
+    // 临时文件比缓存文件多一个后缀，按最长的算
+    val maxLength = filename.length + CACHE_SUFFIX_WITH_DOT.length + TEMP_SUFFIX_WITH_DOT.length
+    if (maxLength > MAX_FILENAME_LENGTH) {
+      libException("Cache key is too long: ${key.toByteArray().size} bytes, max $MAX_KEY_BYTES bytes")
+    }
     return _directory.resolve(filename + CACHE_SUFFIX_WITH_DOT)
   }
 
@@ -173,6 +179,17 @@ internal class FileCacheStore : CacheStore {
 private const val CACHE_SUFFIX_WITH_DOT = ".cache"
 /** 临时文件后缀 */
 private const val TEMP_SUFFIX_WITH_DOT = ".tmp"
+
+/** 文件名长度上限，Linux下NAME_MAX为255字节，Base64的输出是ASCII，所以字符数等于字节数 */
+private const val MAX_FILENAME_LENGTH = 255
+
+/**
+ * key的最大字节数。
+ * Base64编码后的长度为ceil(4n/3)，还要留出[CACHE_SUFFIX_WITH_DOT]和[TEMP_SUFFIX_WITH_DOT]共10个字节，
+ * 即ceil(4n/3) <= 245，解得n <= 183。
+ * 注意限制的是字节数不是字符数，UTF-8下一个汉字占3个字节。
+ */
+private const val MAX_KEY_BYTES = 183
 
 /** 把[key]转为文件名 */
 private fun keyToFilename(key: String): String {
