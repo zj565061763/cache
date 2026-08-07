@@ -10,6 +10,10 @@ import java.io.IOException
 internal class FileCacheStore : CacheStore {
   private lateinit var _directory: File
 
+  /** 监听是否有效 */
+  @Volatile
+  private var _watchValid = false
+
   @Volatile
   private var _cacheChangeCallback: CacheStore.CacheChangeCallback? = null
 
@@ -18,13 +22,13 @@ internal class FileCacheStore : CacheStore {
     _directory = directory
     if (checkDirectoryExist()) {
       deleteTempFile()
-      _fileObserver.startWatching()
     } else {
       throw IOException("CacheStore mkdirs failure:$directory")
     }
   }
 
   override fun putCache(key: String, value: ByteArray) {
+    checkWatchValid()
     val file = fileOf(key)
     val tempFile = file.resolveSibling("${file.name}${TEMP_SUFFIX_WITH_DOT}")
 
@@ -51,20 +55,36 @@ internal class FileCacheStore : CacheStore {
   }
 
   override fun getCache(key: String): ByteArray? {
+    checkWatchValid()
     return try {
       fileOf(key).readBytes()
     } catch (_: FileNotFoundException) {
+      // 文件不存在，也可能是整个目录被删除了
+      checkDirectoryExist()
       null
     }
   }
 
   override fun removeCache(key: String): Boolean {
-    return fileOf(key).let { !it.exists() || it.delete() }
+    checkWatchValid()
+    val file = fileOf(key)
+    if (!file.exists()) {
+      // 文件不存在，也可能是整个目录被删除了
+      checkDirectoryExist()
+      return true
+    }
+    return file.delete()
   }
 
   override fun keys(): List<String> {
+    checkWatchValid()
     val listFile = _directory.listFiles { file -> file.name.endsWith(CACHE_SUFFIX_WITH_DOT) }
-    if (listFile.isNullOrEmpty()) return emptyList()
+    if (listFile == null) {
+      // 目录不存在
+      checkDirectoryExist()
+      return emptyList()
+    }
+    if (listFile.isEmpty()) return emptyList()
     return listFile.mapNotNull { file ->
       val filename = file.name.removeSuffix(CACHE_SUFFIX_WITH_DOT)
       filenameToKey(filename)
@@ -72,7 +92,7 @@ internal class FileCacheStore : CacheStore {
   }
 
   override fun destroy() {
-    _fileObserver.stopWatching()
+    stopWatching()
   }
 
   override fun setCacheChangeCallback(callback: CacheStore.CacheChangeCallback) {
@@ -82,6 +102,12 @@ internal class FileCacheStore : CacheStore {
   private val _fileObserver by lazy {
     object : FileObserver(_directory.absolutePath) {
       override fun onEvent(event: Int, path: String?) {
+        if ((event and (DELETE_SELF or MOVE_SELF)) != 0) {
+          // 被监听的目录本身被删除或移动了，监听已失效，等待下次操作时重新监听
+          _watchValid = false
+          return
+        }
+
         if (path.isNullOrEmpty()) return
 
         val filename = path.removeSuffix(CACHE_SUFFIX_WITH_DOT)
@@ -105,12 +131,45 @@ internal class FileCacheStore : CacheStore {
     return _directory.resolve(filename + CACHE_SUFFIX_WITH_DOT)
   }
 
-  /** 检查目录是否存在，如果不存在则创建 */
+  /**
+   * 如果监听已失效，则检查目录并恢复监听。
+   * 目录被删除后重建时（例如清除数据），之前的监听不会自动作用于新目录，必须重新监听。
+   */
+  private fun checkWatchValid() {
+    if (!_watchValid) checkDirectoryExist()
+  }
+
+  /**
+   * 检查目录是否存在，如果不存在则创建，并确保监听有效。
+   *
+   * 监听失效是靠DELETE_SELF事件感知的，而事件的投递是异步的，所以除了[checkWatchValid]，
+   * 各个操作在发现目录不存在时也要调用本方法，否则目录刚被删除的那一小段时间里监听不会恢复。
+   * 尤其是[getCache]和[keys]：只读的调用方只有这两条路径，它们不恢复的话，
+   * 监听死了就再也收不到事件，也就再也没有机会恢复。
+   */
   private fun checkDirectoryExist(): Boolean {
     val dir = _directory
-    if (dir.isDirectory) return true
-    if (dir.isFile) dir.delete()
-    return dir.mkdirs()
+    if (!dir.isDirectory) {
+      if (dir.isFile) dir.delete()
+      // 目录已不存在，之前的监听必然已失效
+      _watchValid = false
+      if (!dir.mkdirs()) return false
+    }
+    startWatching()
+    return true
+  }
+
+  private fun startWatching() {
+    if (_watchValid) return
+    // 先停止，清理掉可能残留的失效监听
+    _fileObserver.stopWatching()
+    _fileObserver.startWatching()
+    _watchValid = true
+  }
+
+  private fun stopWatching() {
+    _watchValid = false
+    _fileObserver.stopWatching()
   }
 
   /** 删除临时文件 */

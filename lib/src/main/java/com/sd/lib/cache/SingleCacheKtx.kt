@@ -22,7 +22,7 @@ interface SingleCacheKtx<T> {
    * 更新缓存，[block]在[Dispatchers.IO]上面执行，如果[block]返回null则删除缓存
    * @return true-更新成功；false-更新失败
    */
-  suspend fun update(block: suspend (T) -> T?): Boolean
+  suspend fun update(block: (T) -> T?): Boolean
 }
 
 /**
@@ -74,7 +74,7 @@ private class SingleCacheKtxImpl<T>(
     }
   }
 
-  override suspend fun update(block: suspend (T) -> T?): Boolean {
+  override suspend fun update(block: (T) -> T?): Boolean {
     return cache.edit {
       val oldCache = get(key) ?: getDefault()
       val newCache = block(oldCache)

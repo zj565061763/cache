@@ -1,7 +1,6 @@
 package com.sd.lib.cache
 
 import com.sd.lib.cache.store.CacheStore
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -10,8 +9,6 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
@@ -21,7 +18,7 @@ interface CacheKtx<T> {
   fun flowOf(key: String): Flow<T?>
 
   /** 编辑缓存，[block]在[Dispatchers.IO]上面执行 */
-  suspend fun <R> edit(block: suspend Cache<T>.() -> R): R
+  suspend fun <R> edit(block: Cache<T>.() -> R): R
 }
 
 suspend fun <T> CacheKtx<T>.put(key: String, value: T?) = edit { put(key, value) }
@@ -38,23 +35,18 @@ internal class CacheKtxImpl<T>(
     return callbackFlow {
       val callback = callbackForTargetKeyCacheChange(targetKey = key) { trySend(Unit) }
       _callbacks.addCallback(callback)
+      // 注册回调之后再触发首次读取，否则会丢失注册期间的缓存变化
+      trySend(Unit)
       awaitClose { _callbacks.removeCallback(callback) }
     }.conflate()
-      .onStart { emit(Unit) }
       .map { cache.get(key) }
       .distinctUntilChanged()
       .flowOn(Dispatchers.IO)
   }
 
-  override suspend fun <R> edit(block: suspend Cache<T>.() -> R): R {
+  override suspend fun <R> edit(block: Cache<T>.() -> R): R {
     return withContext(Dispatchers.IO) {
-      cache.lockCache {
-        try {
-          runBlocking { block(cache) }
-        } catch (e: InterruptedException) {
-          throw CancellationException().initCause(e)
-        }
-      }
+      cache.lockCache { block(cache) }
     }
   }
 }
