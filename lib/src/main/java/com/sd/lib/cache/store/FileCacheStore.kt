@@ -203,6 +203,7 @@ private fun filenameToKey(filename: String): String? {
   return runCatching {
     val input = filename.toByteArray()
     val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
-    Base64.decode(input, flag).decodeToString()
+    // 必须throwOnInvalidSequence，否则非法的UTF-8会被静默替换成U+FFFD，
+    Base64.decode(input, flag).decodeToString(throwOnInvalidSequence = true)
   }.getOrNull()
 }

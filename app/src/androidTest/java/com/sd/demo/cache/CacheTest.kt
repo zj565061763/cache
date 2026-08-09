@@ -83,9 +83,35 @@ class CacheTest {
     }
     assertEquals(1, tooLong.size)
   }
+
+  /** 目录里混进名字能通过Base64解码、但解出来不是合法UTF-8的文件时，keys()不能把它当成有效key */
+  @Test
+  fun testInvalidUtf8FilenameIgnored() {
+    val cache = FCache.get(TestInvalidFilenameModel::class.java)
+    val key = "validKey"
+    assertEquals(true, cache.put(key, TestInvalidFilenameModel()))
+
+    // "____"是4个合法的URL_SAFE Base64字符（_是索引63），解码得到[0xFF,0xFF,0xFF]，
+    // 而0xFF在UTF-8里永远不是合法字节
+    val garbage = cacheStoreDirectory(INVALID_FILENAME_MODEL_ID).resolve("____.cache")
+    garbage.writeBytes(byteArrayOf(1))
+    try {
+      assertEquals(listOf(key), cache.keys())
+    } finally {
+      garbage.delete()
+      cache.remove(key)
+    }
+  }
 }
 
 @CacheEntity("TestKeyLengthModel")
 data class TestKeyLengthModel(
+  val name: String = "tom",
+)
+
+const val INVALID_FILENAME_MODEL_ID = "TestInvalidFilenameModel"
+
+@CacheEntity(INVALID_FILENAME_MODEL_ID)
+data class TestInvalidFilenameModel(
   val name: String = "tom",
 )
