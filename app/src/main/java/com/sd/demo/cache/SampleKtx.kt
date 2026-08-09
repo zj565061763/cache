@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.sd.demo.cache.databinding.SampleKtxBinding
-import com.sd.lib.cache.FCacheKtx
+import com.sd.lib.cache.FCache
 import kotlinx.coroutines.launch
 
 class SampleKtx : AppCompatActivity() {
@@ -13,7 +13,7 @@ class SampleKtx : AppCompatActivity() {
   private val key1 = "key1"
   private val key2 = "key2"
 
-  private val _cache = FCacheKtx.get(DefaultModel::class.java)
+  private val _cache = FCache.getKtx(DefaultModel::class.java)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

@@ -4,7 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.sd.lib.cache.CacheEntity
 import com.sd.lib.cache.CacheLockLevel
-import com.sd.lib.cache.FCacheKtx
+import com.sd.lib.cache.FCache
 import com.sd.lib.cache.get
 import com.sd.lib.cache.put
 import com.sd.lib.cache.remove
@@ -24,14 +24,14 @@ import kotlin.time.Duration.Companion.seconds
 class CacheKtxTest {
   @Test
   fun testCacheInstance() {
-    val cache1 = FCacheKtx.get(TestKtxModel::class.java)
-    val cache2 = FCacheKtx.get(TestKtxModel::class.java)
+    val cache1 = FCache.getKtx(TestKtxModel::class.java)
+    val cache2 = FCache.getKtx(TestKtxModel::class.java)
     assertEquals(true, cache1 === cache2)
   }
 
   @Test
   fun test() = runBlocking {
-    val cache = FCacheKtx.get(TestKtxModel::class.java)
+    val cache = FCache.getKtx(TestKtxModel::class.java)
 
     val key1 = "key1"
     val key2 = "key2"
@@ -66,7 +66,7 @@ class CacheKtxTest {
 
   @Test
   fun testFlow() = runBlocking {
-    val cache = FCacheKtx.get(TestKtxModel::class.java)
+    val cache = FCache.getKtx(TestKtxModel::class.java)
     val key = "key"
     cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
       assertEquals(null, awaitItem())
@@ -96,7 +96,7 @@ class CacheKtxTest {
    */
   @Test
   fun testFlowInitialValueNotStale() = runBlocking {
-    val cache = FCacheKtx.get(TestKtxRaceModel::class.java)
+    val cache = FCache.getKtx(TestKtxRaceModel::class.java)
     val key = "testFlowInitialValueNotStale"
     // 用一个较大的旧值让"读初始值"这一步足够慢，
     // 并发的put会先卡在缓存锁上，等读完成后立刻写入，从而落在"读初始值"与"注册回调"之间
@@ -119,7 +119,7 @@ class CacheKtxTest {
   /** 去掉runBlocking之后，[com.sd.lib.cache.CacheKtx.edit]仍然要正确串行化 */
   @Test
   fun testEditSerialization() = runBlocking {
-    val cache = FCacheKtx.get(TestKtxCounterModel::class.java)
+    val cache = FCache.getKtx(TestKtxCounterModel::class.java)
     val key = "testEditSerialization"
     cache.remove(key)
 
@@ -143,8 +143,8 @@ class CacheKtxTest {
    */
   @Test
   fun testEditNoDeadlockAcrossCaches() = runBlocking {
-    val cacheA = FCacheKtx.get(TestKtxProcessLockModelA::class.java)
-    val cacheB = FCacheKtx.get(TestKtxProcessLockModelB::class.java)
+    val cacheA = FCache.getKtx(TestKtxProcessLockModelA::class.java)
+    val cacheB = FCache.getKtx(TestKtxProcessLockModelB::class.java)
     val key = "testEditNoDeadlockAcrossCaches"
 
     withTimeout(30.seconds) {
@@ -171,7 +171,7 @@ class CacheKtxTest {
    */
   @Test
   fun testInPlaceWriteNotified() = runBlocking {
-    val cache = FCacheKtx.get(TestKtxInPlaceModel::class.java)
+    val cache = FCache.getKtx(TestKtxInPlaceModel::class.java)
     val key = "testInPlaceWriteNotified"
 
     cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
@@ -192,7 +192,7 @@ class CacheKtxTest {
   /** 缓存文件被移出监听目录，对缓存来说等同于被删除 */
   @Test
   fun testMovedOutTreatedAsRemoved() = runBlocking {
-    val cache = FCacheKtx.get(TestKtxMovedOutModel::class.java)
+    val cache = FCache.getKtx(TestKtxMovedOutModel::class.java)
     val key = "testMovedOutTreatedAsRemoved"
 
     cache.flowOf(key).test(timeout = TEST_TIMEOUT) {

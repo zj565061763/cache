@@ -20,31 +20,48 @@ interface SingleCacheKtx<T> {
    * @return true-更新成功；false-更新失败
    */
   suspend fun update(block: (T) -> T?): Boolean
+
+  companion object {
+    private val _caches = mutableMapOf<Class<*>, SingleCacheKtx<*>>()
+
+    fun <T> get(
+      clazz: Class<T>,
+      /** 是否启用内存缓存，启用后[flow]方法返回的是热流，并缓存最近的一个值在内存中 */
+      memoryCache: Boolean = false,
+      /** 获取默认缓存，调用此方法时同步执行 */
+      getDefault: () -> T,
+    ): SingleCacheKtx<T> {
+      return if (memoryCache) {
+        synchronized(_caches) {
+          val cache = _caches.getOrPut(clazz) {
+            SingleCacheKtxImpl(
+              cache = FCache.getKtx(clazz),
+              memoryCache = true,
+              defaultCache = getDefault(),
+            )
+          }
+          @Suppress("UNCHECKED_CAST")
+          cache as SingleCacheKtx<T>
+        }
+      } else {
+        SingleCacheKtxImpl(
+          cache = FCache.getKtx(clazz),
+          memoryCache = false,
+          defaultCache = getDefault(),
+        )
+      }
+    }
+  }
 }
 
-/**
- * 注意：如果启用了内存缓存（[memoryCache]为true），则App中同类型的缓存[T]，应该使用同一个[SingleCacheKtx]对象。
- * 否者可能造成[SingleCacheKtx.flow]延迟，例如：
- * A对象调用[SingleCacheKtx.update]后，B对象立即从[SingleCacheKtx.flow]获取的值可能还是旧的。
- *
- * 另外启用内存缓存后，内部会在[GlobalScope]上常驻一个协程收集缓存变化，它不会被取消，
- * 所以不要为同一份缓存重复创建[SingleCacheKtx]对象，例如放在Activity的字段上。
- */
-fun <T> CacheKtx<T>.asSingleCacheKtx(
-  /** 缓存key */
-  key: String = DEFAULT_SINGLE_CACHE_KEY,
+inline fun <reified T> singleCacheKtx(
   /** 是否启用内存缓存，启用后[SingleCacheKtx.flow]方法返回的是热流，并缓存最近的一个值在内存中 */
   memoryCache: Boolean = false,
-  /**
-   * 获取默认缓存，在[Dispatchers.IO]上面执行。
-   * 每个收集者会各自调用它，所以应该保持轻量，并且多次调用要返回相等的值，
-   * 否则不同的收集者可能拿到不同的默认缓存。
-   */
-  getDefault: () -> T,
+  /** 获取默认缓存 */
+  noinline getDefault: () -> T,
 ): SingleCacheKtx<T> {
-  return SingleCacheKtxImpl(
-    cache = this,
-    key = key,
+  return SingleCacheKtx.get(
+    clazz = T::class.java,
     memoryCache = memoryCache,
     getDefault = getDefault,
   )
@@ -53,9 +70,9 @@ fun <T> CacheKtx<T>.asSingleCacheKtx(
 @OptIn(DelicateCoroutinesApi::class)
 private class SingleCacheKtxImpl<T>(
   private val cache: CacheKtx<T>,
-  private val key: String,
+  private val key: String = "com.sd.lib.cache.key.singlecache",
   memoryCache: Boolean,
-  private val getDefault: () -> T,
+  private val defaultCache: T,
 ) : SingleCacheKtx<T> {
   private val _hotFlow: MutableSharedFlow<T?>? = if (memoryCache) {
     MutableSharedFlow(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
@@ -64,7 +81,7 @@ private class SingleCacheKtxImpl<T>(
   }
 
   private val _flow = (_hotFlow ?: (cache.eventFlowOf(key).map { cache.get(key) }))
-    .map { it ?: getDefault() }
+    .map { it ?: defaultCache }
     .distinctUntilChanged()
     .flowOn(Dispatchers.IO)
 
@@ -72,7 +89,7 @@ private class SingleCacheKtxImpl<T>(
 
   override suspend fun update(block: (T) -> T?): Boolean {
     return cache.edit {
-      val oldCache = get(key) ?: getDefault()
+      val oldCache = get(key) ?: defaultCache
       val newCache = block(oldCache)
       val result = if (newCache != null) {
         put(key, newCache)
@@ -97,6 +114,3 @@ private class SingleCacheKtxImpl<T>(
     }
   }
 }
-
-/** 默认的单缓存key */
-private const val DEFAULT_SINGLE_CACHE_KEY = "com.sd.lib.cache.key.singlecache"

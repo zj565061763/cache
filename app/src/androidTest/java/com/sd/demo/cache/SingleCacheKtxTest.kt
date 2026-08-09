@@ -3,8 +3,7 @@ package com.sd.demo.cache
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.sd.lib.cache.CacheEntity
-import com.sd.lib.cache.FCacheKtx
-import com.sd.lib.cache.asSingleCacheKtx
+import com.sd.lib.cache.singleCacheKtx
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
@@ -21,8 +20,7 @@ class SingleCacheKtxTest {
 
   @Test
   fun testUpdateAndFlow() = runBlocking {
-    val cache = FCacheKtx.get(TestSingleModel::class.java)
-      .asSingleCacheKtx { TestSingleModel() }
+    val cache = singleCacheKtx<TestSingleModel> { TestSingleModel() }
 
     // 复位为默认缓存
     assertEquals(true, cache.update { null })
@@ -42,8 +40,7 @@ class SingleCacheKtxTest {
   /** [com.sd.lib.cache.SingleCacheKtx.update]返回null会删除缓存，还原为默认缓存 */
   @Test
   fun testUpdateReturnNullRemoves() = runBlocking {
-    val cache = FCacheKtx.get(TestSingleRemoveModel::class.java)
-      .asSingleCacheKtx { TestSingleRemoveModel() }
+    val cache = singleCacheKtx<TestSingleRemoveModel> { TestSingleRemoveModel() }
 
     assertEquals(true, cache.update { null })
 
@@ -61,8 +58,7 @@ class SingleCacheKtxTest {
   /** memoryCache为true时启用内存缓存，[com.sd.lib.cache.SingleCacheKtx.flow]返回热流 */
   @Test
   fun testMemoryCacheFlow() = runBlocking {
-    val cache = FCacheKtx.get(TestSingleMemoryModel::class.java)
-      .asSingleCacheKtx(memoryCache = true) { TestSingleMemoryModel() }
+    val cache = singleCacheKtx<TestSingleMemoryModel>(memoryCache = true) { TestSingleMemoryModel() }
 
     assertEquals(true, cache.update { null })
     assertEquals(TestSingleMemoryModel(), withTimeout(TEST_TIMEOUT) { cache.flow().first() })
@@ -83,9 +79,8 @@ class SingleCacheKtxTest {
    */
   @Test
   fun testMemoryCacheReceivesExternalWrite() = runBlocking {
-    val key = "testMemoryCacheReceivesExternalWrite"
-    val cache = FCacheKtx.get(TestSingleExternalModel::class.java)
-      .asSingleCacheKtx(key = key, memoryCache = true) { TestSingleExternalModel() }
+    // 新API不支持自定义key，使用DEFAULT_SINGLE_CACHE_KEY
+    val cache = singleCacheKtx<TestSingleExternalModel>(memoryCache = true) { TestSingleExternalModel() }
 
     val before = TestSingleExternalModel(name = "before")
     assertEquals(true, cache.update { before })
@@ -96,7 +91,7 @@ class SingleCacheKtxTest {
       val external = TestSingleExternalModel(name = "external")
       writeCacheFileDirectly(
         id = EXTERNAL_MODEL_ID,
-        key = key,
+        key = SINGLE_CACHE_KEY,
         json = """{"name":"${external.name}"}""",
       )
       assertEquals(external, awaitItemUntil(external))
@@ -111,8 +106,7 @@ class SingleCacheKtxTest {
    */
   @Test
   fun testMemoryCacheNoStaleEmission() = runBlocking {
-    val cache = FCacheKtx.get(TestSingleJitterModel::class.java)
-      .asSingleCacheKtx(memoryCache = true) { TestSingleJitterModel() }
+    val cache = singleCacheKtx<TestSingleJitterModel>(memoryCache = true) { TestSingleJitterModel() }
 
     val count = 300
     assertEquals(true, cache.update { TestSingleJitterModel(seq = 0) })
@@ -158,6 +152,9 @@ data class TestSingleMemoryModel(
 )
 
 const val EXTERNAL_MODEL_ID = "TestSingleExternalModel"
+
+/** 与[com.sd.lib.cache.SingleCacheKtx]内部的DEFAULT_SINGLE_CACHE_KEY保持一致 */
+const val SINGLE_CACHE_KEY = "com.sd.lib.cache.key.singlecache"
 
 @CacheEntity(EXTERNAL_MODEL_ID)
 data class TestSingleExternalModel(

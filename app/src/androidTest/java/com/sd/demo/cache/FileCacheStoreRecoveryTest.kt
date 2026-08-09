@@ -3,7 +3,7 @@ package com.sd.demo.cache
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.sd.lib.cache.CacheEntity
-import com.sd.lib.cache.FCacheKtx
+import com.sd.lib.cache.FCache
 import com.sd.lib.cache.get
 import com.sd.lib.cache.keys
 import com.sd.lib.cache.put
@@ -22,7 +22,7 @@ import kotlin.time.Duration.Companion.seconds
 @RunWith(AndroidJUnit4::class)
 class FileCacheStoreRecoveryTest {
 
-  private val _cache = FCacheKtx.get(TestRecoveryModel::class.java)
+  private val _cache = FCache.getKtx(TestRecoveryModel::class.java)
 
   /** 缓存目录被删除后，通过写操作恢复监听 */
   @Test

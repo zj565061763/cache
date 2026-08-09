@@ -3,7 +3,7 @@ package com.sd.demo.cache
 import android.app.Application
 import com.sd.lib.cache.CacheConfig
 import com.sd.lib.cache.CacheEntity
-import com.sd.lib.cache.FCacheKtx
+import com.sd.lib.cache.FCache
 import com.sd.lib.cache.init
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -28,7 +28,7 @@ class App : Application() {
       val keysFlow = MutableStateFlow<List<String>?>(null)
       launch {
         while (true) {
-          keysFlow.value = FCacheKtx.get(DefaultModel::class.java).edit { keys() }
+          keysFlow.value = FCache.getKtx(DefaultModel::class.java).edit { keys() }
           delay(1000)
         }
       }
