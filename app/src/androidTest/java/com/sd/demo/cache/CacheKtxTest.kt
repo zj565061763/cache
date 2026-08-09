@@ -163,6 +163,56 @@ class CacheKtxTest {
     assertEquals(true, cacheA.get(key) != null)
     assertEquals(true, cacheB.get(key) != null)
   }
+
+  /**
+   * 外部就地写入缓存文件（不经过临时文件重命名）走的是CLOSE_WRITE事件。
+   * 库自己的写入永远是「临时文件+重命名」，产生的是MOVED_TO，所以这一位只有本用例覆盖，
+   * 掩码里漏掉CLOSE_WRITE的话没有别的用例会失败。
+   */
+  @Test
+  fun testInPlaceWriteNotified() = runBlocking {
+    val cache = FCacheKtx.get(TestKtxInPlaceModel::class.java)
+    val key = "testInPlaceWriteNotified"
+
+    cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
+      cache.remove(key)
+      awaitItemUntil(null)
+
+      val model1 = TestKtxInPlaceModel(name = "value1")
+      assertEquals(true, cache.put(key, model1))
+      assertEquals(model1, awaitItemUntil(model1))
+
+      // 直接就地写文件，不重命名
+      val model2 = TestKtxInPlaceModel(name = "inPlace")
+      cacheFileOf(IN_PLACE_MODEL_ID, key).writeBytes("""{"name":"${model2.name}"}""".toByteArray())
+      assertEquals(model2, awaitItemUntil(model2))
+    }
+  }
+
+  /** 缓存文件被移出监听目录，对缓存来说等同于被删除 */
+  @Test
+  fun testMovedOutTreatedAsRemoved() = runBlocking {
+    val cache = FCacheKtx.get(TestKtxMovedOutModel::class.java)
+    val key = "testMovedOutTreatedAsRemoved"
+
+    cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
+      cache.remove(key)
+      awaitItemUntil(null)
+
+      val model = TestKtxMovedOutModel(name = "value")
+      assertEquals(true, cache.put(key, model))
+      assertEquals(model, awaitItemUntil(model))
+
+      // 移到缓存根目录下，不在被监听的store目录里，才算真正移出
+      val dest = cacheRootDirectory().resolve("movedOut.bak")
+      assertEquals(true, cacheFileOf(MOVED_OUT_MODEL_ID, key).renameTo(dest))
+      try {
+        assertEquals(null, awaitItemUntil(null))
+      } finally {
+        dest.delete()
+      }
+    }
+  }
 }
 
 @CacheEntity("TestKtxModel")
@@ -187,5 +237,19 @@ data class TestKtxProcessLockModelA(
 
 @CacheEntity(id = "TestKtxProcessLockModelB", lockLevel = CacheLockLevel.CurrentProcess)
 data class TestKtxProcessLockModelB(
+  val name: String = "tom",
+)
+
+const val IN_PLACE_MODEL_ID = "TestKtxInPlaceModel"
+
+@CacheEntity(IN_PLACE_MODEL_ID)
+data class TestKtxInPlaceModel(
+  val name: String = "tom",
+)
+
+const val MOVED_OUT_MODEL_ID = "TestKtxMovedOutModel"
+
+@CacheEntity(MOVED_OUT_MODEL_ID)
+data class TestKtxMovedOutModel(
   val name: String = "tom",
 )

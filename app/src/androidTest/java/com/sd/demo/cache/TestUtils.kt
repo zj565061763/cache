@@ -59,6 +59,13 @@ fun recreateCacheStoreDirectory(id: String, group: String = DEFAULT_GROUP) {
   assertEquals(true, dir.isDirectory)
 }
 
+/** [key]对应的缓存文件，与`FileCacheStore.fileOf()`的规则保持一致 */
+fun cacheFileOf(id: String, key: String, group: String = DEFAULT_GROUP): File {
+  val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
+  val filename = Base64.encode(key.toByteArray(), flag).decodeToString()
+  return cacheStoreDirectory(id = id, group = group).resolve("${filename}.cache")
+}
+
 /**
  * 绕过[com.sd.lib.cache.store.CacheStore]直接写缓存文件，模拟其他进程的写入。
  * 写法与`FileCacheStore.putCache()`一致：先写临时文件再重命名，触发MOVED_TO事件。
@@ -69,11 +76,8 @@ fun writeCacheFileDirectly(
   json: String,
   group: String = DEFAULT_GROUP,
 ) {
-  val dir = cacheStoreDirectory(id = id, group = group)
-  val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
-  val filename = Base64.encode(key.toByteArray(), flag).decodeToString()
-  val file = dir.resolve("${filename}.cache")
-  val tempFile = dir.resolve("${filename}.cache.tmp")
+  val file = cacheFileOf(id = id, key = key, group = group)
+  val tempFile = file.resolveSibling("${file.name}.tmp")
   tempFile.writeBytes(json.toByteArray())
   assertEquals(true, tempFile.renameTo(file))
 }

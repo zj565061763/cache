@@ -1,6 +1,7 @@
 package com.sd.lib.cache.store
 
 import android.content.Context
+import android.os.Build
 import android.os.FileObserver
 import android.util.Base64
 import com.sd.lib.cache.libException
@@ -96,29 +97,38 @@ internal class FileCacheStore : CacheStore {
     _cacheChangeCallback = callback
   }
 
-  private val _fileObserver by lazy {
-    object : FileObserver(_directory.absolutePath) {
-      override fun onEvent(event: Int, path: String?) {
-        if ((event and (DELETE_SELF or MOVE_SELF)) != 0) {
-          // 被监听的目录本身被删除或移动了，监听已失效，等待下次操作时重新监听
-          _watchValid = false
-          return
-        }
-
-        if (path.isNullOrEmpty()) return
-
-        val filename = path.removeSuffix(CACHE_SUFFIX_WITH_DOT)
-        if (filename.length == path.length) return
-
-        val key = filenameToKey(filename)
-        if (key != null) {
-          when {
-            (event and DELETE) != 0 -> _cacheChangeCallback?.onRemove(key)
-            (event and (MOVED_TO or CLOSE_WRITE)) != 0 -> _cacheChangeCallback?.onModify(key)
-            else -> {}
-          }
-        }
+  private val _fileObserver: FileObserver by lazy {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      object : FileObserver(_directory, FILE_OBSERVER_MASK) {
+        override fun onEvent(event: Int, path: String?) = handleFileEvent(event, path)
       }
+    } else {
+      @Suppress("DEPRECATION")
+      object : FileObserver(_directory.absolutePath, FILE_OBSERVER_MASK) {
+        override fun onEvent(event: Int, path: String?) = handleFileEvent(event, path)
+      }
+    }
+  }
+
+  private fun handleFileEvent(event: Int, path: String?) {
+    if ((event and (FileObserver.DELETE_SELF or FileObserver.MOVE_SELF)) != 0) {
+      // 被监听的目录本身被删除或移动了，监听已失效，等待下次操作时重新监听
+      _watchValid = false
+      return
+    }
+
+    if (path.isNullOrEmpty()) return
+
+    val filename = path.removeSuffix(CACHE_SUFFIX_WITH_DOT)
+    if (filename.length == path.length) return
+
+    val key = filenameToKey(filename) ?: return
+
+    when {
+      // 文件被移出目录和被删除，对缓存来说是一回事
+      (event and (FileObserver.DELETE or FileObserver.MOVED_FROM)) != 0 -> _cacheChangeCallback?.onRemove(key)
+      (event and (FileObserver.MOVED_TO or FileObserver.CLOSE_WRITE)) != 0 -> _cacheChangeCallback?.onModify(key)
+      else -> {}
     }
   }
 
@@ -174,6 +184,17 @@ internal class FileCacheStore : CacheStore {
     _directory.listFiles { file -> file.name.endsWith(TEMP_SUFFIX_WITH_DOT) }?.forEach { it.delete() }
   }
 }
+
+/**
+ * 只监听真正用到的事件。
+ * 默认的ALL_EVENTS会让每次读缓存文件都产生OPEN/ACCESS/CLOSE_NOWRITE，白白唤醒观察线程。
+ */
+private const val FILE_OBSERVER_MASK = FileObserver.CLOSE_WRITE or
+  FileObserver.MOVED_TO or
+  FileObserver.MOVED_FROM or
+  FileObserver.DELETE or
+  FileObserver.DELETE_SELF or
+  FileObserver.MOVE_SELF
 
 /** 缓存文件后缀 */
 private const val CACHE_SUFFIX_WITH_DOT = ".cache"
