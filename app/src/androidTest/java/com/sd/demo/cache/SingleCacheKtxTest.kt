@@ -5,12 +5,16 @@ import app.cash.turbine.test
 import com.sd.lib.cache.CacheEntity
 import com.sd.lib.cache.FCacheKtx
 import com.sd.lib.cache.asSingleCacheKtx
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.concurrent.CopyOnWriteArrayList
 
 @RunWith(AndroidJUnit4::class)
 class SingleCacheKtxTest {
@@ -98,6 +102,44 @@ class SingleCacheKtxTest {
       assertEquals(external, awaitItemUntil(external))
     }
   }
+
+  /**
+   * 内存缓存有两个生产者：[com.sd.lib.cache.SingleCacheKtx.update]直接发射刚写入的值，
+   * 以及监听到缓存变化后重新读盘再发射。
+   * 如果读出的值要跨过缓冲才发射，一个"在途"的旧值就可能排在新值之后到达，
+   * 内存里的值就会短暂地退回旧值。
+   */
+  @Test
+  fun testMemoryCacheNoStaleEmission() = runBlocking {
+    val cache = FCacheKtx.get(TestSingleJitterModel::class.java)
+      .asSingleCacheKtx(memoryCache = true) { TestSingleJitterModel() }
+
+    val count = 300
+    assertEquals(true, cache.update { TestSingleJitterModel(seq = 0) })
+
+    // 不能靠收集流来判断：内存缓存是replay=1 + DROP_OLDEST，抖动的两次发射间隔极短，
+    // 收集者大概率只看到后一个，回退在流上看不出来。
+    // 这里紧凑地采样replay缓存本身——被写坏的就是它。
+    val violations = CopyOnWriteArrayList<String>()
+    val sampler = launch(Dispatchers.Default) {
+      var max = 0
+      while (isActive) {
+        val seq = cache.flow().first().seq
+        if (seq < max) violations.add("$max -> $seq")
+        if (seq > max) max = seq
+      }
+    }
+    try {
+      repeat(count) { index ->
+        assertEquals(true, cache.update { TestSingleJitterModel(seq = index + 1) })
+      }
+    } finally {
+      sampler.cancel()
+    }
+
+    // update的序号严格递增，采样到的值不允许回退
+    assertEquals(emptyList<String>(), violations.toList())
+  }
 }
 
 @CacheEntity("TestSingleModel")
@@ -120,4 +162,9 @@ const val EXTERNAL_MODEL_ID = "TestSingleExternalModel"
 @CacheEntity(EXTERNAL_MODEL_ID)
 data class TestSingleExternalModel(
   val name: String = "tom",
+)
+
+@CacheEntity("TestSingleJitterModel")
+data class TestSingleJitterModel(
+  val seq: Int = 0,
 )

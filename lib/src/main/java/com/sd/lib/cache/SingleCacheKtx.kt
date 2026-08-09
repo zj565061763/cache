@@ -7,7 +7,6 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -36,7 +35,11 @@ fun <T> CacheKtx<T>.asSingleCacheKtx(
   key: String = DEFAULT_SINGLE_CACHE_KEY,
   /** 是否启用内存缓存，启用后[SingleCacheKtx.flow]方法返回的是热流，并缓存最近的一个值在内存中 */
   memoryCache: Boolean = false,
-  /** 获取默认缓存，在[Dispatchers.IO]上面执行 */
+  /**
+   * 获取默认缓存，在[Dispatchers.IO]上面执行。
+   * 每个收集者会各自调用它，所以应该保持轻量，并且多次调用要返回相等的值，
+   * 否则不同的收集者可能拿到不同的默认缓存。
+   */
   getDefault: () -> T,
 ): SingleCacheKtx<T> {
   return SingleCacheKtxImpl(
@@ -54,21 +57,18 @@ private class SingleCacheKtxImpl<T>(
   memoryCache: Boolean,
   private val getDefault: () -> T,
 ) : SingleCacheKtx<T> {
-
-  private val _flow = cache.flowOf(key)
-    .map { it ?: getDefault() }
-    .distinctUntilChanged()
-    .flowOn(Dispatchers.IO)
-
-  private val _sharedFlow: MutableSharedFlow<T>? = if (memoryCache) {
+  private val _hotFlow: MutableSharedFlow<T?>? = if (memoryCache) {
     MutableSharedFlow(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
   } else {
     null
   }
 
-  private val _hotFlow: Flow<T>? = _sharedFlow?.distinctUntilChanged()
+  private val _flow = (_hotFlow ?: (cache.eventFlowOf(key).map { cache.get(key) }))
+    .map { it ?: getDefault() }
+    .distinctUntilChanged()
+    .flowOn(Dispatchers.IO)
 
-  override fun flow(): Flow<T> = _hotFlow ?: _flow
+  override fun flow(): Flow<T> = _flow
 
   override suspend fun update(block: (T) -> T?): Boolean {
     return cache.edit {
@@ -80,16 +80,20 @@ private class SingleCacheKtxImpl<T>(
         remove(key)
       }
       if (result) {
-        _sharedFlow?.tryEmit(newCache ?: getDefault())
+        _hotFlow?.tryEmit(newCache)
       }
       result
     }
   }
 
   init {
-    val sharedFlow = _sharedFlow
-    if (sharedFlow != null) {
-      GlobalScope.launch { sharedFlow.emitAll(_flow) }
+    val hotFlow = _hotFlow
+    if (hotFlow != null) {
+      GlobalScope.launch {
+        cache.eventFlowOf(key).collect {
+          cache.edit { hotFlow.tryEmit(get(key)) }
+        }
+      }
     }
   }
 }

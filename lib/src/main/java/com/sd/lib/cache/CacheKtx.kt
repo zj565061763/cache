@@ -17,6 +17,9 @@ interface CacheKtx<T> {
   /** [key]对应的缓存 */
   fun flowOf(key: String): Flow<T?>
 
+  /** [key]对应的缓存事件 */
+  fun eventFlowOf(key: String): Flow<Unit>
+
   /** 编辑缓存，[block]在[Dispatchers.IO]上面执行 */
   suspend fun <R> edit(block: Cache<T>.() -> R): R
 }
@@ -32,16 +35,19 @@ internal class CacheKtxImpl<T>(
   private val _callbacks = CacheCallbacks(cache)
 
   override fun flowOf(key: String): Flow<T?> {
-    return callbackFlow {
-      val callback = callbackForTargetKeyCacheChange(targetKey = key) { trySend(Unit) }
-      _callbacks.addCallback(callback)
-      // 注册回调之后再触发首次读取，否则会丢失注册期间的缓存变化
-      trySend(Unit)
-      awaitClose { _callbacks.removeCallback(callback) }
-    }.conflate()
+    return eventFlowOf(key)
       .map { cache.get(key) }
       .distinctUntilChanged()
       .flowOn(Dispatchers.IO)
+  }
+
+  override fun eventFlowOf(key: String): Flow<Unit> {
+    return callbackFlow {
+      val callback = callbackForTargetKeyCacheChange(targetKey = key) { trySend(Unit) }
+      _callbacks.addCallback(callback)
+      trySend(Unit)
+      awaitClose { _callbacks.removeCallback(callback) }
+    }.conflate()
   }
 
   override suspend fun <R> edit(block: Cache<T>.() -> R): R {
