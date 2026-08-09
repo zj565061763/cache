@@ -57,7 +57,7 @@ interface SingleCacheKtx<T> {
 inline fun <reified T> singleCacheKtx(
   /** 是否启用内存缓存，启用后[SingleCacheKtx.flow]方法返回的是热流，并缓存最近的一个值在内存中 */
   memoryCache: Boolean = false,
-  /** 获取默认缓存 */
+  /** 获取默认缓存，调用此方法时同步执行 */
   noinline getDefault: () -> T,
 ): SingleCacheKtx<T> {
   return SingleCacheKtx.get(
