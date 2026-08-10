@@ -37,7 +37,9 @@ val single = singleCacheKtx<UserProfile>(memoryCache = true) { UserProfile() }
 
 ## 并发、Flow 与单值缓存契约
 
-`CacheLockLevel` 的三个级别分别为当前进程内的“当前缓存”“当前组”“整个进程”；它们不提供跨进程互斥。默认文件写入依靠重命名保证单次写入原子性，`FileObserver` 负责感知其他进程的变化。
+`CacheLockLevel` 的三个级别分别为当前进程内的“当前缓存”“当前组”“整个进程”；它们不提供跨进程互斥。库支持多个进程按顺序读写同一缓存，每个进程都必须初始化 `CacheConfig`；默认文件写入依靠重命名保证正常完成的单次写入不会产生半写的正式缓存文件，`FileObserver` 异步感知其他进程的变化。
+
+多进程同时写入、跨进程 `edit/update` 原子性、结果顺序和即时内存一致性不在保证范围内，调用方必须自行串行化。审查时不要把缺少跨进程锁、并发初始化清理临时文件或并发删除缓存目录列为受支持场景中的缺陷；但非并发的跨进程读写、文件完整性和最终通知仍是必须保持的契约。
 
 - `Cache.put/get/remove/keys` 在选定锁上串行访问仓库；不存在的 key 执行 `remove` 也返回 `true`。
 - `CacheKtx.edit` 将整个非挂起块切到 `Dispatchers.IO` 并持有同一把锁，适合原子读改写。
