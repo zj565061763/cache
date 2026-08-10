@@ -145,13 +145,21 @@ private class MemorySingleCacheKtx<T>(
 
   override fun onUpdateResult(newCache: T?) {
     _hotFlow.tryEmit(newCache)
+    completeInitialized()
+  }
+
+  private fun completeInitialized() {
+    if (_initialized.isCompleted) return
+    _initialized.complete(Unit)
   }
 
   init {
     GlobalScope.launch {
       cache.eventFlowOf(key).collect {
-        cache.edit { _hotFlow.tryEmit(get(key)) }
-        if (!_initialized.isCompleted) _initialized.complete(Unit)
+        cache.edit {
+          _hotFlow.tryEmit(get(key))
+          completeInitialized()
+        }
       }
     }
   }
