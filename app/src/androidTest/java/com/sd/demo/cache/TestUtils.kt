@@ -44,21 +44,6 @@ fun deleteCacheDirectory() {
   cacheRootDirectory().deleteRecursively()
 }
 
-/**
- * 模拟"目录被外部进程删除后，又在同一路径重建"。
- * 重建之后目录本身是存在的，只有[android.os.FileObserver]的DELETE_SELF事件能察觉到监听已失效。
- */
-fun recreateCacheStoreDirectory(id: String, group: String = DEFAULT_GROUP) {
-  val dir = cacheStoreDirectory(id = id, group = group)
-  // 这里要断言删除成功：目录必须真的被删掉，旧的监听才会失效，否则用例的前提就不成立了。
-  // 所以调用方必须保证重建期间没有并发的缓存操作，不然并发操作会把目录重建出来导致这里返回false。
-  assertEquals(true, dir.deleteRecursively())
-  // 不能断言mkdirs()的返回值：目录被删除后，任何一次并发的缓存操作都会把它重建出来，
-  // 此时mkdirs()返回false。这里只需要保证目录最终存在。
-  dir.mkdirs()
-  assertEquals(true, dir.isDirectory)
-}
-
 /** [key]对应的缓存文件，与`FileCacheStore.fileOf()`的规则保持一致 */
 fun cacheFileOf(id: String, key: String, group: String = DEFAULT_GROUP): File {
   val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING

@@ -121,7 +121,7 @@ private class DiskSingleCacheKtx<T>(
   defaultCache: T,
 ) : BaseSingleCacheKtx<T>(cache, defaultCache) {
   override fun getFlow(): Flow<T?> {
-    return cache.eventFlowOf(key).map { cache.get(key) }
+    return (cache as CacheKtxImpl<T>).eventFlowOf(key).map { cache.get(key) }
   }
 }
 
@@ -155,7 +155,7 @@ private class MemorySingleCacheKtx<T>(
 
   init {
     GlobalScope.launch {
-      cache.eventFlowOf(key).collect {
+      (cache as CacheKtxImpl<T>).eventFlowOf(key).collect {
         cache.edit {
           _hotFlow.tryEmit(get(key))
           completeInitialized()

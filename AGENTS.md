@@ -41,7 +41,6 @@ val single = singleCacheKtx<UserProfile>(memoryCache = true) { UserProfile() }
 
 - `Cache.put/get/remove/keys` 在选定锁上串行访问仓库；不存在的 key 执行 `remove` 也返回 `true`。
 - `CacheKtx.edit` 将整个非挂起块切到 `Dispatchers.IO` 并持有同一把锁，适合原子读改写。
-- `eventFlowOf(key)` 是冷流：先注册监听，再发射初始 `Unit`；事件使用 `conflate`，不保证逐个保留。
 - `flowOf(key)` 在每个事件后重新读盘，并通过 `distinctUntilChanged` 去重；不要用它断言底层事件次数。
 - `SingleCacheKtx.update` 的 lambda 返回 `null` 表示删除。`memoryCache=false` 时每次创建新冷流实例；`true` 时同类型共享进程级实例和 `SharedFlow(replay=1)`，默认值只同步计算一次，慢订阅者允许跳过中间值。
 

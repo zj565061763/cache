@@ -70,45 +70,6 @@ class FileCacheStoreRecoveryTest {
   }
 
   /**
-   * 目录被外部删除后又在同一路径重建，此时目录本身是存在的，
-   * [checkDirectoryExist]那条"目录不存在"的路径不会被触发，
-   * 只能靠[android.os.FileObserver]的DELETE_SELF事件察觉监听已失效。
-   *
-   * 注意：整个重建过程中不能有其他缓存操作在跑，否则它们会先一步把目录重建出来，
-   * 变成走"目录不存在"那条路径，这个用例就失去意义了。所以这里先不收集Flow。
-   */
-  @Test
-  fun testRecoverAfterExternalRecreate() = runBlocking {
-    val key = "testRecoverAfterExternalRecreate"
-    val model1 = TestRecoveryModel(name = "value1")
-    assertEquals(true, _cache.put(key, model1))
-
-    // 监听一个并不存在的key：per-file DELETE不会通知它，收到的只可能是onCleared。
-    // 这样可以确定性等到DELETE_SELF被处理，不需要猜测FileObserver的投递耗时。
-    _cache.eventFlowOf("${key}_onCleared").test(timeout = TEST_TIMEOUT) {
-      assertEquals(Unit, awaitItem())
-      recreateCacheStoreDirectory(RECOVERY_MODEL_ID)
-      assertEquals(Unit, awaitItem())
-      cancelAndIgnoreRemainingEvents()
-    }
-
-    _cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
-      // 目录被重建过，缓存文件已经没了
-      assertEquals(null, awaitItem())
-
-      // 绕过CacheStore直接写文件，新值只可能通过监听被感知到
-      val model2 = TestRecoveryModel(name = "value2")
-      writeCacheFileDirectly(
-        id = RECOVERY_MODEL_ID,
-        key = key,
-        json = """{"name":"${model2.name}"}""",
-      )
-      // 修复前：目录还在，监听却指向已被删除的旧目录，这里会一直等到超时
-      assertEquals(model2, awaitItem())
-    }
-  }
-
-  /**
    * 缓存目录被整体移走（MOVE_SELF），里面的文件跟着目录一起走了，并没有被逐个删除，
    * 所以不会有任何per-file DELETE事件。此时只能靠
    * [com.sd.lib.cache.store.CacheStore.CacheChangeCallback.onCleared]通知订阅者重新读取，

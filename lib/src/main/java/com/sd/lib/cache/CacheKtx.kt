@@ -17,9 +17,6 @@ interface CacheKtx<T> {
   /** [key]对应的缓存 */
   fun flowOf(key: String): Flow<T?>
 
-  /** [key]对应的缓存事件 */
-  fun eventFlowOf(key: String): Flow<Unit>
-
   /** 编辑缓存，[block]在[Dispatchers.IO]上面执行 */
   suspend fun <R> edit(block: Cache<T>.() -> R): R
 }
@@ -41,7 +38,7 @@ internal class CacheKtxImpl<T>(
       .flowOn(Dispatchers.IO)
   }
 
-  override fun eventFlowOf(key: String): Flow<Unit> {
+  fun eventFlowOf(key: String): Flow<Unit> {
     return callbackFlow {
       val callback = callbackForTargetKeyCacheChange(targetKey = key) { trySend(Unit) }
       _callbacks.addCallback(callback)

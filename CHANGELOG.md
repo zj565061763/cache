@@ -16,8 +16,6 @@
 ### ✨ Improvements
 
 - 新增 `SingleCacheKtx.get()` 扩展方法，通过 `flow().first()` 获取当前缓存值
-- `CacheKtx.eventFlowOf(key)` 作为公开 API 暴露
-- `eventFlowOf(key)` 在注册监听后立即发射初始事件，并合并来不及消费的重复事件
 - FileObserver 掩码收窄为缓存实际需要的事件，减少读文件产生的无效唤醒
 - 缓存 key 明确限制为最多 186 个 UTF-8 字节，超限时向 `ExceptionHandler` 提供可读错误
 

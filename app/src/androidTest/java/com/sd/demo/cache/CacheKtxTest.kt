@@ -11,7 +11,6 @@ import com.sd.lib.cache.remove
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -257,70 +256,6 @@ class CacheKtxTest {
     }
   }
 
-  /** [com.sd.lib.cache.CacheKtx.eventFlowOf]直接测试：初始事件、写入事件、删除事件、目录删除事件 */
-  @Test
-  fun testEventFlowOf() = runBlocking {
-    val cache = FCache.getKtx(TestKtxEventModel::class.java)
-    val key = "testEventFlowOf"
-
-    cache.eventFlowOf(key).test(timeout = TEST_TIMEOUT) {
-      // 初始事件
-      assertEquals(Unit, awaitItem())
-
-      // 写入 → 事件
-      assertEquals(true, cache.put(key, TestKtxEventModel(name = "value")))
-      assertEquals(Unit, awaitItem())
-
-      // 删除 → 事件
-      assertEquals(true, cache.remove(key))
-      assertEquals(Unit, awaitItem())
-
-      // 目录被删除：per-file DELETE 和 DELETE_SELF 都会触发事件，这里只断言至少有一个
-      deleteCacheDirectory()
-      assertEquals(Unit, awaitItem())
-      // 目录删除可能产生多个事件，不要让它们干扰后面对新写入的断言。
-      cancelAndIgnoreRemainingEvents()
-    }
-
-    // 用新订阅验证目录删除后的写入通知，避免消费到上一次删除的残留事件。
-    cache.eventFlowOf(key).test(timeout = TEST_TIMEOUT) {
-      assertEquals(Unit, awaitItem())
-      assertEquals(true, cache.put(key, TestKtxEventModel(name = "again")))
-      assertEquals(Unit, awaitItem())
-    }
-
-    cache.remove(key)
-    Unit
-  }
-
-  /** 写临时文件（.cache.tmp）不应触发任何缓存变化事件 */
-  @Test
-  fun testTempFileWriteNoEvent() = runBlocking {
-    val cache = FCache.getKtx(TestKtxTempEventModel::class.java)
-    val key = "testTempFileWriteNoEvent_${System.nanoTime()}"
-    // 只读一次以初始化store和FileObserver，不产生文件变化事件。
-    assertEquals(null, cache.get(key))
-
-    val file = cacheFileOf(TEMP_EVENT_MODEL_ID, key)
-    val tempFile = file.resolveSibling("${file.name}.tmp")
-
-    cache.eventFlowOf(key).test(timeout = TEST_TIMEOUT) {
-      // 初始事件
-      assertEquals(Unit, awaitItem())
-      // 直接写临时文件（模拟残留），库自己的写入也会先写临时文件再重命名，
-      // 临时文件产生的事件（CLOSE_WRITE/DELETE）必须被过滤掉。
-      try {
-        tempFile.writeBytes("garbage".toByteArray())
-        assertEquals(true, tempFile.delete())
-        // 直接监听eventFlowOf，避免flowOf的distinctUntilChanged掩盖错误事件。
-        // FileObserver异步分发事件；等待事件队列稳定后再确认没有事件。
-        delay(2.seconds)
-        expectNoEvents()
-      } finally {
-        tempFile.delete()
-      }
-    }
-  }
 }
 
 @CacheEntity("TestKtxModel")
@@ -379,17 +314,5 @@ const val MOVED_OUT_MODEL_ID = "TestKtxMovedOutModel"
 
 @CacheEntity(MOVED_OUT_MODEL_ID)
 data class TestKtxMovedOutModel(
-  val name: String = "tom",
-)
-
-@CacheEntity("TestKtxEventModel")
-data class TestKtxEventModel(
-  val name: String = "tom",
-)
-
-const val TEMP_EVENT_MODEL_ID = "TestKtxTempEventModel"
-
-@CacheEntity(TEMP_EVENT_MODEL_ID)
-data class TestKtxTempEventModel(
   val name: String = "tom",
 )
