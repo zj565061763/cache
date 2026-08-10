@@ -145,7 +145,7 @@ class CacheTest {
     assertEquals(true, cacheB.remove(key))
   }
 
-  /** 残留的临时文件（.cache.tmp）不能出现在keys()中 */
+  /** 残留的临时文件不能出现在keys()中 */
   @Test
   fun testTempFileNotInKeys() {
     val cache = FCache.get(TestTempFileModel::class.java)
@@ -154,8 +154,7 @@ class CacheTest {
     assertEquals(true, cache.put(key, TestTempFileModel(name = "value")))
 
     // 手动制造一个残留的临时文件（模拟进程在上一次写入中途被杀）
-    val file = cacheFileOf(TEMP_FILE_MODEL_ID, key)
-    val tempFile = file.resolveSibling("${file.name}.tmp")
+    val tempFile = currentProcessTempFile(TEMP_FILE_MODEL_ID, marker = "residual")
     tempFile.writeBytes("garbage".toByteArray())
     try {
       assertEquals(listOf(key), cache.keys())
@@ -174,7 +173,7 @@ class CacheTest {
     // 预置目录和残留临时文件，模拟上一次进程崩溃
     val dir = cacheStoreDirectory(TEMP_CLEAN_MODEL_ID)
     dir.mkdirs()
-    val stale = dir.resolve("stale.cache.tmp")
+    val stale = currentProcessTempFile(TEMP_CLEAN_MODEL_ID, marker = "stale")
     stale.writeBytes("garbage".toByteArray())
 
     try {

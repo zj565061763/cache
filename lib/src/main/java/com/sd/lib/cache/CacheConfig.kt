@@ -6,7 +6,6 @@ import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.FileCacheStore
 import com.sd.lib.moshi.fMoshi
 import java.io.File
-import java.security.MessageDigest
 
 class CacheConfig private constructor(
   builder: Builder,

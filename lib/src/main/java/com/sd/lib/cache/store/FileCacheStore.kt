@@ -1,16 +1,21 @@
 package com.sd.lib.cache.store
 
+import android.app.ActivityManager
+import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.FileObserver
+import android.os.Process
 import android.util.Base64
 import com.sd.lib.cache.libException
+import com.sd.lib.cache.md5
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 
 internal class FileCacheStore : CacheStore {
   private lateinit var _directory: File
+  private lateinit var _tempFilePrefix: String
 
   /** 监听是否有效 */
   @Volatile
@@ -22,6 +27,7 @@ internal class FileCacheStore : CacheStore {
   override fun init(context: Context, directory: File) {
     if (::_directory.isInitialized) return
     _directory = directory
+    _tempFilePrefix = tempFilePrefix(context)
     if (checkDirectoryExist()) {
       deleteTempFile()
     } else {
@@ -34,7 +40,7 @@ internal class FileCacheStore : CacheStore {
     val file = fileOf(key)
 
     fun writeWithTempFile() {
-      val tempFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_SUFFIX_WITH_DOT, _directory)
+      val tempFile = File.createTempFile(_tempFilePrefix, TEMP_SUFFIX_WITH_DOT, _directory)
       try {
         tempFile.writeBytes(value)
         if (tempFile.renameTo(file)) {
@@ -183,7 +189,9 @@ internal class FileCacheStore : CacheStore {
 
   /** 删除临时文件 */
   private fun deleteTempFile() {
-    _directory.listFiles { file -> file.name.endsWith(TEMP_SUFFIX_WITH_DOT) }?.forEach { it.delete() }
+    _directory.listFiles { file ->
+      file.name.startsWith(_tempFilePrefix) && file.name.endsWith(TEMP_SUFFIX_WITH_DOT)
+    }?.forEach { it.delete() }
   }
 }
 
@@ -202,7 +210,7 @@ private const val FILE_OBSERVER_MASK = FileObserver.CLOSE_WRITE or
 private const val CACHE_SUFFIX_WITH_DOT = ".cache"
 /** 临时文件后缀 */
 private const val TEMP_SUFFIX_WITH_DOT = ".tmp"
-/** 临时文件前缀；配合[File.createTempFile]为每次写入排他创建唯一文件 */
+/** 临时文件基础前缀，实际前缀还会包含进程名哈希 */
 private const val TEMP_FILE_PREFIX = ".sd-cache-"
 
 /** 文件名长度上限，Linux下NAME_MAX为255字节，Base64的输出是ASCII，所以字符数等于字节数 */
@@ -231,4 +239,30 @@ private fun filenameToKey(filename: String): String? {
     // 必须throwOnInvalidSequence，否则非法的UTF-8会被静默替换成U+FFFD，
     Base64.decode(input, flag).decodeToString(throwOnInvalidSequence = true)
   }.getOrNull()
+}
+
+/** 当前进程专属的临时文件前缀；进程名可用时跨重启稳定，最终PID兜底仍保证存活进程间隔离。 */
+private fun tempFilePrefix(context: Context): String {
+  val processName = context.currentProcessName()
+  return "$TEMP_FILE_PREFIX${md5(processName)}-"
+}
+
+private fun Context.currentProcessName(): String {
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    return Application.getProcessName()
+  }
+
+  val myPid = Process.myPid()
+  val processName = runCatching {
+    (getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager)
+      ?.runningAppProcesses
+      ?.firstOrNull { it.pid == myPid }
+      ?.processName
+  }.getOrNull()?.takeIf { it.isNotBlank() }
+  if (processName != null) return processName
+
+  return runCatching {
+    File("/proc/self/cmdline").readText().trimEnd('\u0000')
+  }.getOrNull()?.takeIf { it.isNotBlank() }
+    ?: "$packageName:${myPid}"
 }

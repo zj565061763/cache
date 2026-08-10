@@ -15,25 +15,11 @@ import com.sd.lib.cache.FCache
 /** 供instrumentation测试在独立进程中发起缓存写入。 */
 class MultiProcessCacheWriteService : Service() {
   private val _messenger = Messenger(Handler(Looper.getMainLooper()) { message ->
-    if (message.what != COMMAND_WRITE) return@Handler false
-
-    val replyTo = message.replyTo ?: return@Handler false
-    val key = message.data.getString(EXTRA_KEY) ?: return@Handler false
-    val owner = message.data.getString(EXTRA_OWNER) ?: return@Handler false
-    val payloadSize = message.data.getInt(EXTRA_PAYLOAD_SIZE)
-    val startAt = message.data.getLong(EXTRA_START_AT)
-
-    Thread({
-      val cache = FCache.get(MultiProcessWriteModel::class.java)
-      val model = newMultiProcessWriteModel(owner, payloadSize)
-      waitUntil(startAt)
-      val result = cache.put(key, model)
-      val response = Message.obtain(null, RESPONSE_WRITE).apply {
-        arg1 = if (result) 1 else 0
-      }
-      runCatching { replyTo.send(response) }
-    }, "cache-test-writer").start()
-    true
+    when (message.what) {
+      COMMAND_WRITE -> handleWrite(message)
+      COMMAND_INITIALIZE -> handleInitialize(message)
+      else -> false
+    }
   })
 
   override fun onBind(intent: Intent?): IBinder = _messenger.binder
@@ -41,6 +27,8 @@ class MultiProcessCacheWriteService : Service() {
   companion object {
     const val COMMAND_WRITE = 1
     const val RESPONSE_WRITE = 2
+    const val COMMAND_INITIALIZE = 3
+    const val RESPONSE_INITIALIZE = 4
     const val EXTRA_KEY = "key"
     const val EXTRA_OWNER = "owner"
     const val EXTRA_PAYLOAD_SIZE = "payload_size"
@@ -63,6 +51,40 @@ class MultiProcessCacheWriteService : Service() {
         this.replyTo = replyTo
       }
     }
+
+    fun newInitializeMessage(replyTo: Messenger): Message {
+      return Message.obtain(null, COMMAND_INITIALIZE).apply {
+        this.replyTo = replyTo
+      }
+    }
+  }
+
+  private fun handleWrite(message: Message): Boolean {
+    val replyTo = message.replyTo ?: return false
+    val key = message.data.getString(EXTRA_KEY) ?: return false
+    val owner = message.data.getString(EXTRA_OWNER) ?: return false
+    val payloadSize = message.data.getInt(EXTRA_PAYLOAD_SIZE)
+    val startAt = message.data.getLong(EXTRA_START_AT)
+
+    Thread({
+      val cache = FCache.get(MultiProcessWriteModel::class.java)
+      val model = newMultiProcessWriteModel(owner, payloadSize)
+      waitUntil(startAt)
+      val result = cache.put(key, model)
+      sendResult(replyTo, RESPONSE_WRITE, result)
+    }, "cache-test-writer").start()
+    return true
+  }
+
+  private fun handleInitialize(message: Message): Boolean {
+    val replyTo = message.replyTo ?: return false
+    Thread({
+      val cache = FCache.get(MultiProcessTempCleanupModel::class.java)
+      val result = cache.put(INITIALIZE_KEY, MultiProcessTempCleanupModel())
+      cache.remove(INITIALIZE_KEY)
+      sendResult(replyTo, RESPONSE_INITIALIZE, result)
+    }, "cache-test-initializer").start()
+    return true
   }
 }
 
@@ -70,6 +92,13 @@ class MultiProcessCacheWriteService : Service() {
 data class MultiProcessWriteModel(
   val owner: String = "",
   val payload: String = "",
+)
+
+const val MULTI_PROCESS_TEMP_CLEANUP_MODEL_ID = "MultiProcessTempCleanupModel"
+
+@CacheEntity(MULTI_PROCESS_TEMP_CLEANUP_MODEL_ID)
+data class MultiProcessTempCleanupModel(
+  val value: String = "value",
 )
 
 fun newMultiProcessWriteModel(owner: String, payloadSize: Int): MultiProcessWriteModel {
@@ -86,3 +115,12 @@ private fun waitUntil(startAt: Long) {
     Thread.sleep(remaining.coerceAtMost(10))
   }
 }
+
+private fun sendResult(replyTo: Messenger, what: Int, result: Boolean) {
+  val response = Message.obtain(null, what).apply {
+    arg1 = if (result) 1 else 0
+  }
+  runCatching { replyTo.send(response) }
+}
+
+private const val INITIALIZE_KEY = "initialize"

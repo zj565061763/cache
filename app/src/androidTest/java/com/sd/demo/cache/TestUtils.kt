@@ -1,5 +1,10 @@
 package com.sd.demo.cache
 
+import android.app.ActivityManager
+import android.app.Application
+import android.content.Context
+import android.os.Build
+import android.os.Process
 import android.util.Base64
 import androidx.test.platform.app.InstrumentationRegistry
 import app.cash.turbine.ReceiveTurbine
@@ -37,6 +42,17 @@ fun cacheStoreDirectory(id: String, group: String = DEFAULT_GROUP): File {
   return cacheRootDirectory().resolve(md5(group)).resolve(md5(id))
 }
 
+/** 当前进程在指定缓存目录中使用的临时文件名。 */
+fun currentProcessTempFile(
+  id: String,
+  marker: String,
+  group: String = DEFAULT_GROUP,
+): File {
+  val processName = currentProcessName()
+  return cacheStoreDirectory(id = id, group = group)
+    .resolve(".sd-cache-${md5(processName)}-$marker.tmp")
+}
+
 /** 模拟"清除数据"，整个缓存根目录被删除 */
 fun deleteCacheDirectory() {
   // 不能断言deleteRecursively()的返回值：删除的过程中，任何一次并发的缓存操作都会把目录重建出来，
@@ -62,7 +78,7 @@ fun writeCacheFileDirectly(
   group: String = DEFAULT_GROUP,
 ) {
   val file = cacheFileOf(id = id, key = key, group = group)
-  val tempFile = file.resolveSibling("${file.name}.tmp")
+  val tempFile = file.resolveSibling(".sd-cache-direct-${System.nanoTime()}.tmp")
   tempFile.writeBytes(json.toByteArray())
   assertEquals(true, tempFile.renameTo(file))
 }
@@ -78,7 +94,7 @@ suspend fun <T> ReceiveTurbine<T>.awaitItemUntil(expect: T): T {
   }
 }
 
-/** 与`CacheConfig.md5()`的实现保持一致 */
+/** 与`com.sd.lib.cache.md5()`的实现保持一致 */
 private fun md5(input: String): String {
   val md5Bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray())
   return buildString {
@@ -88,6 +104,27 @@ private fun md5(input: String): String {
       append(hex)
     }
   }
+}
+
+private fun currentProcessName(): String {
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    return Application.getProcessName()
+  }
+
+  val context = InstrumentationRegistry.getInstrumentation().targetContext
+  val myPid = Process.myPid()
+  val processName = runCatching {
+    (context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager)
+      ?.runningAppProcesses
+      ?.firstOrNull { it.pid == myPid }
+      ?.processName
+  }.getOrNull()?.takeIf { it.isNotBlank() }
+  if (processName != null) return processName
+
+  return runCatching {
+    File("/proc/self/cmdline").readText().trimEnd('\u0000')
+  }.getOrNull()?.takeIf { it.isNotBlank() }
+    ?: "${context.packageName}:$myPid"
 }
 
 fun <T> testCache(

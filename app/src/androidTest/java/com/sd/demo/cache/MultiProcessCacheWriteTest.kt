@@ -23,6 +23,40 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class MultiProcessCacheWriteTest {
+  /** 一个进程初始化store时，不能清理其他进程遗留或正在使用的临时文件。 */
+  @Test
+  fun testInitializationKeepsOtherProcessTempFile() = runBlocking {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val directory = cacheStoreDirectory(MULTI_PROCESS_TEMP_CLEANUP_MODEL_ID)
+    directory.deleteRecursively()
+    directory.mkdirs()
+    val mainProcessTempFile = currentProcessTempFile(
+      id = MULTI_PROCESS_TEMP_CLEANUP_MODEL_ID,
+      marker = "active",
+    )
+    mainProcessTempFile.writeBytes("writing".toByteArray())
+
+    val connection = CacheWriterServiceConnection()
+    val intent = Intent(context, MultiProcessCacheWriteService::class.java)
+    assertEquals(true, context.bindService(intent, connection, Context.BIND_AUTO_CREATE))
+    try {
+      val remote = withTimeout(TEST_TIMEOUT) { connection.awaitMessenger() }
+      val remoteResult = CompletableDeferred<Boolean>()
+      val replyTo = resultMessenger(
+        responseWhat = MultiProcessCacheWriteService.RESPONSE_INITIALIZE,
+        result = remoteResult,
+      )
+      remote.send(MultiProcessCacheWriteService.newInitializeMessage(replyTo))
+
+      assertEquals(true, withTimeout(TEST_TIMEOUT) { remoteResult.await() })
+      assertEquals(true, mainProcessTempFile.exists())
+    } finally {
+      context.unbindService(connection)
+      mainProcessTempFile.delete()
+      directory.deleteRecursively()
+    }
+  }
+
   /** 同一个key被两个进程并发写入时，两次写入都应成功，最终文件也必须是一个完整值。 */
   @Test
   fun testConcurrentPutFromTwoProcesses() = runBlocking {
@@ -40,14 +74,10 @@ class MultiProcessCacheWriteTest {
         val mainModel = newMultiProcessWriteModel(MAIN_OWNER, PAYLOAD_SIZE)
         val remoteModel = newMultiProcessWriteModel(REMOTE_OWNER, PAYLOAD_SIZE)
         val remoteResult = CompletableDeferred<Boolean>()
-        val replyTo = Messenger(Handler(Looper.getMainLooper()) { message ->
-          if (message.what == MultiProcessCacheWriteService.RESPONSE_WRITE) {
-            remoteResult.complete(message.arg1 == 1)
-            true
-          } else {
-            false
-          }
-        })
+        val replyTo = resultMessenger(
+          responseWhat = MultiProcessCacheWriteService.RESPONSE_WRITE,
+          result = remoteResult,
+        )
         val startAt = SystemClock.elapsedRealtime() + START_DELAY_MILLIS
 
         remote.send(
@@ -86,6 +116,20 @@ class MultiProcessCacheWriteTest {
       context.unbindService(connection)
     }
   }
+}
+
+private fun resultMessenger(
+  responseWhat: Int,
+  result: CompletableDeferred<Boolean>,
+): Messenger {
+  return Messenger(Handler(Looper.getMainLooper()) { message ->
+    if (message.what == responseWhat) {
+      result.complete(message.arg1 == 1)
+      true
+    } else {
+      false
+    }
+  })
 }
 
 private class CacheWriterServiceConnection : ServiceConnection {

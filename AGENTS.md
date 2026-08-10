@@ -39,7 +39,7 @@ val single = singleCacheKtx<UserProfile>(memoryCache = true) { UserProfile() }
 
 `CacheLockLevel` 的三个级别分别为当前进程内的“当前缓存”“当前组”“整个进程”；它们不提供跨进程互斥。库支持多个进程按顺序读写同一缓存，每个进程都必须初始化 `CacheConfig`；默认文件写入依靠重命名保证正常完成的单次写入不会产生半写的正式缓存文件，`FileObserver` 异步感知其他进程的变化。
 
-多进程同时写入、跨进程 `edit/update` 原子性、结果顺序和即时内存一致性不在保证范围内，调用方必须自行串行化。审查时不要把缺少跨进程锁、并发初始化清理临时文件或并发删除缓存目录列为受支持场景中的缺陷；但非并发的跨进程读写、文件完整性和最终通知仍是必须保持的契约。
+多进程同时写入、跨进程 `edit/update` 原子性、结果顺序和即时内存一致性不在保证范围内，调用方必须自行串行化。审查时不要把缺少跨进程锁或并发删除缓存目录列为受支持场景中的缺陷；但非并发的跨进程读写、文件完整性和最终通知仍是必须保持的契约。各进程的临时文件必须隔离，某进程初始化时不得清理其他进程的临时文件。
 
 - `Cache.put/get/remove/keys` 在选定锁上串行访问仓库；不存在的 key 执行 `remove` 也返回 `true`。
 - `CacheKtx.edit` 将整个非挂起块切到 `Dispatchers.IO` 并持有同一把锁，适合原子读改写。
@@ -56,7 +56,7 @@ val single = singleCacheKtx<UserProfile>(memoryCache = true) { UserProfile() }
 
 默认目录是 `filesDir/sd.lib.cache/<md5(group)>/<md5(id)>/`。Key 以 UTF-8 编码后转换成无填充 URL-safe Base64，生成 `<key>.cache`；key 上限为 186 个 UTF-8 字节。非法 Base64 或非法 UTF-8 文件名必须被 `keys()` 忽略。
 
-写入时排他创建 `.sd-cache-<随机值>.tmp`，写完后重命名为目标缓存文件；初始化会清理残留临时文件。监听仅处理 `CLOSE_WRITE`、`MOVED_TO`、`MOVED_FROM`、`DELETE`、`DELETE_SELF` 和 `MOVE_SELF`：移出等同删除，目录删除或移动触发 `onCleared`。监听失效后，`put/get/remove/keys` 任一路径都必须重建目录并重新注册监听。修改目录、哈希、编码、后缀、写入顺序或事件映射均属于持久化兼容性变更，需要迁移说明及恢复测试。
+写入时排他创建 `.sd-cache-<进程名MD5>-<随机值>.tmp`，写完后重命名为目标缓存文件；初始化只清理当前进程前缀的残留临时文件。监听仅处理 `CLOSE_WRITE`、`MOVED_TO`、`MOVED_FROM`、`DELETE`、`DELETE_SELF` 和 `MOVE_SELF`：移出等同删除，目录删除或移动触发 `onCleared`。监听失效后，`put/get/remove/keys` 任一路径都必须重建目录并重新注册监听。修改目录、哈希、编码、后缀、写入顺序或事件映射均属于持久化兼容性变更，需要迁移说明及恢复测试。
 
 ## 构建与验证
 
