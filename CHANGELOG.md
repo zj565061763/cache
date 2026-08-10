@@ -13,6 +13,7 @@
 
 ### ✨ Improvements
 
+- 新增 `SingleCacheKtx.get()` 扩展方法，通过 `flow().first()` 获取当前缓存值
 - `CacheKtx.eventFlowOf(key)` 作为公开 API 暴露
 - FileObserver 掩码收窄，减少无效唤醒
 - 超长 key 给出明确的错误信息
