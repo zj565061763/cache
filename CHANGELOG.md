@@ -25,6 +25,7 @@
 - `flowOf` 初始值读取与回调注册之间存在竞态，可能丢失更新
 - `edit { }` 在特定锁级别下存在死锁隐患
 - 内存缓存连续快速 `update` 时，Flow 可能短暂发射旧值
+- `memoryCache=true` 冷启动时（热流尚未初始化），`get()` / `flow().first()` 可能挂起或返回默认缓存而非磁盘真实值
 - `keys()` 可能包含无法解码为合法 UTF-8 的乱码 key
 
 ### Migration
