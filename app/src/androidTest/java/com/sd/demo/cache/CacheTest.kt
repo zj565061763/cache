@@ -7,6 +7,7 @@ import com.sd.lib.cache.FCache
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class CacheTest {
@@ -102,6 +103,89 @@ class CacheTest {
       cache.remove(key)
     }
   }
+
+  /** 磁盘上的缓存数据损坏时，get()应返回null并把解码异常转发给ExceptionHandler，而不是抛出 */
+  @Test
+  fun testCorruptedDataReturnsNull() {
+    val cache = FCache.get(TestCorruptModel::class.java)
+    val key = "testCorruptedData"
+
+    assertEquals(true, cache.put(key, TestCorruptModel(name = "valid")))
+    // 绕过CacheStore直接写坏数据
+    writeCacheFileDirectly(id = CORRUPT_MODEL_ID, key = key, json = "{invalid")
+
+    CacheErrors.clear()
+    assertEquals(null, cache.get(key))
+
+    // 解码失败是普通异常（Moshi的JsonEncodingException），应该被转发给ExceptionHandler而不是抛给调用方
+    val errors = CacheErrors.list().filter { it is IOException }
+    assertEquals(true, errors.isNotEmpty())
+  }
+
+  /** 同一个id在不同group下互不冲突，各自独立读写 */
+  @Test
+  fun testSameIdDifferentGroupNoConflict() {
+    val cacheA = FCache.get(TestSameIdGroupAModel::class.java)
+    val cacheB = FCache.get(TestSameIdGroupBModel::class.java)
+
+    val key = "key"
+    assertEquals(true, cacheA.put(key, TestSameIdGroupAModel(name = "a")))
+    assertEquals(true, cacheB.put(key, TestSameIdGroupBModel(name = "b")))
+
+    // 相同的key在各自的group下互不干扰
+    assertEquals("a", cacheA.get(key)?.name)
+    assertEquals("b", cacheB.get(key)?.name)
+    assertEquals(listOf(key), cacheA.keys())
+    assertEquals(listOf(key), cacheB.keys())
+
+    // 删除互不影响
+    assertEquals(true, cacheA.remove(key))
+    assertEquals(null, cacheA.get(key))
+    assertEquals("b", cacheB.get(key)?.name)
+    assertEquals(true, cacheB.remove(key))
+  }
+
+  /** 残留的临时文件（.cache.tmp）不能出现在keys()中 */
+  @Test
+  fun testTempFileNotInKeys() {
+    val cache = FCache.get(TestTempFileModel::class.java)
+    val key = "testTempFile"
+
+    assertEquals(true, cache.put(key, TestTempFileModel(name = "value")))
+
+    // 手动制造一个残留的临时文件（模拟进程在上一次写入中途被杀）
+    val file = cacheFileOf(TEMP_FILE_MODEL_ID, key)
+    val tempFile = file.resolveSibling("${file.name}.tmp")
+    tempFile.writeBytes("garbage".toByteArray())
+    try {
+      assertEquals(listOf(key), cache.keys())
+    } finally {
+      tempFile.delete()
+      cache.remove(key)
+    }
+  }
+
+  /** store初始化时应清理掉残留的临时文件 */
+  @Test
+  fun testTempFileCleanedAtInit() {
+    val cache = FCache.get(TestTempCleanModel::class.java)
+    val key = "testTempClean"
+
+    // 预置目录和残留临时文件，模拟上一次进程崩溃
+    val dir = cacheStoreDirectory(TEMP_CLEAN_MODEL_ID)
+    dir.mkdirs()
+    val stale = dir.resolve("stale.cache.tmp")
+    stale.writeBytes("garbage".toByteArray())
+
+    try {
+      // 首次操作触发store初始化，残留临时文件应被清理
+      assertEquals(true, cache.put(key, TestTempCleanModel(name = "value")))
+      assertEquals(false, stale.exists())
+    } finally {
+      stale.delete()
+      cache.remove(key)
+    }
+  }
 }
 
 @CacheEntity("TestKeyLengthModel")
@@ -113,5 +197,40 @@ const val INVALID_FILENAME_MODEL_ID = "TestInvalidFilenameModel"
 
 @CacheEntity(INVALID_FILENAME_MODEL_ID)
 data class TestInvalidFilenameModel(
+  val name: String = "tom",
+)
+
+const val CORRUPT_MODEL_ID = "TestCorruptModel"
+
+@CacheEntity(CORRUPT_MODEL_ID)
+data class TestCorruptModel(
+  val name: String = "",
+)
+
+private const val SAME_ID = "SameIdSharedId"
+private const val GROUP_A = "com.sd.lib.cache.group.sameid_test_a"
+private const val GROUP_B = "com.sd.lib.cache.group.sameid_test_b"
+
+@CacheEntity(id = SAME_ID, group = GROUP_A)
+data class TestSameIdGroupAModel(
+  val name: String = "",
+)
+
+@CacheEntity(id = SAME_ID, group = GROUP_B)
+data class TestSameIdGroupBModel(
+  val name: String = "",
+)
+
+const val TEMP_FILE_MODEL_ID = "TestTempFileModel"
+
+@CacheEntity(TEMP_FILE_MODEL_ID)
+data class TestTempFileModel(
+  val name: String = "tom",
+)
+
+const val TEMP_CLEAN_MODEL_ID = "TestTempCleanModel"
+
+@CacheEntity(TEMP_CLEAN_MODEL_ID)
+data class TestTempCleanModel(
   val name: String = "tom",
 )

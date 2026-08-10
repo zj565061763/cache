@@ -8,6 +8,7 @@ import com.sd.lib.cache.singleCacheKtx
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -210,6 +211,116 @@ class SingleCacheKtxTest {
     // update的序号严格递增，采样到的值不允许回退
     assertEquals(emptyList<String>(), violations.toList())
   }
+
+  /**
+   * memoryCache=true 时进程共享同一个实例，[getDefault]只在首次创建时调用一次，
+   * 之后传入的[getDefault]被忽略，回退值保持为首次调用的结果。
+   */
+  @Test
+  fun testGetDefaultCalledOnceWithMemoryCache() = runBlocking {
+    var callCount = 0
+    val cache1 = singleCacheKtx<TestSingleDefaultMemoryModel>(memoryCache = true) {
+      callCount++
+      TestSingleDefaultMemoryModel(name = "first")
+    }
+    // 第二次调用传入不同的默认值，应返回同一实例且不再调用 getDefault
+    val cache2 = singleCacheKtx<TestSingleDefaultMemoryModel>(memoryCache = true) {
+      callCount++
+      TestSingleDefaultMemoryModel(name = "second")
+    }
+    assertEquals(true, cache1 === cache2)
+    assertEquals(1, callCount)
+
+    // 删除缓存后，回退值应是首次调用时的默认值（"first"），后续传入的 "second" 被忽略
+    assertEquals(true, cache1.update { null })
+    assertEquals(TestSingleDefaultMemoryModel(name = "first"), withTimeout(TEST_TIMEOUT) { cache1.get() })
+  }
+
+  /** memoryCache=false 时每次调用都返回新实例，且每次都会重新执行[getDefault] */
+  @Test
+  fun testGetDefaultCalledEachCallWithoutMemoryCache() = runBlocking {
+    var callCount = 0
+    val cache1 = singleCacheKtx<TestSingleDefaultDiskModel> {
+      callCount++
+      TestSingleDefaultDiskModel(name = "v$callCount")
+    }
+    val cache2 = singleCacheKtx<TestSingleDefaultDiskModel> {
+      callCount++
+      TestSingleDefaultDiskModel(name = "v$callCount")
+    }
+    assertEquals(false, cache1 === cache2)
+    assertEquals(2, callCount)
+
+    // 各实例使用各自的默认值
+    assertEquals(true, cache1.update { null })
+    assertEquals(TestSingleDefaultDiskModel(name = "v1"), cache1.get())
+    assertEquals(TestSingleDefaultDiskModel(name = "v2"), cache2.get())
+  }
+
+  /**
+   * memoryCache=true 时缓存目录被整体删除：per-file DELETE 事件和 DELETE_SELF 的 onCleared
+   * 都会驱动收集协程重新读盘，读不到文件时热流发射 null，订阅者应收到默认值，之后 update 恢复。
+   */
+  @Test
+  fun testMemoryCacheRecoverAfterDirectoryDelete() = runBlocking {
+    val cache = singleCacheKtx<TestSingleMemoryDeleteModel>(memoryCache = true) { TestSingleMemoryDeleteModel() }
+
+    assertEquals(true, cache.update { it.copy(name = "value") })
+
+    cache.flow().test(timeout = TEST_TIMEOUT) {
+      assertEquals(TestSingleMemoryDeleteModel(name = "value"), awaitItemUntil(TestSingleMemoryDeleteModel(name = "value")))
+
+      // 删除整个缓存目录
+      deleteCacheDirectory()
+      assertEquals(TestSingleMemoryDeleteModel(), awaitItemUntil(TestSingleMemoryDeleteModel()))
+
+      // 重新写入恢复
+      assertEquals(true, cache.update { it.copy(name = "recovered") })
+      assertEquals(TestSingleMemoryDeleteModel(name = "recovered"), awaitItemUntil(TestSingleMemoryDeleteModel(name = "recovered")))
+    }
+  }
+
+  /**
+   * 同一 memory 热流的多个订阅者：SharedFlow 对每个订阅者广播相同的发射序列，
+   * 加上 distinctUntilChanged 去重后，两个订阅者收集到的序列应完全一致。
+   */
+  @Test
+  fun testMemoryCacheMultipleSubscribers() = runBlocking {
+    val cache = singleCacheKtx<TestSingleMultiSubModel>(memoryCache = true) { TestSingleMultiSubModel() }
+
+    val init = TestSingleMultiSubModel(name = "init")
+    assertEquals(true, cache.update { init })
+
+    val resultsA = CopyOnWriteArrayList<TestSingleMultiSubModel>()
+    val resultsB = CopyOnWriteArrayList<TestSingleMultiSubModel>()
+
+    val jobA = launch(Dispatchers.Default) { cache.flow().collect { resultsA.add(it) } }
+    val jobB = launch(Dispatchers.Default) { cache.flow().collect { resultsB.add(it) } }
+
+    try {
+      // 等两个订阅者都收到初始值再开始更新，保证两边从同一个起点开始
+      withTimeout(TEST_TIMEOUT) {
+        while (resultsA.firstOrNull() != init || resultsB.firstOrNull() != init) {
+          delay(10)
+        }
+      }
+
+      assertEquals(true, cache.update { it.copy(name = "update1") })
+      assertEquals(true, cache.update { it.copy(name = "update2") })
+
+      withTimeout(TEST_TIMEOUT) {
+        while (resultsA.lastOrNull()?.name != "update2" || resultsB.lastOrNull()?.name != "update2") {
+          delay(10)
+        }
+      }
+
+      // 两个订阅者看到的序列一致
+      assertEquals(resultsA, resultsB)
+    } finally {
+      jobA.cancel()
+      jobB.cancel()
+    }
+  }
 }
 
 @CacheEntity("TestSingleModel")
@@ -259,5 +370,25 @@ data class TestSingleColdStartModel(
 
 @CacheEntity("TestSingleRaceModel")
 data class TestSingleRaceModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleDefaultMemoryModel")
+data class TestSingleDefaultMemoryModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleDefaultDiskModel")
+data class TestSingleDefaultDiskModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleMemoryDeleteModel")
+data class TestSingleMemoryDeleteModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleMultiSubModel")
+data class TestSingleMultiSubModel(
   val name: String = "tom",
 )

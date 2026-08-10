@@ -11,6 +11,7 @@ import com.sd.lib.cache.remove
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -213,6 +214,63 @@ class CacheKtxTest {
       }
     }
   }
+
+  /** [com.sd.lib.cache.CacheKtx.eventFlowOf]直接测试：初始事件、写入事件、删除事件、目录删除事件 */
+  @Test
+  fun testEventFlowOf() = runBlocking {
+    val cache = FCache.getKtx(TestKtxEventModel::class.java)
+    val key = "testEventFlowOf"
+
+    cache.eventFlowOf(key).test(timeout = TEST_TIMEOUT) {
+      // 初始事件
+      assertEquals(Unit, awaitItem())
+
+      // 写入 → 事件
+      assertEquals(true, cache.put(key, TestKtxEventModel(name = "value")))
+      assertEquals(Unit, awaitItem())
+
+      // 删除 → 事件
+      assertEquals(true, cache.remove(key))
+      assertEquals(Unit, awaitItem())
+
+      // 目录被删除：per-file DELETE 和 DELETE_SELF 都会触发事件，这里只断言至少有一个
+      deleteCacheDirectory()
+      assertEquals(Unit, awaitItem())
+
+      // 目录删除后读操作会重建目录，写入应该还能正常通知
+      assertEquals(true, cache.put(key, TestKtxEventModel(name = "again")))
+      assertEquals(Unit, awaitItem())
+    }
+  }
+
+  /** 写临时文件（.cache.tmp）不应触发任何缓存变化事件 */
+  @Test
+  fun testTempFileWriteNoEvent() = runBlocking {
+    val cache = FCache.getKtx(TestKtxTempEventModel::class.java)
+    val key = "testTempFileWriteNoEvent"
+    assertEquals(true, cache.put(key, TestKtxTempEventModel(name = "value")))
+
+    val file = cacheFileOf(TEMP_EVENT_MODEL_ID, key)
+    val tempFile = file.resolveSibling("${file.name}.tmp")
+
+    cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
+      assertEquals(TestKtxTempEventModel(name = "value"), awaitItemUntil(TestKtxTempEventModel(name = "value")))
+
+      // 直接写临时文件（模拟残留），库自己的写入也会先写临时文件再重命名，
+      // 临时文件产生的事件（CLOSE_WRITE/DELETE）必须被过滤掉，否则会白白触发一次缓存变化
+      tempFile.writeBytes("garbage".toByteArray())
+      try {
+        // 等事件投递窗口过去，再断言没有收到任何事件
+        delay(2.seconds)
+        expectNoEvents()
+      } finally {
+        tempFile.delete()
+      }
+    }
+
+    cache.remove(key)
+    Unit
+  }
 }
 
 @CacheEntity("TestKtxModel")
@@ -251,5 +309,17 @@ const val MOVED_OUT_MODEL_ID = "TestKtxMovedOutModel"
 
 @CacheEntity(MOVED_OUT_MODEL_ID)
 data class TestKtxMovedOutModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestKtxEventModel")
+data class TestKtxEventModel(
+  val name: String = "tom",
+)
+
+const val TEMP_EVENT_MODEL_ID = "TestKtxTempEventModel"
+
+@CacheEntity(TEMP_EVENT_MODEL_ID)
+data class TestKtxTempEventModel(
   val name: String = "tom",
 )
