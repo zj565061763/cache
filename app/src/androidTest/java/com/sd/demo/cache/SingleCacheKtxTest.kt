@@ -133,7 +133,7 @@ class SingleCacheKtxTest {
 
   /**
    * 冷启动场景：memoryCache=true，磁盘已有缓存，热流尚未初始化（GlobalScope 协程未运行），
-   * 此时调用 get() 应通过 onSubscription 直接读磁盘，返回真实缓存而非默认缓存。
+   * 此时调用 get() 应等待初始化完成。
    */
   @Test
   fun testMemoryCacheGetOnColdStart() = runBlocking {
