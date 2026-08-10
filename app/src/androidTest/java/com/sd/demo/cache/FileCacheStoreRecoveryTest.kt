@@ -106,6 +106,40 @@ class FileCacheStoreRecoveryTest {
     }
   }
 
+  /**
+   * 缓存目录被整体移走（MOVE_SELF），里面的文件跟着目录一起走了，并没有被逐个删除，
+   * 所以不会有任何per-file DELETE事件。此时只能靠
+   * [com.sd.lib.cache.store.CacheStore.CacheChangeCallback.onCleared]通知订阅者重新读取，
+   * 否则flow会一直停在目录移走前的旧值上。
+   *
+   * 用「移走整个目录」而不是「删除整个目录」是有意为之：删除会先逐个触发per-file DELETE，
+   * 那条路径已经被[onRemove]覆盖，无法单独验证[onCleared]。
+   */
+  @Test
+  fun testDirectoryMovedOutNotified() = runBlocking {
+    val key = "testDirectoryMovedOutNotified"
+    _cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
+      _cache.remove(key)
+      awaitItemUntil(null)
+
+      val model = TestRecoveryModel(name = "value")
+      assertEquals(true, _cache.put(key, model))
+      assertEquals(model, awaitItemUntil(model))
+
+      // 把整个缓存目录移走，触发MOVE_SELF；文件跟着走了，不会有per-file事件
+      val dir = cacheStoreDirectory(RECOVERY_MODEL_ID)
+      val dest = cacheRootDirectory().resolve("movedDir_${System.currentTimeMillis()}")
+      assertEquals(true, dir.renameTo(dest))
+      try {
+        // 修复前：MOVE_SELF只置_watchValid=false就返回，订阅者收不到任何通知，
+        // 会一直停在model上直到超时
+        assertEquals(null, awaitItemUntil(null))
+      } finally {
+        dest.deleteRecursively()
+      }
+    }
+  }
+
   /** 缓存目录被删除后，各个读写操作的返回值语义不变 */
   @Test
   fun testReadWriteAfterDelete() = runBlocking {

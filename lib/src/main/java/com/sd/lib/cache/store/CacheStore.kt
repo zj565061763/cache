@@ -37,5 +37,8 @@ interface CacheStore {
 
     /** [key]对应的缓存被写入 */
     fun onModify(key: String)
+
+    /** 整个缓存被清除（例如目录被删除或移动） */
+    fun onCleared()
   }
 }

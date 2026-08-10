@@ -85,5 +85,9 @@ internal class CacheImpl<T>(
     override fun onModify(key: String) {
       cacheChangeCallback?.onModify(key)
     }
+
+    override fun onCleared() {
+      cacheChangeCallback?.onCleared()
+    }
   }
 }

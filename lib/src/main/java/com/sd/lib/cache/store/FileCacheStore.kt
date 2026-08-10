@@ -114,6 +114,7 @@ internal class FileCacheStore : CacheStore {
     if ((event and (FileObserver.DELETE_SELF or FileObserver.MOVE_SELF)) != 0) {
       // 被监听的目录本身被删除或移动了，监听已失效，等待下次操作时重新监听
       _watchValid = false
+      _cacheChangeCallback?.onCleared()
       return
     }
 

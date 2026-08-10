@@ -78,6 +78,10 @@ private class CacheCallbacks<T>(cache: CacheImpl<T>) {
       override fun onModify(key: String) {
         _callbacks.forEach { it.onModify(key) }
       }
+
+      override fun onCleared() {
+        _callbacks.forEach { it.onCleared() }
+      }
     }
   }
 }
@@ -93,6 +97,10 @@ private fun callbackForTargetKeyCacheChange(
 
     override fun onModify(key: String) {
       if (key == targetKey) onChange()
+    }
+
+    override fun onCleared() {
+      onChange()
     }
   }
 }
