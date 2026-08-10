@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.launch
 
 interface SingleCacheKtx<T> {
@@ -35,9 +36,8 @@ interface SingleCacheKtx<T> {
       return if (memoryCache) {
         synchronized(_caches) {
           val cache = _caches.getOrPut(clazz) {
-            SingleCacheKtxImpl(
+            MemorySingleCacheKtx(
               cache = FCache.getKtx(clazz),
-              memoryCache = true,
               defaultCache = getDefault(),
             )
           }
@@ -45,9 +45,8 @@ interface SingleCacheKtx<T> {
           cache as SingleCacheKtx<T>
         }
       } else {
-        SingleCacheKtxImpl(
+        DiskSingleCacheKtx(
           cache = FCache.getKtx(clazz),
-          memoryCache = false,
           defaultCache = getDefault(),
         )
       }
@@ -71,25 +70,11 @@ inline fun <reified T> singleCacheKtx(
   )
 }
 
-@OptIn(DelicateCoroutinesApi::class)
-private class SingleCacheKtxImpl<T>(
-  private val cache: CacheKtx<T>,
-  private val key: String = "com.sd.lib.cache.key.singlecache",
-  memoryCache: Boolean,
-  private val defaultCache: T,
+private abstract class BaseSingleCacheKtx<T>(
+  protected val cache: CacheKtx<T>,
+  protected val defaultCache: T,
+  protected val key: String = "com.sd.lib.cache.key.singlecache",
 ) : SingleCacheKtx<T> {
-  private val _hotFlow: MutableSharedFlow<T?>? = if (memoryCache) {
-    MutableSharedFlow(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-  } else {
-    null
-  }
-
-  private val _flow = (_hotFlow ?: (cache.eventFlowOf(key).map { cache.get(key) }))
-    .map { it ?: defaultCache }
-    .distinctUntilChanged()
-    .flowOn(Dispatchers.IO)
-
-  override fun flow(): Flow<T> = _flow
 
   override suspend fun update(block: (T) -> T?): Boolean {
     return cache.edit {
@@ -101,19 +86,60 @@ private class SingleCacheKtxImpl<T>(
         remove(key)
       }
       if (result) {
-        _hotFlow?.tryEmit(newCache)
+        onUpdateResult(newCache)
       }
       result
     }
   }
 
+  /** [update] 写入成功后回调，[newCache] 为写入的值，null 表示已删除 */
+  protected open fun onUpdateResult(newCache: T?) {}
+}
+
+/**
+ * 不启用内存缓存：[flow] 为冷流，每次订阅都从磁盘读取。
+ */
+private class DiskSingleCacheKtx<T>(
+  cache: CacheKtx<T>,
+  defaultCache: T,
+) : BaseSingleCacheKtx<T>(cache, defaultCache) {
+
+  private val _flow = cache.eventFlowOf(key)
+    .map { cache.get(key) ?: defaultCache }
+    .distinctUntilChanged()
+    .flowOn(Dispatchers.IO)
+
+  override fun flow(): Flow<T> = _flow
+}
+
+/**
+ * 启用内存缓存：[flow] 为热流（replay=1），值变化时同步更新内存。
+ * 订阅建立后若热流尚未初始化，自动读一次磁盘填充初始值。
+ */
+@OptIn(DelicateCoroutinesApi::class)
+private class MemorySingleCacheKtx<T>(
+  cache: CacheKtx<T>,
+  defaultCache: T,
+) : BaseSingleCacheKtx<T>(cache, defaultCache) {
+
+  private val _hotFlow = MutableSharedFlow<T?>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+  private val _flow = _hotFlow
+    .onSubscription { if (_hotFlow.replayCache.isEmpty()) emit(cache.get(key)) }
+    .map { it ?: defaultCache }
+    .distinctUntilChanged()
+    .flowOn(Dispatchers.IO)
+
+  override fun flow(): Flow<T> = _flow
+
+  override fun onUpdateResult(newCache: T?) {
+    _hotFlow.tryEmit(newCache)
+  }
+
   init {
-    val hotFlow = _hotFlow
-    if (hotFlow != null) {
-      GlobalScope.launch {
-        cache.eventFlowOf(key).collect {
-          cache.edit { hotFlow.tryEmit(get(key)) }
-        }
+    GlobalScope.launch {
+      cache.eventFlowOf(key).collect {
+        cache.edit { _hotFlow.tryEmit(get(key)) }
       }
     }
   }
