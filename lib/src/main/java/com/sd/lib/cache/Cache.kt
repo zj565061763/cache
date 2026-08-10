@@ -21,6 +21,8 @@ internal class CacheImpl<T>(
   private val lock: Any,
   private val cacheStoreProvider: () -> CacheStore,
 ) : Cache<T> {
+  private val _objectConverter = CacheConfig.get().objectConverter
+
   @Volatile
   var cacheChangeCallback: CacheStore.CacheChangeCallback? = null
 
@@ -62,7 +64,7 @@ internal class CacheImpl<T>(
 
   @Throws(Throwable::class)
   private fun encode(value: T, clazz: Class<T>): ByteArray {
-    return getObjectConverter().encode(value, clazz).also { bytes ->
+    return _objectConverter.encode(value, clazz).also { bytes ->
       if (bytes.isEmpty()) {
         libException("ObjectConverter.encode returns empty ${clazz.name}")
       }
@@ -72,10 +74,8 @@ internal class CacheImpl<T>(
   @Throws(Throwable::class)
   private fun decode(bytes: ByteArray, clazz: Class<T>): T? {
     if (bytes.isEmpty()) return null
-    return getObjectConverter().decode(bytes, clazz)
+    return _objectConverter.decode(bytes, clazz)
   }
-
-  private fun getObjectConverter(): CacheConfig.ObjectConverter = CacheConfig.get().objectConverter
 
   private val _cacheChangeCallback = object : CacheStore.CacheChangeCallback {
     override fun onRemove(key: String) {
