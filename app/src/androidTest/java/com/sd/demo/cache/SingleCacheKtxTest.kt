@@ -6,6 +6,9 @@ import com.sd.lib.cache.CacheEntity
 import com.sd.lib.cache.get
 import com.sd.lib.cache.singleCacheKtx
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -14,6 +17,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
 class SingleCacheKtxTest {
@@ -101,6 +105,29 @@ class SingleCacheKtxTest {
 
       assertEquals(true, cache.update { it.copy(name = "second") })
       assertEquals(TestSingleMemoryModel(name = "second"), awaitItem())
+    }
+  }
+
+  /**
+   * 竞态场景：构造后 GlobalScope 协程尚未完成首次填充时，立即 update 写入新值，
+   * 同时开始订阅。订阅者应收到 update 写入的新值，不能停在默认缓存或旧值上。
+   *
+   * 这个用例靠多次循环把首次填充与首个 update 的时间窗口撞开，是回归保护而非确定性证明。
+   */
+  @Test
+  fun testMemoryCacheFirstUpdateRaceWithSubscription() = runBlocking {
+    repeat(50) { index ->
+      val cache = singleCacheKtx<TestSingleRaceModel>(memoryCache = true) { TestSingleRaceModel() }
+      val expected = TestSingleRaceModel(name = "race$index")
+
+      coroutineScope {
+        val deferred = async(Dispatchers.Default) {
+          cache.flow().first { it == expected }
+        }
+        // 与订阅并发地立即写入，命中"首次填充 vs 首个 update"的竞态窗口
+        launch(Dispatchers.IO) { cache.update { expected } }
+        assertEquals(expected, withTimeout(10.seconds) { deferred.await() })
+      }
     }
   }
 
@@ -227,5 +254,10 @@ data class TestSingleGetMemoryModel(
 
 @CacheEntity("TestSingleColdStartModel")
 data class TestSingleColdStartModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleRaceModel")
+data class TestSingleRaceModel(
   val name: String = "tom",
 )

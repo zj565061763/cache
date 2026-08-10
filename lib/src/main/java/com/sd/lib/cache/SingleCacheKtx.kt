@@ -1,5 +1,6 @@
 package com.sd.lib.cache
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -93,7 +94,7 @@ private abstract class BaseSingleCacheKtx<T>(
   }
 
   /** [update] 写入成功后回调，[newCache] 为写入的值，null 表示已删除 */
-  protected open fun onUpdateResult(newCache: T?) {}
+  protected open fun onUpdateResult(newCache: T?) = Unit
 }
 
 /**
@@ -121,11 +122,11 @@ private class MemorySingleCacheKtx<T>(
   cache: CacheKtx<T>,
   defaultCache: T,
 ) : BaseSingleCacheKtx<T>(cache, defaultCache) {
-
+  private val _initialized = CompletableDeferred<Unit>()
   private val _hotFlow = MutableSharedFlow<T?>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
   private val _flow = _hotFlow
-    .onSubscription { if (_hotFlow.replayCache.isEmpty()) emit(cache.get(key)) }
+    .onSubscription { _initialized.await() }
     .map { it ?: defaultCache }
     .distinctUntilChanged()
     .flowOn(Dispatchers.IO)
@@ -140,6 +141,7 @@ private class MemorySingleCacheKtx<T>(
     GlobalScope.launch {
       cache.eventFlowOf(key).collect {
         cache.edit { _hotFlow.tryEmit(get(key)) }
+        if (!_initialized.isCompleted) _initialized.complete(Unit)
       }
     }
   }
