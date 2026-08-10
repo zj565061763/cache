@@ -3,9 +3,9 @@ package com.sd.demo.cache
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.sd.lib.cache.CacheEntity
+import com.sd.lib.cache.get
 import com.sd.lib.cache.singleCacheKtx
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -55,19 +55,50 @@ class SingleCacheKtxTest {
     }
   }
 
+  /** get()用flow().first()获取当前值，memoryCache=false时走磁盘读取 */
+  @Test
+  fun testGet() = runBlocking {
+    val cache = singleCacheKtx<TestSingleGetModel> { TestSingleGetModel() }
+
+    // 无缓存时返回默认值
+    assertEquals(true, cache.update { null })
+    assertEquals(TestSingleGetModel(), cache.get())
+
+    // 写入后立即可读
+    assertEquals(true, cache.update { it.copy(name = "hello") })
+    assertEquals(TestSingleGetModel(name = "hello"), cache.get())
+
+    // 删除后还原为默认值
+    assertEquals(true, cache.update { null })
+    assertEquals(TestSingleGetModel(), cache.get())
+  }
+
+  /** get()在memoryCache=true时直接从热流的replay缓存中取值，不触发磁盘读取 */
+  @Test
+  fun testGetWithMemoryCache() = runBlocking {
+    val cache = singleCacheKtx<TestSingleGetMemoryModel>(memoryCache = true) { TestSingleGetMemoryModel() }
+
+    assertEquals(true, cache.update { null })
+    assertEquals(TestSingleGetMemoryModel(), withTimeout(TEST_TIMEOUT) { cache.get() })
+
+    assertEquals(true, cache.update { it.copy(name = "memory") })
+    // 内存缓存，update后立即可通过get()读到新值
+    assertEquals(TestSingleGetMemoryModel(name = "memory"), withTimeout(TEST_TIMEOUT) { cache.get() })
+  }
+
   /** memoryCache为true时启用内存缓存，[com.sd.lib.cache.SingleCacheKtx.flow]返回热流 */
   @Test
   fun testMemoryCacheFlow() = runBlocking {
     val cache = singleCacheKtx<TestSingleMemoryModel>(memoryCache = true) { TestSingleMemoryModel() }
 
     assertEquals(true, cache.update { null })
-    assertEquals(TestSingleMemoryModel(), withTimeout(TEST_TIMEOUT) { cache.flow().first() })
+    assertEquals(TestSingleMemoryModel(), withTimeout(TEST_TIMEOUT) { cache.get() })
 
     assertEquals(true, cache.update { it.copy(name = "memory") })
     // 内存缓存，update之后立即就能读到新值
     assertEquals(
       TestSingleMemoryModel(name = "memory"),
-      withTimeout(TEST_TIMEOUT) { cache.flow().first() },
+      withTimeout(TEST_TIMEOUT) { cache.get() },
     )
   }
 
@@ -118,7 +149,7 @@ class SingleCacheKtxTest {
     val sampler = launch(Dispatchers.Default) {
       var max = 0
       while (isActive) {
-        val seq = cache.flow().first().seq
+        val seq = cache.get().seq
         if (seq < max) violations.add("$max -> $seq")
         if (seq > max) max = seq
       }
@@ -164,4 +195,14 @@ data class TestSingleExternalModel(
 @CacheEntity("TestSingleJitterModel")
 data class TestSingleJitterModel(
   val seq: Int = 0,
+)
+
+@CacheEntity("TestSingleGetModel")
+data class TestSingleGetModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleGetMemoryModel")
+data class TestSingleGetMemoryModel(
+  val name: String = "tom",
 )

@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -53,6 +54,9 @@ interface SingleCacheKtx<T> {
     }
   }
 }
+
+/** 获取当前缓存值 */
+suspend fun <T> SingleCacheKtx<T>.get(): T = flow().first()
 
 inline fun <reified T> singleCacheKtx(
   /** 是否启用内存缓存，启用后[SingleCacheKtx.flow]方法返回的是热流，并缓存最近的一个值在内存中 */
