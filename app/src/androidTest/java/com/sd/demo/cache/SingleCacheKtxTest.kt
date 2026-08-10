@@ -86,20 +86,38 @@ class SingleCacheKtxTest {
     assertEquals(TestSingleGetMemoryModel(name = "memory"), withTimeout(TEST_TIMEOUT) { cache.get() })
   }
 
-  /** memoryCache为true时启用内存缓存，[com.sd.lib.cache.SingleCacheKtx.flow]返回热流 */
+  /** memoryCache为true时，flow()返回热流，订阅后能持续收到update的变化 */
   @Test
   fun testMemoryCacheFlow() = runBlocking {
     val cache = singleCacheKtx<TestSingleMemoryModel>(memoryCache = true) { TestSingleMemoryModel() }
 
     assertEquals(true, cache.update { null })
-    assertEquals(TestSingleMemoryModel(), withTimeout(TEST_TIMEOUT) { cache.get() })
 
-    assertEquals(true, cache.update { it.copy(name = "memory") })
-    // 内存缓存，update之后立即就能读到新值
-    assertEquals(
-      TestSingleMemoryModel(name = "memory"),
-      withTimeout(TEST_TIMEOUT) { cache.get() },
-    )
+    cache.flow().test(timeout = TEST_TIMEOUT) {
+      assertEquals(TestSingleMemoryModel(), awaitItem())
+
+      assertEquals(true, cache.update { it.copy(name = "first") })
+      assertEquals(TestSingleMemoryModel(name = "first"), awaitItem())
+
+      assertEquals(true, cache.update { it.copy(name = "second") })
+      assertEquals(TestSingleMemoryModel(name = "second"), awaitItem())
+    }
+  }
+
+  /**
+   * 冷启动场景：memoryCache=true，磁盘已有缓存，热流尚未初始化（GlobalScope 协程未运行），
+   * 此时调用 get() 应通过 onSubscription 直接读磁盘，返回真实缓存而非默认缓存。
+   */
+  @Test
+  fun testMemoryCacheGetOnColdStart() = runBlocking {
+    // 先用非内存缓存写入真实值（不触发内存缓存单例初始化）
+    val diskCache = singleCacheKtx<TestSingleColdStartModel> { TestSingleColdStartModel() }
+    val expected = TestSingleColdStartModel(name = "real")
+    assertEquals(true, diskCache.update { expected })
+
+    // 内存缓存单例：_hotFlow 可能为空，get() 应返回磁盘真实值而非默认缓存
+    val cache = singleCacheKtx<TestSingleColdStartModel>(memoryCache = true) { TestSingleColdStartModel() }
+    assertEquals(expected, withTimeout(TEST_TIMEOUT) { cache.get() })
   }
 
   /**
@@ -204,5 +222,10 @@ data class TestSingleGetModel(
 
 @CacheEntity("TestSingleGetMemoryModel")
 data class TestSingleGetMemoryModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleColdStartModel")
+data class TestSingleColdStartModel(
   val name: String = "tom",
 )
