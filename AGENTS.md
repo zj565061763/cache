@@ -1,88 +1,81 @@
-## 项目概述
+# Repository Guidelines
 
-Android 键值缓存库，发布于 Maven Central：`io.github.zj565061763.android:cache`。仓库包含两个模块：
+## 项目定位与目录
 
-- **`lib/`** — 库本体（命名空间 `com.sd.lib.cache`，`minSdk 21`）
-- **`app/`** — Demo 应用及仪器化测试套件
+本仓库提供 Android 键值缓存库，Maven 坐标为 `io.github.zj565061763.android:cache`，最低支持 API 21，使用 SDK 35 编译。
 
-## 构建命令
+- `lib/src/main/java/com/sd/lib/cache/`：公开 API、配置、实体元数据、同步及协程封装。
+- `lib/src/main/java/com/sd/lib/cache/store/`：`CacheStore` 接口与默认文件实现。
+- `app/src/main/java/com/sd/demo/cache/`：初始化及同步、Flow、单值缓存、多进程示例。
+- `app/src/androidTest/`：全部自动化测试；仓库没有本地 JVM 测试。
+- `gradle/libs.versions.toml`：插件和依赖版本；`lib/gradle.properties`：发布坐标及版本。
 
-```bash
-# 编译库的 release 产物
-./gradlew :lib:assembleRelease
+核心调用链为：`CacheConfig → FCache → CacheImpl/CacheKtxImpl → CacheStore → FileCacheStore`。修改前先定位责任层，避免把存储、序列化、同步和响应式通知混在一起。
 
-# 运行所有仪器化测试（需要连接设备或模拟器）
-./gradlew :app:connectedAndroidTest
+## 初始化与公开 API
 
-# 只运行某个测试类
-./gradlew :app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.sd.demo.cache.CacheTest
+`CacheConfig.init(context)` 必须在每个进程的 `Application.onCreate()` 中调用一次；重复初始化会失败。默认使用 `FileCacheStore` 和 Moshi。自定义 `CacheStoreFactory` 每次应返回新仓库，自定义 `ObjectConverter` 必须线程安全，自定义 `ExceptionHandler` 不应再次调用缓存 API 造成递归。
 
-# 编译 Demo 应用
-./gradlew :app:assembleDebug
-```
-
-所有测试均为**仪器化测试**（`androidTest`），不含本地 JVM 单元测试。
-
-## 架构说明
-
-### 初始化
-
-必须在 `Application.onCreate` 中调用一次 `CacheConfig.init(context) { … }`，可配置：
-- `CacheStoreFactory` — 默认使用 `FileCacheStore`
-- `ObjectConverter` — 默认使用 Moshi JSON（`fMoshi`）
-- `ExceptionHandler` — 接收非致命异常
-
-### 声明缓存实体
-
-用 `@CacheEntity` 标注数据类：
+缓存模型必须添加运行时注解：
 
 ```kotlin
-@CacheEntity(id = "MyModel", group = "com.example.mygroup")
-data class MyModel(val name: String = "")
+@CacheEntity(
+  id = "UserProfile",
+  group = "com.example.account",
+  lockLevel = CacheLockLevel.CurrentProcessCurrentCache,
+)
+data class UserProfile(val name: String = "")
+
+val cache = FCache.get(UserProfile::class.java)       // 同步 API
+val cacheKtx = FCache.getKtx(UserProfile::class.java) // Flow/协程 API
+val single = singleCacheKtx<UserProfile>(memoryCache = true) { UserProfile() }
 ```
 
-`id` 在同一 `group` 内不可重复。`group` 默认为 `"com.sd.lib.cache.group.default"`。
+`id` 和 `group` 不得为空；同一组内一个 `id` 只能绑定一个实体类型，不同组可以复用 `id`。`FCache` 按实体 `Class` 缓存 `Cache` 和 `CacheKtx` 实例。`put` 不接受 `null`，删除必须调用 `remove`。
 
-### 核心 API
+## 并发、Flow 与单值缓存契约
 
-| 入口 | 适用场景 |
-|---|---|
-| `FCache.get(clazz)` → `Cache<T>` | 同步访问 |
-| `FCache.getKtx(clazz)` → `CacheKtx<T>` | 协程 / Flow 访问 |
-| `singleCacheKtx<T>(…) { default }` | 单 key 缓存，可选内存热流 |
+`CacheLockLevel` 的三个级别分别为当前进程内的“当前缓存”“当前组”“整个进程”；它们不提供跨进程互斥。默认文件写入依靠重命名保证单次写入原子性，`FileObserver` 负责感知其他进程的变化。
 
-`Cache<T>` 的方法（`put/get/remove/keys`）**线程安全**，失败时返回 `false`/`null`/空列表，不向调用方抛出异常；异常统一转发给 `ExceptionHandler`。
+- `Cache.put/get/remove/keys` 在选定锁上串行访问仓库；不存在的 key 执行 `remove` 也返回 `true`。
+- `CacheKtx.edit` 将整个非挂起块切到 `Dispatchers.IO` 并持有同一把锁，适合原子读改写。
+- `eventFlowOf(key)` 是冷流：先注册监听，再发射初始 `Unit`；事件使用 `conflate`，不保证逐个保留。
+- `flowOf(key)` 在每个事件后重新读盘，并通过 `distinctUntilChanged` 去重；不要用它断言底层事件次数。
+- `SingleCacheKtx.update` 的 lambda 返回 `null` 表示删除。`memoryCache=false` 时每次创建新冷流实例；`true` 时同类型共享进程级实例和 `SharedFlow(replay=1)`，默认值只同步计算一次，慢订阅者允许跳过中间值。
 
-`CacheKtx<T>` 是 `Cache<T>` 的协程封装：
-- `flowOf(key)` — 冷流 `Flow<T?>`，每次缓存变化时重新发射
-- `eventFlowOf(key)` — 冷流 `Flow<Unit>`，仅发射变化事件本身
-- `edit { }` — 挂起块，在 `Dispatchers.IO` 上持锁执行 `Cache` 操作
+修改锁、回调注册顺序、初始值读取或热流初始化时，必须覆盖并发首次订阅、快速连续更新、多个订阅者和目录删除后的恢复。
 
-`SingleCacheKtx<T>` 是固定单 key 的门面。启用 `memoryCache = true` 时，实例为进程级单例，底层由 `MutableSharedFlow(replay=1)` 驱动，`flow()` 返回热流。
+## 异常模型
 
-### 存储实现（`FileCacheStore`）
+普通存储或序列化异常经 `libRunCatching` 转发给 `ExceptionHandler`：`put/remove` 降级为 `false`，`get` 为 `null`，`keys` 为空列表。编码器返回空字节属于 `CacheException`，空文件读取则视为无缓存。缺少注解、空白 `id/group` 会在取得实例时立即抛出 `IllegalArgumentException`；同组重复 `id`、内部配置错误和所有 JVM `Error` 必须继续抛出，不得被静默降级。新增入口应保持这一区分。
 
-文件存储路径：`filesDir/sd.lib.cache/<md5(group)>/<md5(id)>/`。  
-Key 经 URL-safe Base64 编码后作为文件名，后缀为 `.cache`。  
-写入采用原子操作：先写 `.tmp` 临时文件，再 `rename` 为正式文件。  
-`FileObserver` 驱动响应式变更通知，监听掩码收窄为 `CLOSE_WRITE | MOVED_TO | MOVED_FROM | DELETE | DELETE_SELF | MOVE_SELF`，避免读操作产生噪声事件。
+## 文件格式与监听协议
 
-**Key 最大长度为 183 UTF-8 字节**（在 `fileOf()` 中校验），限制的是字节数而非字符数——一个汉字占 3 字节。
+默认目录是 `filesDir/sd.lib.cache/<md5(group)>/<md5(id)>/`。Key 以 UTF-8 编码后转换成无填充 URL-safe Base64，生成 `<key>.cache`；key 上限为 183 个 UTF-8 字节。非法 Base64 或非法 UTF-8 文件名必须被 `keys()` 忽略。
 
-### 锁级别（`CacheLockLevel`）
+写入流程固定为先写 `<key>.cache.tmp`，再重命名为正式文件；初始化会清理残留临时文件。监听仅处理 `CLOSE_WRITE`、`MOVED_TO`、`MOVED_FROM`、`DELETE`、`DELETE_SELF` 和 `MOVE_SELF`：移出等同删除，目录删除或移动触发 `onCleared`。监听失效后，`put/get/remove/keys` 任一路径都必须重建目录并重新注册监听。修改目录、哈希、编码、后缀、写入顺序或事件映射均属于持久化兼容性变更，需要迁移说明及恢复测试。
 
-通过 `@CacheEntity` 的 `lockLevel` 参数控制：
+## 构建与验证
 
-| 级别 | 说明 |
-|---|---|
-| `CurrentProcessCurrentCache`（默认）| 每个缓存实例独立锁 |
-| `CurrentProcessCurrentGroup` | 同组所有缓存共享一把锁 |
-| `CurrentProcess` | 全进程所有缓存共享一把锁 |
+在仓库根目录使用 Gradle Wrapper：
 
-### 错误模型
+```bash
+./gradlew :lib:assembleRelease       # 构建发布 AAR
+./gradlew :app:assembleDebug         # 构建示例 APK
+./gradlew lint                       # 执行 Android Lint
+./gradlew :app:connectedAndroidTest  # 在设备或模拟器运行完整测试
+```
 
-- `CacheException` — 可恢复异常；被 `libRunCatching` 捕获后转发给 `ExceptionHandler`
-- `CacheError`（内部子类）— 编程错误（重复 `id`、配置错误等）；**始终重新抛出**，绕过 handler
-- `Error` 子类 — 始终重新抛出
+运行单个类时追加：
 
-`libRunCatching` 是唯一的统一 catch 点；不要在业务层对 `Cache` 调用套自己的 `try/catch`，除非确实需要原始异常。
+```bash
+-Pandroid.testInstrumentationRunnerArguments.class=com.sd.demo.cache.CacheTest
+```
+
+测试使用 AndroidX JUnit4、Espresso 和 Turbine。`CacheTest` 覆盖基础、key 边界、损坏数据和临时文件；`FCacheErrorTest` 覆盖配置错误；`CacheKtxTest` 覆盖锁及事件竞态；`SingleCacheKtxTest` 覆盖冷热流；`FileCacheStoreRecoveryTest` 覆盖目录异常。文件监听和 IO 使用真实时间，因此采用 `runBlocking`、`TEST_TIMEOUT`（15 秒）和 `awaitItemUntil`，不要替换为虚拟时间 `runTest`。新增测试模型应使用唯一 `id`，并在 `finally` 中清理文件或订阅任务。
+
+## 编码、兼容与提交规范
+
+遵循 Kotlin 官方风格和现有两空格缩进：类型使用 `PascalCase`，成员使用 `camelCase`，常量使用 `UPPER_SNAKE_CASE`，多行参数保留尾逗号。公开行为添加 KDoc，实现细节优先使用 `internal`/`private`。依赖版本统一放入版本目录。若修改 `@CacheEntity` 或反射模型，同时检查 `consumer-rules.pro`。
+
+近期提交采用简短的中文结果描述，如 `修复…`、`优化…`、`单元测试`。一个提交只处理一个主题。Pull Request 需说明受影响模块、行为变化、验证命令及关联 Issue；UI 变化附截图。公开 API 或磁盘格式变化必须在 `CHANGELOG.md` 提供迁移说明。发布前同步 `VERSION_NAME`、变更日志和 Maven 配置；不要提交签名密钥、仓库凭据、`local.properties` 或 `build/` 产物。
