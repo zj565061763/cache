@@ -9,7 +9,7 @@
 - `coroutineScope` 参数改为 `memoryCache: Boolean`；启用内存缓存后，同一实体类型改为进程级单例，不再由调用方的 `CoroutineScope` 控制生命周期
 - `getDefault` 改为创建实例时同步调用：`memoryCache=true` 时仅首次创建该类型实例时调用一次，`false` 时每次创建实例调用一次
 - `CacheKtx.edit` / `SingleCacheKtx.update` 的 lambda 不再是 `suspend`
-- `Cache.put(key, null)` 不再支持，改用 `remove(key)`
+- `Cache.put(key, null)` / `CacheKtx.put(key, null)` 不再支持，改用 `remove(key)`
 - `CacheStore.destroy()` 已移除
 - `CacheStore.CacheChangeCallback` 新增 `onCleared()` 方法，自定义 `CacheStore` 需实现
 
@@ -32,6 +32,7 @@
 - `keys()` 可能包含无法解码为合法 UTF-8 的乱码 key
 - 多个进程并发写入同一 key 时共用固定临时文件，可能导致写入失败或缓存文件损坏
 - 一个进程初始化缓存时可能清理其他进程正在写入的临时文件
+- 在 `CacheConfig.init()` 前创建单值内存缓存可能导致热流永久等待
 
 ### Migration
 
