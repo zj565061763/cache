@@ -33,6 +33,8 @@ val single = singleCacheKtx<UserProfile>(memoryCache = true) { UserProfile() }
 
 `id` 和 `group` 不得为空；同一组内一个 `id` 只能绑定一个实体类型，不同组可以复用 `id`。`FCache` 按实体 `Class` 缓存 `Cache` 和 `CacheKtx` 实例。`put` 不接受 `null`，删除必须调用 `remove`。
 
+`lib` 中的 `kotlinx-coroutines` 有意使用 `compileOnly`，不作为 Maven 传递依赖；接入方必须自行声明兼容版本的 `kotlinx-coroutines-android`。除非项目依赖策略明确变更，否则不要将其改成 `api`/`implementation`，也不要在审查中把它列为依赖遗漏。
+
 ## 并发、Flow 与单值缓存契约
 
 `CacheLockLevel` 的三个级别分别为当前进程内的“当前缓存”“当前组”“整个进程”；它们不提供跨进程互斥。默认文件写入依靠重命名保证单次写入原子性，`FileObserver` 负责感知其他进程的变化。
