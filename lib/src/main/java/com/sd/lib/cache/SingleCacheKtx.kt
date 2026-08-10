@@ -8,10 +8,11 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.launch
 
 interface SingleCacheKtx<T> {
@@ -73,11 +74,20 @@ inline fun <reified T> singleCacheKtx(
 
 private abstract class BaseSingleCacheKtx<T>(
   protected val cache: CacheKtx<T>,
-  protected val defaultCache: T,
+  private val defaultCache: T,
   protected val key: String = "com.sd.lib.cache.key.singlecache",
 ) : SingleCacheKtx<T> {
 
-  override suspend fun update(block: (T) -> T?): Boolean {
+  private val _flow by lazy {
+    getFlow()
+      .map { it ?: defaultCache }
+      .distinctUntilChanged()
+      .flowOn(Dispatchers.IO)
+  }
+
+  final override fun flow(): Flow<T> = _flow
+
+  final override suspend fun update(block: (T) -> T?): Boolean {
     return cache.edit {
       val oldCache = get(key) ?: defaultCache
       val newCache = block(oldCache)
@@ -93,29 +103,26 @@ private abstract class BaseSingleCacheKtx<T>(
     }
   }
 
+  protected abstract fun getFlow(): Flow<T?>
+
   /** [update] 写入成功后回调，[newCache] 为写入的值，null 表示已删除 */
   protected open fun onUpdateResult(newCache: T?) = Unit
 }
 
 /**
- * 不启用内存缓存：[flow] 为冷流，每次订阅都从磁盘读取。
+ * 磁盘缓存：[flow] 为冷流，每次订阅都从磁盘读取
  */
 private class DiskSingleCacheKtx<T>(
   cache: CacheKtx<T>,
   defaultCache: T,
 ) : BaseSingleCacheKtx<T>(cache, defaultCache) {
-
-  private val _flow = cache.eventFlowOf(key)
-    .map { cache.get(key) ?: defaultCache }
-    .distinctUntilChanged()
-    .flowOn(Dispatchers.IO)
-
-  override fun flow(): Flow<T> = _flow
+  override fun getFlow(): Flow<T?> {
+    return cache.eventFlowOf(key).map { cache.get(key) }
+  }
 }
 
 /**
- * 启用内存缓存：[flow] 为热流（replay=1），值变化时同步更新内存。
- * 订阅建立后若热流尚未初始化，自动读一次磁盘填充初始值。
+ * 磁盘和内存缓存：[flow] 为热流，值变化时同步更新内存
  */
 @OptIn(DelicateCoroutinesApi::class)
 private class MemorySingleCacheKtx<T>(
@@ -125,13 +132,12 @@ private class MemorySingleCacheKtx<T>(
   private val _initialized = CompletableDeferred<Unit>()
   private val _hotFlow = MutableSharedFlow<T?>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-  private val _flow = _hotFlow
-    .onSubscription { _initialized.await() }
-    .map { it ?: defaultCache }
-    .distinctUntilChanged()
-    .flowOn(Dispatchers.IO)
-
-  override fun flow(): Flow<T> = _flow
+  override fun getFlow(): Flow<T?> {
+    return flow {
+      _initialized.await()
+      emitAll(_hotFlow)
+    }
+  }
 
   override fun onUpdateResult(newCache: T?) {
     _hotFlow.tryEmit(newCache)
