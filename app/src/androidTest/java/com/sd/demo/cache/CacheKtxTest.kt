@@ -180,12 +180,12 @@ class CacheKtxTest {
 
       val model1 = TestKtxInPlaceModel(name = "value1")
       assertEquals(true, cache.put(key, model1))
-      assertEquals(model1, awaitItemUntil(model1))
+      assertEquals(model1, awaitItem())
 
       // 直接就地写文件，不重命名
       val model2 = TestKtxInPlaceModel(name = "inPlace")
       cacheFileOf(IN_PLACE_MODEL_ID, key).writeBytes("""{"name":"${model2.name}"}""".toByteArray())
-      assertEquals(model2, awaitItemUntil(model2))
+      assertEquals(model2, awaitItem())
     }
   }
 
@@ -201,13 +201,13 @@ class CacheKtxTest {
 
       val model = TestKtxMovedOutModel(name = "value")
       assertEquals(true, cache.put(key, model))
-      assertEquals(model, awaitItemUntil(model))
+      assertEquals(model, awaitItem())
 
       // 移到缓存根目录下，不在被监听的store目录里，才算真正移出
       val dest = cacheRootDirectory().resolve("movedOut.bak")
       assertEquals(true, cacheFileOf(MOVED_OUT_MODEL_ID, key).renameTo(dest))
       try {
-        assertEquals(null, awaitItemUntil(null))
+        assertEquals(null, awaitItem())
       } finally {
         dest.delete()
       }

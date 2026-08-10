@@ -34,7 +34,7 @@ class FileCacheStoreRecoveryTest {
 
       val model1 = TestRecoveryModel(name = "value1")
       assertEquals(true, _cache.put(key, model1))
-      assertEquals(model1, awaitItemUntil(model1))
+      assertEquals(model1, awaitItem())
 
       // 确认删掉的确实是这个缓存正在使用的目录
       assertEquals(true, cacheStoreDirectory(RECOVERY_MODEL_ID).isDirectory)
@@ -92,7 +92,7 @@ class FileCacheStoreRecoveryTest {
 
     _cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
       // 目录被重建过，缓存文件已经没了
-      assertEquals(null, awaitItemUntil(null))
+      assertEquals(null, awaitItem())
 
       // 绕过CacheStore直接写文件，新值只可能通过监听被感知到
       val model2 = TestRecoveryModel(name = "value2")
@@ -102,7 +102,7 @@ class FileCacheStoreRecoveryTest {
         json = """{"name":"${model2.name}"}""",
       )
       // 修复前：目录还在，监听却指向已被删除的旧目录，这里会一直等到超时
-      assertEquals(model2, awaitItemUntil(model2))
+      assertEquals(model2, awaitItem())
     }
   }
 
@@ -124,7 +124,7 @@ class FileCacheStoreRecoveryTest {
 
       val model = TestRecoveryModel(name = "value")
       assertEquals(true, _cache.put(key, model))
-      assertEquals(model, awaitItemUntil(model))
+      assertEquals(model, awaitItem())
 
       // 把整个缓存目录移走，触发MOVE_SELF；文件跟着走了，不会有per-file事件
       val dir = cacheStoreDirectory(RECOVERY_MODEL_ID)
@@ -133,7 +133,7 @@ class FileCacheStoreRecoveryTest {
       try {
         // 修复前：MOVE_SELF只置_watchValid=false就返回，订阅者收不到任何通知，
         // 会一直停在model上直到超时
-        assertEquals(null, awaitItemUntil(null))
+        assertEquals(null, awaitItem())
       } finally {
         dest.deleteRecursively()
       }
@@ -178,7 +178,7 @@ class FileCacheStoreRecoveryTest {
 
       val model1 = TestRecoveryModel(name = "value1")
       assertEquals(true, _cache.put(key, model1))
-      assertEquals(model1, awaitItemUntil(model1))
+      assertEquals(model1, awaitItem())
 
       assertEquals(true, cacheStoreDirectory(RECOVERY_MODEL_ID).isDirectory)
       deleteCacheDirectory()
