@@ -5,8 +5,10 @@ import app.cash.turbine.test
 import com.sd.lib.cache.CacheEntity
 import com.sd.lib.cache.get
 import com.sd.lib.cache.singleCacheKtx
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -113,22 +115,20 @@ class SingleCacheKtxTest {
    * 竞态场景：构造后 GlobalScope 协程尚未完成首次填充时，立即 update 写入新值，
    * 同时开始订阅。订阅者应收到 update 写入的新值，不能停在默认缓存或旧值上。
    *
-   * 这个用例靠多次循环把首次填充与首个 update 的时间窗口撞开，是回归保护而非确定性证明。
+   * memoryCache按Class缓存单例，所以同一类型只有一次真正的冷启动机会。
    */
   @Test
   fun testMemoryCacheFirstUpdateRaceWithSubscription() = runBlocking {
-    repeat(50) { index ->
-      val cache = singleCacheKtx<TestSingleRaceModel>(memoryCache = true) { TestSingleRaceModel() }
-      val expected = TestSingleRaceModel(name = "race$index")
+    val cache = singleCacheKtx<TestSingleRaceModel>(memoryCache = true) { TestSingleRaceModel() }
+    val expected = TestSingleRaceModel(name = "race")
 
-      coroutineScope {
-        val deferred = async(Dispatchers.Default) {
-          cache.flow().first { it == expected }
-        }
-        // 与订阅并发地立即写入，命中"首次填充 vs 首个 update"的竞态窗口
-        launch(Dispatchers.IO) { cache.update { expected } }
-        assertEquals(expected, withTimeout(10.seconds) { deferred.await() })
+    coroutineScope {
+      // 先让订阅者运行到等待初始化的位置，再立即写入。
+      val deferred = async(Dispatchers.Default, start = CoroutineStart.UNDISPATCHED) {
+        cache.flow().first { it == expected }
       }
+      launch(Dispatchers.IO) { cache.update { expected } }
+      assertEquals(expected, withTimeout(10.seconds) { deferred.await() })
     }
   }
 
@@ -205,7 +205,7 @@ class SingleCacheKtxTest {
         assertEquals(true, cache.update { TestSingleJitterModel(seq = index + 1) })
       }
     } finally {
-      sampler.cancel()
+      sampler.cancelAndJoin()
     }
 
     // update的序号严格递增，采样到的值不允许回退
@@ -281,8 +281,8 @@ class SingleCacheKtxTest {
   }
 
   /**
-   * 同一 memory 热流的多个订阅者：SharedFlow 对每个订阅者广播相同的发射序列，
-   * 加上 distinctUntilChanged 去重后，两个订阅者收集到的序列应完全一致。
+   * 同一 memory 热流的多个订阅者都应该收到初始状态和最终状态。
+   * SharedFlow使用DROP_OLDEST，慢订阅者允许跳过中间值，不要断言完整序列必须相同。
    */
   @Test
   fun testMemoryCacheMultipleSubscribers() = runBlocking {
@@ -314,11 +314,13 @@ class SingleCacheKtxTest {
         }
       }
 
-      // 两个订阅者看到的序列一致
-      assertEquals(resultsA, resultsB)
+      assertEquals(init, resultsA.first())
+      assertEquals(init, resultsB.first())
+      assertEquals("update2", resultsA.last().name)
+      assertEquals("update2", resultsB.last().name)
     } finally {
-      jobA.cancel()
-      jobB.cancel()
+      jobA.cancelAndJoin()
+      jobB.cancelAndJoin()
     }
   }
 }

@@ -8,12 +8,10 @@ import com.sd.lib.cache.get
 import com.sd.lib.cache.keys
 import com.sd.lib.cache.put
 import com.sd.lib.cache.remove
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.time.Duration.Companion.seconds
 
 /**
  * 缓存目录被删除之后，[android.os.FileObserver]的监听会失效，
@@ -85,10 +83,14 @@ class FileCacheStoreRecoveryTest {
     val model1 = TestRecoveryModel(name = "value1")
     assertEquals(true, _cache.put(key, model1))
 
-    recreateCacheStoreDirectory(RECOVERY_MODEL_ID)
-    // 监听失效是靠DELETE_SELF事件感知的，事件的投递是异步的，这里要等它到达。
-    // 也就是说恢复是最终一致的：事件到达之前的那次操作仍然可能丢失通知。
-    delay(1.seconds)
+    // 监听一个并不存在的key：per-file DELETE不会通知它，收到的只可能是onCleared。
+    // 这样可以确定性等到DELETE_SELF被处理，不需要猜测FileObserver的投递耗时。
+    _cache.eventFlowOf("${key}_onCleared").test(timeout = TEST_TIMEOUT) {
+      assertEquals(Unit, awaitItem())
+      recreateCacheStoreDirectory(RECOVERY_MODEL_ID)
+      assertEquals(Unit, awaitItem())
+      cancelAndIgnoreRemainingEvents()
+    }
 
     _cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
       // 目录被重建过，缓存文件已经没了

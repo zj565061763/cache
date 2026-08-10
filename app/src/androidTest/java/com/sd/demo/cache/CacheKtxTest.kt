@@ -19,6 +19,8 @@ import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
@@ -165,6 +167,46 @@ class CacheKtxTest {
     assertEquals(true, cacheB.get(key) != null)
   }
 
+  /** [CacheLockLevel.CurrentProcessCurrentGroup]下，同组不同缓存的edit必须串行执行。 */
+  @Test
+  fun testEditSerializationInCurrentGroup() = runBlocking {
+    val cacheA = FCache.getKtx(TestKtxGroupLockModelA::class.java)
+    val cacheB = FCache.getKtx(TestKtxGroupLockModelB::class.java)
+    val firstEntered = CountDownLatch(1)
+    val releaseFirst = CountDownLatch(1)
+    val secondAttempting = CountDownLatch(1)
+    val secondEntered = CountDownLatch(1)
+
+    coroutineScope {
+      val jobA = async(Dispatchers.IO) {
+        cacheA.edit {
+          firstEntered.countDown()
+          assertEquals(true, releaseFirst.await(10, TimeUnit.SECONDS))
+        }
+      }
+      assertEquals(true, firstEntered.await(10, TimeUnit.SECONDS))
+
+      val jobB = async(Dispatchers.IO) {
+        secondAttempting.countDown()
+        cacheB.edit { secondEntered.countDown() }
+      }
+      assertEquals(true, secondAttempting.await(10, TimeUnit.SECONDS))
+
+      try {
+        // A持有group锁时，B不能进入edit block。
+        assertEquals(false, secondEntered.await(1, TimeUnit.SECONDS))
+      } finally {
+        releaseFirst.countDown()
+      }
+
+      withTimeout(10.seconds) {
+        jobA.await()
+        jobB.await()
+      }
+      assertEquals(true, secondEntered.await(0, TimeUnit.SECONDS))
+    }
+  }
+
   /**
    * 外部就地写入缓存文件（不经过临时文件重命名）走的是CLOSE_WRITE事件。
    * 库自己的写入永远是「临时文件+重命名」，产生的是MOVED_TO，所以这一位只有本用例覆盖，
@@ -236,40 +278,48 @@ class CacheKtxTest {
       // 目录被删除：per-file DELETE 和 DELETE_SELF 都会触发事件，这里只断言至少有一个
       deleteCacheDirectory()
       assertEquals(Unit, awaitItem())
+      // 目录删除可能产生多个事件，不要让它们干扰后面对新写入的断言。
+      cancelAndIgnoreRemainingEvents()
+    }
 
-      // 目录删除后读操作会重建目录，写入应该还能正常通知
+    // 用新订阅验证目录删除后的写入通知，避免消费到上一次删除的残留事件。
+    cache.eventFlowOf(key).test(timeout = TEST_TIMEOUT) {
+      assertEquals(Unit, awaitItem())
       assertEquals(true, cache.put(key, TestKtxEventModel(name = "again")))
       assertEquals(Unit, awaitItem())
     }
+
+    cache.remove(key)
+    Unit
   }
 
   /** 写临时文件（.cache.tmp）不应触发任何缓存变化事件 */
   @Test
   fun testTempFileWriteNoEvent() = runBlocking {
     val cache = FCache.getKtx(TestKtxTempEventModel::class.java)
-    val key = "testTempFileWriteNoEvent"
-    assertEquals(true, cache.put(key, TestKtxTempEventModel(name = "value")))
+    val key = "testTempFileWriteNoEvent_${System.nanoTime()}"
+    // 只读一次以初始化store和FileObserver，不产生文件变化事件。
+    assertEquals(null, cache.get(key))
 
     val file = cacheFileOf(TEMP_EVENT_MODEL_ID, key)
     val tempFile = file.resolveSibling("${file.name}.tmp")
 
-    cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
-      assertEquals(TestKtxTempEventModel(name = "value"), awaitItemUntil(TestKtxTempEventModel(name = "value")))
-
+    cache.eventFlowOf(key).test(timeout = TEST_TIMEOUT) {
+      // 初始事件
+      assertEquals(Unit, awaitItem())
       // 直接写临时文件（模拟残留），库自己的写入也会先写临时文件再重命名，
-      // 临时文件产生的事件（CLOSE_WRITE/DELETE）必须被过滤掉，否则会白白触发一次缓存变化
-      tempFile.writeBytes("garbage".toByteArray())
+      // 临时文件产生的事件（CLOSE_WRITE/DELETE）必须被过滤掉。
       try {
-        // 等事件投递窗口过去，再断言没有收到任何事件
+        tempFile.writeBytes("garbage".toByteArray())
+        assertEquals(true, tempFile.delete())
+        // 直接监听eventFlowOf，避免flowOf的distinctUntilChanged掩盖错误事件。
+        // FileObserver异步分发事件；等待事件队列稳定后再确认没有事件。
         delay(2.seconds)
         expectNoEvents()
       } finally {
         tempFile.delete()
       }
     }
-
-    cache.remove(key)
-    Unit
   }
 }
 
@@ -295,6 +345,26 @@ data class TestKtxProcessLockModelA(
 
 @CacheEntity(id = "TestKtxProcessLockModelB", lockLevel = CacheLockLevel.CurrentProcess)
 data class TestKtxProcessLockModelB(
+  val name: String = "tom",
+)
+
+private const val TEST_KTX_GROUP_LOCK = "com.sd.demo.cache.group.lock"
+
+@CacheEntity(
+  id = "TestKtxGroupLockModelA",
+  group = TEST_KTX_GROUP_LOCK,
+  lockLevel = CacheLockLevel.CurrentProcessCurrentGroup,
+)
+data class TestKtxGroupLockModelA(
+  val name: String = "tom",
+)
+
+@CacheEntity(
+  id = "TestKtxGroupLockModelB",
+  group = TEST_KTX_GROUP_LOCK,
+  lockLevel = CacheLockLevel.CurrentProcessCurrentGroup,
+)
+data class TestKtxGroupLockModelB(
   val name: String = "tom",
 )
 
