@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 class SampleSingleCacheKtx : AppCompatActivity() {
   private val _binding by lazy { SampleSingleCacheKtxBinding.inflate(layoutInflater) }
-  private val _cache = singleCacheKtx<DefaultModel> { DefaultModel() }
+  private val _cache = singleCacheKtx { DefaultModel() }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

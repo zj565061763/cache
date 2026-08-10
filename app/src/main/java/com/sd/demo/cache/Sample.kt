@@ -7,7 +7,6 @@ import com.sd.lib.cache.FCache
 
 open class Sample : AppCompatActivity() {
   private val _binding by lazy { SampleBinding.inflate(layoutInflater) }
-
   private val _cache = FCache.get(DefaultModel::class.java)
 
   private val _key1 = "key1"

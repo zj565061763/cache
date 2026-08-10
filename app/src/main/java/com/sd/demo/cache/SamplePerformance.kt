@@ -8,7 +8,6 @@ import kotlin.time.measureTime
 
 class SamplePerformance : AppCompatActivity() {
   private val _binding by lazy { SamplePerformanceBinding.inflate(layoutInflater) }
-
   private val _cache = FCache.get(DefaultModel::class.java)
 
   private val _key = "performance"

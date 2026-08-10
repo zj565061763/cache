@@ -9,11 +9,10 @@ import kotlinx.coroutines.launch
 
 class SampleKtx : AppCompatActivity() {
   private val _binding by lazy { SampleKtxBinding.inflate(layoutInflater) }
+  private val _cache = FCache.getKtx(DefaultModel::class.java)
 
   private val key1 = "key1"
   private val key2 = "key2"
-
-  private val _cache = FCache.getKtx(DefaultModel::class.java)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
