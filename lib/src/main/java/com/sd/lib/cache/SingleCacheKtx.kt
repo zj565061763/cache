@@ -28,11 +28,16 @@ interface SingleCacheKtx<T> {
   companion object {
     private val _caches = mutableMapOf<Class<*>, SingleCacheKtx<*>>()
 
+    /**
+     * 获取[clazz]对应的[SingleCacheKtx]，
+     * 如果[memoryCache]为true，则进程共享同一个[SingleCacheKtx]实例，并且[getDefault]只在实例首次被创建时，同步调用一次,
+     * 如果[memoryCache]为false，则每次调用都返回一个新的[SingleCacheKtx]实例，且同步调用一次[getDefault]
+     */
     fun <T> get(
       clazz: Class<T>,
       /** 是否启用内存缓存，启用后[flow]方法返回的是热流，并缓存最近的一个值在内存中 */
       memoryCache: Boolean = false,
-      /** 获取默认缓存，调用此方法时同步执行 */
+      /** 获取默认缓存，调用此方法时，按需同步执行 */
       getDefault: () -> T,
     ): SingleCacheKtx<T> {
       return if (memoryCache) {
@@ -59,10 +64,9 @@ interface SingleCacheKtx<T> {
 /** 获取当前缓存值 */
 suspend fun <T> SingleCacheKtx<T>.get(): T = flow().first()
 
+/** 参考[SingleCacheKtx.get] */
 inline fun <reified T> singleCacheKtx(
-  /** 是否启用内存缓存，启用后[SingleCacheKtx.flow]方法返回的是热流，并缓存最近的一个值在内存中 */
   memoryCache: Boolean = false,
-  /** 获取默认缓存，调用此方法时同步执行 */
   noinline getDefault: () -> T,
 ): SingleCacheKtx<T> {
   return SingleCacheKtx.get(
