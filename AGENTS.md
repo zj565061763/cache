@@ -51,9 +51,9 @@ val single = singleCacheKtx<UserProfile>(memoryCache = true) { UserProfile() }
 
 ## 文件格式与监听协议
 
-默认目录是 `filesDir/sd.lib.cache/<md5(group)>/<md5(id)>/`。Key 以 UTF-8 编码后转换成无填充 URL-safe Base64，生成 `<key>.cache`；key 上限为 183 个 UTF-8 字节。非法 Base64 或非法 UTF-8 文件名必须被 `keys()` 忽略。
+默认目录是 `filesDir/sd.lib.cache/<md5(group)>/<md5(id)>/`。Key 以 UTF-8 编码后转换成无填充 URL-safe Base64，生成 `<key>.cache`；key 上限为 186 个 UTF-8 字节。非法 Base64 或非法 UTF-8 文件名必须被 `keys()` 忽略。
 
-写入流程固定为先写 `<key>.cache.tmp`，再重命名为正式文件；初始化会清理残留临时文件。监听仅处理 `CLOSE_WRITE`、`MOVED_TO`、`MOVED_FROM`、`DELETE`、`DELETE_SELF` 和 `MOVE_SELF`：移出等同删除，目录删除或移动触发 `onCleared`。监听失效后，`put/get/remove/keys` 任一路径都必须重建目录并重新注册监听。修改目录、哈希、编码、后缀、写入顺序或事件映射均属于持久化兼容性变更，需要迁移说明及恢复测试。
+写入时排他创建 `.sd-cache-<随机值>.tmp`，写完后重命名为目标缓存文件；初始化会清理残留临时文件。监听仅处理 `CLOSE_WRITE`、`MOVED_TO`、`MOVED_FROM`、`DELETE`、`DELETE_SELF` 和 `MOVE_SELF`：移出等同删除，目录删除或移动触发 `onCleared`。监听失效后，`put/get/remove/keys` 任一路径都必须重建目录并重新注册监听。修改目录、哈希、编码、后缀、写入顺序或事件映射均属于持久化兼容性变更，需要迁移说明及恢复测试。
 
 ## 构建与验证
 

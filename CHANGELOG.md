@@ -19,7 +19,7 @@
 - `CacheKtx.eventFlowOf(key)` 作为公开 API 暴露
 - `eventFlowOf(key)` 在注册监听后立即发射初始事件，并合并来不及消费的重复事件
 - FileObserver 掩码收窄为缓存实际需要的事件，减少读文件产生的无效唤醒
-- 缓存 key 明确限制为最多 183 个 UTF-8 字节，超限时向 `ExceptionHandler` 提供可读错误
+- 缓存 key 明确限制为最多 186 个 UTF-8 字节，超限时向 `ExceptionHandler` 提供可读错误
 
 ### 🐛 Bug Fixes
 
@@ -32,6 +32,7 @@
 - `memoryCache=true` 冷启动时（热流尚未初始化），`get()` / `flow().first()` 可能挂起或返回默认缓存而非磁盘真实值
 - `memoryCache=true` 时，缓存目录被清除后热流无法可靠回退到默认值并恢复后续更新
 - `keys()` 可能包含无法解码为合法 UTF-8 的乱码 key
+- 多个进程并发写入同一 key 时共用固定临时文件，可能导致写入失败或缓存文件损坏
 
 ### Migration
 

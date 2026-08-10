@@ -32,14 +32,18 @@ internal class FileCacheStore : CacheStore {
   override fun putCache(key: String, value: ByteArray) {
     checkWatchValid()
     val file = fileOf(key)
-    val tempFile = file.resolveSibling("${file.name}${TEMP_SUFFIX_WITH_DOT}")
 
     fun writeWithTempFile() {
-      tempFile.writeBytes(value)
-      if (tempFile.renameTo(file)) {
-        // 重命名成功
-      } else {
-        throw IOException("CacheStore.putCache rename failed from $tempFile to $file")
+      val tempFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_SUFFIX_WITH_DOT, _directory)
+      try {
+        tempFile.writeBytes(value)
+        if (tempFile.renameTo(file)) {
+          // 重命名成功
+        } else {
+          throw IOException("CacheStore.putCache rename failed from $tempFile to $file")
+        }
+      } finally {
+        tempFile.delete()
       }
     }
 
@@ -51,8 +55,6 @@ internal class FileCacheStore : CacheStore {
       } else {
         throw e
       }
-    } finally {
-      tempFile.delete()
     }
   }
 
@@ -136,8 +138,7 @@ internal class FileCacheStore : CacheStore {
   /** [key]对应的[File] */
   private fun fileOf(key: String): File {
     val filename = keyToFilename(key)
-    // 临时文件比缓存文件多一个后缀，按最长的算
-    val maxLength = filename.length + CACHE_SUFFIX_WITH_DOT.length + TEMP_SUFFIX_WITH_DOT.length
+    val maxLength = filename.length + CACHE_SUFFIX_WITH_DOT.length
     if (maxLength > MAX_FILENAME_LENGTH) {
       libException("Cache key is too long: ${key.toByteArray().size} bytes, max $MAX_KEY_BYTES bytes")
     }
@@ -201,17 +202,19 @@ private const val FILE_OBSERVER_MASK = FileObserver.CLOSE_WRITE or
 private const val CACHE_SUFFIX_WITH_DOT = ".cache"
 /** 临时文件后缀 */
 private const val TEMP_SUFFIX_WITH_DOT = ".tmp"
+/** 临时文件前缀；配合[File.createTempFile]为每次写入排他创建唯一文件 */
+private const val TEMP_FILE_PREFIX = ".sd-cache-"
 
 /** 文件名长度上限，Linux下NAME_MAX为255字节，Base64的输出是ASCII，所以字符数等于字节数 */
 private const val MAX_FILENAME_LENGTH = 255
 
 /**
  * key的最大字节数。
- * Base64编码后的长度为ceil(4n/3)，还要留出[CACHE_SUFFIX_WITH_DOT]和[TEMP_SUFFIX_WITH_DOT]共10个字节，
- * 即ceil(4n/3) <= 245，解得n <= 183。
+ * Base64编码后的长度为ceil(4n/3)，还要留出[CACHE_SUFFIX_WITH_DOT]的6个字节，
+ * 即ceil(4n/3) <= 249，解得n <= 186。
  * 注意限制的是字节数不是字符数，UTF-8下一个汉字占3个字节。
  */
-private const val MAX_KEY_BYTES = 183
+private const val MAX_KEY_BYTES = 186
 
 /** 把[key]转为文件名 */
 private fun keyToFilename(key: String): String {

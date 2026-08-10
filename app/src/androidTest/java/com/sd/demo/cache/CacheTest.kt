@@ -31,7 +31,7 @@ class CacheTest {
   fun testMaxLengthKey() {
     val cache = FCache.get(TestKeyLengthModel::class.java)
     // ASCII字符一个占一个字节
-    val key = "k".repeat(183)
+    val key = "k".repeat(186)
     val model = TestKeyLengthModel(name = "value")
 
     assertEquals(true, cache.put(key, model))
@@ -44,7 +44,7 @@ class CacheTest {
   @Test
   fun testTooLongKey() {
     val cache = FCache.get(TestKeyLengthModel::class.java)
-    val key = "k".repeat(184)
+    val key = "k".repeat(187)
 
     CacheErrors.clear()
     assertEquals(false, cache.put(key, TestKeyLengthModel()))
@@ -64,20 +64,20 @@ class CacheTest {
     val cache = FCache.get(TestKeyLengthModel::class.java)
     val model = TestKeyLengthModel(name = "value")
 
-    // 61个汉字183字节，正好在上限内
-    val key = "缓".repeat(61)
-    assertEquals(183, key.toByteArray().size)
+    // 62个汉字186字节，正好在上限内
+    val key = "缓".repeat(62)
+    assertEquals(186, key.toByteArray().size)
     assertEquals(true, cache.put(key, model))
     assertEquals(model, cache.get(key))
     assertEquals(true, cache.remove(key))
 
-    // 62个汉字186字节，超了
-    val tooLongKey = "缓".repeat(62)
-    assertEquals(186, tooLongKey.toByteArray().size)
+    // 63个汉字189字节，超了
+    val tooLongKey = "缓".repeat(63)
+    assertEquals(189, tooLongKey.toByteArray().size)
 
     CacheErrors.clear()
     assertEquals(false, cache.put(tooLongKey, model))
-    // 必须断言异常的内容：如果长度检查错写成key.length，62也没超183，
+    // 必须断言异常的内容：如果长度检查错写成key.length，63也没超186，
     // put同样会因为文件名过长而返回false，只看返回值区分不出来
     val tooLong = CacheErrors.list().filter {
       it is CacheException && it.message.orEmpty().contains("too long")
