@@ -5,6 +5,7 @@ import com.sd.lib.cache.CacheConfig
 import com.sd.lib.cache.CacheEntity
 import com.sd.lib.cache.FCache
 import com.sd.lib.cache.init
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,8 +13,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.util.Collections
+import kotlin.time.Duration.Companion.seconds
 
 class App : Application() {
+  @OptIn(DelicateCoroutinesApi::class)
   override fun onCreate() {
     super.onCreate()
     CacheConfig.init(this) {
@@ -28,8 +31,8 @@ class App : Application() {
       val keysFlow = MutableStateFlow<List<String>?>(null)
       launch {
         while (true) {
-          keysFlow.value = FCache.getKtx(DefaultModel::class.java).edit { keys() }
-          delay(1000)
+          keysFlow.value = FCache.get(DefaultModel::class.java).keys()
+          delay(1.seconds)
         }
       }
       launch {
