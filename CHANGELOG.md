@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.2.1
+
+### ✨ Improvements
+
+- 内存缓存初始化完成后，读取 replay 值不再强制切换到 `Dispatchers.IO`
+
 ## 3.2.0
 
 ### ⚠️ Breaking Changes

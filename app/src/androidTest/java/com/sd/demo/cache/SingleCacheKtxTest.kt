@@ -17,9 +17,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotSame
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
+import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
@@ -91,6 +96,26 @@ class SingleCacheKtxTest {
     assertEquals(true, cache.update { it.copy(name = "memory") })
     // 内存缓存，update后立即可通过get()读到新值
     assertEquals(TestSingleGetMemoryModel(name = "memory"), withTimeout(TEST_TIMEOUT) { cache.get() })
+  }
+
+  /** 内存缓存初始化完成后，get()直接读取replay值，不发生调度器切换 */
+  @Test
+  fun testMemoryCacheGetDoesNotSuspendAfterInitialized() = runBlocking {
+    val cache = singleCacheKtx<TestSingleImmediateModel>(memoryCache = true) { TestSingleImmediateModel() }
+    val expected = TestSingleImmediateModel(name = "memory")
+    assertEquals(true, cache.update { expected })
+
+    val block: suspend () -> TestSingleImmediateModel = { cache.get() }
+    val result = block.startCoroutineUninterceptedOrReturn(
+      object : Continuation<TestSingleImmediateModel> {
+        override val context = EmptyCoroutineContext
+
+        override fun resumeWith(result: Result<TestSingleImmediateModel>) = Unit
+      }
+    )
+
+    assertNotSame(COROUTINE_SUSPENDED, result)
+    assertEquals(expected, result)
   }
 
   /** memoryCache为true时，flow()返回热流，订阅后能持续收到update的变化 */
@@ -337,6 +362,11 @@ data class TestSingleRemoveModel(
 
 @CacheEntity("TestSingleMemoryModel")
 data class TestSingleMemoryModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleImmediateModel")
+data class TestSingleImmediateModel(
   val name: String = "tom",
 )
 

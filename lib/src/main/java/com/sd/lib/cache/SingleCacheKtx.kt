@@ -86,7 +86,6 @@ private abstract class BaseSingleCacheKtx<T>(
     getFlow()
       .map { it ?: defaultCache }
       .distinctUntilChanged()
-      .flowOn(Dispatchers.IO)
   }
 
   final override fun flow(): Flow<T> = _flow
@@ -121,7 +120,9 @@ private class DiskSingleCacheKtx<T>(
   defaultCache: T,
 ) : BaseSingleCacheKtx<T>(cache, defaultCache) {
   override fun getFlow(): Flow<T?> {
-    return (cache as CacheKtxImpl<T>).eventFlowOf(key).map { cache.get(key) }
+    return (cache as CacheKtxImpl<T>).eventFlowOf(key)
+      .map { cache.get(key) }
+      .flowOn(Dispatchers.IO)
   }
 }
 
