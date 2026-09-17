@@ -6,6 +6,8 @@ import android.content.Context
 import android.os.Build
 import android.os.FileObserver
 import android.os.Process
+import android.system.ErrnoException
+import android.system.OsConstants
 import android.util.Base64
 import com.sd.lib.cache.libException
 import com.sd.lib.cache.md5
@@ -64,9 +66,11 @@ internal class FileCacheStore : CacheStore {
 
   override fun getCache(key: String): ByteArray? {
     checkWatchValid()
+    val file = fileOf(key)
     return try {
-      fileOf(key).readBytes()
-    } catch (_: FileNotFoundException) {
+      file.readBytes()
+    } catch (e: FileNotFoundException) {
+      if (!e.isPathMissing(file)) throw e
       // 文件不存在，也可能是整个目录被删除了
       checkDirectoryExist()
       null
@@ -88,7 +92,7 @@ internal class FileCacheStore : CacheStore {
     checkWatchValid()
     val listFile = _directory.listFiles { file -> file.name.endsWith(CACHE_SUFFIX_WITH_DOT) }
     if (listFile == null) {
-      // 目录不存在
+      if (_directory.isDirectory) throw IOException("CacheStore.keys list files failure:$_directory")
       checkDirectoryExist()
       return emptyList()
     }
@@ -247,6 +251,11 @@ private fun filenameToKey(filename: String): String? {
   } catch (_: Exception) {
     null
   }
+}
+
+private fun FileNotFoundException.isPathMissing(file: File): Boolean {
+  val errno = (cause as? ErrnoException)?.errno ?: return !file.exists()
+  return errno == OsConstants.ENOENT || errno == OsConstants.ENOTDIR
 }
 
 /** 当前进程专属的临时文件前缀；进程名可用时跨重启稳定，最终PID兜底仍保证存活进程间隔离。 */

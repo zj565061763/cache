@@ -8,6 +8,7 @@ import com.sd.lib.cache.FCache
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.FileNotFoundException
 import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
@@ -167,6 +168,54 @@ class CacheTest {
     assertEquals(true, errors.isNotEmpty())
   }
 
+  /** 缓存文件存在但无法读取时，不能静默当成缓存未命中 */
+  @Test
+  fun testUnreadableFileReported() {
+    val cache = FCache.get(TestUnreadableFileModel::class.java)
+    val key = "testUnreadableFileReported"
+    val file = cacheFileOf(UNREADABLE_FILE_MODEL_ID, key)
+
+    try {
+      assertEquals(true, cache.put(key, TestUnreadableFileModel()))
+      assertEquals(true, file.setReadable(false, false))
+      assertEquals(false, file.canRead())
+
+      CacheErrors.clear()
+      assertEquals(null, cache.get(key))
+      val errors = CacheErrors.list().filter {
+        it is FileNotFoundException && it.message.orEmpty().contains(file.absolutePath)
+      }
+      assertEquals(1, errors.size)
+    } finally {
+      file.setReadable(true, true)
+      cache.remove(key)
+    }
+  }
+
+  /** 缓存目录存在但无法遍历时，不能静默返回空列表 */
+  @Test
+  fun testUnreadableDirectoryReported() {
+    val cache = FCache.get(TestUnreadableDirectoryModel::class.java)
+    val key = "testUnreadableDirectoryReported"
+    val directory = cacheStoreDirectory(UNREADABLE_DIRECTORY_MODEL_ID)
+
+    try {
+      assertEquals(true, cache.put(key, TestUnreadableDirectoryModel()))
+      assertEquals(true, directory.setReadable(false, false))
+      assertEquals(false, directory.canRead())
+
+      CacheErrors.clear()
+      assertEquals(emptyList<String>(), cache.keys())
+      val errors = CacheErrors.list().filter {
+        it is IOException && it.message.orEmpty().contains("list files failure")
+      }
+      assertEquals(1, errors.size)
+    } finally {
+      directory.setReadable(true, true)
+      cache.remove(key)
+    }
+  }
+
   /** 同一个id在不同group下互不冲突，各自独立读写 */
   @Test
   fun testSameIdDifferentGroupNoConflict() {
@@ -258,6 +307,20 @@ const val CORRUPT_MODEL_ID = "TestCorruptModel"
 
 @CacheEntity(CORRUPT_MODEL_ID)
 data class TestCorruptModel(
+  val name: String = "",
+)
+
+const val UNREADABLE_FILE_MODEL_ID = "TestUnreadableFileModel"
+
+@CacheEntity(UNREADABLE_FILE_MODEL_ID)
+data class TestUnreadableFileModel(
+  val name: String = "",
+)
+
+const val UNREADABLE_DIRECTORY_MODEL_ID = "TestUnreadableDirectoryModel"
+
+@CacheEntity(UNREADABLE_DIRECTORY_MODEL_ID)
+data class TestUnreadableDirectoryModel(
   val name: String = "",
 )
 
