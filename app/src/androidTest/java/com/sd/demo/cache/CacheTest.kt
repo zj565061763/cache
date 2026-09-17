@@ -153,6 +153,27 @@ class CacheTest {
     }
   }
 
+  /** 非规范Base64文件名必须被忽略，不能产生重复或无法访问的key */
+  @Test
+  fun testNonCanonicalBase64FilenameIgnored() {
+    val cache = FCache.get(TestNonCanonicalFilenameModel::class.java)
+    val key = "a"
+    assertEquals(true, cache.put(key, TestNonCanonicalFilenameModel()))
+
+    val directory = cacheStoreDirectory(NON_CANONICAL_FILENAME_MODEL_ID)
+    val padded = directory.resolve("YQ==.cache")
+    val whitespace = directory.resolve("Y Q.cache")
+    padded.writeBytes(byteArrayOf(1))
+    whitespace.writeBytes(byteArrayOf(1))
+    try {
+      assertEquals(listOf(key), cache.keys())
+    } finally {
+      padded.delete()
+      whitespace.delete()
+      cache.remove(key)
+    }
+  }
+
   /** 磁盘上的缓存数据损坏时，get()应返回null并把解码异常转发给ExceptionHandler，而不是抛出 */
   @Test
   fun testCorruptedDataReturnsNull() {
@@ -352,6 +373,13 @@ const val INVALID_FILENAME_MODEL_ID = "TestInvalidFilenameModel"
 
 @CacheEntity(INVALID_FILENAME_MODEL_ID)
 data class TestInvalidFilenameModel(
+  val name: String = "tom",
+)
+
+const val NON_CANONICAL_FILENAME_MODEL_ID = "TestNonCanonicalFilenameModel"
+
+@CacheEntity(NON_CANONICAL_FILENAME_MODEL_ID)
+data class TestNonCanonicalFilenameModel(
   val name: String = "tom",
 )
 
