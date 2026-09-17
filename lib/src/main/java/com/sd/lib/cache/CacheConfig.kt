@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.FileCacheStore
-import com.sd.lib.moshi.fMoshi
 import java.io.File
 
 class CacheConfig private constructor(
@@ -127,16 +126,4 @@ inline fun CacheConfig.Companion.init(
       .apply(block)
       .build(context)
   )
-}
-
-private class DefaultObjectConverter : CacheConfig.ObjectConverter {
-  override fun <T> encode(value: T, clazz: Class<T>): ByteArray {
-    return fMoshi.adapter(clazz).toJson(value).toByteArray()
-  }
-
-  override fun <T> decode(bytes: ByteArray, clazz: Class<T>): T {
-    return checkNotNull(
-      fMoshi.adapter(clazz).fromJson(bytes.decodeToString(throwOnInvalidSequence = true))
-    )
-  }
 }
