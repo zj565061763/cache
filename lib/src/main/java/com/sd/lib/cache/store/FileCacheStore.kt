@@ -28,11 +28,8 @@ internal class FileCacheStore : CacheStore {
     if (::_directory.isInitialized) return
     _directory = directory
     _tempFilePrefix = tempFilePrefix(context)
-    if (checkDirectoryExist()) {
-      deleteTempFile()
-    } else {
-      throw IOException("CacheStore mkdirs failure:$directory")
-    }
+    checkDirectoryExist()
+    deleteTempFile()
   }
 
   override fun putCache(key: String, value: ByteArray) {
@@ -56,7 +53,8 @@ internal class FileCacheStore : CacheStore {
     try {
       writeWithTempFile()
     } catch (e: IOException) {
-      if (!_directory.isDirectory && checkDirectoryExist()) {
+      if (!_directory.isDirectory) {
+        checkDirectoryExist()
         writeWithTempFile()
       } else {
         throw e
@@ -167,16 +165,17 @@ internal class FileCacheStore : CacheStore {
    * 尤其是[getCache]和[keys]：只读的调用方只有这两条路径，它们不恢复的话，
    * 监听死了就再也收不到事件，也就再也没有机会恢复。
    */
-  private fun checkDirectoryExist(): Boolean {
+  private fun checkDirectoryExist() {
     val dir = _directory
     if (!dir.isDirectory) {
       if (dir.isFile) dir.delete()
       // 目录已不存在，之前的监听必然已失效
       _watchValid = false
-      if (!dir.mkdirs()) return false
+      if (!dir.mkdirs() && !dir.isDirectory) {
+        throw IOException("CacheStore mkdirs failure:$dir")
+      }
     }
     startWatching()
-    return true
   }
 
   private fun startWatching() {

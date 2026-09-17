@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.IOException
 
 /**
  * 缓存目录被删除之后，[android.os.FileObserver]的监听会失效，
@@ -59,6 +60,37 @@ class FileCacheStoreRecoveryTest {
       assertEquals(true, cache.put(key, model))
       assertEquals(model, cache.get(key))
     } finally {
+      cache.remove(key)
+    }
+  }
+
+  /** 缓存目录无法重建时，失败应转发给异常处理器 */
+  @Test
+  fun testDirectoryCreationFailureReported() {
+    val cache = FCache.get(TestDirectoryCreationFailureModel::class.java)
+    val key = "testDirectoryCreationFailureReported"
+    val directory = cacheStoreDirectory(
+      id = DIRECTORY_CREATION_FAILURE_MODEL_ID,
+      group = DIRECTORY_CREATION_FAILURE_GROUP,
+    )
+    val groupDirectory = checkNotNull(directory.parentFile)
+
+    try {
+      assertEquals(true, cache.put(key, TestDirectoryCreationFailureModel()))
+      assertEquals(true, groupDirectory.deleteRecursively())
+      groupDirectory.writeText("blocked")
+
+      CacheErrors.clear()
+      assertEquals(null, cache.get(key))
+      assertEquals(emptyList<String>(), cache.keys())
+      assertEquals(false, cache.remove(key))
+
+      val errors = CacheErrors.list().filter {
+        it is IOException && it.message.orEmpty().contains("mkdirs failure")
+      }
+      assertEquals(3, errors.size)
+    } finally {
+      groupDirectory.delete()
       cache.remove(key)
     }
   }
@@ -191,5 +223,16 @@ private const val SYNCHRONOUS_PUT_RECOVERY_MODEL_ID = "TestSynchronousPutRecover
 
 @CacheEntity(SYNCHRONOUS_PUT_RECOVERY_MODEL_ID)
 data class TestSynchronousPutRecoveryModel(
+  val name: String = "tom",
+)
+
+private const val DIRECTORY_CREATION_FAILURE_MODEL_ID = "TestDirectoryCreationFailureModel"
+private const val DIRECTORY_CREATION_FAILURE_GROUP = "com.sd.demo.cache.group.directory_creation_failure"
+
+@CacheEntity(
+  id = DIRECTORY_CREATION_FAILURE_MODEL_ID,
+  group = DIRECTORY_CREATION_FAILURE_GROUP,
+)
+data class TestDirectoryCreationFailureModel(
   val name: String = "tom",
 )
