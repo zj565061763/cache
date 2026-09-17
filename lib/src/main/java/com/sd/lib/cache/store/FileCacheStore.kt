@@ -55,8 +55,8 @@ internal class FileCacheStore : CacheStore {
 
     try {
       writeWithTempFile()
-    } catch (e: FileNotFoundException) {
-      if (checkDirectoryExist()) {
+    } catch (e: IOException) {
+      if (!_directory.isDirectory && checkDirectoryExist()) {
         writeWithTempFile()
       } else {
         throw e

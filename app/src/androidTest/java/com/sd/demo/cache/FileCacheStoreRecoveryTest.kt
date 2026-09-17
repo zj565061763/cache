@@ -45,6 +45,24 @@ class FileCacheStoreRecoveryTest {
     }
   }
 
+  /** 缓存目录被删除后，同步写操作应立即重建目录并完成写入 */
+  @Test
+  fun testRecoverOnSynchronousPut() {
+    val cache = FCache.get(TestSynchronousPutRecoveryModel::class.java)
+    val key = "testRecoverOnSynchronousPut"
+    val model = TestSynchronousPutRecoveryModel(name = "value")
+
+    try {
+      assertEquals(true, cache.put(key, model))
+      assertEquals(true, cacheStoreDirectory(SYNCHRONOUS_PUT_RECOVERY_MODEL_ID).deleteRecursively())
+
+      assertEquals(true, cache.put(key, model))
+      assertEquals(model, cache.get(key))
+    } finally {
+      cache.remove(key)
+    }
+  }
+
   /** 缓存目录被删除后，通过[com.sd.lib.cache.Cache.get]恢复监听 */
   @Test
   fun testRecoverOnGet() = runBlocking {
@@ -166,5 +184,12 @@ const val RECOVERY_MODEL_ID = "TestRecoveryModel"
 
 @CacheEntity(RECOVERY_MODEL_ID)
 data class TestRecoveryModel(
+  val name: String = "tom",
+)
+
+private const val SYNCHRONOUS_PUT_RECOVERY_MODEL_ID = "TestSynchronousPutRecoveryModel"
+
+@CacheEntity(SYNCHRONOUS_PUT_RECOVERY_MODEL_ID)
+data class TestSynchronousPutRecoveryModel(
   val name: String = "tom",
 )
