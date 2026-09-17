@@ -153,6 +153,33 @@ class FileCacheStoreRecoveryTest {
     }
   }
 
+  /** 目录移走后立即读取恢复监听时，应主动通知订阅者缓存已清空 */
+  @Test
+  fun testActiveRecoveryNotifiesCleared() = runBlocking {
+    val cache = FCache.getKtx(TestActiveRecoveryNotificationModel::class.java)
+    val key = "testActiveRecoveryNotifiesCleared"
+
+    cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
+      cache.remove(key)
+      awaitItemUntil(null)
+
+      val model = TestActiveRecoveryNotificationModel(name = "value")
+      assertEquals(true, cache.put(key, model))
+      assertEquals(model, awaitItem())
+
+      val directory = cacheStoreDirectory(ACTIVE_RECOVERY_NOTIFICATION_MODEL_ID)
+      val movedDirectory = cacheRootDirectory().resolve("activeRecovery_${System.nanoTime()}")
+      assertEquals(true, directory.renameTo(movedDirectory))
+      try {
+        assertEquals(null, cache.get(key))
+        assertEquals(null, awaitItem())
+      } finally {
+        movedDirectory.deleteRecursively()
+        cache.remove(key)
+      }
+    }
+  }
+
   /** 缓存目录被删除后，各个读写操作的返回值语义不变 */
   @Test
   fun testReadWriteAfterDelete() = runBlocking {
@@ -223,6 +250,13 @@ private const val SYNCHRONOUS_PUT_RECOVERY_MODEL_ID = "TestSynchronousPutRecover
 
 @CacheEntity(SYNCHRONOUS_PUT_RECOVERY_MODEL_ID)
 data class TestSynchronousPutRecoveryModel(
+  val name: String = "tom",
+)
+
+private const val ACTIVE_RECOVERY_NOTIFICATION_MODEL_ID = "TestActiveRecoveryNotificationModel"
+
+@CacheEntity(ACTIVE_RECOVERY_NOTIFICATION_MODEL_ID)
+data class TestActiveRecoveryNotificationModel(
   val name: String = "tom",
 )
 

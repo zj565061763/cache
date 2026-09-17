@@ -166,7 +166,8 @@ internal class FileCacheStore : CacheStore {
    */
   private fun checkDirectoryExist() {
     val dir = _directory
-    if (!dir.isDirectory) {
+    val shouldCreateDirectory = !dir.isDirectory
+    if (shouldCreateDirectory) {
       if (dir.isFile) dir.delete()
       // 目录已不存在，之前的监听必然已失效
       _watchValid = false
@@ -175,6 +176,7 @@ internal class FileCacheStore : CacheStore {
       }
     }
     startWatching()
+    if (shouldCreateDirectory) _cacheChangeCallback?.onCleared()
   }
 
   private fun startWatching() {
