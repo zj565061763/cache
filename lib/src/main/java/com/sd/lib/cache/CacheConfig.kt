@@ -136,7 +136,7 @@ private class DefaultObjectConverter : CacheConfig.ObjectConverter {
 
   override fun <T> decode(bytes: ByteArray, clazz: Class<T>): T {
     return checkNotNull(
-      fMoshi.adapter(clazz).fromJson(bytes.decodeToString())
+      fMoshi.adapter(clazz).fromJson(bytes.decodeToString(throwOnInvalidSequence = true))
     )
   }
 }
