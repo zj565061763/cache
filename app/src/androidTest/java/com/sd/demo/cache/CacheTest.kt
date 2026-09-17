@@ -1,5 +1,7 @@
 package com.sd.demo.cache
 
+import android.system.ErrnoException
+import android.system.OsConstants
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sd.lib.cache.Cache
 import com.sd.lib.cache.CacheEntity
@@ -237,6 +239,35 @@ class CacheTest {
     }
   }
 
+  /** 缓存目录无法访问时，remove不能把访问失败误判为缓存不存在 */
+  @Test
+  fun testRemoveFromInaccessibleDirectoryReported() {
+    val cache = FCache.get(TestInaccessibleRemoveModel::class.java)
+    val key = "testRemoveFromInaccessibleDirectoryReported"
+    val model = TestInaccessibleRemoveModel(name = "value")
+    val directory = cacheStoreDirectory(INACCESSIBLE_REMOVE_MODEL_ID)
+    val file = cacheFileOf(INACCESSIBLE_REMOVE_MODEL_ID, key)
+
+    try {
+      assertEquals(true, cache.put(key, model))
+      assertEquals(true, directory.setExecutable(false, false))
+      assertEquals(false, file.exists())
+
+      CacheErrors.clear()
+      assertEquals(false, cache.remove(key))
+      val errors = CacheErrors.list().filter {
+        it is IOException && (it.cause as? ErrnoException)?.errno == OsConstants.EACCES
+      }
+      assertEquals(1, errors.size)
+
+      assertEquals(true, directory.setExecutable(true, true))
+      assertEquals(model, cache.get(key))
+    } finally {
+      directory.setExecutable(true, true)
+      cache.remove(key)
+    }
+  }
+
   /** 同一个id在不同group下互不冲突，各自独立读写 */
   @Test
   fun testSameIdDifferentGroupNoConflict() {
@@ -349,6 +380,13 @@ const val UNREADABLE_DIRECTORY_MODEL_ID = "TestUnreadableDirectoryModel"
 
 @CacheEntity(UNREADABLE_DIRECTORY_MODEL_ID)
 data class TestUnreadableDirectoryModel(
+  val name: String = "",
+)
+
+const val INACCESSIBLE_REMOVE_MODEL_ID = "TestInaccessibleRemoveModel"
+
+@CacheEntity(INACCESSIBLE_REMOVE_MODEL_ID)
+data class TestInaccessibleRemoveModel(
   val name: String = "",
 )
 

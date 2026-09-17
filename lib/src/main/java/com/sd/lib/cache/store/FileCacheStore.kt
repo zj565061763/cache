@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.FileObserver
 import android.os.Process
 import android.system.ErrnoException
+import android.system.Os
 import android.system.OsConstants
 import android.util.Base64
 import com.sd.lib.cache.libException
@@ -70,22 +71,29 @@ internal class FileCacheStore : CacheStore {
     return try {
       file.readBytes()
     } catch (e: FileNotFoundException) {
-      if (!e.isPathMissing(file)) throw e
-      // 文件不存在，也可能是整个目录被删除了
-      checkDirectoryExist()
-      null
+      if (e.isPathMissing(file)) {
+        checkDirectoryExist()
+        null
+      } else {
+        throw e
+      }
     }
   }
 
   override fun removeCache(key: String): Boolean {
     checkWatchValid()
     val file = fileOf(key)
-    if (!file.exists()) {
-      // 文件不存在，也可能是整个目录被删除了
-      checkDirectoryExist()
-      return true
+    return try {
+      Os.remove(file.absolutePath)
+      true
+    } catch (e: ErrnoException) {
+      if (e.isPathMissing()) {
+        checkDirectoryExist()
+        true
+      } else {
+        throw IOException("CacheStore.removeCache failure:$file", e)
+      }
     }
-    return file.delete()
   }
 
   override fun keys(): List<String> {
@@ -254,7 +262,11 @@ private fun filenameToKey(filename: String): String? {
 }
 
 private fun FileNotFoundException.isPathMissing(file: File): Boolean {
-  val errno = (cause as? ErrnoException)?.errno ?: return !file.exists()
+  val errnoException = cause as? ErrnoException ?: return !file.exists()
+  return errnoException.isPathMissing()
+}
+
+private fun ErrnoException.isPathMissing(): Boolean {
   return errno == OsConstants.ENOENT || errno == OsConstants.ENOTDIR
 }
 
