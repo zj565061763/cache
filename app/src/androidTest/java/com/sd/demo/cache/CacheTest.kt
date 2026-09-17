@@ -85,6 +85,33 @@ class CacheTest {
     assertEquals(1, tooLong.size)
   }
 
+  /** 非法UTF-16 key必须失败，不能替换成问号后与正常key冲突 */
+  @Test
+  fun testInvalidUtf16Key() {
+    val cache = FCache.get(TestInvalidKeyModel::class.java)
+    val invalidKey = "😀".substring(0, 1)
+    val normalKey = "?"
+    val model = TestInvalidKeyModel(name = "value")
+
+    try {
+      CacheErrors.clear()
+      assertEquals(false, cache.put(invalidKey, model))
+      assertEquals(null, cache.get(invalidKey))
+      assertEquals(false, cache.remove(invalidKey))
+
+      val errors = CacheErrors.list().filter {
+        it is CacheException && it.message.orEmpty().contains("invalid UTF-16")
+      }
+      assertEquals(3, errors.size)
+
+      assertEquals(true, cache.put(normalKey, model))
+      assertEquals(model, cache.get(normalKey))
+      assertEquals(listOf(normalKey), cache.keys())
+    } finally {
+      cache.remove(normalKey)
+    }
+  }
+
   /** 目录里混进名字能通过Base64解码、但解出来不是合法UTF-8的文件时，keys()不能把它当成有效key */
   @Test
   fun testInvalidUtf8FilenameIgnored() {
@@ -189,6 +216,11 @@ class CacheTest {
 
 @CacheEntity("TestKeyLengthModel")
 data class TestKeyLengthModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestInvalidKeyModel")
+data class TestInvalidKeyModel(
   val name: String = "tom",
 )
 

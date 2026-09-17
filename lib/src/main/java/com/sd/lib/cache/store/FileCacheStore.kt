@@ -141,12 +141,11 @@ internal class FileCacheStore : CacheStore {
 
   /** [key]对应的[File] */
   private fun fileOf(key: String): File {
-    val filename = keyToFilename(key)
-    val maxLength = filename.length + CACHE_SUFFIX_WITH_DOT.length
-    if (maxLength > MAX_FILENAME_LENGTH) {
-      libException("Cache key is too long: ${key.toByteArray().size} bytes, max $MAX_KEY_BYTES bytes")
+    val keyBytes = keyToBytes(key)
+    if (keyBytes.size > MAX_KEY_BYTES) {
+      libException("Cache key is too long: ${keyBytes.size} bytes, max $MAX_KEY_BYTES bytes")
     }
-    return _directory.resolve(filename + CACHE_SUFFIX_WITH_DOT)
+    return _directory.resolve(keyToFilename(keyBytes) + CACHE_SUFFIX_WITH_DOT)
   }
 
   /**
@@ -212,22 +211,28 @@ private const val TEMP_SUFFIX_WITH_DOT = ".tmp"
 /** 临时文件基础前缀，实际前缀还会包含进程名哈希 */
 private const val TEMP_FILE_PREFIX = ".sd-cache-"
 
-/** 文件名长度上限，Linux下NAME_MAX为255字节，Base64的输出是ASCII，所以字符数等于字节数 */
-private const val MAX_FILENAME_LENGTH = 255
-
 /**
  * key的最大字节数。
- * Base64编码后的长度为ceil(4n/3)，还要留出[CACHE_SUFFIX_WITH_DOT]的6个字节，
+ * Linux下NAME_MAX为255字节，Base64编码后的长度为ceil(4n/3)，
+ * 还要留出[CACHE_SUFFIX_WITH_DOT]的6个字节，
  * 即ceil(4n/3) <= 249，解得n <= 186。
  * 注意限制的是字节数不是字符数，UTF-8下一个汉字占3个字节。
  */
 private const val MAX_KEY_BYTES = 186
 
-/** 把[key]转为文件名 */
-private fun keyToFilename(key: String): String {
-  val input = key.toByteArray()
+/** 把[key]严格编码为UTF-8 */
+private fun keyToBytes(key: String): ByteArray {
+  return try {
+    key.encodeToByteArray(throwOnInvalidSequence = true)
+  } catch (e: CharacterCodingException) {
+    libException("Cache key contains invalid UTF-16", e)
+  }
+}
+
+/** 把[keyBytes]转为文件名 */
+private fun keyToFilename(keyBytes: ByteArray): String {
   val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
-  return Base64.encode(input, flag).decodeToString()
+  return Base64.encode(keyBytes, flag).decodeToString()
 }
 
 /** 把[filename]转为key */
