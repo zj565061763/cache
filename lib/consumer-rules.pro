@@ -1,3 +1,6 @@
+# 保留运行时注解及其默认值
+-keepattributes RuntimeVisibleAnnotations,AnnotationDefault
+
 # 保留注解类本身
 -keep @interface com.sd.lib.cache.CacheEntity
 
