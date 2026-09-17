@@ -237,12 +237,14 @@ private fun keyToFilename(keyBytes: ByteArray): String {
 
 /** 把[filename]转为key */
 private fun filenameToKey(filename: String): String? {
-  return runCatching {
+  return try {
     val input = filename.toByteArray()
     val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
     // 必须throwOnInvalidSequence，否则非法的UTF-8会被静默替换成U+FFFD，
     Base64.decode(input, flag).decodeToString(throwOnInvalidSequence = true)
-  }.getOrNull()
+  } catch (_: Exception) {
+    null
+  }
 }
 
 /** 当前进程专属的临时文件前缀；进程名可用时跨重启稳定，最终PID兜底仍保证存活进程间隔离。 */
@@ -257,16 +259,19 @@ private fun Context.currentProcessName(): String {
   }
 
   val myPid = Process.myPid()
-  val processName = runCatching {
+  val processName = try {
     (getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager)
       ?.runningAppProcesses
       ?.firstOrNull { it.pid == myPid }
       ?.processName
-  }.getOrNull()?.takeIf { it.isNotBlank() }
+  } catch (_: Exception) {
+    null
+  }?.takeIf { it.isNotBlank() }
   if (processName != null) return processName
 
-  return runCatching {
+  return try {
     File("/proc/self/cmdline").readText().trimEnd('\u0000')
-  }.getOrNull()?.takeIf { it.isNotBlank() }
-    ?: "$packageName:${myPid}"
+  } catch (_: Exception) {
+    null
+  }?.takeIf { it.isNotBlank() } ?: "$packageName:${myPid}"
 }
