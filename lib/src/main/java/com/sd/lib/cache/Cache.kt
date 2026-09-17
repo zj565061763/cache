@@ -27,6 +27,7 @@ internal class CacheImpl<T>(
   var cacheChangeCallback: CacheStore.CacheChangeCallback? = null
 
   override fun put(key: String, value: T): Boolean {
+    if (value == null) return false
     return libRunCatching {
       val data = encode(value, clazz)
       lockCache { getCacheStore().putCache(key, data) }

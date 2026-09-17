@@ -1,6 +1,7 @@
 package com.sd.demo.cache
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.sd.lib.cache.Cache
 import com.sd.lib.cache.CacheEntity
 import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.FCache
@@ -24,6 +25,23 @@ class CacheTest {
       clazz = TestDefaultModel::class.java,
       factory = { TestDefaultModel(name = it) },
     )
+  }
+
+  /** 写入null时返回false，不创建缓存文件 */
+  @Test
+  fun testPutNullReturnsFalse() {
+    val cache = FCache.get(TestNullValueModel::class.java)
+    val key = "testPutNullReturnsFalse"
+    @Suppress("UNCHECKED_CAST")
+    val nullableCache = cache as Cache<TestNullValueModel?>
+
+    try {
+      assertEquals(false, nullableCache.put(key, null))
+      assertEquals(null, cache.get(key))
+      assertEquals(false, cache.keys().contains(key))
+    } finally {
+      cache.remove(key)
+    }
   }
 
   /** key的长度上限之内可以正常使用，保证长度检查没有过严 */
@@ -216,6 +234,11 @@ class CacheTest {
 
 @CacheEntity("TestKeyLengthModel")
 data class TestKeyLengthModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestNullValueModel")
+data class TestNullValueModel(
   val name: String = "tom",
 )
 
