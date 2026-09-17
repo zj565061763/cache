@@ -50,7 +50,9 @@ object FCache {
       clazz = clazz,
       lock = lock,
       cacheStoreProvider = { groupCacheStoreFactory.create(id = id, clazz = clazz) },
-    )
+    ).also {
+      groupCacheStoreFactory.register(id = id, clazz = clazz)
+    }
   }
 }
 
@@ -60,32 +62,34 @@ private val CurrentProcessLock = Any()
 private class GroupCacheStoreFactory(
   val group: String,
 ) {
-  private val _stores: MutableMap<String, StoreInfo> = ConcurrentHashMap()
+  private val _stores = ConcurrentHashMap<String, StoreInfo>()
 
-  @Throws(Throwable::class)
-  fun create(id: String, clazz: Class<*>): CacheStore {
-    _stores[id]?.also { info ->
-      if (info.clazz == clazz) {
-        return info.cacheStore
-      } else {
+  fun register(id: String, clazz: Class<*>) {
+    _stores.putIfAbsent(id, StoreInfo(clazz = clazz))?.also { info ->
+      if (info.clazz != clazz) {
         libError("id:${id} has bound to ${info.clazz.name} when bind ${clazz.name}")
       }
     }
+  }
+
+  @Throws(Throwable::class)
+  fun create(id: String, clazz: Class<*>): CacheStore {
+    getStoreInfo(id = id, clazz = clazz).cacheStore?.also { return it }
     synchronized(this@GroupCacheStoreFactory) {
-      _stores[id]?.also { info ->
-        if (info.clazz == clazz) {
-          return info.cacheStore
-        } else {
-          libError("id:${id} has bound to ${info.clazz.name} when bind ${clazz.name}")
-        }
-      }
+      getStoreInfo(id = id, clazz = clazz).cacheStore?.also { return it }
       return CacheConfig.get().newCacheStore(group = group, id = id)
-        .also { cacheStore -> _stores[id] = StoreInfo(clazz, cacheStore) }
+        .also { cacheStore -> _stores[id] = StoreInfo(clazz = clazz, cacheStore = cacheStore) }
     }
+  }
+
+  private fun getStoreInfo(id: String, clazz: Class<*>): StoreInfo {
+    val info = _stores[id] ?: libError("id:${id} has not been registered when create ${clazz.name}")
+    if (info.clazz != clazz) libError("id:${id} has bound to ${info.clazz.name} when bind ${clazz.name}")
+    return info
   }
 
   private class StoreInfo(
     val clazz: Class<*>,
-    val cacheStore: CacheStore,
+    val cacheStore: CacheStore? = null,
   )
 }

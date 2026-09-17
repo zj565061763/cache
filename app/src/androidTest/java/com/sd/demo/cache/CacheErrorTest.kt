@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sd.lib.cache.CacheEntity
 import com.sd.lib.cache.CacheException
 import com.sd.lib.cache.FCache
+import com.sd.lib.cache.singleCacheKtx
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
@@ -38,19 +39,17 @@ class FCacheErrorTest {
   }
 
   /**
-   * 同一 group 内两个不同的类使用相同 id，首次执行缓存操作时应抛出 CacheException。
+   * 同一 group 内两个不同的类使用相同 id，创建第二个单值内存缓存时应抛出 CacheException。
    * CacheError 是编程错误，不经过 ExceptionHandler，直接向调用方传播。
    */
   @Test
   fun testDuplicateIdThrows() {
-    // ConflictModelA 先注册，首次操作正常
-    val cacheA = FCache.get(ConflictModelA::class.java)
-    assertEquals(true, cacheA.put("key", ConflictModelA()))
+    // ConflictModelA 先注册
+    FCache.get(ConflictModelA::class.java)
 
-    // ConflictModelB 使用相同的 id + group，首次操作时应抛出 CacheException
-    val cacheB = FCache.get(ConflictModelB::class.java)
+    // ConflictModelB 使用相同的 id + group，创建单值内存缓存时应同步抛出 CacheException
     val ex = assertThrows(CacheException::class.java) {
-      cacheB.put("key", ConflictModelB())
+      singleCacheKtx<ConflictModelB>(memoryCache = true) { ConflictModelB() }
     }
     assertTrue(ex.message.orEmpty().contains(CONFLICT_ID))
   }
