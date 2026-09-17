@@ -34,9 +34,11 @@ object FCache {
 
     val id = annotation.id
     require(id.isNotBlank()) { "${CacheEntity::class.java.simpleName}.id is blank in $clazz" }
+    requireValidCacheEntityProperty(value = id, property = "id", clazz = clazz)
 
     val group = annotation.group
     require(group.isNotBlank()) { "${CacheEntity::class.java.simpleName}.group is blank in $clazz" }
+    requireValidCacheEntityProperty(value = group, property = "group", clazz = clazz)
 
     val groupCacheStoreFactory = _mapGroupCacheStoreFactory.getOrPut(group) { GroupCacheStoreFactory(group) }
 
@@ -53,6 +55,17 @@ object FCache {
     ).also {
       groupCacheStoreFactory.register(id = id, clazz = clazz)
     }
+  }
+}
+
+private fun requireValidCacheEntityProperty(value: String, property: String, clazz: Class<*>) {
+  try {
+    value.encodeToByteArray(throwOnInvalidSequence = true)
+  } catch (error: CharacterCodingException) {
+    throw IllegalArgumentException(
+      "${CacheEntity::class.java.simpleName}.$property contains invalid UTF-16 in $clazz",
+      error,
+    )
   }
 }
 
