@@ -1,6 +1,7 @@
 package com.sd.demo.cache
 
 import android.system.ErrnoException
+import android.system.Os
 import android.system.OsConstants
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sd.lib.cache.Cache
@@ -171,6 +172,35 @@ class CacheTest {
       padded.delete()
       whitespace.delete()
       cache.remove(key)
+    }
+  }
+
+  /** keys()只返回普通非空缓存文件，忽略目录、空文件和符号链接 */
+  @Test
+  fun testNonCacheEntriesIgnored() {
+    val cache = FCache.get(TestNonCacheEntryModel::class.java)
+    val validKey = "valid"
+    val directoryKey = "directory"
+    val emptyFileKey = "emptyFile"
+    val symbolicLinkKey = "symbolicLink"
+    val validFile = cacheFileOf(NON_CACHE_ENTRY_MODEL_ID, validKey)
+    val directory = cacheFileOf(NON_CACHE_ENTRY_MODEL_ID, directoryKey)
+    val emptyFile = cacheFileOf(NON_CACHE_ENTRY_MODEL_ID, emptyFileKey)
+    val symbolicLink = cacheFileOf(NON_CACHE_ENTRY_MODEL_ID, symbolicLinkKey)
+
+    try {
+      assertEquals(true, cache.put(validKey, TestNonCacheEntryModel()))
+      assertEquals(true, directory.mkdir())
+      assertEquals(true, emptyFile.createNewFile())
+      Os.symlink(validFile.absolutePath, symbolicLink.absolutePath)
+
+      assertEquals(null, cache.get(emptyFileKey))
+      assertEquals(listOf(validKey), cache.keys())
+    } finally {
+      directory.delete()
+      emptyFile.delete()
+      symbolicLink.delete()
+      cache.remove(validKey)
     }
   }
 
@@ -404,6 +434,13 @@ const val NON_CANONICAL_FILENAME_MODEL_ID = "TestNonCanonicalFilenameModel"
 
 @CacheEntity(NON_CANONICAL_FILENAME_MODEL_ID)
 data class TestNonCanonicalFilenameModel(
+  val name: String = "tom",
+)
+
+private const val NON_CACHE_ENTRY_MODEL_ID = "TestNonCacheEntryModel"
+
+@CacheEntity(NON_CACHE_ENTRY_MODEL_ID)
+data class TestNonCacheEntryModel(
   val name: String = "tom",
 )
 

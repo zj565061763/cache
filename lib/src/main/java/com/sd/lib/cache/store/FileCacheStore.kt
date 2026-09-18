@@ -106,6 +106,20 @@ internal class FileCacheStore : CacheStore {
     }
     if (listFile.isEmpty()) return emptyList()
     return listFile.mapNotNull { file ->
+      val stat = try {
+        Os.lstat(file.absolutePath)
+      } catch (e: ErrnoException) {
+        if (e.isPathMissing()) {
+          return@mapNotNull null
+        } else {
+          throw IOException("CacheStore.keys stat failure:$file", e)
+        }
+      }
+
+      if (!OsConstants.S_ISREG(stat.st_mode) || stat.st_size <= 0L) {
+        return@mapNotNull null
+      }
+
       val filename = file.name.removeSuffix(CACHE_SUFFIX_WITH_DOT)
       filenameToKey(filename)
     }
