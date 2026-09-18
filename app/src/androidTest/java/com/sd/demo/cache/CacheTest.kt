@@ -266,6 +266,36 @@ class CacheTest {
     }
   }
 
+  /** 非法UTF-16 Char缓存值必须写入失败，不能静默替换字符后覆盖已有缓存 */
+  @Test
+  fun testInvalidUtf16CharValueRejected() {
+    val cache = FCache.get(TestInvalidUtf16CharValueModel::class.java)
+    val key = "testInvalidUtf16CharValueRejected"
+    val oldValue = TestInvalidUtf16CharValueModel(value = 'a', nullableValue = 'b')
+    val invalidChar = "😀".substring(0, 1).single()
+    val invalidValues = listOf(
+      oldValue.copy(value = invalidChar),
+      oldValue.copy(nullableValue = invalidChar),
+    )
+
+    try {
+      assertEquals(true, cache.put(key, oldValue))
+
+      CacheErrors.clear()
+      invalidValues.forEach { invalidValue ->
+        assertEquals(false, cache.put(key, invalidValue))
+        assertEquals(oldValue, cache.get(key))
+      }
+      assertEquals(invalidValues.size, CacheErrors.list().count {
+        it is CacheException &&
+          it.message.orEmpty().contains("invalid UTF-16") &&
+          it.cause is CharacterCodingException
+      })
+    } finally {
+      cache.remove(key)
+    }
+  }
+
   /** 缓存文件存在但无法读取时，不能静默当成缓存未命中 */
   @Test
   fun testUnreadableFileReported() {
@@ -461,6 +491,12 @@ data class TestInvalidUtf8DataModel(
 @CacheEntity("TestInvalidUtf16ValueModel")
 data class TestInvalidUtf16ValueModel(
   val name: String = "",
+)
+
+@CacheEntity("TestInvalidUtf16CharValueModel")
+data class TestInvalidUtf16CharValueModel(
+  val value: Char = 'a',
+  val nullableValue: Char? = null,
 )
 
 const val UNREADABLE_FILE_MODEL_ID = "TestUnreadableFileModel"
