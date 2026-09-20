@@ -3,7 +3,7 @@ package com.sd.lib.cache
 open class CacheException(
   message: String = "",
   cause: Throwable? = null,
-) : Exception(message, cause)
+) : RuntimeException(message, cause)
 
 internal fun libException(
   message: String,
