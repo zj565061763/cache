@@ -36,6 +36,7 @@ class CacheConfig private constructor(
 
   /** 缓存仓库工厂 */
   fun interface CacheStoreFactory {
+    /** 创建仓库，每次调用都要返回新实例 */
     @Throws(Throwable::class)
     fun create(): CacheStore
   }
@@ -53,6 +54,7 @@ class CacheConfig private constructor(
 
   /** 异常处理类 */
   fun interface ExceptionHandler {
+    /** 缓存操作异常时回调，不要在回调中再调用缓存API */
     fun onException(error: Throwable)
   }
 
@@ -82,6 +84,7 @@ class CacheConfig private constructor(
       this.exceptionHandler = handler
     }
 
+    /** 创建配置 */
     fun build(context: Context): CacheConfig {
       return CacheConfig(this, context)
     }

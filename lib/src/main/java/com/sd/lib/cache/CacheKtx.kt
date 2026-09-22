@@ -28,9 +28,16 @@ interface CacheKtx<T> {
   suspend fun <R> edit(block: Cache<T>.() -> R): R
 }
 
+/** 设置缓存，在[CacheKtx.edit]中执行 */
 suspend fun <T> CacheKtx<T>.put(key: String, value: T) = edit { put(key, value) }
+
+/** 获取缓存，在[CacheKtx.edit]中执行 */
 suspend fun <T> CacheKtx<T>.get(key: String) = edit { get(key) }
+
+/** 删除缓存，在[CacheKtx.edit]中执行 */
 suspend fun <T> CacheKtx<T>.remove(key: String) = edit { remove(key) }
+
+/** 所有缓存key，在[CacheKtx.edit]中执行 */
 suspend fun <T> CacheKtx<T>.keys() = edit { keys() }
 
 internal class CacheKtxImpl<T>(

@@ -37,6 +37,10 @@ data class Address(val city: String = "")
 
 # 多进程约束
 
-本库支持多个进程按顺序读写同一缓存；每个进程都必须在自己的 `Application.onCreate()` 中调用 `CacheConfig.init(context)`。默认文件存储先写临时文件再重命名，正常完成的单次写入不会留下半写的正式缓存文件。
+支持多个进程按顺序读写同一缓存，每个进程都要在 `Application.onCreate()` 中调用 `CacheConfig.init(context)`。
 
-本库不提供跨进程互斥：多个进程同时写入同一 key 时，成功完成的单次写入仍是完整文件，但不保证写入顺序和最终值；`CacheKtx.edit`、`SingleCacheKtx.update` 的读改写也只在当前进程内原子化。需要跨进程并发访问时，调用方必须通过 IPC、文件锁或其他方式自行串行化。Flow 和内存缓存通过 `FileObserver` 异步感知其他进程的修改，不提供即时一致性。
+- 写入先写临时文件再重命名，不会留下写了一半的缓存文件
+- 不提供跨进程互斥，多个进程同时写同一 key 时，最终值不确定
+- `CacheKtx.edit`、`SingleCacheKtx.update` 只在当前进程内是原子的
+- 需要跨进程并发写入时，请自行串行化，例如使用 IPC 或文件锁
+- 其他进程的修改通过文件监听异步通知，Flow 会稍后收到更新
