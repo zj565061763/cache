@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
@@ -38,10 +38,26 @@ internal class CacheKtxImpl<T>(
   private val _callbacks = CacheCallbacks(cache)
 
   override fun flowOf(key: String): Flow<T?> {
-    return eventFlowOf(key)
-      .map { cache.get(key) }
+    return cacheFlowOf(key)
       .distinctUntilChanged()
       .flowOn(Dispatchers.IO)
+  }
+
+  /**
+   * [key]对应的缓存，每次事件后重新读盘；
+   * 读取失败时保留上一个值，首次读取失败则发射null，避免订阅者一直等待。
+   */
+  fun cacheFlowOf(key: String): Flow<T?> {
+    return flow {
+      var emitted = false
+      eventFlowOf(key).collect {
+        val result = cache.readCache(key)
+        if (result.isSuccess || !emitted) {
+          emit(result.getOrNull())
+          emitted = true
+        }
+      }
+    }
   }
 
   fun eventFlowOf(key: String): Flow<Unit> {

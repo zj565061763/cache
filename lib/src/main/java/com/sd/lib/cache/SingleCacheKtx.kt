@@ -121,8 +121,7 @@ private class DiskSingleCacheKtx<T>(
   defaultCache: T,
 ) : BaseSingleCacheKtx<T>(cache, defaultCache) {
   override fun getFlow(): Flow<T?> {
-    return cache.eventFlowOf(key)
-      .map { cache.get(key) }
+    return cache.cacheFlowOf(key)
       .flowOn(Dispatchers.IO)
   }
 }

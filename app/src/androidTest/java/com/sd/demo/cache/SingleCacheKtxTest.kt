@@ -1,7 +1,5 @@
 package com.sd.demo.cache
 
-import android.system.Os
-import android.system.OsConstants
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.sd.lib.cache.CacheEntity
@@ -316,17 +314,14 @@ class SingleCacheKtxTest {
 
     val file = cacheFileOf(READ_FAILURE_MODEL_ID, SINGLE_CACHE_KEY)
     var invoked = false
-    // 去掉读权限后读取失败，但重命名覆盖仍能成功，修复前会用默认值覆盖
-    Os.chmod(file.absolutePath, OsConstants.S_IWUSR)
-    try {
-      val result = cache.update {
+    // 读取失败但重命名覆盖仍能成功，修复前会用默认值覆盖
+    val result = withoutReadPermission(file) {
+      cache.update {
         invoked = true
         it.copy(name = "overwrite")
       }
-      assertEquals(false, result)
-    } finally {
-      Os.chmod(file.absolutePath, OsConstants.S_IRUSR or OsConstants.S_IWUSR)
     }
+    assertEquals(false, result)
     assertEquals(false, invoked)
     assertEquals(expected, cache.get())
   }
@@ -354,14 +349,11 @@ class SingleCacheKtxTest {
     cache.flow().test(timeout = TEST_TIMEOUT) {
       assertEquals(before, awaitItemUntil(before))
 
-      // 只保留写权限并就地写入，CLOSE_WRITE触发重新读盘，读取必然失败
-      Os.chmod(file.absolutePath, OsConstants.S_IWUSR)
-      try {
+      withoutReadPermission(file) {
+        // 就地写入触发CLOSE_WRITE，重新读盘必然失败
         file.writeBytes("""{"name":"${before.name}"}""".toByteArray())
         // 等待重新读盘完成，修复前这里会发射默认值
         delay(1000)
-      } finally {
-        Os.chmod(file.absolutePath, OsConstants.S_IRUSR or OsConstants.S_IWUSR)
       }
       expectNoEvents()
 
@@ -372,6 +364,31 @@ class SingleCacheKtxTest {
         key = SINGLE_CACHE_KEY,
         json = """{"name":"${after.name}"}""",
       )
+      assertEquals(after, awaitItem())
+    }
+  }
+
+  /** memoryCache=false时重新读盘失败，冷流保留原值，不能退回默认值 */
+  @Test
+  fun testDiskCacheKeepsValueOnReadFailure() = runBlocking {
+    val cache = singleCacheKtx<TestSingleDiskReadFailureModel> { TestSingleDiskReadFailureModel() }
+    val before = TestSingleDiskReadFailureModel(name = "before")
+    assertEquals(true, cache.update { before })
+    val file = cacheFileOf(DISK_READ_FAILURE_MODEL_ID, SINGLE_CACHE_KEY)
+
+    cache.flow().test(timeout = TEST_TIMEOUT) {
+      assertEquals(before, awaitItem())
+
+      withoutReadPermission(file) {
+        // 就地写入触发CLOSE_WRITE，重新读盘必然失败
+        file.writeBytes("""{"name":"${before.name}"}""".toByteArray())
+        // 等待重新读盘完成，修复前这里会发射默认值
+        delay(1000)
+      }
+      expectNoEvents()
+
+      val after = TestSingleDiskReadFailureModel(name = "after")
+      assertEquals(true, cache.update { after })
       assertEquals(after, awaitItem())
     }
   }
@@ -509,6 +526,13 @@ const val MEMORY_READ_FAILURE_MODEL_ID = "TestSingleMemoryReadFailureModel"
 
 @CacheEntity(MEMORY_READ_FAILURE_MODEL_ID)
 data class TestSingleMemoryReadFailureModel(
+  val name: String = "tom",
+)
+
+const val DISK_READ_FAILURE_MODEL_ID = "TestSingleDiskReadFailureModel"
+
+@CacheEntity(DISK_READ_FAILURE_MODEL_ID)
+data class TestSingleDiskReadFailureModel(
   val name: String = "tom",
 )
 

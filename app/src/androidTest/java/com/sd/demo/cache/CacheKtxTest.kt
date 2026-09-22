@@ -11,6 +11,7 @@ import com.sd.lib.cache.remove
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -207,6 +208,47 @@ class CacheKtxTest {
     }
   }
 
+  /** 重新读盘失败时，flowOf保留当前值，不能发射null */
+  @Test
+  fun testFlowKeepsValueOnReadFailure() = runBlocking {
+    val cache = FCache.getKtx(TestKtxReadFailureModel::class.java)
+    val key = "testFlowKeepsValueOnReadFailure"
+    val before = TestKtxReadFailureModel(name = "before")
+    assertEquals(true, cache.put(key, before))
+    val file = cacheFileOf(KTX_READ_FAILURE_MODEL_ID, key)
+
+    cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
+      assertEquals(before, awaitItem())
+
+      withoutReadPermission(file) {
+        // 就地写入触发CLOSE_WRITE，重新读盘必然失败
+        file.writeBytes("""{"name":"${before.name}"}""".toByteArray())
+        // 等待重新读盘完成，修复前这里会发射null
+        delay(1000)
+      }
+      expectNoEvents()
+
+      val after = TestKtxReadFailureModel(name = "after")
+      assertEquals(true, cache.put(key, after))
+      assertEquals(after, awaitItem())
+    }
+  }
+
+  /** 首次读盘失败时flowOf发射null，订阅者不能一直等待 */
+  @Test
+  fun testFlowEmitsNullOnInitialReadFailure() = runBlocking {
+    val cache = FCache.getKtx(TestKtxReadFailureModel::class.java)
+    val key = "testFlowEmitsNullOnInitialReadFailure"
+    assertEquals(true, cache.put(key, TestKtxReadFailureModel(name = "value")))
+    val file = cacheFileOf(KTX_READ_FAILURE_MODEL_ID, key)
+
+    withoutReadPermission(file) {
+      cache.flowOf(key).test(timeout = TEST_TIMEOUT) {
+        assertEquals(null, awaitItem())
+      }
+    }
+  }
+
   /**
    * 首次访问缓存会在持有当前缓存锁时创建仓库，
    * 创建仓库使用的锁不能与[CacheLockLevel.CurrentProcessCurrentGroup]的组级锁共用，否则会形成锁顺序反转。
@@ -362,6 +404,13 @@ data class TestKtxCreateStoreGroupModel(
   group = TEST_KTX_GROUP_CREATE_STORE,
 )
 data class TestKtxCreateStoreModel(
+  val name: String = "tom",
+)
+
+const val KTX_READ_FAILURE_MODEL_ID = "TestKtxReadFailureModel"
+
+@CacheEntity(KTX_READ_FAILURE_MODEL_ID)
+data class TestKtxReadFailureModel(
   val name: String = "tom",
 )
 

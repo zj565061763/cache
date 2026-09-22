@@ -5,6 +5,8 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.Process
+import android.system.Os
+import android.system.OsConstants
 import android.util.Base64
 import androidx.test.platform.app.InstrumentationRegistry
 import app.cash.turbine.ReceiveTurbine
@@ -81,6 +83,19 @@ fun writeCacheFileDirectly(
   val tempFile = file.resolveSibling(".sd-cache-direct-${System.nanoTime()}.tmp")
   tempFile.writeBytes(json.toByteArray())
   assertEquals(true, tempFile.renameTo(file))
+}
+
+/**
+ * 在[block]执行期间去掉[file]的读权限，模拟仓库读取失败。
+ * 只保留写权限，就地写入和重命名覆盖仍能成功。
+ */
+inline fun <R> withoutReadPermission(file: File, block: () -> R): R {
+  Os.chmod(file.absolutePath, OsConstants.S_IWUSR)
+  try {
+    return block()
+  } finally {
+    Os.chmod(file.absolutePath, OsConstants.S_IRUSR or OsConstants.S_IWUSR)
+  }
 }
 
 /**
