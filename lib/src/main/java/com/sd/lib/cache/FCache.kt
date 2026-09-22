@@ -76,7 +76,7 @@ private val CurrentProcessLock = Any()
 private class GroupCacheStoreFactory(
   val group: String,
 ) {
-  /** 当前组的缓存锁，不能与创建仓库的锁共用，否则会与缓存锁形成锁顺序反转 */
+  /** 当前组的缓存锁，不能与创建仓库的锁共用，否则可能死锁 */
   val groupLock = Any()
 
   private val _stores = ConcurrentHashMap<String, StoreInfo>()

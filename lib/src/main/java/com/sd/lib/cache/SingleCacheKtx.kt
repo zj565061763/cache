@@ -37,7 +37,7 @@ interface SingleCacheKtx<T> {
      */
     fun <T> get(
       clazz: Class<T>,
-      /** 是否启用内存缓存，启用后[flow]方法返回的是热流，并缓存最近的一个值在内存中 */
+      /** 是否启用内存缓存，启用后[flow]为热流，并在内存中保留最新值 */
       memoryCache: Boolean = false,
       /** 默认缓存，创建实例时同步调用 */
       getDefault: () -> T,
@@ -94,7 +94,7 @@ private abstract class BaseSingleCacheKtx<T>(
 
   final override suspend fun update(block: (T) -> T?): Boolean {
     return cache.edit {
-      // 仓库读取失败时无法确定旧值，放弃更新以免覆盖已有缓存；解码失败视为无缓存，允许用默认值覆盖
+      // 仓库读取失败时放弃更新，避免覆盖已有缓存；解码失败视为无缓存
       val oldCache = cache.cache.readCache(key).getOrElse { return@edit false } ?: defaultCache
       val newCache = block(oldCache)
       val result = if (newCache != null) {

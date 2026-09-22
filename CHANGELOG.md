@@ -4,9 +4,8 @@
 
 ### 🐛 Bug Fixes
 
-- `SingleCacheKtx.update` 读取仓库失败时返回 `false` 且不执行 `block`，不再用默认值覆盖已有缓存；缓存无法解码时仍以默认值作为旧值覆盖写入
-- `memoryCache=true` 时重新读盘失败，热流保留当前值，不再退回默认值
-- `CacheKtx.flowOf` 和 `memoryCache=false` 的 `SingleCacheKtx.flow()` 重新读盘失败时保留当前值，不再发射 `null` 或默认值；首次读取失败仍发射 `null` 或默认值
+- `SingleCacheKtx.update` 读取失败时返回 `false`，不再用默认值覆盖已有缓存（缓存无法解码时仍会覆盖）
+- `CacheKtx.flowOf` 和 `SingleCacheKtx.flow()` 重新读盘失败时保留当前值，不再退回 `null` 或默认值
 - 修复首次访问缓存时，与同组 `CurrentProcessCurrentGroup` 缓存的 `edit` 并发可能发生的死锁
 
 ## 3.2.1

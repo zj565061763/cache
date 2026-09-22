@@ -73,17 +73,17 @@ class CacheConfig private constructor(
     internal var exceptionHandler: ExceptionHandler? = null
       private set
 
-    /** 缓存仓库工厂 */
+    /** 设置缓存仓库工厂 */
     fun setCacheStoreFactory(factory: CacheStoreFactory?) = apply {
       this.cacheStoreFactory = factory
     }
 
-    /** 对象转换 */
+    /** 设置对象转换器 */
     fun setObjectConverter(converter: ObjectConverter) = apply {
       this.objectConverter = converter
     }
 
-    /** 异常处理 */
+    /** 设置异常处理 */
     fun setExceptionHandler(handler: ExceptionHandler) = apply {
       this.exceptionHandler = handler
     }

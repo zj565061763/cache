@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 /** 协程版缓存，支持Flow监听 */
 interface CacheKtx<T> {
-  /** [key]对应的缓存 */
+  /** [key]对应的缓存流，缓存变化时发射最新值 */
   fun flowOf(key: String): Flow<T?>
 
   /**

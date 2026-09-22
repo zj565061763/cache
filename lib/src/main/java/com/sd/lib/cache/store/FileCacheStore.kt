@@ -282,7 +282,7 @@ private fun ErrnoException.isPathMissing(): Boolean {
   return errno == OsConstants.ENOENT || errno == OsConstants.ENOTDIR
 }
 
-/** 当前进程专属的临时文件前缀；进程名可用时跨重启稳定，最终PID兜底仍保证存活进程间隔离 */
+/** 当前进程专属的临时文件前缀，按进程名区分，取不到进程名时用PID兜底 */
 private fun tempFilePrefix(context: Context): String {
   val processName = context.currentProcessName()
   return "$TEMP_FILE_PREFIX${md5(processName)}-"
