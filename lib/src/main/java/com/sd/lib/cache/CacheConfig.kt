@@ -6,6 +6,7 @@ import com.sd.lib.cache.store.CacheStore
 import com.sd.lib.cache.store.FileCacheStore
 import java.io.File
 
+/** 缓存全局配置 */
 class CacheConfig private constructor(
   builder: Builder,
   context: Context,
@@ -61,6 +62,7 @@ class CacheConfig private constructor(
     fun onException(error: Throwable)
   }
 
+  /** [CacheConfig]构建器 */
   class Builder {
     internal var cacheStoreFactory: CacheStoreFactory? = null
       private set
@@ -96,7 +98,7 @@ class CacheConfig private constructor(
     @Volatile
     private var sConfig: CacheConfig? = null
 
-    /** 初始化 */
+    /** 初始化，每个进程在Application.onCreate中调用一次，重复调用会抛异常 */
     @JvmStatic
     fun init(config: CacheConfig) {
       synchronized(this@Companion) {
@@ -116,7 +118,7 @@ class CacheConfig private constructor(
   }
 }
 
-/** 初始化 */
+/** 初始化，每个进程在Application.onCreate中调用一次，重复调用会抛异常 */
 inline fun CacheConfig.Companion.init(
   context: Context,
   block: CacheConfig.Builder.() -> Unit = {},

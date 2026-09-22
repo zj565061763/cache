@@ -3,6 +3,7 @@ package com.sd.lib.cache
 import com.sd.lib.cache.store.CacheStore
 import java.util.concurrent.ConcurrentHashMap
 
+/** 缓存入口，按实体类型获取缓存实例 */
 object FCache {
   private val _mapGroupCacheStoreFactory = mutableMapOf<String, GroupCacheStoreFactory>()
   private val _cacheHolder = mutableMapOf<Class<*>, Cache<*>>()

@@ -1,5 +1,6 @@
 package com.sd.lib.cache
 
+/** 缓存异常 */
 open class CacheException(
   message: String = "",
   cause: Throwable? = null,

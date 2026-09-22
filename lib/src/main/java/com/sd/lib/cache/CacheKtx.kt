@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 
+/** 协程版缓存，支持Flow监听 */
 interface CacheKtx<T> {
   /** [key]对应的缓存 */
   fun flowOf(key: String): Flow<T?>

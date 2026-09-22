@@ -27,7 +27,7 @@ interface CacheStore {
   @Throws(Throwable::class)
   fun keys(): List<String>
 
-  /** 缓存变化回调 */
+  /** 设置缓存变化回调 */
   fun setCacheChangeCallback(callback: CacheChangeCallback)
 
   /** 缓存变化回调 */

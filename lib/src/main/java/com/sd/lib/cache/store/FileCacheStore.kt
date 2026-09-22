@@ -43,9 +43,7 @@ internal class FileCacheStore : CacheStore {
       val tempFile = File.createTempFile(_tempFilePrefix, TEMP_SUFFIX_WITH_DOT, _directory)
       try {
         tempFile.writeBytes(value)
-        if (tempFile.renameTo(file)) {
-          // 重命名成功
-        } else {
+        if (!tempFile.renameTo(file)) {
           throw IOException("CacheStore.putCache rename failed from $tempFile to $file")
         }
       } finally {
@@ -185,10 +183,8 @@ internal class FileCacheStore : CacheStore {
   /**
    * 检查目录是否存在，如果不存在则创建，并确保监听有效。
    *
-   * 监听失效是靠DELETE_SELF事件感知的，而事件的投递是异步的，所以除了[checkWatchValid]，
-   * 各个操作在发现目录不存在时也要调用本方法，否则目录刚被删除的那一小段时间里监听不会恢复。
-   * 尤其是[getCache]和[keys]：只读的调用方只有这两条路径，它们不恢复的话，
-   * 监听死了就再也收不到事件，也就再也没有机会恢复。
+   * 监听失效靠异步的DELETE_SELF事件感知，所以各操作发现目录不存在时也要调用本方法。
+   * 只读路径[getCache]和[keys]尤其需要，否则监听失效后再也收不到事件。
    */
   private fun checkDirectoryExist() {
     val dir = _directory
@@ -268,7 +264,7 @@ private fun filenameToKey(filename: String): String? {
   return try {
     val input = filename.toByteArray()
     val flag = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
-    // 必须throwOnInvalidSequence，否则非法的UTF-8会被静默替换成U+FFFD，
+    // 非法UTF-8必须失败，不能静默替换成U+FFFD
     Base64.decode(input, flag)
       .also { bytes -> if (keyToFilename(bytes) != filename) return null }
       .decodeToString(throwOnInvalidSequence = true)
@@ -286,7 +282,7 @@ private fun ErrnoException.isPathMissing(): Boolean {
   return errno == OsConstants.ENOENT || errno == OsConstants.ENOTDIR
 }
 
-/** 当前进程专属的临时文件前缀；进程名可用时跨重启稳定，最终PID兜底仍保证存活进程间隔离。 */
+/** 当前进程专属的临时文件前缀；进程名可用时跨重启稳定，最终PID兜底仍保证存活进程间隔离 */
 private fun tempFilePrefix(context: Context): String {
   val processName = context.currentProcessName()
   return "$TEMP_FILE_PREFIX${md5(processName)}-"

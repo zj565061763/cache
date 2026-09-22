@@ -15,8 +15,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+/** 单值缓存，每个实体类型只保存一个值 */
 interface SingleCacheKtx<T> {
-  /** 缓存 */
+  /** 缓存流 */
   fun flow(): Flow<T>
 
   /**
@@ -29,15 +30,16 @@ interface SingleCacheKtx<T> {
     private val _caches = mutableMapOf<Class<*>, SingleCacheKtx<*>>()
 
     /**
-     * 获取[clazz]对应的[SingleCacheKtx]，
-     * 如果[memoryCache]为true，则进程共享同一个[SingleCacheKtx]实例，并且[getDefault]只在实例首次被创建时，同步调用一次,
-     * 如果[memoryCache]为false，则每次调用都返回一个新的[SingleCacheKtx]实例，且同步调用一次[getDefault]
+     * 获取[clazz]对应的[SingleCacheKtx]
+     *
+     * [memoryCache]为true时进程内共享同一实例，[getDefault]只在首次创建时调用一次；
+     * 为false时每次返回新实例，并调用一次[getDefault]。
      */
     fun <T> get(
       clazz: Class<T>,
       /** 是否启用内存缓存，启用后[flow]方法返回的是热流，并缓存最近的一个值在内存中 */
       memoryCache: Boolean = false,
-      /** 获取默认缓存，调用此方法时，按需同步执行 */
+      /** 默认缓存，创建实例时同步调用 */
       getDefault: () -> T,
     ): SingleCacheKtx<T> {
       return if (memoryCache) {
@@ -64,7 +66,7 @@ interface SingleCacheKtx<T> {
 /** 获取当前缓存值 */
 suspend fun <T> SingleCacheKtx<T>.get(): T = flow().first()
 
-/** 参考[SingleCacheKtx.get] */
+/** 参考[SingleCacheKtx.Companion.get] */
 inline fun <reified T> singleCacheKtx(
   memoryCache: Boolean = false,
   noinline getDefault: () -> T,
@@ -109,12 +111,12 @@ private abstract class BaseSingleCacheKtx<T>(
 
   protected abstract fun getFlow(): Flow<T?>
 
-  /** [update] 写入成功后回调，[newCache] 为写入的值，null 表示已删除 */
+  /** [update]写入成功后回调，[newCache]为写入的值，null表示已删除 */
   protected open fun onUpdateResult(newCache: T?) = Unit
 }
 
 /**
- * 磁盘缓存：[flow] 为冷流，每次订阅都从磁盘读取
+ * 磁盘缓存：[flow]为冷流，每次订阅都从磁盘读取
  */
 private class DiskSingleCacheKtx<T>(
   cache: CacheKtxImpl<T>,
@@ -127,7 +129,7 @@ private class DiskSingleCacheKtx<T>(
 }
 
 /**
- * 磁盘和内存缓存：[flow] 为热流，值变化时同步更新内存
+ * 磁盘和内存缓存：[flow]为热流，值变化时同步更新内存
  */
 @OptIn(DelicateCoroutinesApi::class)
 private class MemorySingleCacheKtx<T>(
