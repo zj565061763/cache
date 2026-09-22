@@ -21,6 +21,9 @@ import org.junit.Assert.assertNotSame
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
@@ -393,6 +396,48 @@ class SingleCacheKtxTest {
     }
   }
 
+  /** 某类型的getDefault阻塞时，不能阻塞其他类型创建内存单值缓存 */
+  @Test
+  fun testMemoryCacheCreationNotBlockedByOtherType() {
+    val blockingEntered = CountDownLatch(1)
+    val releaseBlocking = CountDownLatch(1)
+    val otherCreated = CountDownLatch(1)
+
+    // 使用普通线程，修复前被阻塞时测试能按时失败，不会一直等待
+    thread {
+      singleCacheKtx<TestSingleBlockingDefaultModel>(memoryCache = true) {
+        blockingEntered.countDown()
+        releaseBlocking.await(TEST_TIMEOUT.inWholeSeconds, TimeUnit.SECONDS)
+        TestSingleBlockingDefaultModel()
+      }
+    }
+    try {
+      assertEquals(true, blockingEntered.await(10, TimeUnit.SECONDS))
+      thread {
+        singleCacheKtx<TestSingleUnblockedModel>(memoryCache = true) { TestSingleUnblockedModel() }
+        otherCreated.countDown()
+      }
+      assertEquals(true, otherCreated.await(10, TimeUnit.SECONDS))
+    } finally {
+      releaseBlocking.countDown()
+    }
+  }
+
+  /** getDefault抛异常时不保留失败的实例，下次调用重新创建 */
+  @Test
+  fun testMemoryCacheRetryAfterGetDefaultFailure() = runBlocking {
+    val error = runCatching {
+      singleCacheKtx<TestSingleDefaultFailureModel>(memoryCache = true) { error("getDefault failure") }
+    }.exceptionOrNull()
+    assertEquals("getDefault failure", error?.message)
+
+    val cache = singleCacheKtx<TestSingleDefaultFailureModel>(memoryCache = true) {
+      TestSingleDefaultFailureModel(name = "retry")
+    }
+    assertEquals(true, cache.update { null })
+    assertEquals(TestSingleDefaultFailureModel(name = "retry"), withTimeout(TEST_TIMEOUT) { cache.get() })
+  }
+
   /**
    * 同一 memory 热流的多个订阅者都应该收到初始状态和最终状态。
    * SharedFlow使用DROP_OLDEST，慢订阅者允许跳过中间值，不要断言完整序列必须相同。
@@ -533,6 +578,21 @@ const val DISK_READ_FAILURE_MODEL_ID = "TestSingleDiskReadFailureModel"
 
 @CacheEntity(DISK_READ_FAILURE_MODEL_ID)
 data class TestSingleDiskReadFailureModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleBlockingDefaultModel")
+data class TestSingleBlockingDefaultModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleUnblockedModel")
+data class TestSingleUnblockedModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleDefaultFailureModel")
+data class TestSingleDefaultFailureModel(
   val name: String = "tom",
 )
 

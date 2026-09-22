@@ -27,7 +27,8 @@ interface SingleCacheKtx<T> {
   suspend fun update(block: (T) -> T?): Boolean
 
   companion object {
-    private val _caches = mutableMapOf<Class<*>, SingleCacheKtx<*>>()
+    /** 内存单值缓存，全局锁只用于查找和放入，实例在各自的[Lazy]中创建 */
+    private val sMemoryCaches = mutableMapOf<Class<*>, Lazy<SingleCacheKtx<*>>>()
 
     /**
      * 获取[clazz]对应的[SingleCacheKtx]
@@ -43,22 +44,40 @@ interface SingleCacheKtx<T> {
       getDefault: () -> T,
     ): SingleCacheKtx<T> {
       return if (memoryCache) {
-        synchronized(_caches) {
-          val cache = _caches.getOrPut(clazz) {
-            MemorySingleCacheKtx(
-              cache = FCache.getKtx(clazz) as CacheKtxImpl<T>,
-              defaultCache = getDefault(),
-            )
-          }
-          @Suppress("UNCHECKED_CAST")
-          cache as SingleCacheKtx<T>
-        }
+        getMemoryCache(clazz, getDefault)
       } else {
         DiskSingleCacheKtx(
           cache = FCache.getKtx(clazz) as CacheKtxImpl<T>,
           defaultCache = getDefault(),
         )
       }
+    }
+
+    /** 获取[clazz]对应的内存单值缓存，[getDefault]在该类型自己的锁中执行，不阻塞其他类型 */
+    private fun <T> getMemoryCache(clazz: Class<T>, getDefault: () -> T): SingleCacheKtx<T> {
+      val holder = synchronized(sMemoryCaches) {
+        sMemoryCaches.getOrPut(clazz) {
+          lazy {
+            MemorySingleCacheKtx(
+              cache = FCache.getKtx(clazz) as CacheKtxImpl<T>,
+              defaultCache = getDefault(),
+            )
+          }
+        }
+      }
+
+      val cache = try {
+        holder.value
+      } catch (e: Throwable) {
+        // 创建失败时移除，下次调用重新创建，也避免一直持有首个调用者的getDefault
+        synchronized(sMemoryCaches) {
+          if (sMemoryCaches[clazz] === holder) sMemoryCaches.remove(clazz)
+        }
+        throw e
+      }
+
+      @Suppress("UNCHECKED_CAST")
+      return cache as SingleCacheKtx<T>
     }
   }
 }

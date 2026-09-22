@@ -7,6 +7,7 @@
 - `SingleCacheKtx.update` 读取失败时返回 `false`，不再用默认值覆盖已有缓存（缓存无法解码时仍会覆盖）
 - `CacheKtx.flowOf` 和 `SingleCacheKtx.flow()` 重新读盘失败时保留当前值，不再退回 `null` 或默认值
 - 修复首次访问缓存时，与同组 `CurrentProcessCurrentGroup` 缓存的 `edit` 并发可能发生的死锁
+- 创建内存单值缓存时，一个类型的 `getDefault` 阻塞不再影响其他类型
 
 ## 3.2.1
 
