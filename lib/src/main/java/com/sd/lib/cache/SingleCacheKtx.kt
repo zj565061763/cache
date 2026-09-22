@@ -44,7 +44,7 @@ interface SingleCacheKtx<T> {
         synchronized(_caches) {
           val cache = _caches.getOrPut(clazz) {
             MemorySingleCacheKtx(
-              cache = FCache.getKtx(clazz),
+              cache = FCache.getKtx(clazz) as CacheKtxImpl<T>,
               defaultCache = getDefault(),
             )
           }
@@ -53,7 +53,7 @@ interface SingleCacheKtx<T> {
         }
       } else {
         DiskSingleCacheKtx(
-          cache = FCache.getKtx(clazz),
+          cache = FCache.getKtx(clazz) as CacheKtxImpl<T>,
           defaultCache = getDefault(),
         )
       }
@@ -77,7 +77,7 @@ inline fun <reified T> singleCacheKtx(
 }
 
 private abstract class BaseSingleCacheKtx<T>(
-  protected val cache: CacheKtx<T>,
+  protected val cache: CacheKtxImpl<T>,
   private val defaultCache: T,
   protected val key: String = "com.sd.lib.cache.key.singlecache",
 ) : SingleCacheKtx<T> {
@@ -92,7 +92,8 @@ private abstract class BaseSingleCacheKtx<T>(
 
   final override suspend fun update(block: (T) -> T?): Boolean {
     return cache.edit {
-      val oldCache = get(key) ?: defaultCache
+      // 仓库读取失败时无法确定旧值，放弃更新以免覆盖已有缓存；解码失败视为无缓存，允许用默认值覆盖
+      val oldCache = cache.cache.readCache(key).getOrElse { return@edit false } ?: defaultCache
       val newCache = block(oldCache)
       val result = if (newCache != null) {
         put(key, newCache)
@@ -116,11 +117,11 @@ private abstract class BaseSingleCacheKtx<T>(
  * 磁盘缓存：[flow] 为冷流，每次订阅都从磁盘读取
  */
 private class DiskSingleCacheKtx<T>(
-  cache: CacheKtx<T>,
+  cache: CacheKtxImpl<T>,
   defaultCache: T,
 ) : BaseSingleCacheKtx<T>(cache, defaultCache) {
   override fun getFlow(): Flow<T?> {
-    return (cache as CacheKtxImpl<T>).eventFlowOf(key)
+    return cache.eventFlowOf(key)
       .map { cache.get(key) }
       .flowOn(Dispatchers.IO)
   }
@@ -131,7 +132,7 @@ private class DiskSingleCacheKtx<T>(
  */
 @OptIn(DelicateCoroutinesApi::class)
 private class MemorySingleCacheKtx<T>(
-  cache: CacheKtx<T>,
+  cache: CacheKtxImpl<T>,
   defaultCache: T,
 ) : BaseSingleCacheKtx<T>(cache, defaultCache) {
   private val _initialized = CompletableDeferred<Unit>()
@@ -156,10 +157,14 @@ private class MemorySingleCacheKtx<T>(
 
   init {
     GlobalScope.launch {
-      (cache as CacheKtxImpl<T>).eventFlowOf(key).collect {
+      cache.eventFlowOf(key).collect {
         cache.edit {
-          _hotFlow.tryEmit(get(key))
-          completeInitialized()
+          val result = cache.cache.readCache(key)
+          // 读取失败时保留内存中的值；尚未初始化时仍发射null，避免订阅者一直等待
+          if (result.isSuccess || !_initialized.isCompleted) {
+            _hotFlow.tryEmit(result.getOrNull())
+            completeInitialized()
+          }
         }
       }
     }

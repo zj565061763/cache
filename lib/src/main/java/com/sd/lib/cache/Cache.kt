@@ -36,10 +36,20 @@ internal class CacheImpl<T>(
   }
 
   override fun get(key: String): T? {
-    return libRunCatching {
+    return readCache(key).getOrNull()
+  }
+
+  /**
+   * 读取缓存，仓库读取失败时返回失败结果，解码失败视为无缓存；
+   * 两种异常都会转发给[CacheConfig.ExceptionHandler]。
+   */
+  fun readCache(key: String): Result<T?> {
+    val data = libRunCatching {
       lockCache { getCacheStore().getCache(key) }
-        ?.let { data -> decode(data, clazz) }
-    }.getOrNull()
+    }.getOrElse { return Result.failure(it) }
+    return Result.success(
+      data?.let { libRunCatching { decode(it, clazz) }.getOrNull() }
+    )
   }
 
   override fun remove(key: String): Boolean {

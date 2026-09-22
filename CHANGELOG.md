@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### 🐛 Bug Fixes
+
+- `SingleCacheKtx.update` 读取仓库失败时返回 `false` 且不执行 `block`，不再用默认值覆盖已有缓存；缓存无法解码时仍以默认值作为旧值覆盖写入
+- `memoryCache=true` 时重新读盘失败，热流保留当前值，不再退回默认值
+
 ## 3.2.1
 
 ### ✨ Improvements

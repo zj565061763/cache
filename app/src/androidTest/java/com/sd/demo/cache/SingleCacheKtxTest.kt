@@ -1,5 +1,7 @@
 package com.sd.demo.cache
 
+import android.system.Os
+import android.system.OsConstants
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.sd.lib.cache.CacheEntity
@@ -305,6 +307,75 @@ class SingleCacheKtxTest {
     }
   }
 
+  /** 仓库读取失败时无法确定旧值，update必须放弃，不能用默认值覆盖已有缓存 */
+  @Test
+  fun testUpdateAbortsOnReadFailure() = runBlocking {
+    val cache = singleCacheKtx<TestSingleReadFailureModel> { TestSingleReadFailureModel() }
+    val expected = TestSingleReadFailureModel(name = "value")
+    assertEquals(true, cache.update { expected })
+
+    val file = cacheFileOf(READ_FAILURE_MODEL_ID, SINGLE_CACHE_KEY)
+    var invoked = false
+    // 去掉读权限后读取失败，但重命名覆盖仍能成功，修复前会用默认值覆盖
+    Os.chmod(file.absolutePath, OsConstants.S_IWUSR)
+    try {
+      val result = cache.update {
+        invoked = true
+        it.copy(name = "overwrite")
+      }
+      assertEquals(false, result)
+    } finally {
+      Os.chmod(file.absolutePath, OsConstants.S_IRUSR or OsConstants.S_IWUSR)
+    }
+    assertEquals(false, invoked)
+    assertEquals(expected, cache.get())
+  }
+
+  /** 缓存无法解码时视为无缓存，update以默认值作为旧值并覆盖写入 */
+  @Test
+  fun testUpdateOverwritesUndecodableCache() = runBlocking {
+    val cache = singleCacheKtx<TestSingleUndecodableModel> { TestSingleUndecodableModel() }
+    // 先访问一次，确保缓存目录已创建
+    assertEquals(true, cache.update { null })
+    writeCacheFileDirectly(id = UNDECODABLE_MODEL_ID, key = SINGLE_CACHE_KEY, json = "not json")
+
+    assertEquals(true, cache.update { it.copy(name = "${it.name}-update") })
+    assertEquals(TestSingleUndecodableModel(name = "tom-update"), cache.get())
+  }
+
+  /** memoryCache=true时重新读盘失败，热流保留原值，不能退回默认值 */
+  @Test
+  fun testMemoryCacheKeepsValueOnReadFailure() = runBlocking {
+    val cache = singleCacheKtx<TestSingleMemoryReadFailureModel>(memoryCache = true) { TestSingleMemoryReadFailureModel() }
+    val before = TestSingleMemoryReadFailureModel(name = "before")
+    assertEquals(true, cache.update { before })
+    val file = cacheFileOf(MEMORY_READ_FAILURE_MODEL_ID, SINGLE_CACHE_KEY)
+
+    cache.flow().test(timeout = TEST_TIMEOUT) {
+      assertEquals(before, awaitItemUntil(before))
+
+      // 只保留写权限并就地写入，CLOSE_WRITE触发重新读盘，读取必然失败
+      Os.chmod(file.absolutePath, OsConstants.S_IWUSR)
+      try {
+        file.writeBytes("""{"name":"${before.name}"}""".toByteArray())
+        // 等待重新读盘完成，修复前这里会发射默认值
+        delay(1000)
+      } finally {
+        Os.chmod(file.absolutePath, OsConstants.S_IRUSR or OsConstants.S_IWUSR)
+      }
+      expectNoEvents()
+
+      // 读取恢复后仍能收到新值
+      val after = TestSingleMemoryReadFailureModel(name = "after")
+      writeCacheFileDirectly(
+        id = MEMORY_READ_FAILURE_MODEL_ID,
+        key = SINGLE_CACHE_KEY,
+        json = """{"name":"${after.name}"}""",
+      )
+      assertEquals(after, awaitItem())
+    }
+  }
+
   /**
    * 同一 memory 热流的多个订阅者都应该收到初始状态和最终状态。
    * SharedFlow使用DROP_OLDEST，慢订阅者允许跳过中间值，不要断言完整序列必须相同。
@@ -417,6 +488,27 @@ data class TestSingleDefaultDiskModel(
 
 @CacheEntity("TestSingleMemoryDeleteModel")
 data class TestSingleMemoryDeleteModel(
+  val name: String = "tom",
+)
+
+const val READ_FAILURE_MODEL_ID = "TestSingleReadFailureModel"
+
+@CacheEntity(READ_FAILURE_MODEL_ID)
+data class TestSingleReadFailureModel(
+  val name: String = "tom",
+)
+
+const val UNDECODABLE_MODEL_ID = "TestSingleUndecodableModel"
+
+@CacheEntity(UNDECODABLE_MODEL_ID)
+data class TestSingleUndecodableModel(
+  val name: String = "tom",
+)
+
+const val MEMORY_READ_FAILURE_MODEL_ID = "TestSingleMemoryReadFailureModel"
+
+@CacheEntity(MEMORY_READ_FAILURE_MODEL_ID)
+data class TestSingleMemoryReadFailureModel(
   val name: String = "tom",
 )
 
