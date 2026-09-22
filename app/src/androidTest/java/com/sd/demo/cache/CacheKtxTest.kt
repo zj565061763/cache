@@ -20,6 +20,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
@@ -207,6 +208,47 @@ class CacheKtxTest {
   }
 
   /**
+   * 首次访问缓存会在持有当前缓存锁时创建仓库，
+   * 创建仓库使用的锁不能与[CacheLockLevel.CurrentProcessCurrentGroup]的组级锁共用，否则会形成锁顺序反转。
+   */
+  @Test
+  fun testCreateStoreNoDeadlockWithGroupLock() {
+    val groupCache = FCache.getKtx(TestKtxCreateStoreGroupModel::class.java)
+    val cache = FCache.getKtx(TestKtxCreateStoreModel::class.java)
+    val key = "testCreateStoreNoDeadlockWithGroupLock"
+    val groupLocked = CountDownLatch(1)
+    val cacheLocked = CountDownLatch(1)
+    val finished = CountDownLatch(2)
+
+    // 死锁时两个线程都无法结束，用普通线程避免协程作用域一直等待子任务
+    thread {
+      runBlocking {
+        groupCache.edit {
+          groupLocked.countDown()
+          cacheLocked.await(10, TimeUnit.SECONDS)
+          // 持有组级锁时访问同组的另一个缓存，需要它的缓存锁
+          FCache.get(TestKtxCreateStoreModel::class.java).get(key)
+        }
+      }
+      finished.countDown()
+    }
+
+    thread {
+      groupLocked.await(10, TimeUnit.SECONDS)
+      runBlocking {
+        cache.edit {
+          cacheLocked.countDown()
+          // 持有缓存锁时首次访问，需要创建仓库
+          get(key)
+        }
+      }
+      finished.countDown()
+    }
+
+    assertEquals(true, finished.await(TEST_TIMEOUT.inWholeSeconds, TimeUnit.SECONDS))
+  }
+
+  /**
    * 外部就地写入缓存文件（不经过临时文件重命名）走的是CLOSE_WRITE事件。
    * 库自己的写入永远是「临时文件+重命名」，产生的是MOVED_TO，所以这一位只有本用例覆盖，
    * 掩码里漏掉CLOSE_WRITE的话没有别的用例会失败。
@@ -300,6 +342,26 @@ data class TestKtxGroupLockModelA(
   lockLevel = CacheLockLevel.CurrentProcessCurrentGroup,
 )
 data class TestKtxGroupLockModelB(
+  val name: String = "tom",
+)
+
+private const val TEST_KTX_GROUP_CREATE_STORE = "com.sd.demo.cache.group.createStore"
+
+@CacheEntity(
+  id = "TestKtxCreateStoreGroupModel",
+  group = TEST_KTX_GROUP_CREATE_STORE,
+  lockLevel = CacheLockLevel.CurrentProcessCurrentGroup,
+)
+data class TestKtxCreateStoreGroupModel(
+  val name: String = "tom",
+)
+
+/** 仅供[CacheKtxTest.testCreateStoreNoDeadlockWithGroupLock]使用，保证仓库在该用例中首次创建 */
+@CacheEntity(
+  id = "TestKtxCreateStoreModel",
+  group = TEST_KTX_GROUP_CREATE_STORE,
+)
+data class TestKtxCreateStoreModel(
   val name: String = "tom",
 )
 

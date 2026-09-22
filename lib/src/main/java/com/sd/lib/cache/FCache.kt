@@ -44,7 +44,7 @@ object FCache {
 
     val lock = when (annotation.lockLevel) {
       CacheLockLevel.CurrentProcessCurrentCache -> Any()
-      CacheLockLevel.CurrentProcessCurrentGroup -> groupCacheStoreFactory
+      CacheLockLevel.CurrentProcessCurrentGroup -> groupCacheStoreFactory.groupLock
       CacheLockLevel.CurrentProcess -> CurrentProcessLock
     }
 
@@ -75,6 +75,9 @@ private val CurrentProcessLock = Any()
 private class GroupCacheStoreFactory(
   val group: String,
 ) {
+  /** 当前组的缓存锁，不能与创建仓库的锁共用，否则会与缓存锁形成锁顺序反转 */
+  val groupLock = Any()
+
   private val _stores = ConcurrentHashMap<String, StoreInfo>()
 
   fun register(id: String, clazz: Class<*>) {
