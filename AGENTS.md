@@ -28,7 +28,7 @@ val single = singleCacheKtx<UserProfile>(memoryCache = true) { UserProfile() }
 `CacheLockLevel` 的三个级别分别为当前进程内的“当前缓存”“当前组”“整个进程”，均不提供跨进程互斥。跨进程只保证按顺序读写、单次写入的文件完整性和 `FileObserver` 的最终通知；多进程并发写入、跨进程 `edit/update` 原子性、结果顺序和即时一致性不在保证范围内，审查时不要把缺少跨进程锁或并发删除缓存目录列为缺陷。
 
 - `Cache.put/get/remove/keys` 在选定锁上串行访问仓库；不存在的 key 执行 `remove` 也返回 `true`。
-- `CacheKtx.edit` 将整个非挂起块切到 `Dispatchers.IO` 并持有同一把锁，适合原子读改写。
+- `CacheKtx.edit` 将整个非挂起块切到 `Dispatchers.IO` 并持有同一把锁，适合原子读改写。块内嵌套访问锁不同的其他缓存时，反向嵌套会死锁，属于调用方责任；需要跨缓存原子操作时应共享同组锁或进程锁。库内部不得在持有缓存锁时隐式获取调用方可见的锁，避免调用方未嵌套也死锁。
 - `flowOf(key)` 在每个事件后重新读盘，并通过 `distinctUntilChanged` 去重；不要用它断言底层事件次数。
 - `SingleCacheKtx.update` 的 lambda 返回 `null` 表示删除。`memoryCache=false` 时每次调用都返回新实例并同步调用一次 `getDefault`，`flow()` 为冷流；`true` 时同类型共享进程级实例和 `SharedFlow(replay=1)`，`getDefault` 只在首次创建时同步调用一次，慢订阅者允许跳过中间值。
 

@@ -17,7 +17,13 @@ interface CacheKtx<T> {
   /** [key]对应的缓存 */
   fun flowOf(key: String): Flow<T?>
 
-  /** 编辑缓存，[block]在[Dispatchers.IO]上面执行 */
+  /**
+   * 编辑缓存，[block]在[Dispatchers.IO]上面执行，并在执行期间持有当前缓存的锁。
+   *
+   * 在[block]中访问锁不同的其他缓存时，如果另一处以相反顺序嵌套访问，会造成死锁。
+   * 需要跨缓存原子操作时，应让这些缓存共享同一把锁，
+   * 即同组的[CacheLockLevel.CurrentProcessCurrentGroup]或[CacheLockLevel.CurrentProcess]。
+   */
   suspend fun <R> edit(block: Cache<T>.() -> R): R
 }
 
