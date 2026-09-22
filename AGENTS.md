@@ -65,6 +65,6 @@ val single = singleCacheKtx<UserProfile>(memoryCache = true) { UserProfile() }
 
 ## 编码、兼容与提交规范
 
-遵循 Kotlin 官方风格和现有两空格缩进：类型使用 `PascalCase`，成员使用 `camelCase`，常量使用 `UPPER_SNAKE_CASE`，多行参数保留尾逗号。公开行为添加 KDoc，实现细节优先使用 `internal`/`private`。依赖版本统一放入版本目录。若修改 `@CacheEntity` 或反射模型，同时检查 `consumer-rules.pro`。
+遵循 Kotlin 官方风格和现有两空格缩进：类型使用 `PascalCase`，成员使用 `camelCase`，常量使用 `UPPER_SNAKE_CASE`，多行参数保留尾逗号。公开行为添加 KDoc，实现细节优先使用 `internal`/`private`。依赖版本统一放入版本目录。若修改 `@CacheEntity` 或反射模型，同时检查 `consumer-rules.pro`。消费规则只保留实体类本身，嵌套类和枚举由接入方保留（见 README）；示例 app 未开启混淆，测试覆盖不到这类问题。
 
 提交信息格式为 `type(scope): 中文描述`，如 `fix(lib): 忽略非缓存文件条目`，一个提交只处理一个主题。Pull Request 需说明受影响模块、行为变化、验证命令及关联 Issue。公开 API 或磁盘格式变化必须在 `CHANGELOG.md` 提供迁移说明。发布前同步 `VERSION_NAME`、变更日志和 Maven 配置；不要提交签名密钥、仓库凭据、`local.properties` 或 `build/` 产物。
