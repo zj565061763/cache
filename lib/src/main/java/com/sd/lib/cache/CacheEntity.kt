@@ -17,9 +17,7 @@ annotation class CacheEntity(
   val lockLevel: CacheLockLevel = CacheLockLevel.CurrentProcessCurrentCache,
 )
 
-/**
- * 缓存锁等级
- */
+/** 缓存锁等级 */
 enum class CacheLockLevel {
   /** 当前进程当前缓存 */
   CurrentProcessCurrentCache,

@@ -115,9 +115,7 @@ private abstract class BaseSingleCacheKtx<T>(
   protected open fun onUpdateResult(newCache: T?) = Unit
 }
 
-/**
- * 磁盘缓存：[flow]为冷流，每次订阅都从磁盘读取
- */
+/** 磁盘缓存：[flow]为冷流，每次订阅都从磁盘读取 */
 private class DiskSingleCacheKtx<T>(
   cache: CacheKtxImpl<T>,
   defaultCache: T,
@@ -128,9 +126,7 @@ private class DiskSingleCacheKtx<T>(
   }
 }
 
-/**
- * 磁盘和内存缓存：[flow]为热流，值变化时同步更新内存
- */
+/** 磁盘和内存缓存：[flow]为热流，值变化时同步更新内存 */
 @OptIn(DelicateCoroutinesApi::class)
 private class MemorySingleCacheKtx<T>(
   cache: CacheKtxImpl<T>,

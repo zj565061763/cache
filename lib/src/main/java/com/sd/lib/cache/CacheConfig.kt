@@ -34,17 +34,13 @@ class CacheConfig private constructor(
     }
   }
 
-  /**
-   * 缓存仓库工厂
-   */
+  /** 缓存仓库工厂 */
   fun interface CacheStoreFactory {
     @Throws(Throwable::class)
     fun create(): CacheStore
   }
 
-  /**
-   * 对象转换器，[encode]和[decode]可能存在并发，注意线程安全
-   */
+  /** 对象转换器，[encode]和[decode]可能存在并发，注意线程安全 */
   interface ObjectConverter {
     /** 编码 */
     @Throws(Throwable::class)
@@ -55,9 +51,7 @@ class CacheConfig private constructor(
     fun <T> decode(bytes: ByteArray, clazz: Class<T>): T
   }
 
-  /**
-   * 异常处理类
-   */
+  /** 异常处理类 */
   fun interface ExceptionHandler {
     fun onException(error: Throwable)
   }

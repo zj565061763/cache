@@ -3,9 +3,7 @@ package com.sd.lib.cache.store
 import android.content.Context
 import java.io.File
 
-/**
- * 缓存仓库
- */
+/** 缓存仓库 */
 interface CacheStore {
   /** 初始化 */
   @Throws(Throwable::class)
