@@ -8,11 +8,14 @@ import com.sd.lib.cache.get
 import com.sd.lib.cache.keys
 import com.sd.lib.cache.put
 import com.sd.lib.cache.remove
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
+import kotlin.concurrent.thread
 
 /**
  * 缓存目录被删除之后，[android.os.FileObserver]的监听会失效，
@@ -204,6 +207,52 @@ class FileCacheStoreRecoveryTest {
   }
 
   /**
+   * 目录被反复删除重建时，重新监听可能注册失败，或落在随后被删除的目录上。
+   * 每轮目录稳定后监听都必须恢复，外部写入仍要通知订阅者。
+   */
+  @Test
+  fun testRecoverAfterDirectoryChurn() = runBlocking {
+    val cacheKtx = FCache.getKtx(TestDirectoryChurnModel::class.java)
+    val cache = FCache.get(TestDirectoryChurnModel::class.java)
+    val key = "testRecoverAfterDirectoryChurn"
+    val directory = cacheStoreDirectory(DIRECTORY_CHURN_MODEL_ID)
+
+    try {
+      cacheKtx.flowOf(key).test(timeout = TEST_TIMEOUT) {
+        cacheKtx.remove(key)
+        awaitItemUntil(null)
+
+        // 监听失效是概率事件，分多轮检测，每轮都是一次独立的机会
+        repeat(8) { round ->
+          // 模拟其他进程反复删除并重建目录，同时本进程不断读取，触发重新监听
+          val deadline = System.currentTimeMillis() + 500
+          val churn = thread {
+            while (System.currentTimeMillis() < deadline) {
+              directory.deleteRecursively()
+              directory.mkdirs()
+            }
+          }
+          val reader = thread {
+            while (churn.isAlive) cache.get(key)
+          }
+          withContext(Dispatchers.IO) {
+            churn.join()
+            reader.join()
+          }
+          assertEquals(true, directory.isDirectory)
+
+          val model = TestDirectoryChurnModel(name = "round$round")
+          writeCacheFileDirectly(id = DIRECTORY_CHURN_MODEL_ID, key = key, json = """{"name":"${model.name}"}""")
+          // 修复前：监听可能永久失效，这里会一直等到超时
+          assertEquals(model, awaitItemUntil(model))
+        }
+      }
+    } finally {
+      cache.remove(key)
+    }
+  }
+
+  /**
    * 删除缓存目录后先执行[read]（读操作应当恢复监听），
    * 然后绕过[com.sd.lib.cache.store.CacheStore]直接写文件，
    * 这样新值只可能通过[android.os.FileObserver]的监听被感知到。
@@ -268,5 +317,12 @@ private const val DIRECTORY_CREATION_FAILURE_GROUP = "com.sd.demo.cache.group.di
   group = DIRECTORY_CREATION_FAILURE_GROUP,
 )
 data class TestDirectoryCreationFailureModel(
+  val name: String = "tom",
+)
+
+private const val DIRECTORY_CHURN_MODEL_ID = "TestDirectoryChurnModel"
+
+@CacheEntity(DIRECTORY_CHURN_MODEL_ID)
+data class TestDirectoryChurnModel(
   val name: String = "tom",
 )

@@ -202,16 +202,64 @@ internal class FileCacheStore : CacheStore {
         throw IOException("CacheStore mkdirs failure:$dir")
       }
     }
-    startWatching()
-    if (shouldCreateDirectory) _cacheChangeCallback?.onCleared()
+    val watching = startWatching()
+    // 重新监听失败时也要通知，让订阅者重新读取，从而再次尝试监听
+    if (shouldCreateDirectory || !watching) _cacheChangeCallback?.onCleared()
   }
 
-  private fun startWatching() {
-    if (_watchValid) return
+  /** 确保监听有效，返回false表示注册期间目录被删除或替换，监听可能没有生效 */
+  private fun startWatching(): Boolean {
+    if (_watchValid) return true
+    // 先标记为有效，注册期间收到的DELETE_SELF才能把它改回false
+    _watchValid = true
+    val watching = try {
+      registerFileObserver()
+    } catch (e: Throwable) {
+      _watchValid = false
+      throw e
+    }
+    if (!watching) _watchValid = false
+    return watching
+  }
+
+  /**
+   * 注册监听，返回false表示注册期间目录被删除或替换。
+   *
+   * 目录在注册前被删除时，注册会静默失败，也不会再收到DELETE_SELF，
+   * 所以要比较注册前后目录的inode，而不能只依赖DELETE_SELF。
+   */
+  private fun registerFileObserver(): Boolean {
+    // 注册期间保持目录打开，目录被删除后立即重建时，新目录不会复用它的inode
+    val fd = try {
+      Os.open(_directory.absolutePath, OsConstants.O_RDONLY, 0)
+    } catch (e: ErrnoException) {
+      if (e.isPathMissing()) return false
+      // 无法判断目录是否变化，按监听有效处理，避免订阅者反复重新读取
+      restartFileObserver()
+      return true
+    }
+    try {
+      val inode = Os.fstat(fd).st_ino
+      restartFileObserver()
+      return inode == directoryInode()
+    } finally {
+      Os.close(fd)
+    }
+  }
+
+  private fun restartFileObserver() {
     // 先停止，清理掉可能残留的失效监听
     _fileObserver.stopWatching()
     _fileObserver.startWatching()
-    _watchValid = true
+  }
+
+  /** 目录当前的inode，无法获取时返回null */
+  private fun directoryInode(): Long? {
+    return try {
+      Os.stat(_directory.absolutePath).st_ino
+    } catch (_: ErrnoException) {
+      null
+    }
   }
 
   /** 删除临时文件 */
