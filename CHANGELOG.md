@@ -8,6 +8,7 @@
 - `CacheKtx.flowOf` 和 `SingleCacheKtx.flow()` 重新读盘失败时保留当前值，不再退回 `null` 或默认值
 - 修复首次访问缓存时，与同组 `CurrentProcessCurrentGroup` 缓存的 `edit` 并发可能发生的死锁
 - 创建内存单值缓存时，一个类型的 `getDefault` 阻塞不再影响其他类型
+- 写入时先把数据刷到磁盘再重命名，断电不再留下空的缓存文件
 
 ## 3.2.1
 

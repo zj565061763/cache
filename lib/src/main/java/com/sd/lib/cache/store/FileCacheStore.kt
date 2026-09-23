@@ -14,6 +14,7 @@ import com.sd.lib.cache.libException
 import com.sd.lib.cache.md5
 import java.io.File
 import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.io.IOException
 
 internal class FileCacheStore : CacheStore {
@@ -42,7 +43,11 @@ internal class FileCacheStore : CacheStore {
     fun writeWithTempFile() {
       val tempFile = File.createTempFile(_tempFilePrefix, TEMP_SUFFIX_WITH_DOT, _directory)
       try {
-        tempFile.writeBytes(value)
+        FileOutputStream(tempFile).use { output ->
+          output.write(value)
+          // 重命名前把数据刷到磁盘，避免断电后留下空文件或写了一半的文件
+          output.fd.sync()
+        }
         if (!tempFile.renameTo(file)) {
           throw IOException("CacheStore.putCache rename failed from $tempFile to $file")
         }
