@@ -28,7 +28,7 @@ interface SingleCacheKtx<T> {
 
   companion object {
     /** 内存单值缓存，全局锁只用于查找和放入，实例在各自的[Lazy]中创建 */
-    private val sMemoryCaches = mutableMapOf<Class<*>, Lazy<SingleCacheKtx<*>>>()
+    private val sMemoryCaches = mutableMapOf<Class<*>, Lazy<Result<SingleCacheKtx<*>>>>()
 
     /**
      * 获取[clazz]对应的[SingleCacheKtx]
@@ -57,18 +57,19 @@ interface SingleCacheKtx<T> {
     private fun <T> getMemoryCache(clazz: Class<T>, getDefault: () -> T): SingleCacheKtx<T> {
       val holder = synchronized(sMemoryCaches) {
         sMemoryCaches.getOrPut(clazz) {
+          // 失败结果也要保存，否则等待中的调用者会重新创建，得到已被移除的实例
           lazy {
-            MemorySingleCacheKtx(
-              cache = FCache.getKtx(clazz) as CacheKtxImpl<T>,
-              defaultCache = getDefault(),
-            )
+            runCatching {
+              MemorySingleCacheKtx(
+                cache = FCache.getKtx(clazz) as CacheKtxImpl<T>,
+                defaultCache = getDefault(),
+              )
+            }
           }
         }
       }
 
-      val cache = try {
-        holder.value
-      } catch (e: Throwable) {
+      val cache = holder.value.getOrElse { e ->
         // 创建失败时移除，下次调用重新创建，也避免一直持有首个调用者的getDefault
         synchronized(sMemoryCaches) {
           if (sMemoryCaches[clazz] === holder) sMemoryCaches.remove(clazz)

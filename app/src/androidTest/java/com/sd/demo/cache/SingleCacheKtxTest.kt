@@ -23,6 +23,7 @@ import org.junit.runner.RunWith
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.EmptyCoroutineContext
@@ -439,6 +440,57 @@ class SingleCacheKtxTest {
   }
 
   /**
+   * 首次创建失败时，并发等待的调用者也要拿到同一个失败，不能重跑首个调用者的getDefault。
+   * 修复前等待者会创建出已被移除的实例，之后同类型出现多个实例。
+   */
+  @Test
+  fun testMemoryCacheConcurrentGetDefaultFailure() {
+    val callCount = AtomicInteger()
+    val entered = CountDownLatch(1)
+    val release = CountDownLatch(1)
+    val errors = CopyOnWriteArrayList<Throwable>()
+
+    val first = thread {
+      runCatching {
+        singleCacheKtx<TestSingleConcurrentFailureModel>(memoryCache = true) {
+          // 只有首次调用失败，重跑时会成功
+          if (callCount.incrementAndGet() > 1) return@singleCacheKtx TestSingleConcurrentFailureModel(name = "rerun")
+          entered.countDown()
+          release.await(TEST_TIMEOUT.inWholeSeconds, TimeUnit.SECONDS)
+          error("getDefault failure")
+        }
+      }.exceptionOrNull()?.also { errors.add(it) }
+    }
+    try {
+      assertEquals(true, entered.await(10, TimeUnit.SECONDS))
+      val second = thread {
+        runCatching {
+          singleCacheKtx<TestSingleConcurrentFailureModel>(memoryCache = true) { TestSingleConcurrentFailureModel(name = "second") }
+        }.exceptionOrNull()?.also { errors.add(it) }
+      }
+      // 等第二个调用者阻塞在创建锁上，再让首个调用失败
+      val deadline = System.currentTimeMillis() + 10_000
+      while (second.state != Thread.State.BLOCKED && System.currentTimeMillis() < deadline) Thread.sleep(10)
+      assertEquals(Thread.State.BLOCKED, second.state)
+      release.countDown()
+      first.join(10_000)
+      second.join(10_000)
+    } finally {
+      release.countDown()
+    }
+
+    assertEquals(1, callCount.get())
+    assertEquals(listOf("getDefault failure", "getDefault failure"), errors.map { it.message })
+
+    // 失败后重新创建，使用新调用者的getDefault
+    val cache = singleCacheKtx<TestSingleConcurrentFailureModel>(memoryCache = true) { TestSingleConcurrentFailureModel(name = "retry") }
+    runBlocking {
+      assertEquals(true, cache.update { null })
+      assertEquals(TestSingleConcurrentFailureModel(name = "retry"), withTimeout(TEST_TIMEOUT) { cache.get() })
+    }
+  }
+
+  /**
    * 同一 memory 热流的多个订阅者都应该收到初始状态和最终状态。
    * SharedFlow使用DROP_OLDEST，慢订阅者允许跳过中间值，不要断言完整序列必须相同。
    */
@@ -593,6 +645,11 @@ data class TestSingleUnblockedModel(
 
 @CacheEntity("TestSingleDefaultFailureModel")
 data class TestSingleDefaultFailureModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleConcurrentFailureModel")
+data class TestSingleConcurrentFailureModel(
   val name: String = "tom",
 )
 
