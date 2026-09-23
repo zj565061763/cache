@@ -40,7 +40,7 @@ interface SingleCacheKtx<T> {
       clazz: Class<T>,
       /** 是否启用内存缓存，启用后[flow]为热流，并在内存中保留最新值 */
       memoryCache: Boolean = false,
-      /** 默认缓存，创建实例时同步调用 */
+      /** 默认缓存，创建实例时同步调用，只构造简单对象，不要在里面访问缓存 */
       getDefault: () -> T,
     ): SingleCacheKtx<T> {
       return if (memoryCache) {
