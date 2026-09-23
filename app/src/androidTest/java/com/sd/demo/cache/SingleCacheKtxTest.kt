@@ -3,6 +3,7 @@ package com.sd.demo.cache
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.sd.lib.cache.CacheEntity
+import com.sd.lib.cache.SingleCacheKtx
 import com.sd.lib.cache.get
 import com.sd.lib.cache.singleCacheKtx
 import kotlinx.coroutines.CoroutineStart
@@ -18,12 +19,14 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertSame
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.EmptyCoroutineContext
@@ -440,8 +443,8 @@ class SingleCacheKtxTest {
   }
 
   /**
-   * 首次创建失败时，并发等待的调用者也要拿到同一个失败，不能重跑首个调用者的getDefault。
-   * 修复前等待者会创建出已被移除的实例，之后同类型出现多个实例。
+   * 首次创建失败时，并发等待的调用者用自己的getDefault重新创建，并成为共享实例。
+   * 不能重跑首个调用者的getDefault，也不能把首个调用者的异常抛给等待者。
    */
   @Test
   fun testMemoryCacheConcurrentGetDefaultFailure() {
@@ -449,6 +452,7 @@ class SingleCacheKtxTest {
     val entered = CountDownLatch(1)
     val release = CountDownLatch(1)
     val errors = CopyOnWriteArrayList<Throwable>()
+    val secondCache = AtomicReference<SingleCacheKtx<TestSingleConcurrentFailureModel>>()
 
     val first = thread {
       runCatching {
@@ -466,7 +470,7 @@ class SingleCacheKtxTest {
       val second = thread {
         runCatching {
           singleCacheKtx<TestSingleConcurrentFailureModel>(memoryCache = true) { TestSingleConcurrentFailureModel(name = "second") }
-        }.exceptionOrNull()?.also { errors.add(it) }
+        }.onSuccess { secondCache.set(it) }.exceptionOrNull()?.also { errors.add(it) }
       }
       // 等第二个调用者阻塞在创建锁上，再让首个调用失败
       val deadline = System.currentTimeMillis() + 10_000
@@ -480,14 +484,32 @@ class SingleCacheKtxTest {
     }
 
     assertEquals(1, callCount.get())
-    assertEquals(listOf("getDefault failure", "getDefault failure"), errors.map { it.message })
+    assertEquals(listOf("getDefault failure"), errors.map { it.message })
 
-    // 失败后重新创建，使用新调用者的getDefault
-    val cache = singleCacheKtx<TestSingleConcurrentFailureModel>(memoryCache = true) { TestSingleConcurrentFailureModel(name = "retry") }
+    // 等待者创建的实例就是共享实例，默认值来自等待者自己的getDefault
+    val cache = singleCacheKtx<TestSingleConcurrentFailureModel>(memoryCache = true) { TestSingleConcurrentFailureModel(name = "third") }
+    assertSame(secondCache.get(), cache)
     runBlocking {
       assertEquals(true, cache.update { null })
-      assertEquals(TestSingleConcurrentFailureModel(name = "retry"), withTimeout(TEST_TIMEOUT) { cache.get() })
+      assertEquals(TestSingleConcurrentFailureModel(name = "second"), withTimeout(TEST_TIMEOUT) { cache.get() })
     }
+  }
+
+  /** getDefault中重入获取同类型内存单值缓存会无限递归，应抛出StackOverflowError，不能因重试卡住 */
+  @Test
+  fun testMemoryCacheReentrantGetDefaultFails() {
+    fun create(): SingleCacheKtx<TestSingleReentrantModel> = singleCacheKtx(memoryCache = true) {
+      create()
+      TestSingleReentrantModel()
+    }
+
+    val error = AtomicReference<Throwable>()
+    // 用较小的栈尽快触发栈溢出
+    val thread = Thread(null, { error.set(runCatching { create() }.exceptionOrNull()) }, "reentrant", 256 * 1024)
+    thread.start()
+    thread.join(TEST_TIMEOUT.inWholeMilliseconds)
+    assertEquals(false, thread.isAlive)
+    assertEquals(true, error.get() is StackOverflowError)
   }
 
   /**
@@ -650,6 +672,11 @@ data class TestSingleDefaultFailureModel(
 
 @CacheEntity("TestSingleConcurrentFailureModel")
 data class TestSingleConcurrentFailureModel(
+  val name: String = "tom",
+)
+
+@CacheEntity("TestSingleReentrantModel")
+data class TestSingleReentrantModel(
   val name: String = "tom",
 )
 

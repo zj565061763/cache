@@ -55,30 +55,34 @@ interface SingleCacheKtx<T> {
 
     /** 获取[clazz]对应的内存单值缓存，[getDefault]在该类型自己的锁中执行，不阻塞其他类型 */
     private fun <T> getMemoryCache(clazz: Class<T>, getDefault: () -> T): SingleCacheKtx<T> {
-      val holder = synchronized(sMemoryCaches) {
-        sMemoryCaches.getOrPut(clazz) {
-          // 失败结果也要保存，否则等待中的调用者会重新创建，得到已被移除的实例
-          lazy {
-            runCatching {
-              MemorySingleCacheKtx(
-                cache = FCache.getKtx(clazz) as CacheKtxImpl<T>,
-                defaultCache = getDefault(),
-              )
-            }
+      while (true) {
+        var created: Lazy<Result<SingleCacheKtx<*>>>? = null
+        val holder = synchronized(sMemoryCaches) {
+          sMemoryCaches.getOrPut(clazz) {
+            // 失败结果也要保存，否则等待中的调用者会重跑创建，得到已被移除的实例
+            lazy {
+              runCatching {
+                MemorySingleCacheKtx(
+                  cache = FCache.getKtx(clazz) as CacheKtxImpl<T>,
+                  defaultCache = getDefault(),
+                )
+              }
+            }.also { created = it }
           }
         }
-      }
 
-      val cache = holder.value.getOrElse { e ->
-        // 创建失败时移除，下次调用重新创建，也避免一直持有首个调用者的getDefault
+        holder.value.onSuccess {
+          @Suppress("UNCHECKED_CAST")
+          return it as SingleCacheKtx<T>
+        }
+
+        // 失败的结果不再复用，下次调用重新创建
         synchronized(sMemoryCaches) {
           if (sMemoryCaches[clazz] === holder) sMemoryCaches.remove(clazz)
         }
-        throw e
+        // 自己的getDefault失败或出现JVM Error时抛出，其他调用者的普通异常改用自己的getDefault重试
+        if (holder === created || holder.value.exceptionOrNull() is Error) holder.value.getOrThrow()
       }
-
-      @Suppress("UNCHECKED_CAST")
-      return cache as SingleCacheKtx<T>
     }
   }
 }
