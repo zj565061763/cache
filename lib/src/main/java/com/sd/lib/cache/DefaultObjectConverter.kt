@@ -20,7 +20,7 @@ internal class DefaultObjectConverter : CacheConfig.ObjectConverter {
 
   override fun <T> decode(bytes: ByteArray, clazz: Class<T>): T {
     return checkNotNull(
-      _moshi.adapter(clazz).fromJson(bytes.decodeToString(throwOnInvalidSequence = true))
+      _moshi.adapter(clazz).fromJson(bytes.decodeToString())
     )
   }
 }

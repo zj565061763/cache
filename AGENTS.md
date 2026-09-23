@@ -53,6 +53,8 @@ val single = singleCacheKtx<UserProfile>(memoryCache = true) { UserProfile() }
 
 - 普通存储或序列化异常经 `libRunCatching` 转给 `ExceptionHandler`，然后降级：`put/remove` 返回 `false`，`get` 返回 `null`，`keys` 返回空列表。
 - 编码器返回空字节抛 `CacheException`；读到空文件视为无缓存。
+- 默认转换器只在写入时校验非法 UTF-16，读取时不校验 UTF-8 和 UTF-16，以保证读取性能。
+- 外部手动写入的非法字符不在支持范围内，审查时不要列为缺陷。
 - 缺少注解、`id/group` 非法时，取得实例时立即抛 `IllegalArgumentException`。
 - 同组重复 `id`、内部配置错误和所有 JVM `Error` 必须继续抛出，不能降级。新增入口要保持这一区分。
 

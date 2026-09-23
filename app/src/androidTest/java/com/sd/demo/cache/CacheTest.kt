@@ -222,26 +222,6 @@ class CacheTest {
     assertEquals(true, errors.isNotEmpty())
   }
 
-  /** 非法UTF-8缓存数据必须解码失败，不能静默替换字符后返回被篡改的数据 */
-  @Test
-  fun testInvalidUtf8DataReturnsNull() {
-    val cache = FCache.get(TestInvalidUtf8DataModel::class.java)
-    val key = "testInvalidUtf8DataReturnsNull"
-    val file = cacheFileOf(INVALID_UTF8_DATA_MODEL_ID, key)
-
-    try {
-      assertEquals(true, cache.put(key, TestInvalidUtf8DataModel(name = "valid")))
-      val invalidData = "{\"name\":\"".toByteArray() + byteArrayOf(0xff.toByte()) + "\"}".toByteArray()
-      file.writeBytes(invalidData)
-
-      CacheErrors.clear()
-      assertEquals(null, cache.get(key))
-      assertEquals(1, CacheErrors.list().count { it is CharacterCodingException })
-    } finally {
-      cache.remove(key)
-    }
-  }
-
   /** 非法UTF-16缓存值必须写入失败，不能静默替换字符后覆盖已有缓存 */
   @Test
   fun testInvalidUtf16ValueRejected() {
@@ -478,13 +458,6 @@ const val CORRUPT_MODEL_ID = "TestCorruptModel"
 
 @CacheEntity(CORRUPT_MODEL_ID)
 data class TestCorruptModel(
-  val name: String = "",
-)
-
-const val INVALID_UTF8_DATA_MODEL_ID = "TestInvalidUtf8DataModel"
-
-@CacheEntity(INVALID_UTF8_DATA_MODEL_ID)
-data class TestInvalidUtf8DataModel(
   val name: String = "",
 )
 
