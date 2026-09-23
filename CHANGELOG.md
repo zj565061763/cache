@@ -4,7 +4,7 @@
 
 ### ✨ Improvements
 
-- `CacheKtx.flowOf` 和 `memoryCache=false` 的 `SingleCacheKtx.flow()` 在订阅者处理慢时只保留最新值，不再依次发射积压的中间值
+- `memoryCache=false` 的 `SingleCacheKtx.flow()` 在订阅者处理慢时只保留最新值，不再依次发射积压的中间值
 
 ### 🐛 Bug Fixes
 

@@ -49,8 +49,6 @@ internal class CacheKtxImpl<T>(
     return cacheFlowOf(key)
       .distinctUntilChanged()
       .flowOn(Dispatchers.IO)
-      // 每个值都是重新读盘的完整状态，订阅者处理慢时只保留最新值
-      .conflate()
   }
 
   /**
