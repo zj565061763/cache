@@ -7,6 +7,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
@@ -147,6 +148,8 @@ private class DiskSingleCacheKtx<T>(
   override fun getFlow(): Flow<T?> {
     return cache.cacheFlowOf(key)
       .flowOn(Dispatchers.IO)
+      // 每个值都是重新读盘的完整状态，订阅者处理慢时只保留最新值
+      .conflate()
   }
 }
 

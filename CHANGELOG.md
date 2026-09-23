@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### ✨ Improvements
+
+- `CacheKtx.flowOf` 和 `memoryCache=false` 的 `SingleCacheKtx.flow()` 在订阅者处理慢时只保留最新值，不再依次发射积压的中间值
+
 ### 🐛 Bug Fixes
 
 - `SingleCacheKtx.update` 读取失败时返回 `false`，不再用默认值覆盖已有缓存（缓存无法解码时仍会覆盖）

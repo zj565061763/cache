@@ -8,8 +8,10 @@ import com.sd.lib.cache.FCache
 import com.sd.lib.cache.get
 import com.sd.lib.cache.put
 import com.sd.lib.cache.remove
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -19,6 +21,7 @@ import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -340,6 +343,41 @@ class CacheKtxTest {
     }
   }
 
+
+  /** 订阅者处理慢时只收到最新值，不会依次收到积压的中间值 */
+  @Test
+  fun testFlowOfSlowCollectorReceivesLatestOnly() = runBlocking {
+    val cache = FCache.getKtx(TestKtxSlowCollectorModel::class.java)
+    val key = "testFlowOfSlowCollectorReceivesLatestOnly"
+    cache.remove(key)
+
+    val received = CopyOnWriteArrayList<TestKtxSlowCollectorModel?>()
+    val release = CompletableDeferred<Unit>()
+    val job = launch(Dispatchers.Default) {
+      cache.flowOf(key).collect {
+        received.add(it)
+        // 收到初始值后模拟处理很慢，期间每次更新都会单独读盘
+        if (received.size == 1) release.await()
+      }
+    }
+    try {
+      withTimeout(TEST_TIMEOUT) { while (received.isEmpty()) delay(10) }
+      repeat(5) { index ->
+        assertEquals(true, cache.put(key, TestKtxSlowCollectorModel(seq = index + 1)))
+        // 等待文件事件触发读盘，避免多次更新被合并成一次读盘
+        delay(300)
+      }
+      release.complete(Unit)
+
+      val latest = TestKtxSlowCollectorModel(seq = 5)
+      withTimeout(TEST_TIMEOUT) { while (received.last() != latest) delay(10) }
+      assertEquals(listOf(null, latest), received.toList())
+    } finally {
+      release.complete(Unit)
+      job.cancelAndJoin()
+      cache.remove(key)
+    }
+  }
 }
 
 @CacheEntity("TestKtxModel")
@@ -426,4 +464,9 @@ const val MOVED_OUT_MODEL_ID = "TestKtxMovedOutModel"
 @CacheEntity(MOVED_OUT_MODEL_ID)
 data class TestKtxMovedOutModel(
   val name: String = "tom",
+)
+
+@CacheEntity("TestKtxSlowCollectorModel")
+data class TestKtxSlowCollectorModel(
+  val seq: Int = 0,
 )

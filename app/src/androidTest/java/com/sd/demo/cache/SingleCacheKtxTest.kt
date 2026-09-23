@@ -6,6 +6,7 @@ import com.sd.lib.cache.CacheEntity
 import com.sd.lib.cache.SingleCacheKtx
 import com.sd.lib.cache.get
 import com.sd.lib.cache.singleCacheKtx
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -140,6 +141,39 @@ class SingleCacheKtxTest {
 
       assertEquals(true, cache.update { it.copy(name = "second") })
       assertEquals(TestSingleMemoryModel(name = "second"), awaitItem())
+    }
+  }
+
+  /** memoryCache=false时订阅者处理慢，只收到最新值，不会依次收到积压的中间值 */
+  @Test
+  fun testDiskCacheSlowCollectorReceivesLatestOnly() = runBlocking {
+    val cache = singleCacheKtx<TestSingleSlowCollectorModel> { TestSingleSlowCollectorModel() }
+    assertEquals(true, cache.update { null })
+
+    val received = CopyOnWriteArrayList<TestSingleSlowCollectorModel>()
+    val release = CompletableDeferred<Unit>()
+    val job = launch(Dispatchers.Default) {
+      cache.flow().collect {
+        received.add(it)
+        // 收到初始值后模拟处理很慢，期间每次更新都会单独读盘
+        if (received.size == 1) release.await()
+      }
+    }
+    try {
+      withTimeout(TEST_TIMEOUT) { while (received.isEmpty()) delay(10) }
+      repeat(5) { index ->
+        assertEquals(true, cache.update { TestSingleSlowCollectorModel(seq = index + 1) })
+        // 等待文件事件触发读盘，避免多次更新被合并成一次读盘
+        delay(300)
+      }
+      release.complete(Unit)
+
+      val latest = TestSingleSlowCollectorModel(seq = 5)
+      withTimeout(TEST_TIMEOUT) { while (received.last() != latest) delay(10) }
+      assertEquals(listOf(TestSingleSlowCollectorModel(), latest), received.toList())
+    } finally {
+      release.complete(Unit)
+      job.cancelAndJoin()
     }
   }
 
@@ -678,6 +712,11 @@ data class TestSingleConcurrentFailureModel(
 @CacheEntity("TestSingleReentrantModel")
 data class TestSingleReentrantModel(
   val name: String = "tom",
+)
+
+@CacheEntity("TestSingleSlowCollectorModel")
+data class TestSingleSlowCollectorModel(
+  val seq: Int = 0,
 )
 
 @CacheEntity("TestSingleMultiSubModel")

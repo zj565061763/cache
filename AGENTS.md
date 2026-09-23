@@ -41,11 +41,12 @@ val single = singleCacheKtx<UserProfile>(memoryCache = true) { UserProfile() }
 - 在 `edit` 块内访问锁不同的其他缓存时，反向嵌套会死锁，属于调用方责任。需要跨缓存原子操作时，应共享同组锁或进程锁。
 - 库内部不能在持有缓存锁时，再隐式获取调用方可见的锁。
 - `flowOf(key)` 每次事件后重新读盘，并用 `distinctUntilChanged` 去重，不能用它断言事件次数。
+- `flowOf(key)` 和 `SingleCacheKtx.flow()` 在两种模式下都只保证最新值，慢订阅者可能跳过中间值。
 - 仓库读取失败时，Flow 保留当前值；只有首次读取失败时发射 `null`。
 - 解码失败视为无缓存。`SingleCacheKtx.update` 只在仓库读取失败时返回 `false`。
 - `SingleCacheKtx.update` 的 lambda 返回 `null` 表示删除。
 - `memoryCache=false`：每次调用都返回新实例，并调用一次 `getDefault`，`flow()` 为冷流。
-- `memoryCache=true`：同类型共享进程级实例和 `SharedFlow(replay=1)`，`getDefault` 只在首次创建时调用，慢订阅者可能跳过中间值。
+- `memoryCache=true`：同类型共享进程级实例和 `SharedFlow(replay=1)`，`getDefault` 只在首次创建时调用。
 
 修改锁、回调注册顺序、初始值读取或热流初始化时，测试要覆盖：并发首次订阅、快速连续更新、多个订阅者、目录删除后恢复。
 
